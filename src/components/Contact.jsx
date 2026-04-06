@@ -1,6 +1,10 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Mail, Phone, MapPin, Send, User, MessageSquare, Linkedin, Github, Send as Telegram } from 'lucide-react'
+import emailjs from '@emailjs/browser'
 
 export default function Contact() {
+  const form = useRef()
   const [result, setResult] = useState('')
   const [resultStyle, setResultStyle] = useState({})
   const [isSubmitting, setIsSubmitting] = useState(false)
@@ -11,31 +15,29 @@ export default function Contact() {
     setIsSubmitting(true)
     setResult('')
 
-    const formData = {
-      name: e.target.name.value,
-      email: e.target.email.value,
-      message: e.target.message.value
-    }
+    // Note: Use environment variables for better security and maintainability
+    // Create a .env file in the root directory with these keys:
+    // VITE_EMAILJS_SERVICE_ID=...
+    // VITE_EMAILJS_TEMPLATE_ID=...
+    // VITE_EMAILJS_PUBLIC_KEY=...
+    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_your_id' 
+    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_your_id'
+    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'your_public_key'
 
     try {
-      const response = await fetch('http://localhost:3000/api/contact', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData)
-      })
+      await emailjs.sendForm(
+        SERVICE_ID,
+        TEMPLATE_ID,
+        form.current,
+        PUBLIC_KEY
+      )
 
-      const data = await response.json()
-
-      if (data.success) {
-        setResult('✓ Message sent! You will receive an SMS and email notification.')
-        setResultStyle({ color: '#10b981' })
-        e.target.reset()
-      } else {
-        setResult('✗ Failed to send. Please try again or email me directly.')
-        setResultStyle({ color: '#ef4444' })
-      }
+      setResult('✓ Message sent successfully! I will get back to you soon.')
+      setResultStyle({ color: '#10b981' })
+      e.target.reset()
     } catch (error) {
-      setResult('✗ Failed to send. Please email me directly at desalegnky827@gmail.com')
+      console.error('EmailJS Error:', error)
+      setResult('✗ Failed to send. Please try again or email me directly.')
       setResultStyle({ color: '#ef4444' })
     }
 
@@ -43,118 +45,256 @@ export default function Contact() {
   }
 
   const contactInfo = [
-    { icon: '📧', label: 'Email', value: 'desalegnky827@gmail.com', href: 'mailto:desalegnky827@gmail.com' },
-    { icon: '📱', label: 'Phone', value: '+251 908720092', href: 'tel:+251908720092' },
-    { icon: '📍', label: 'Location', value: 'Ethiopia', href: null }
+    { icon: <Mail size={24} />, label: 'Email', value: 'desalegnky827@gmail.com', href: 'mailto:desalegnky827@gmail.com' },
+    { icon: <Phone size={24} />, label: 'Phone', value: '+251 908720092', href: 'tel:+251908720092' },
+    { icon: <MapPin size={24} />, label: 'Location', value: 'Addis Ababa, Ethiopia', href: null }
   ]
 
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.2,
+      },
+    },
+  }
+
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 15,
+      },
+    },
+  }
+
   return (
-    <section id="contact" className="contact">
-      <div className="contact-background">
-        <div className="contact-orb"></div>
-      </div>
-      <div className="container">
-        <div className="section-header">
-          <span className="section-tag">Contact</span>
-          <h2>Get In Touch</h2>
-          <p className="section-subtitle">Let's work together</p>
-        </div>
-        <div className="contact-box">
-          <div className="contact-grid">
-            <div className="contact-info">
-              <h3>Let's Connect</h3>
-              <p>Feel free to reach out if you're looking for a developer, have a question, or just want to connect.</p>
-              <div className="contact-details">
-                {contactInfo.map((info, index) => (
-                  <div key={index} className="contact-item">
-                    <span className="contact-icon">{info.icon}</span>
-                    <div className="contact-text">
-                      <span className="contact-label">{info.label}</span>
-                      {info.href ? (
-                        <a href={info.href}>{info.value}</a>
-                      ) : (
-                        <span>{info.value}</span>
-                      )}
+    <section id="contact" className="py-24 bg-gray-50 dark:bg-slate-900/50 transition-colors duration-500 relative overflow-hidden">
+      {/* Background Decor */}
+      <motion.div 
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.1, 0.15, 0.1],
+        }}
+        transition={{ duration: 10, repeat: Infinity }}
+        className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2"
+      />
+      <motion.div 
+        animate={{
+          scale: [1, 1.1, 1],
+          opacity: [0.1, 0.12, 0.1],
+        }}
+        transition={{ duration: 12, repeat: Infinity }}
+        className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-accent/20 rounded-full blur-[120px] -z-10 -translate-x-1/2 translate-y-1/2"
+      />
+
+      <div className="container mx-auto px-6">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.8 }}
+          className="text-center mb-20"
+        >
+          <motion.span 
+            initial={{ opacity: 0, scale: 0.8 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            className="inline-block px-5 py-2 mb-6 text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full"
+          >
+            Contact
+          </motion.span>
+          <h2 className="text-5xl md:text-6xl font-black text-gray-900 dark:text-white mb-6 tracking-tight">
+            Let's Collaborate
+          </h2>
+          <p className="text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed">
+            Ready to bring your vision to life? Reach out and let's start a conversation about your next big project.
+          </p>
+        </motion.div>
+
+        <motion.div 
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-50px" }}
+          className="glass-panel noise-bg rounded-[3.5rem] shadow-2xl max-w-6xl mx-auto overflow-hidden relative"
+        >
+          <div className="grid lg:grid-cols-5 relative z-10">
+            {/* Contact Info Sidebar */}
+            <motion.div 
+              variants={itemVariants}
+              className="lg:col-span-2 bg-primary p-12 md:p-16 text-white relative overflow-hidden"
+            >
+              <div className="relative z-10">
+                <h3 className="text-4xl font-black mb-10 leading-tight font-display tracking-tight">Connect With Me</h3>
+                <p className="text-white/80 mb-14 text-xl leading-relaxed font-medium">
+                  I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.
+                </p>
+                
+                <div className="space-y-10 mb-14">
+                  {contactInfo.map((info, index) => (
+                    <motion.div 
+                      key={index} 
+                      whileHover={{ x: 10 }}
+                      className="flex items-center gap-6 group"
+                    >
+                      <div className="w-14 h-14 rounded-2xl glass-card flex items-center justify-center text-white group-hover:bg-white group-hover:text-primary transition-all duration-300">
+                        {info.icon}
+                      </div>
+                      <div>
+                        <span className="block text-xs font-black uppercase tracking-[0.2em] text-white/50 mb-1">{info.label}</span>
+                        {info.href ? (
+                          <a href={info.href} className="text-xl font-bold hover:text-accent transition-colors font-display tracking-tight">{info.value}</a>
+                        ) : (
+                          <span className="text-xl font-bold font-display tracking-tight">{info.value}</span>
+                        )}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+
+                <div className="flex gap-5">
+                  {[
+                    { title: 'LinkedIn', icon: <Linkedin size={20} />, href: "https://linkedin.com/in/dk-cs-3rd" },
+                    { title: 'GitHub', icon: <Github size={20} />, href: "https://github.com/desalegn-tech" },
+                    { title: 'Telegram', icon: <Telegram size={20} />, href: "https://t.me/Ds35kg" }
+                  ].map((social, idx) => (
+                    <motion.a 
+                      key={idx} 
+                      whileHover={{ scale: 1.1, y: -3 }}
+                      whileTap={{ scale: 0.9 }}
+                      href={social.href} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="w-12 h-12 rounded-xl glass-card flex items-center justify-center hover:bg-white hover:text-primary transition-all duration-300" 
+                      title={social.title}
+                    >
+                      {social.icon}
+                    </motion.a>
+                  ))}
+                </div>
+              </div>
+
+              {/* Decorative background element for sidebar */}
+              <div className="absolute top-[-20%] left-[-20%] w-[150%] h-[150%] bg-white/5 rounded-full blur-[100px] -z-0 pointer-events-none" />
+            </motion.div>
+
+            {/* Contact Form */}
+            <motion.div 
+              variants={itemVariants}
+              className="lg:col-span-3 p-12 md:p-16"
+            >
+              <form ref={form} className="space-y-8" onSubmit={handleSubmit}>
+                <div className="grid md:grid-cols-2 gap-8">
+                  <div className="space-y-3">
+                    <label className="text-sm font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Your Name</label>
+                    <div className="relative group">
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary">
+                        <User size={20} />
+                      </span>
+                      <input 
+                        name="user_name"
+                        type="text" 
+                        required
+                        placeholder="e.g. Alex Johnson"
+                        className="w-full pl-14 pr-6 py-5 bg-gray-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-3xl outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-lg shadow-sm"
+                        onFocus={() => setFocusedField('name')}
+                        onBlur={() => setFocusedField(null)}
+                      />
                     </div>
                   </div>
-                ))}
-              </div>
-              <div className="social-links">
-                <a href="mailto:desalegnky827@gmail.com" className="social-link" title="Email">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z" /></svg>
-                </a>
-                <a href="https://linkedin.com/in/dk-cs-3rd" target="_blank" rel="noopener noreferrer" className="social-link" title="LinkedIn">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z" /></svg>
-                </a>
-                <a href="https://github.com/desalegn-tech" target="_blank" rel="noopener noreferrer" className="social-link" title="GitHub">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z" /></svg>
-                </a>
-                <a href="https://t.me/Ds35kg" target="_blank" rel="noopener noreferrer" className="social-link" title="Telegram">
-                  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z" /></svg>
-                </a>
-              </div>
-            </div>
-            <form className="contact-form" onSubmit={handleSubmit}>
+                  <div className="space-y-3">
+                    <label className="text-sm font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Email Address</label>
+                    <div className="relative group">
+                      <span className="absolute left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary">
+                        <Mail size={20} />
+                      </span>
+                      <input 
+                        name="user_email"
+                        type="email" 
+                        required
+                        placeholder="e.g. alex@example.com"
+                        className="w-full pl-14 pr-6 py-5 bg-gray-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-3xl outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-lg shadow-sm"
+                        onFocus={() => setFocusedField('email')}
+                        onBlur={() => setFocusedField(null)}
+                      />
+                    </div>
+                  </div>
+                </div>
 
-              <div className={`form-group ${focusedField === 'name' ? 'focused' : ''}`}>
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  placeholder=" "
-                  required
-                  onFocus={() => setFocusedField('name')}
-                  onBlur={() => setFocusedField(null)}
-                />
-                <label htmlFor="name">Your Name</label>
-                <span className="input-icon">👤</span>
-              </div>
+                <div className="space-y-3">
+                  <label className="text-sm font-black uppercase tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Your Message</label>
+                  <div className="relative group">
+                    <span className="absolute left-5 top-6 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary">
+                      <MessageSquare size={20} />
+                    </span>
+                    <textarea 
+                      name="message"
+                      required
+                      placeholder="Tell me about your project or vision..."
+                      rows="6"
+                      className="w-full pl-14 pr-6 py-5 bg-gray-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-3xl outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-lg shadow-sm resize-none"
+                      onFocus={() => setFocusedField('message')}
+                      onBlur={() => setFocusedField(null)}
+                    ></textarea>
+                  </div>
+                </div>
 
-              <div className={`form-group ${focusedField === 'email' ? 'focused' : ''}`}>
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  placeholder=" "
-                  required
-                  onFocus={() => setFocusedField('email')}
-                  onBlur={() => setFocusedField(null)}
-                />
-                <label htmlFor="email">Your Email</label>
-                <span className="input-icon">✉️</span>
-              </div>
+                <AnimatePresence>
+                  {result && (
+                    <motion.div 
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="p-5 rounded-2xl text-base font-bold text-center"
+                      style={{ 
+                        backgroundColor: resultStyle.color + '10',
+                        color: resultStyle.color,
+                        border: `1px solid ${resultStyle.color}20`
+                      }}
+                    >
+                      {result}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
 
-              <div className={`form-group ${focusedField === 'message' ? 'focused' : ''}`}>
-                <textarea
-                  name="message"
-                  id="message"
-                  placeholder=" "
-                  rows="5"
-                  required
-                  onFocus={() => setFocusedField('message')}
-                  onBlur={() => setFocusedField(null)}
-                ></textarea>
-                <label htmlFor="message">Your Message</label>
-                <span className="input-icon">💬</span>
-              </div>
-
-              <button type="submit" className="submit-button" disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <>
-                    <span className="spinner"></span>
-                    Sending...
-                  </>
-                ) : (
-                  <>
-                    Send Message
-                    <span className="btn-arrow">→</span>
-                  </>
-                )}
-              </button>
-            </form>
+                <motion.button 
+                  type="submit" 
+                  disabled={isSubmitting}
+                  whileHover={{ scale: 1.02, translateY: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full py-5 bg-primary hover:bg-secondary text-white font-black text-xl rounded-[2rem] shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-secondary/30 transition-all duration-300 flex items-center justify-center gap-4 disabled:opacity-70 disabled:cursor-not-allowed group relative overflow-hidden"
+                >
+                  <span className="relative z-10 flex items-center gap-4">
+                    {isSubmitting ? (
+                      <div className="w-7 h-7 border-4 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    ) : (
+                      <>
+                        Send Message
+                        <motion.span 
+                          animate={{ x: [0, 5, 0] }}
+                          transition={{ duration: 1.5, repeat: Infinity }}
+                        >
+                          <Send size={24} />
+                        </motion.span>
+                      </>
+                    )}
+                  </span>
+                  <motion.div 
+                    initial={{ x: '-100%' }}
+                    whileHover={{ x: '100%' }}
+                    transition={{ duration: 0.6 }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -z-0"
+                  />
+                </motion.button>
+              </form>
+            </motion.div>
           </div>
-          <div id="result" style={{ textAlign: 'center', marginTop: '1rem', fontSize: '1.1rem', ...resultStyle }}>{result}</div>
-        </div>
+        </motion.div>
       </div>
     </section>
   )

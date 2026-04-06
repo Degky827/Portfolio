@@ -6,44 +6,35 @@ import Skills from './components/Skills'
 import Projects from './components/Projects'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
-import './App.css'
 
 function App() {
   const [darkMode, setDarkMode] = useState(false)
 
   useEffect(() => {
-    const handleScroll = () => {
-      const navbar = document.querySelector('.navbar')
-      if (window.scrollY > 50) {
-        navbar.style.boxShadow = '0 6px 12px rgba(0, 0, 0, 0.15)'
-      } else {
-        navbar.style.boxShadow = '0 4px 6px rgba(0, 0, 0, 0.1)'
-      }
+    if (darkMode) {
+      document.documentElement.classList.add('dark')
+    } else {
+      document.documentElement.classList.remove('dark')
     }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
-
-  useEffect(() => {
-    document.body.classList.toggle('dark-mode', darkMode)
   }, [darkMode])
 
   return (
-    <div className={`app ${darkMode ? 'dark' : ''}`}>
+    <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
       <button 
-        className="theme-toggle"
+        className="fixed top-20 right-6 z-[9998] w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700 flex items-center justify-center text-2xl hover:scale-110 transition-transform"
         onClick={() => setDarkMode(!darkMode)}
         aria-label="Toggle theme"
       >
         {darkMode ? '☀️' : '🌙'}
       </button>
       <Navbar />
-      <Hero />
-      <About />
-      <Skills />
-      <Projects />
-      <Contact />
+      <main>
+        <Hero />
+        <About />
+        <Skills />
+        <Projects />
+        <Contact />
+      </main>
       <Footer />
     </div>
   )

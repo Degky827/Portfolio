@@ -1,3 +1,5 @@
+import { motion } from 'framer-motion'
+
 export default function Footer() {
   const currentYear = new Date().getFullYear()
   
@@ -25,58 +27,114 @@ export default function Footer() {
   ]
 
   return (
-    <footer className="footer">
-      <div className="footer-wave">
-        <svg viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z"></path>
+    <footer className="bg-black text-white pt-24 pb-12 relative overflow-hidden">
+      {/* Wave Divider */}
+      <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0] transform rotate-180">
+        <svg className="relative block w-[calc(100%+1.3px)] h-[60px]" viewBox="0 0 1200 120" preserveAspectRatio="none">
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21,0,0,0,321.39,56.44Z" className="fill-white dark:fill-slate-900 transition-colors duration-500"></path>
         </svg>
       </div>
-      <div className="container">
-        <div className="footer-content">
-          <div className="footer-brand">
-            <div className="footer-logo">
-              <span className="logo-icon">⚡</span>
-              <span>Desalegn</span>
+
+      <div className="container mx-auto px-6">
+        <div className="grid md:grid-cols-4 gap-16 mb-20">
+          {/* Brand */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="md:col-span-2"
+          >
+            <div className="flex items-center gap-3 text-3xl font-black mb-8">
+              <span className="w-12 h-12 bg-primary text-white rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">⚡</span>
+              <span className="tracking-tighter uppercase">Desalegn</span>
             </div>
-            <p>Building digital experiences that matter.</p>
-          </div>
-          
-          <div className="footer-links">
-            <h4>Quick Links</h4>
-            <ul>
-              <li><a href="#home">Home</a></li>
-              <li><a href="#about">About</a></li>
-              <li><a href="#skills">Skills</a></li>
-              <li><a href="#projects">Projects</a></li>
-              <li><a href="#contact">Contact</a></li>
-            </ul>
-          </div>
-          
-          <div className="footer-social">
-            <h4>Connect</h4>
-            <div className="social-icons">
+            <p className="text-gray-400 text-xl max-w-sm mb-10 leading-relaxed">
+              Building robust digital experiences through modern web development and secure network infrastructure.
+            </p>
+            <div className="flex gap-5">
               {socialLinks.map((link, index) => (
-                <a 
+                <motion.a 
                   key={index}
                   href={link.href}
                   target="_blank"
                   rel="noopener noreferrer"
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-14 h-14 rounded-2xl bg-white/5 flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 group shadow-sm shadow-white/5"
                   title={link.title}
-                  className="social-icon"
                 >
-                  {link.icon}
-                </a>
+                  <div className="w-6 h-6 group-hover:scale-110 transition-transform">
+                    {link.icon}
+                  </div>
+                </motion.a>
               ))}
             </div>
-          </div>
+          </motion.div>
+
+          {/* Quick Links */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.2 }}
+          >
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-white/40 mb-10">Explore</h4>
+            <ul className="space-y-6">
+              {['Home', 'About', 'Skills', 'Projects', 'Contact'].map((item) => (
+                <li key={item}>
+                  <a href={`#${item.toLowerCase()}`} className="text-gray-400 hover:text-white transition-colors flex items-center gap-3 group text-lg font-bold">
+                    <span className="w-0 group-hover:w-3 h-1 bg-primary rounded-full transition-all duration-300"></span>
+                    {item}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </motion.div>
+
+          {/* Contact Summary */}
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.4 }}
+          >
+            <h4 className="text-sm font-black uppercase tracking-[0.2em] text-white/40 mb-10">Office</h4>
+            <ul className="space-y-8 text-gray-400">
+              <li className="flex items-start gap-4">
+                <span className="text-2xl">📍</span>
+                <span className="text-lg font-bold leading-tight">Addis Ababa, Ethiopia</span>
+              </li>
+              <li className="flex items-start gap-4">
+                <span className="text-2xl">📧</span>
+                <a href="mailto:desalegnky827@gmail.com" className="text-lg font-bold hover:text-white transition-colors break-all">desalegnky827@gmail.com</a>
+              </li>
+              <li className="flex items-start gap-4">
+                <span className="text-2xl">📱</span>
+                <a href="tel:+251908720092" className="text-lg font-bold hover:text-white transition-colors">+251 908 720 092</a>
+              </li>
+            </ul>
+          </motion.div>
         </div>
-        
-        <div className="footer-bottom">
-          <p>&copy; {currentYear} Desalegn. All rights reserved.</p>
-          <div className="footer-credit">
-            Made with <span className="heart">❤️</span> using React
+
+        <motion.div 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          className="pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-8 text-gray-500 text-sm font-bold uppercase tracking-widest"
+        >
+          <p>&copy; {currentYear} Desalegn. Built with passion and precision.</p>
+          <div className="flex items-center gap-3">
+            <span>Made with</span>
+            <motion.span 
+              animate={{ scale: [1, 1.2, 1] }}
+              transition={{ duration: 1, repeat: Infinity }}
+              className="text-red-500 text-xl"
+            >
+              ❤️
+            </motion.span>
+            <span>using React & Tailwind</span>
           </div>
-        </div>
+        </motion.div>
       </div>
     </footer>
   )
