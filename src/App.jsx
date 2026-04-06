@@ -21,7 +21,7 @@ function App() {
   return (
     <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
       <button 
-        className="fixed top-20 right-6 z-[9998] w-12 h-12 rounded-full bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700 flex items-center justify-center text-2xl hover:scale-110 transition-transform"
+        className="fixed top-20 right-4 sm:right-6 z-[9998] w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-full bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700 flex items-center justify-center text-lg sm:text-2xl hover:scale-110 transition-transform"
         onClick={() => setDarkMode(!darkMode)}
         aria-label="Toggle theme"
       >
