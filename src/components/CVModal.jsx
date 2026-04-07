@@ -90,7 +90,7 @@ export default function CVModal({ isOpen, onClose }) {
                       <a href="https://linkedin.com/in/dk-cs-3rd" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
                         <LinkedinIcon size={20} />
                       </a>
-                      <a href="https://github.com/desalegn-tech" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                      <a href="https://github.com/desalegnkasayemuluyekasaye-tech" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
                         <GithubIcon size={20} />
                       </a>
                       <a href="https://t.me/Ds35kg" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
@@ -116,7 +116,7 @@ export default function CVModal({ isOpen, onClose }) {
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl">
                     <ExternalLink className="w-5 h-5 text-primary flex-shrink-0" />
-                    <a href="https://desalegnkasayemulu.yekasaye.tech.github.io/portkiro/" target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">Portfolio</a>
+                    <a href="https://desalegnkasayemuluyekasaye-tech.github.io/portkiro/" target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">Portfolio</a>
                   </div>
                 </div>
 

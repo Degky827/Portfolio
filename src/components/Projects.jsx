@@ -14,8 +14,8 @@ const projectsData = [
     tags: ['React', 'Tailwind', 'Framer Motion'],
     icon: <Globe size={32} />,
     color: '#6366f1',
-    liveUrl: 'https://desalegnkasayemulu.yekasaye.tech.github.io/portkiro/',
-    repoUrl: 'https://github.com/desalegn-tech/portkiro'
+    liveUrl: 'https://desalegnkasayemuluyekasaye-tech.github.io/portkiro/',
+    repoUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech/portkiro'
   },
   {
     title: 'Media Platform',
@@ -24,7 +24,7 @@ const projectsData = [
     icon: <Rocket size={32} />,
     color: '#8b5cf6',
     liveUrl: 'https://media-plat-git-ecfd38-desalegnkasayemuluyekasaye-techs-projects.vercel.app/',
-    repoUrl: 'https://github.com/desalegn-tech/media-platform'
+    repoUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech/media-platform'
   },
   {
     title: 'Network Design',
@@ -32,7 +32,7 @@ const projectsData = [
     tags: ['Cisco', 'Security', 'Infrastructure'],
     icon: <Wifi size={32} />,
     color: '#10b981',
-    liveUrl: 'https://www.netacad.com/courses/networking/ccna',
+    liveUrl: 'public/cisco.pkt',
     repoUrl: '#'
   },
   {
@@ -41,8 +41,8 @@ const projectsData = [
     tags: ['Integration', 'Automation', 'DevOps'],
     icon: <Layers size={32} />,
     color: '#f59e0b',
-    liveUrl: 'https://github.com/desalegn-tech',
-    repoUrl: 'https://github.com/desalegn-tech'
+    liveUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech',
+    repoUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech'
   }
 ]
 

@@ -34,7 +34,7 @@ export default function Footer() {
       icon: <LinkedinIcon size={20} />
     },
     { 
-      href: 'https://github.com/desalegn-tech', 
+      href: 'https://github.com/desalegnkasayemuluyekasaye-tech', 
       title: 'GitHub', 
       icon: <GithubIcon size={20} />
     },
