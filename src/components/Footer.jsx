@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Zap, ArrowUp, Mail, MapPin, Navigation } from 'lucide-react'
+import { Zap, ArrowUp, Mail } from 'lucide-react'
 
 const GithubIcon = ({ size = 24 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -59,45 +59,6 @@ export default function Footer() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6">
-        {/* Location Map Section */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-          className="mb-12 sm:mb-16"
-        >
-          <div className="flex items-center justify-center gap-3 mb-4 sm:mb-6">
-            <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary" />
-            <h3 className="text-lg sm:text-xl font-black text-white">Find Me In</h3>
-          </div>
-          
-          <div className="relative rounded-2xl sm:rounded-[1.5rem] md:rounded-[2rem] overflow-hidden shadow-2xl border border-slate-700/50">
-            {/* Map Embed */}
-            <iframe 
-              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d126134.28197389658!2d37.3333!3d11.5833!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x1644d8c6c7000001%3A0x4e1d4f7c6a000000!2sBahir%20Dar%2C%20Ethiopia!5e0!3m2!1sen!2sus!4v1700000000000!5m2!1sen!2sus"
-              width="100%"
-              height="250"
-              style={{ border: 0, filter: 'invert(90%) hue-rotate(180deg)' }}
-              allowFullScreen=""
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Bahirdar, Ethiopia Location"
-            />
-            
-            {/* Location Overlay */}
-            <div className="absolute top-4 left-4 right-4 sm:top-6 sm:left-6 glass-panel rounded-xl sm:rounded-2xl p-3 sm:p-4 flex items-center gap-3 sm:gap-4 shadow-xl backdrop-blur-md bg-slate-900/80">
-              <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl bg-primary flex items-center justify-center flex-shrink-0">
-                <Navigation className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-              </div>
-              <div>
-                <h4 className="font-black text-sm sm:text-base text-white">Bahirdar, Ethiopia</h4>
-                <p className="text-xs sm:text-sm text-gray-300">Amhara Region • Lake Tana</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
         {/* Footer Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 md:gap-16 mb-12 sm:mb-16">
           {/* Brand */}
@@ -166,7 +127,14 @@ export default function Footer() {
               <li className="flex items-start gap-3 sm:gap-4">
                 <span className="text-lg sm:text-xl md:text-2xl">📍</span>
                 <div>
-                  <span className="text-sm sm:text-base md:text-lg font-medium leading-tight block">Bahirdar, Ethiopia</span>
+                  <a 
+                    href="https://www.google.com/maps/place/Bahir+Dar,+Ethiopia/@11.5833,37.3333,12z" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm sm:text-base md:text-lg font-medium leading-tight block hover:text-primary transition-colors"
+                  >
+                    Bahirdar, Ethiopia
+                  </a>
                   <span className="text-xs text-white/50">Amhara Region</span>
                 </div>
               </li>

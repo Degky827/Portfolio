@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { GraduationCap, Briefcase, Rocket, Target, Code, Award, Users, TrendingUp } from 'lucide-react'
+import { GraduationCap, Briefcase, Rocket, Target, Code, Award, Users, TrendingUp, Download, FileText } from 'lucide-react'
 
 const aboutSections = [
   {
@@ -24,7 +24,7 @@ const aboutSections = [
   }
 ]
 
-export default function About() {
+export default function About({ onOpenCV }) {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -163,6 +163,51 @@ export default function About() {
               </div>
             </motion.div>
           </div>
+
+          {/* CV Download Section */}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-50px" }}
+            transition={{ duration: 0.8, delay: 0.3 }}
+            className="mt-10 sm:mt-12 lg:mt-16"
+          >
+            <div className="relative overflow-hidden rounded-2xl sm:rounded-[1.5rem] md:rounded-[2rem]">
+              {/* Background Gradient */}
+              <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-accent" />
+              
+              {/* Animated Shine Effect */}
+              <motion.div
+                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
+                animate={{ x: ['-100%', '200%'] }}
+                transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
+                style={{ width: '50%' }}
+              />
+              
+              {/* Content */}
+              <div className="relative p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-4 sm:gap-5 text-white">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
+                    <FileText className="w-8 h-8 sm:w-10 sm:h-10" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl sm:text-2xl md:text-3xl font-black mb-1 sm:mb-2">Download My Resume</h3>
+                    <p className="text-white/80 text-sm sm:text-base">Get a detailed overview of my skills, experience, and achievements</p>
+                  </div>
+                </div>
+                
+                <motion.button
+                  onClick={onOpenCV}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="group flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary font-bold sm:font-black text-sm sm:text-base rounded-full shadow-xl hover:shadow-2xl transition-all whitespace-nowrap"
+                >
+                  <Download className="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-bounce" />
+                  <span>View & Download</span>
+                </motion.button>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </div>
     </section>

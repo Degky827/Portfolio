@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Menu, X, Mail, ChevronRight, MapPin, Phone } from 'lucide-react'
+import { Zap, Menu, X, Mail, ChevronRight, MapPin, Phone, Download } from 'lucide-react'
 
 const navLinks = [
   { id: 'home', label: 'Home' },
@@ -10,7 +10,7 @@ const navLinks = [
   { id: 'contact', label: 'Contact' },
 ]
 
-export default function Navbar() {
+export default function Navbar({ onOpenCV }) {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
 
@@ -88,6 +88,20 @@ export default function Navbar() {
               </a>
             </motion.li>
           ))}
+          <motion.a
+            href="/Desalegn_Kasaye_Resume.pdf"
+            download="Desalegn_Kasaye_Resume.pdf"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.8 }}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={onOpenCV}
+            className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-primary to-secondary text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full hover:shadow-lg hover:shadow-primary/40 transition-all shadow-md cursor-pointer"
+          >
+            <Download size={14} className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
+            <span>Resume</span>
+          </motion.a>
         </ul>
 
         {/* Mobile Sidebar */}
@@ -149,6 +163,17 @@ export default function Navbar() {
                 </ul>
 
                 <div className="mt-auto space-y-6 sm:space-y-8">
+                  {/* Download CV Button */}
+                  <motion.button
+                    onClick={() => { setIsOpen(false); onOpenCV(); }}
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex items-center justify-center gap-3 w-full py-4 bg-primary text-white font-bold uppercase tracking-wider rounded-2xl hover:bg-secondary transition-colors shadow-lg shadow-primary/30"
+                  >
+                    <Download size={20} />
+                    <span>View & Download CV</span>
+                  </motion.button>
+
                   {/* Contact Info Card */}
                   <div className="p-5 sm:p-6 md:p-8 glass-panel rounded-2xl sm:rounded-[1.5rem] noise-bg relative overflow-hidden group">
                     <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />

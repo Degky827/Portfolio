@@ -32,7 +32,7 @@ const projectsData = [
     tags: ['Cisco', 'Security', 'Infrastructure'],
     icon: <Wifi size={32} />,
     color: '#10b981',
-    liveUrl: '#',
+    liveUrl: 'https://www.netacad.com/courses/networking/ccna',
     repoUrl: '#'
   },
   {
@@ -41,8 +41,8 @@ const projectsData = [
     tags: ['Integration', 'Automation', 'DevOps'],
     icon: <Layers size={32} />,
     color: '#f59e0b',
-    liveUrl: '#',
-    repoUrl: '#'
+    liveUrl: 'https://github.com/desalegn-tech',
+    repoUrl: 'https://github.com/desalegn-tech'
   }
 ]
 

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Code2, Globe, Rocket, MapPin, Coffee } from 'lucide-react'
+import { ArrowRight, Sparkles, Code2, Globe, Rocket, MapPin, Coffee, Download } from 'lucide-react'
 
-export default function Hero() {
+export default function Hero({ onOpenCV }) {
   const [typedText, setTypedText] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const fullText = 'Developer and Network Designer'
@@ -231,6 +231,16 @@ export default function Hero() {
                 >
                   View Work
                 </motion.a>
+                <motion.button 
+                  whileHover={{ scale: 1.05, translateY: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={onOpenCV}
+                  className="group relative px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 bg-gradient-to-r from-secondary to-accent text-white rounded-full sm:rounded-[2rem] font-bold sm:font-black text-sm sm:text-base lg:text-lg shadow-2xl shadow-secondary/40 hover:shadow-accent/40 transition-all flex items-center gap-2 sm:gap-4 overflow-hidden"
+                >
+                  <span className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+                  <Download className="w-4 h-4 sm:w-5 sm:h-5" />
+                  <span className="relative z-10">View CV</span>
+                </motion.button>
               </motion.div>
 
               {/* Stats */}
