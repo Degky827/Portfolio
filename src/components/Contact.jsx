@@ -147,7 +147,7 @@ export default function Contact() {
                 <div className="flex gap-3 sm:gap-4 md:gap-5">
                   {[
                     { title: 'LinkedIn', icon: <LinkedinIcon size={18} />, href: "https://linkedin.com/in/dk-cs-3rd" },
-                    { title: 'GitHub', icon: <GithubIcon size={18} />, href: "https://github.com/desalegn-tech" },
+                    { title: 'GitHub', icon: <GithubIcon size={18} />, href: "https://github.com/desalegnkasayemuluyekasaye-tech" },
                     { title: 'Telegram', icon: <Telegram size={18} />, href: "https://t.me/Ds35kg" }
                   ].map((social, idx) => (
                     <motion.a 
