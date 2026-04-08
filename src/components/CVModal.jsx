@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, Download, Mail, Phone, MapPin, ExternalLink } from 'lucide-react'
+import { X, Download, Mail, Phone, MapPin, ExternalLink, Award, FileText } from 'lucide-react'
 
 const GithubIcon = ({ size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -20,6 +20,21 @@ const TelegramIcon = ({ size = 20 }) => (
 )
 
 export default function CVModal({ isOpen, onClose }) {
+  const certificates = [
+    { name: 'CCNA: Introduction to Networks', issuer: 'Cisco', file: '/CCNA-_Introduction_to_Networks_certificate_desalegnkasayemuluyekasaye-gmail-com_7249a65b-84fe-46db-8cbe-797a03205390.pdf' },
+    { name: 'e-SHE OEX100 Certificate', issuer: 'e-SHE Online Learning', file: '/e-SHE OEX100 Certificate _ e-SHE Online Learning.pdf' },
+    { name: 'e-SHE DS201 Certificate', issuer: 'e-SHE Online Learning', file: '/e-SHE DS201 Certificate _ e-SHE Online Learning.pdf' },
+    { name: 'e-SHE CE106 Certificate', issuer: 'e-SHE Online Learning', file: '/e-SHE CE106 Certificate _ e-SHE Online Learning.pdf' },
+    { name: 'e-SHE CE105 Certificate', issuer: 'e-SHE Online Learning', file: '/e-SHE CE105 Certificate _ e-SHE Online Learning.pdf' },
+    { name: 'e-SHE CE104 Certificate', issuer: 'e-SHE Online Learning', file: '/e-SHE CE104 Certificate _ e-SHE Online Learning.pdf' },
+    { name: 'e-SHE CE102 Certificate', issuer: 'e-SHE Online Learning', file: '/e-SHE CE102 Certificate _ e-SHE Online Learning.pdf' },
+    { name: 'e-SHE CE101 Certificate', issuer: 'e-SHE Online Learning', file: '/e-SHE CE101 Certificate _ e-SHE Online Learning.pdf' },
+    { name: 'Learn the Latest Tech Skills - Udacity', issuer: 'Udacity', file: '/Learn the Latest Tech Skills; Advance Your Career _ Udacity.pdf' },
+    { name: 'Learn the Latest Tech Skills 1 - Udacity', issuer: 'Udacity', file: '/Learn_the_Latest_Tech_Skills;_Advance_Your_Career_Udacity_1.pdf' },
+    { name: 'Learn the Latest Tech Skills 2 - Udacity', issuer: 'Udacity', file: '/Learn_the_Latest_Tech_Skills;_Advance_Your_Career_Udacity_2.pdf' },
+    { name: 'Learn the Latest Tech Skills 3 - Udacity', issuer: 'Udacity', file: '/Learn_the_Latest_Tech_Skills;_Advance_Your_Career_Udacity_3.pdf' },
+  ]
+
   const handlePreview = () => {
     window.open('/Desalegn_CV.html', '_blank')
   }
@@ -208,27 +223,55 @@ export default function CVModal({ isOpen, onClose }) {
                   </div>
                 </div>
 
-                {/* Projects */}
-                <div className="mb-8">
-                  <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <span className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center text-orange-500 text-sm">🚀</span>
-                    Featured Projects
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-10 sm:pl-10">
-                    <div className="p-4 bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-primary/10">
-                      <h4 className="font-bold text-gray-900 dark:text-white mb-1">Portfolio Website</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Modern React portfolio with animations</p>
-                      <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">React + Tailwind</span>
+                  {/* Projects */}
+                  <div className="mb-8">
+                    <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <span className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center text-orange-500 text-sm">🚀</span>
+                      Featured Projects
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-10 sm:pl-10">
+                      <div className="p-4 bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-primary/10">
+                        <h4 className="font-bold text-gray-900 dark:text-white mb-1">Portfolio Website</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Modern React portfolio with animations</p>
+                        <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">React + Tailwind</span>
+                      </div>
+                      <div className="p-4 bg-gradient-to-br from-secondary/5 to-accent/5 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-secondary/10">
+                        <h4 className="font-bold text-gray-900 dark:text-white mb-1">Media Platform</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Full-stack media streaming app</p>
+                        <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">Next.js + Vercel</span>
+                      </div>
                     </div>
-                    <div className="p-4 bg-gradient-to-br from-secondary/5 to-accent/5 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-secondary/10">
-                      <h4 className="font-bold text-gray-900 dark:text-white mb-1">Media Platform</h4>
-                      <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Full-stack media streaming app</p>
-                      <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">Next.js + Vercel</span>
+                  </div>
+
+                  {/* Certificates */}
+                  <div className="mb-8 sm:mb-10">
+                    <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                      <span className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center text-yellow-500 text-sm">🏆</span>
+                      Certificates
+                    </h3>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pl-10 sm:pl-10">
+                      {certificates.map((cert, index) => (
+                        <a
+                          key={index}
+                          href={cert.file}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl hover:bg-primary/10 hover:shadow-md transition-all group"
+                        >
+                          <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                            <Award className="w-5 h-5 text-yellow-500" />
+                          </div>
+                          <div className="min-w-0">
+                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-primary">{cert.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{cert.issuer}</p>
+                          </div>
+                          <FileText className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-auto" />
+                        </a>
+                      ))}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
             {/* Footer - Fixed Download Button */}
             <div className="sticky bottom-0 bg-white dark:bg-slate-900 p-4 sm:p-6 border-t border-gray-200 dark:border-slate-700">
