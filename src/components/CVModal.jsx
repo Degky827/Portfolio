@@ -100,7 +100,7 @@ export default function CVModal({ isOpen, onClose }) {
                   />
                   <div className="text-center sm:text-left">
                     <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">Desalegn Kasaye Mulu</h1>
-                    <p className="text-primary font-bold text-base sm:text-lg mb-4">Full-Stack Developer & Network Designer</p>
+                    <p className="text-primary font-bold text-base sm:text-lg mb-4">Aspiring Cyber Security Expert & Full-Stack Developer</p>
                     <div className="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4">
                       <a href="https://linkedin.com/in/dk-cs-3rd" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
                         <LinkedinIcon size={20} />
@@ -142,8 +142,9 @@ export default function CVModal({ isOpen, onClose }) {
                     Professional Summary
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed pl-10 sm:pl-10">
-                    Passionate Full-Stack Developer and Network Designer with expertise in building secure, scalable digital solutions. 
-                    Combining 5+ years of experience in web development with deep knowledge in cyber security and network infrastructure.
+                    Aspiring Cyber Security Professional and Full-Stack Developer with a vision to pursue MSc in Cyber Security. 
+                    Passionate about building secure, scalable digital solutions with knowledge in web development, 
+                    cyber security fundamentals and network infrastructure.
                   </p>
                 </div>
 
@@ -201,24 +202,24 @@ export default function CVModal({ isOpen, onClose }) {
                 <div className="mb-8 sm:mb-10">
                   <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
                     <span className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center text-green-500 text-sm">💼</span>
-                    Experience
+                    Projects & Learning
                   </h3>
                   <div className="pl-10 sm:pl-10 space-y-4">
                     <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
-                        <h4 className="font-bold text-gray-900 dark:text-white">Full-Stack Developer</h4>
-                        <span className="text-sm text-primary font-medium">2022 - Present</span>
+                        <h4 className="font-bold text-gray-900 dark:text-white">Portfolio Website</h4>
+                        <span className="text-sm text-primary font-medium">2024</span>
                       </div>
-                      <p className="text-sm font-medium text-secondary mb-1">Freelance / Self-Employed</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Building modern web applications and providing network design solutions for clients.</p>
+                      <p className="text-sm font-medium text-secondary mb-1">Self-Learning Project</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Built modern web applications to practice full-stack development skills.</p>
                     </div>
                     <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
-                        <h4 className="font-bold text-gray-900 dark:text-white">Network Designer</h4>
-                        <span className="text-sm text-primary font-medium">2020 - Present</span>
+                        <h4 className="font-bold text-gray-900 dark:text-white">Network Design Learning</h4>
+                        <span className="text-sm text-primary font-medium">2023 - Present</span>
                       </div>
-                      <p className="text-sm font-medium text-secondary mb-1">Enterprise Solutions</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Designing and implementing secure network infrastructures for businesses.</p>
+                      <p className="text-sm font-medium text-secondary mb-1">Self-Learning</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Studying Cisco networking and cybersecurity fundamentals through online courses.</p>
                     </div>
                   </div>
                 </div>
