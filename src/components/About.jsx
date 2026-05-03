@@ -5,7 +5,7 @@ const aboutSections = [
   {
     title: 'Education & Background',
     icon: <GraduationCap size={24} />,
-    content: "I hold a Bachelor's degree in Computer Science and a Master's degree in Cyber Security, providing a deep foundation in both software systems and digital protection."
+    content: "I hold a Bachelor's degree in Computer Science , providing a deep foundation in both software systems and digital protection."
   },
   {
     title: 'Professional Focus',

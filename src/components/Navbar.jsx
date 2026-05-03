@@ -54,7 +54,7 @@ export default function Navbar({ onOpenCV }) {
             <Zap size={18} className="w-4 h-4 sm:w-6 sm:h-6" fill="currentColor" />
           </div>
           <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent font-display">
-            PORTFOLIO
+            DESALEGN
           </span>
         </motion.a>
         
@@ -100,7 +100,7 @@ export default function Navbar({ onOpenCV }) {
             className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-primary to-secondary text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full hover:shadow-lg hover:shadow-primary/40 transition-all shadow-md cursor-pointer"
           >
             <Download size={14} className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
-            <span>Resume</span>
+            <span>Resume CV</span>
           </motion.a>
         </ul>
 

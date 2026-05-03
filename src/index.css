@@ -107,6 +107,6 @@ h1, h2, h3, h4, h5, h6 {
 
 @layer base {
   * {
-    border-color: theme(border-color.100, rgb(229 231 235));
+    border-color: theme('colors.gray.200', 'rgb(229 231 235)');
   }
 }

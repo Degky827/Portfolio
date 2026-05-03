@@ -41,7 +41,7 @@ const projectsData = [
     tags: ['Integration', 'Automation', 'DevOps'],
     icon: <Layers size={32} />,
     color: '#f59e0b',
-    liveUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech',
+    liveUrl: 'https://smart-bdu-client-2121.vercel.app/',
     repoUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech'
   }
 ]

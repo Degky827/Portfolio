@@ -192,7 +192,7 @@ export default function Hero({ onOpenCV }) {
               
               <motion.div variants={itemVariants} className="text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-primary/80 mb-4 sm:mb-6 flex items-center justify-center lg:justify-start gap-3">
                 <div className="w-6 sm:w-8 h-px bg-primary/40" />
-                <span>Creative Developer</span>
+                <span>Creative Mobile and Software Developer</span>
               </motion.div>
               
               <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 sm:mb-6 tracking-tight font-display">

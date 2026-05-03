@@ -33,6 +33,8 @@ export default function CVModal({ isOpen, onClose }) {
     { name: 'Learn the Latest Tech Skills 1 - Udacity', issuer: 'Udacity', file: '/Learn_the_Latest_Tech_Skills;_Advance_Your_Career_Udacity_1.pdf' },
     { name: 'Learn the Latest Tech Skills 2 - Udacity', issuer: 'Udacity', file: '/Learn_the_Latest_Tech_Skills;_Advance_Your_Career_Udacity_2.pdf' },
     { name: 'Learn the Latest Tech Skills 3 - Udacity', issuer: 'Udacity', file: '/Learn_the_Latest_Tech_Skills;_Advance_Your_Career_Udacity_3.pdf' },
+    { name: 'Learner Transcript', issuer: 'BDU', file: '/learner_transcript.pdf' },
+    { name: 'Networking Academy Learn-A-Thon', issuer: 'Cisco Networking Academy', file: '/Networking_Academy_Learn-A-Thon_2026_certificate_desalegnkasayemuluyekasaye-gmail-com_d61d7bd1-93a4-418b-af56-08b473aa9b6d.pdf' },
   ]
 
   const handlePreview = () => {
@@ -99,8 +101,8 @@ export default function CVModal({ isOpen, onClose }) {
                     className="w-28 h-32 sm:w-36 sm:h-44 rounded-xl sm:rounded-2xl object-cover object-top border-4 border-primary/20 shadow-xl"
                   />
                   <div className="text-center sm:text-left">
-                    <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">Desalegn Kasaye Mulu</h1>
-                    <p className="text-primary font-bold text-base sm:text-lg mb-4">Aspiring Cyber Security Expert & Full-Stack Developer</p>
+                    <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">Desalegn Kasaye </h1>
+                    <p className="text-primary font-bold text-base sm:text-lg mb-4">Aspiring Network Designer & Full-Stack Developer</p>
                     <div className="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4">
                       <a href="https://linkedin.com/in/dk-cs-3rd" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
                         <LinkedinIcon size={20} />
@@ -142,7 +144,7 @@ export default function CVModal({ isOpen, onClose }) {
                     Professional Summary
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed pl-10 sm:pl-10">
-                    Aspiring Cyber Security Professional and Full-Stack Developer with a vision to pursue MSc in Cyber Security. 
+                    Aspiring Full-Stack Developer with a vision to pursue MSc in Cyber Security. 
                     Passionate about building secure, scalable digital solutions with knowledge in web development, 
                     cyber security fundamentals and network infrastructure.
                   </p>
@@ -156,16 +158,16 @@ export default function CVModal({ isOpen, onClose }) {
                   </h3>
                   <div className="pl-10 sm:pl-10 space-y-4">
                     <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
-                        <h4 className="font-bold text-gray-900 dark:text-white">MSc in Cyber Security</h4>
+                      {/* <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
+                        <h4 className="font-bold text-gray-900 dark:text-white">MSc in Cyber Security</h4> 
                         <span className="text-sm text-primary font-medium">2020 - 2022</span>
-                      </div>
+                      </div> */}
                       <p className="text-sm text-gray-500 dark:text-gray-400">Advanced degree focusing on digital protection, network security, and ethical hacking</p>
                     </div>
                     <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
                         <h4 className="font-bold text-gray-900 dark:text-white">BSc in Computer Science</h4>
-                        <span className="text-sm text-primary font-medium">2016 - 2020</span>
+                        <span className="text-sm text-primary font-medium">2022 - 2027</span>
                       </div>
                       <p className="text-sm text-gray-500 dark:text-gray-400">Foundation in software engineering, algorithms, and data structures</p>
                     </div>

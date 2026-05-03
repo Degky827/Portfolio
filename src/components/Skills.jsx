@@ -70,7 +70,7 @@ export default function Skills() {
             My Expertise
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
-            Technical Arsenal
+            Technical Features
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
             A comprehensive overview of the technologies and tools I master to build modern digital solutions.
