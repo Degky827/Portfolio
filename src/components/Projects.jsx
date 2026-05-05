@@ -43,6 +43,42 @@ const projectsData = [
     color: '#f59e0b',
     liveUrl: 'https://smart-bdu-client-2121.vercel.app/',
     repoUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech'
+  },
+  {
+    title: 'SHQMS',
+    description: 'A comprehensive quality management system for tracking and managing quality processes. Built with modern web technologies for streamlined operations.',
+    tags: ['React', 'Vercel', 'QMS'],
+    icon: <Monitor size={32} />,
+    color: '#ef4444',
+    liveUrl: 'https://shqms.vercel.app',
+    repoUrl: 'https://github.com/Abirshdev/SHQMS'
+  },
+  {
+    title: 'Scientific Calculator',
+    description: 'A feature-rich scientific calculator with advanced mathematical functions. Supports trigonometric, logarithmic, and statistical operations.',
+    tags: ['JavaScript', 'HTML/CSS', 'Calculator'],
+    icon: <Code size={32} />,
+    color: '#06b6d4',
+    liveUrl: 'https://desalegnkasayemuluyekasaye-tech.github.io/scientific-calculator/',
+    repoUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech/scientific-calculator'
+  },
+  {
+    title: 'AlgorismApp',
+    description: 'An interactive platform for learning and visualizing algorithms. Features step-by-step explanations and real-time code execution.',
+    tags: ['Algorithms', 'JavaScript', 'Education'],
+    icon: <Code size={32} />,
+    color: '#84cc16',
+    liveUrl: 'https://desalegnkasayemuluyekasaye-tech.github.io/AlgorismApp/',
+    repoUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech/AlgorismApp'
+  },
+  {
+    title: 'LTTMS',
+    description: 'A comprehensive management system for streamlined operations. Features intuitive interface and efficient workflow management.',
+    tags: ['React', 'Management', 'Vercel'],
+    icon: <Layers size={32} />,
+    color: '#f97316',
+    liveUrl: 'https://lttms-98vb-r21kan81w-desalegnkasayemuluyekasaye-techs-projects.vercel.app',
+    repoUrl: 'https://github.com/desalegnkasayemuluyekasaye-tech/LTTMS'
   }
 ]
 
