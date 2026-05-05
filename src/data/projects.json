@@ -1,0 +1,74 @@
+[
+  {
+    "title": "Portfolio Website",
+    "description": "A modern, responsive portfolio website showcasing web development skills and projects. Built with React and Tailwind CSS with smooth animations.",
+    "tags": ["React", "Tailwind", "Framer Motion"],
+    "icon": "Globe",
+    "color": "#6366f1",
+    "liveUrl": "https://desalegnkasayemuluyekasaye-tech.github.io/portkiro/",
+    "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/portkiro"
+  },
+  {
+    "title": "Media Platform",
+    "description": "A media streaming and content platform built with modern web technologies. Features responsive design and seamless user experience.",
+    "tags": ["React", "Next.js", "Vercel"],
+    "icon": "Rocket",
+    "color": "#8b5cf6",
+    "liveUrl": "https://media-plat-git-ecfd38-desalegnkasayemuluyekasaye-techs-projects.vercel.app/",
+    "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/media-platform"
+  },
+  {
+    "title": "Network Design",
+    "description": "Enterprise network architecture with secure and scalable infrastructure solutions. Implementing robust systems for modern business requirements.",
+    "tags": ["Cisco", "Security", "Infrastructure"],
+    "icon": "Wifi",
+    "color": "#10b981",
+    "liveUrl": "public/cisco.pkt",
+    "repoUrl": "#"
+  },
+  {
+    "title": "System Integration",
+    "description": "Seamlessly integrating software systems with network infrastructure. Automating workflows and optimizing business processes.",
+    "tags": ["Integration", "Automation", "DevOps"],
+    "icon": "Layers",
+    "color": "#f59e0b",
+    "liveUrl": "https://smart-bdu-client-2121.vercel.app/",
+    "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech"
+  },
+  {
+    "title": "SHQMS",
+    "description": "A comprehensive quality management system for tracking and managing quality processes. Built with modern web technologies for streamlined operations.",
+    "tags": ["React", "Vercel", "QMS"],
+    "icon": "Monitor",
+    "color": "#ef4444",
+    "liveUrl": "https://shqms.vercel.app",
+    "repoUrl": "https://github.com/Abirshdev/SHQMS"
+  },
+  {
+    "title": "Scientific Calculator",
+    "description": "A feature-rich scientific calculator with advanced mathematical functions. Supports trigonometric, logarithmic, and statistical operations.",
+    "tags": ["JavaScript", "HTML/CSS", "Calculator"],
+    "icon": "Code",
+    "color": "#06b6d4",
+    "liveUrl": "https://desalegnkasayemuluyekasaye-tech.github.io/scientific-calculator/",
+    "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/scientific-calculator"
+  },
+  {
+    "title": "AlgorismApp",
+    "description": "An interactive platform for learning and visualizing algorithms. Features step-by-step explanations and real-time code execution.",
+    "tags": ["Algorithms", "JavaScript", "Education"],
+    "icon": "Code",
+    "color": "#84cc16",
+    "liveUrl": "https://desalegnkasayemuluyekasaye-tech.github.io/AlgorismApp/",
+    "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/AlgorismApp"
+  },
+  {
+    "title": "LTTMS",
+    "description": "A comprehensive management system for streamlined operations. Features intuitive interface and efficient workflow management.",
+    "tags": ["React", "Management", "Vercel"],
+    "icon": "Layers",
+    "color": "#f97316",
+    "liveUrl": "https://lttms-98vb-r21kan81w-desalegnkasayemuluyekasaye-techs-projects.vercel.app",
+    "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/LTTMS"
+  }
+]

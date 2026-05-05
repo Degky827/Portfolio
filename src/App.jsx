@@ -4,9 +4,11 @@ import Hero from './components/Hero'
 import About from './components/About'
 import Skills from './components/Skills'
 import Projects from './components/Projects'
+import AdvancedFeatures from './components/AdvancedFeatures'
 import Contact from './components/Contact'
 import Footer from './components/Footer'
 import CVModal from './components/CVModal'
+import ErrorBoundary from './components/ErrorBoundary'
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -29,39 +31,47 @@ function App() {
     const handleScroll = () => {
       const totalHeight = document.documentElement.scrollTop
       const windowHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight
-      const progress = (totalHeight / windowHeight) * 100
-      setScrollProgress(progress)
+      const progress = windowHeight > 0 ? (totalHeight / windowHeight) * 100 : 0
+      setScrollProgress(Math.min(progress, 100))
     }
-    window.addEventListener('scroll', handleScroll)
+    window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
-      {/* Scroll Progress Bar */}
-      <div 
-        className="fixed top-0 left-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent z-[9999] transition-all duration-100"
-        style={{ width: `${scrollProgress}%` }}
-      />
+    <ErrorBoundary>
+      <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
+        {/* Scroll Progress Bar */}
+        <div
+          className="fixed top-0 left-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent z-[9999] transition-all duration-100"
+          style={{ width: `${scrollProgress}%` }}
+          role="progressbar"
+          aria-valuenow={Math.round(scrollProgress)}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label="Page scroll progress"
+        />
 
-      <button 
-        className="fixed top-20 right-4 sm:right-6 z-[9998] w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-full bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700 flex items-center justify-center text-lg sm:text-2xl hover:scale-110 transition-transform"
-        onClick={() => setDarkMode(!darkMode)}
-        aria-label="Toggle theme"
-      >
-        {darkMode ? '☀️' : '🌙'}
-      </button>
-      <Navbar onOpenCV={() => setShowCV(true)} />
-      <main>
-        <Hero onOpenCV={() => setShowCV(true)} />
-        <About onOpenCV={() => setShowCV(true)} />
-        <Skills />
-        <Projects />
-        <Contact />
-      </main>
-      <Footer />
-      <CVModal isOpen={showCV} onClose={() => setShowCV(false)} />
-    </div>
+        <button
+          className="fixed top-20 right-4 sm:right-6 z-[9998] w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-full bg-white dark:bg-slate-800 shadow-xl border border-gray-100 dark:border-slate-700 flex items-center justify-center text-lg sm:text-2xl hover:scale-110 transition-transform focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+          onClick={() => setDarkMode(!darkMode)}
+          aria-label={`Switch to ${darkMode ? 'light' : 'dark'} theme`}
+        >
+          {darkMode ? '☀️' : '🌙'}
+        </button>
+        <Navbar onOpenCV={() => setShowCV(true)} />
+        <main>
+          <Hero onOpenCV={() => setShowCV(true)} />
+          <About onOpenCV={() => setShowCV(true)} />
+          <Skills />
+          <AdvancedFeatures />
+          <Projects />
+          <Contact />
+        </main>
+        <Footer />
+        <CVModal isOpen={showCV} onClose={() => setShowCV(false)} />
+      </div>
+    </ErrorBoundary>
   )
 }
 

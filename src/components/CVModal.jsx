@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Download, Mail, Phone, MapPin, ExternalLink, Award, FileText } from 'lucide-react'
+import projectsData from '../data/projects.json'
 
 const GithubIcon = ({ size = 20 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -40,7 +41,7 @@ export default function CVModal({ isOpen, onClose }) {
   const handlePreview = () => {
     window.open('/Desalegn_CV.html', '_blank')
   }
-  
+
   const handleDownload = () => {
     const link = document.createElement('a')
     link.href = '/Desalegn_CV.html'
@@ -61,6 +62,7 @@ export default function CVModal({ isOpen, onClose }) {
             exit={{ opacity: 0 }}
             onClick={onClose}
             className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[2000]"
+            aria-hidden="true"
           />
 
           {/* Modal */}
@@ -70,6 +72,9 @@ export default function CVModal({ isOpen, onClose }) {
             exit={{ opacity: 0, scale: 0.9, y: 50 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
             className="fixed inset-4 sm:inset-8 md:inset-16 lg:inset-y-8 lg:inset-x-24 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-3xl shadow-2xl z-[2001] overflow-hidden flex flex-col"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Resume Modal"
           >
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-primary via-secondary to-accent p-4 sm:p-6 flex items-center justify-between z-10">
@@ -84,7 +89,8 @@ export default function CVModal({ isOpen, onClose }) {
               </div>
               <button
                 onClick={onClose}
-                className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center transition-colors"
+                className="w-10 h-10 sm:w-12 sm:h-12 bg-white/20 hover:bg-white/30 backdrop-blur-sm rounded-xl flex items-center justify-center transition-colors focus:outline-none focus:ring-2 focus:ring-white"
+                aria-label="Close modal"
               >
                 <X className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
               </button>
@@ -95,22 +101,22 @@ export default function CVModal({ isOpen, onClose }) {
               <div className="max-w-4xl mx-auto">
                 {/* Profile Section */}
                 <div className="flex flex-col sm:flex-row items-center gap-4 sm:gap-6 mb-8 sm:mb-10 pb-6 sm:pb-8 border-b border-gray-200 dark:border-slate-700">
-                  <img 
-                    src="/BDU1601297.png" 
-                    alt="Desalegn" 
+                  <img
+                    src="/BDU1601297.png"
+                    alt="Desalegn Kasaye"
                     className="w-28 h-32 sm:w-36 sm:h-44 rounded-xl sm:rounded-2xl object-cover object-top border-4 border-primary/20 shadow-xl"
                   />
                   <div className="text-center sm:text-left">
-                    <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">Desalegn Kasaye </h1>
+                    <h1 className="text-2xl sm:text-3xl font-black text-gray-900 dark:text-white mb-2">Desalegn Kasaye</h1>
                     <p className="text-primary font-bold text-base sm:text-lg mb-4">Aspiring Network Designer & Full-Stack Developer</p>
                     <div className="flex flex-wrap justify-center sm:justify-start gap-3 sm:gap-4">
-                      <a href="https://linkedin.com/in/dk-cs-3rd" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                      <a href="https://linkedin.com/in/dk-cs-3rd" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors" aria-label="LinkedIn Profile">
                         <LinkedinIcon size={20} />
                       </a>
-                      <a href="https://github.com/desalegnkasayemuluyekasaye-tech" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                      <a href="https://github.com/desalegnkasayemuluyekasaye-tech" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors" aria-label="GitHub Profile">
                         <GithubIcon size={20} />
                       </a>
-                      <a href="https://t.me/Ds35kg" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors">
+                      <a href="https://t.me/Ds35kg" target="_blank" rel="noopener noreferrer" className="p-2 bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors" aria-label="Telegram Profile">
                         <TelegramIcon size={20} />
                       </a>
                     </div>
@@ -120,19 +126,19 @@ export default function CVModal({ isOpen, onClose }) {
                 {/* Contact Info */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8 sm:mb-10">
                   <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                    <MapPin className="w-5 h-5 text-primary flex-shrink-0" />
+                    <MapPin className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
                     <span className="text-sm text-gray-600 dark:text-gray-300">Bahirdar, Ethiopia</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                    <Mail className="w-5 h-5 text-primary flex-shrink-0" />
+                    <Mail className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
                     <span className="text-sm text-gray-600 dark:text-gray-300 truncate">desalegnky827@gmail.com</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                    <Phone className="w-5 h-5 text-primary flex-shrink-0" />
+                    <Phone className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
                     <span className="text-sm text-gray-600 dark:text-gray-300">+251 908 720 092</span>
                   </div>
                   <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                    <ExternalLink className="w-5 h-5 text-primary flex-shrink-0" />
+                    <ExternalLink className="w-5 h-5 text-primary flex-shrink-0" aria-hidden="true" />
                     <a href="https://desalegnkasayemuluyekasaye-tech.github.io/portkiro/" target="_blank" rel="noopener noreferrer" className="text-sm text-primary hover:underline">Portfolio</a>
                   </div>
                 </div>
@@ -140,12 +146,12 @@ export default function CVModal({ isOpen, onClose }) {
                 {/* Summary */}
                 <div className="mb-8 sm:mb-10">
                   <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm">📝</span>
+                    <span className="w-8 h-8 bg-primary/10 rounded-lg flex items-center justify-center text-primary text-sm" aria-hidden="true">📝</span>
                     Professional Summary
                   </h3>
                   <p className="text-gray-600 dark:text-gray-300 leading-relaxed pl-10 sm:pl-10">
-                    Aspiring Full-Stack Developer with a vision to pursue MSc in Cyber Security. 
-                    Passionate about building secure, scalable digital solutions with knowledge in web development, 
+                    Aspiring Full-Stack Developer with a vision to pursue MSc in Cyber Security.
+                    Passionate about building secure, scalable digital solutions with knowledge in web development,
                     cyber security fundamentals and network infrastructure.
                   </p>
                 </div>
@@ -153,16 +159,12 @@ export default function CVModal({ isOpen, onClose }) {
                 {/* Education */}
                 <div className="mb-8 sm:mb-10">
                   <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <span className="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center text-secondary text-sm">🎓</span>
+                    <span className="w-8 h-8 bg-secondary/10 rounded-lg flex items-center justify-center text-secondary text-sm" aria-hidden="true">🎓</span>
                     Education
                   </h3>
                   <div className="pl-10 sm:pl-10 space-y-4">
                     <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                      {/* <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
-                        <h4 className="font-bold text-gray-900 dark:text-white">MSc in Cyber Security</h4> 
-                        <span className="text-sm text-primary font-medium">2020 - 2022</span>
-                      </div> */}
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Advanced degree focusing on digital protection, network security, and ethical hacking</p>
+                      <p className="text-sm text-gray-500 dark:text-gray-400">Advanced degree focusing on digital protection, network security, and ethical hacking (Planned)</p>
                     </div>
                     <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
                       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
@@ -177,104 +179,84 @@ export default function CVModal({ isOpen, onClose }) {
                 {/* Skills */}
                 <div className="mb-8 sm:mb-10">
                   <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <span className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center text-accent text-sm">⚡</span>
+                    <span className="w-8 h-8 bg-accent/10 rounded-lg flex items-center justify-center text-accent text-sm" aria-hidden="true">⚡</span>
                     Technical Skills
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-10 sm:pl-10">
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-primary rounded-full"></span>
+                      <span className="w-2 h-2 bg-primary rounded-full" aria-hidden="true"></span>
                       <span className="text-gray-600 dark:text-gray-300">React, JavaScript, HTML5, CSS3</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-secondary rounded-full"></span>
+                      <span className="w-2 h-2 bg-secondary rounded-full" aria-hidden="true"></span>
                       <span className="text-gray-600 dark:text-gray-300">Node.js, Express, MongoDB</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-accent rounded-full"></span>
+                      <span className="w-2 h-2 bg-accent rounded-full" aria-hidden="true"></span>
                       <span className="text-gray-600 dark:text-gray-300">Cisco, Network Design, Security</span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                      <span className="w-2 h-2 bg-green-500 rounded-full" aria-hidden="true"></span>
                       <span className="text-gray-600 dark:text-gray-300">Python, Java, C++, PHP</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Experience */}
-                <div className="mb-8 sm:mb-10">
+                {/* Projects - Now dynamically loaded */}
+                <div className="mb-8">
                   <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                    <span className="w-8 h-8 bg-green-500/10 rounded-lg flex items-center justify-center text-green-500 text-sm">💼</span>
-                    Projects & Learning
+                    <span className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center text-orange-500 text-sm" aria-hidden="true">🚀</span>
+                    Featured Projects ({projectsData.length})
                   </h3>
-                  <div className="pl-10 sm:pl-10 space-y-4">
-                    <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
-                        <h4 className="font-bold text-gray-900 dark:text-white">Portfolio Website</h4>
-                        <span className="text-sm text-primary font-medium">2024</span>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-10 sm:pl-10">
+                    {projectsData.map((project, index) => (
+                      <div key={index} className="p-4 bg-gradient-to-br from-gray-50 to-gray-100 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-gray-200 dark:border-slate-700 hover:border-primary/30 transition-all">
+                        <h4 className="font-bold text-gray-900 dark:text-white mb-1">{project.title}</h4>
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2 line-clamp-2">{project.description}</p>
+                        <div className="flex flex-wrap gap-1">
+                          {project.tags.slice(0, 3).map((tag, i) => (
+                            <span key={i} className="text-xs bg-primary/10 text-primary px-2 py-0.5 rounded-full">{tag}</span>
+                          ))}
+                        </div>
+                        <div className="flex gap-2 mt-2">
+                          <a href={project.liveUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">Live Demo</a>
+                          <a href={project.repoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-500 hover:underline">Source</a>
+                        </div>
                       </div>
-                      <p className="text-sm font-medium text-secondary mb-1">Self-Learning Project</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Built modern web applications to practice full-stack development skills.</p>
-                    </div>
-                    <div className="p-4 bg-gray-50 dark:bg-slate-800 rounded-xl">
-                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-1 mb-2">
-                        <h4 className="font-bold text-gray-900 dark:text-white">Network Design Learning</h4>
-                        <span className="text-sm text-primary font-medium">2023 - Present</span>
-                      </div>
-                      <p className="text-sm font-medium text-secondary mb-1">Self-Learning</p>
-                      <p className="text-sm text-gray-500 dark:text-gray-400">Studying Cisco networking and cybersecurity fundamentals through online courses.</p>
-                    </div>
+                    ))}
                   </div>
                 </div>
 
-                  {/* Projects */}
-                  <div className="mb-8">
-                    <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                      <span className="w-8 h-8 bg-orange-500/10 rounded-lg flex items-center justify-center text-orange-500 text-sm">🚀</span>
-                      Featured Projects
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pl-10 sm:pl-10">
-                      <div className="p-4 bg-gradient-to-br from-primary/5 to-secondary/5 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-primary/10">
-                        <h4 className="font-bold text-gray-900 dark:text-white mb-1">Portfolio Website</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Modern React portfolio with animations</p>
-                        <span className="text-xs bg-primary/10 text-primary px-2 py-1 rounded-full">React + Tailwind</span>
-                      </div>
-                      <div className="p-4 bg-gradient-to-br from-secondary/5 to-accent/5 dark:from-slate-800 dark:to-slate-800 rounded-xl border border-secondary/10">
-                        <h4 className="font-bold text-gray-900 dark:text-white mb-1">Media Platform</h4>
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mb-2">Full-stack media streaming app</p>
-                        <span className="text-xs bg-secondary/10 text-secondary px-2 py-1 rounded-full">Next.js + Vercel</span>
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Certificates */}
-                  <div className="mb-8 sm:mb-10">
-                    <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-                      <span className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center text-yellow-500 text-sm">🏆</span>
-                      Certificates
-                    </h3>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pl-10 sm:pl-10">
-                      {certificates.map((cert, index) => (
-                        <a
-                          key={index}
-                          href={cert.file}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl hover:bg-primary/10 hover:shadow-md transition-all group"
-                        >
-                          <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
-                            <Award className="w-5 h-5 text-yellow-500" />
-                          </div>
-                          <div className="min-w-0">
-                            <p className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-primary">{cert.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{cert.issuer}</p>
-                          </div>
-                          <FileText className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-auto" />
-                        </a>
-                      ))}
-                    </div>
+                {/* Certificates */}
+                <div className="mb-8 sm:mb-10">
+                  <h3 className="text-lg sm:text-xl font-black text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+                    <span className="w-8 h-8 bg-yellow-500/10 rounded-lg flex items-center justify-center text-yellow-500 text-sm" aria-hidden="true">🏆</span>
+                    Certificates
+                  </h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 pl-10 sm:pl-10">
+                    {certificates.map((cert, index) => (
+                      <a
+                        key={index}
+                        href={cert.file}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-slate-800 rounded-xl hover:bg-primary/10 hover:shadow-md transition-all group"
+                        aria-label={`View ${cert.name} certificate`}
+                      >
+                        <div className="w-10 h-10 bg-yellow-500/10 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <Award className="w-5 h-5 text-yellow-500" />
+                        </div>
+                        <div className="min-w-0">
+                          <p className="text-sm font-bold text-gray-900 dark:text-white truncate group-hover:text-primary">{cert.name}</p>
+                          <p className="text-xs text-gray-500 dark:text-gray-400">{cert.issuer}</p>
+                        </div>
+                        <FileText className="w-4 h-4 text-gray-400 group-hover:text-primary flex-shrink-0 ml-auto" aria-hidden="true" />
+                      </a>
+                    ))}
                   </div>
                 </div>
               </div>
+            </div>
 
             {/* Footer - Fixed Download Button */}
             <div className="sticky bottom-0 bg-white dark:bg-slate-900 p-4 sm:p-6 border-t border-gray-200 dark:border-slate-700">
@@ -287,7 +269,7 @@ export default function CVModal({ isOpen, onClose }) {
                     onClick={handlePreview}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="group flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all"
+                    className="group flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-gray-100 dark:bg-slate-800 text-gray-700 dark:text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <ExternalLink className="w-4 h-4" />
                     <span>Preview CV</span>
@@ -296,7 +278,7 @@ export default function CVModal({ isOpen, onClose }) {
                     onClick={handleDownload}
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="group flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-gradient-to-r from-primary via-secondary to-accent text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all"
+                    className="group flex items-center justify-center gap-2 px-5 sm:px-6 py-3 bg-gradient-to-r from-primary via-secondary to-accent text-white font-bold rounded-full shadow-lg hover:shadow-xl transition-all focus:outline-none focus:ring-2 focus:ring-primary"
                   >
                     <Download className="w-4 h-4 group-hover:animate-bounce" />
                     <span>Download CV</span>

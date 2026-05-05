@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Code2, Globe, Rocket, MapPin, Coffee, Download } from 'lucide-react'
+import { ArrowRight, Sparkles, Code2, Globe, Rocket, MapPin, Coffee, Download, Zap, Star } from 'lucide-react'
 
 export default function Hero({ onOpenCV }) {
   const [typedText, setTypedText] = useState('')
@@ -147,10 +147,6 @@ export default function Hero({ onOpenCV }) {
                   src="/BDU1601297.png" 
                   alt="Desalegn Profile" 
                   className="w-full h-full object-contain object-top"
-                  loading="eager"
-                  fetchpriority="high"
-                  onLoad={(e) => e.currentTarget.style.opacity = 1}
-                  style={{ opacity: 0, transition: 'opacity 0.5s ease-in-out', backgroundColor: '#f1f5f9' }}
                 />
               </div>
               <motion.div 
@@ -178,60 +174,57 @@ export default function Hero({ onOpenCV }) {
             </motion.div>
 
             {/* Content */}
-            <div className="flex-1 text-center lg:text-left relative z-10">
-              {/* Location Badge */}
+            <motion.div 
+              variants={itemVariants}
+              className="flex-1 text-center lg:text-left space-y-4 sm:space-y-6 md:space-y-8"
+            >
               <motion.div 
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.5 }}
-                className="inline-flex items-center gap-2 px-4 py-2 mb-4 sm:mb-6 rounded-full bg-primary/10 text-primary text-xs sm:text-sm font-bold"
+                className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full border border-primary/20 hover-lift"
               >
-                <MapPin size={14} />
-                <span>Available for Work</span>
+                <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary animate-pulse" />
+                <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-[0.2em]">Available for Work</span>
+                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
               </motion.div>
-              
-              <motion.div variants={itemVariants} className="text-xs sm:text-sm md:text-base font-black uppercase tracking-[0.2em] sm:tracking-[0.3em] text-primary/80 mb-4 sm:mb-6 flex items-center justify-center lg:justify-start gap-3">
-                <div className="w-6 sm:w-8 h-px bg-primary/40" />
-                <span>Creative Mobile and Software Developer</span>
-              </motion.div>
-              
-              <motion.h1 variants={itemVariants} className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-black mb-4 sm:mb-6 tracking-tight font-display">
-                <span className="bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">Desalegn</span>
-                <span className="text-primary">.</span>
-              </motion.h1>
-              
-              <motion.p variants={itemVariants} className="text-lg sm:text-xl md:text-2xl lg:text-3xl text-gray-600 dark:text-gray-300 mb-6 sm:mb-10 min-h-[1.5em] font-medium leading-relaxed">
-                I build <span className="text-primary font-black">{typedText}</span>
-                <motion.span
-                  animate={{ opacity: [1, 0, 1] }}
-                  transition={{ duration: 0.8, repeat: Infinity }}
-                  className="text-primary"
-                >|</motion.span>
+
+              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-white leading-tight">
+                Hi, I'm <span className="gradient-text">Desalegn</span>
+                <br />
+                <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
+                  {typedText}
+                  <motion.span 
+                    animate={{ opacity: [1, 0] }} 
+                    transition={{ duration: 0.5, repeat: Infinity }}
+                    className="inline-block w-1 h-6 sm:h-8 ml-1 bg-gradient-to-b from-primary to-secondary"
+                  />
+                </span>
+              </h1>
+
+              <motion.p 
+                variants={itemVariants}
+                className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 max-w-2xl lg:max-w-none leading-relaxed"
+              >
+                Passionate about creating <span className="text-primary font-semibold">secure</span>, <span className="text-secondary font-semibold">scalable</span> digital solutions and designing robust network architectures. 
+                Specializing in modern web development and enterprise networking.
               </motion.p>
 
-              <motion.div variants={itemVariants} className="flex flex-wrap gap-3 sm:gap-5 justify-center lg:justify-start mb-8 sm:mb-14">
-                <motion.button 
-                  whileHover={{ scale: 1.05, translateY: -2 }}
+              <motion.div 
+                variants={itemVariants}
+                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
+              >
+                <motion.button
+                  whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(99, 102, 241, 0.3)" }}
                   whileTap={{ scale: 0.95 }}
-                  className="px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 bg-primary text-white rounded-full sm:rounded-[2rem] font-bold sm:font-black text-sm sm:text-base lg:text-lg shadow-2xl shadow-primary/40 hover:shadow-primary/60 transition-all flex items-center gap-2 sm:gap-4 group" 
                   onClick={scrollToContact}
+                  className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-full transition-all shadow-lg pulse-on-hover"
                 >
-                  Let's Talk
-                  <ArrowRight className="group-hover:translate-x-2 transition-transform w-4 h-4 sm:w-6 sm:h-6" />
+                  Get In Touch
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                 </motion.button>
-                <motion.a 
-                  whileHover={{ scale: 1.05, translateY: -2 }}
-                  whileTap={{ scale: 0.95 }}
-                  href="#projects" 
-                  className="px-6 sm:px-8 lg:px-10 py-3 sm:py-4 lg:py-5 glass-panel rounded-full sm:rounded-[2rem] font-bold sm:font-black text-sm sm:text-base lg:text-lg hover:bg-white dark:hover:bg-slate-800 transition-all"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
-                  }}
-                >
-                  View Work
-                </motion.a>
-                <motion.button 
+                
+                <motion.button
                   whileHover={{ scale: 1.05, translateY: -2 }}
                   whileTap={{ scale: 0.95 }}
                   onClick={onOpenCV}
@@ -267,7 +260,7 @@ export default function Hero({ onOpenCV }) {
                   </div>
                 </div>
               </motion.div>
-            </div>
+            </motion.div>
           </motion.div>
         </motion.div>
       </div>
