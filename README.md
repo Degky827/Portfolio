@@ -143,12 +143,5 @@ This project uses no server-side secrets by default. If you add environment vari
 - Keep certificate filenames short and consistent for easier linking (recommended: `issuer-name_title_year.pdf`). If you rename files in `public/`, update `CVModal.jsx` accordingly.
 - Use commits with descriptive messages when updating certificates or projects.
 
----
-
-If you'd like, I can:
-
-- shorten/normalize the long networking certificate filename and update references,
-- commit these README changes for you, or
-- add a small CONTRIBUTING.md with instructions for future edits.
 
 File: [README.md](README.md)
