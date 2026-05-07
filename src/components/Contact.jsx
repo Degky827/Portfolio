@@ -32,9 +32,17 @@ export default function Contact() {
     setIsSubmitting(true)
     setResult('')
 
-    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID || 'service_your_id'
-    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID || 'template_your_id'
-    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY || 'your_public_key'
+    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+    // Check if EmailJS is configured
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      setResult('EmailJS not configured. Please email me directly at desalegnky827@gmail.com')
+      setResultType('error')
+      setIsSubmitting(false)
+      return
+    }
 
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
@@ -42,7 +50,8 @@ export default function Contact() {
       setResultType('success')
       e.target.reset()
     } catch (error) {
-      setResult('Failed to send. Please try again or email me directly.')
+      console.error('EmailJS error:', error)
+      setResult('Failed to send. Please email me directly at desalegnky827@gmail.com')
       setResultType('error')
     }
 
@@ -185,14 +194,14 @@ export default function Contact() {
               <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} aria-label="Contact form">
                 <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="user_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Your Name</label>
+                    <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Your Name</label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                         <User size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
                       </span>
                       <input
-                        id="user_name"
-                        name="user_name"
+                        id="from_name"
+                        name="from_name"
                         type="text"
                         required
                         placeholder="e.g. Alex Johnson"
@@ -202,14 +211,14 @@ export default function Contact() {
                     </div>
                   </div>
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="user_email" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Email Address</label>
+                    <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Email Address</label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                         <Mail size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
                       </span>
                       <input
-                        id="user_email"
-                        name="user_email"
+                        id="reply_to"
+                        name="reply_to"
                         type="email"
                         required
                         placeholder="e.g. alex@example.com"
