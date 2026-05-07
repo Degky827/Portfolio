@@ -149,7 +149,7 @@ export default function About({ onOpenCV }) {
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6 border-t border-slate-700/50 bg-slate-800/30">
                   <div className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
                     <Award className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-yellow-400" />
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">MSc Cyber</span>
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">Network Designer</span>
                   </div>
                   <div className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
                     <Users className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-blue-400" />
