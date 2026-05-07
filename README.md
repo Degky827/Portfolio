@@ -9,12 +9,19 @@ A modern personal portfolio built with React, Vite and Tailwind CSS that showcas
 - **Setup** — Install dependencies and run locally.
 - **Available scripts** — Common npm commands.
 - **Project structure** — Short description of important files and folders.
+- **Features** — Key features and components overview.
 - **How to update certificates & projects** — Step-by-step for common edits.
 - **Deploying** — Quick deploy notes (Vercel / GitHub Pages).
 
 ## Overview
 
 This repo contains a single-page portfolio site built with React (JSX) and Tailwind CSS, using Vite as the dev server/bundler. It includes components for the navbar, hero, projects, skills, contact, and a CV modal which links PDF certificates in the `public/` folder.
+
+The site features an **Advanced Features** page with interactive elements including:
+- Live system metrics dashboard with real-time updates
+- Animated counters for statistics
+- Fully functional interactive terminal with commands
+- Technical challenges and solutions showcase
 
 ## Prerequisites
 
@@ -60,13 +67,39 @@ If you use `pnpm` or `yarn`, replace `npm run` accordingly.
 - `src/main.jsx` — React entry, mounts the app.
 - `src/App.jsx` — Main app wrapper.
 - `src/components/` — UI components used across the site:
-  - `Navbar.jsx` — Top navigation and mobile menu.
+  - `Navbar.jsx` — Top navigation and mobile menu with smooth scroll to sections.
   - `Hero.jsx` — Landing hero section.
+  - `AdvancedFeatures.jsx` — Interactive advanced features page with live metrics, animated counters, and functional terminal.
   - `Projects.jsx` — Featured projects grid (live + repo links).
   - `CVModal.jsx` — Resume modal and certificates list (loads PDFs from `public/`).
   - Other components: `About.jsx`, `Skills.jsx`, `Contact.jsx`, `Footer.jsx`, etc.
 - `public/` — Static assets served as-is (images, PDFs, .pkt file). Any PDF placed here is available at `/<filename>`.
 - `vite.config.js`, `postcss.config.js`, `package.json` — build tooling and scripts.
+
+## Features
+
+### Advanced Features Page (`/advanced`)
+- **Live System Metrics Dashboard**: Real-time CPU, memory, network, and active user metrics with circular progress indicators that update every 2 seconds
+- **Animated Counters**: Statistics animate when scrolled into view using Framer Motion's `useInView`
+- **Interactive Terminal**: Fully functional terminal emulator with commands:
+  - `help` - List available commands
+  - `status` - Show system status
+  - `deploy` - Simulate deployment
+  - `scan` - Run security scan
+  - `monitor` - Display live metrics
+  - `uptime` - Show system uptime
+  - `version` - Display version info
+  - `clear` - Clear terminal history
+  - Also supports `npm`, `git`, and `docker` commands
+- **Technical Challenges Section**: Showcases engineering challenges with solutions
+- **Feature Details**: Expandable cards showing additional feature information when clicked
+
+### Other Features
+- **Dark Mode Toggle**: Switch between light and dark themes (persisted in localStorage)
+- **Smooth Scrolling**: Navigation links smoothly scroll to corresponding sections
+- **Responsive Design**: Mobile-friendly with hamburger menu
+- **CV Modal**: View and download resume with certificate links
+- **Contact Form**: Functional contact section with social media links
 
 ## How to update certificates (step-by-step)
 
