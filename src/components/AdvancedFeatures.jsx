@@ -75,10 +75,10 @@ export default function AdvancedFeatures() {
   const [terminalHistory, setTerminalHistory] = useState([])
   const [terminalInput, setTerminalInput] = useState('')
   const terminalRef = useRef(null)
-  
+
   const { scrollYProgress } = useScroll()
   const backgroundY = useTransform(scrollYProgress, [0, 1], [0, 50])
-  
+
   const fadeIn = useSpring({
     from: { opacity: 0, y: 20 },
     to: { opacity: 1, y: 0 },
@@ -123,7 +123,7 @@ export default function AdvancedFeatures() {
   }
 
   return (
-    <section className="relative py-16 sm:py-20 md:py-24 bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 overflow-hidden">
+    <section id="advanced" className="relative py-16 sm:py-20 md:py-24 bg-gradient-to-br from-slate-50 to-gray-100 dark:from-slate-900 dark:to-slate-800 overflow-hidden">
       {/* Animated Background */}
       <motion.div 
         style={{ y: backgroundY }}
