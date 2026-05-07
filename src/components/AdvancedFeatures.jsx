@@ -47,31 +47,43 @@ const advancedFeatures = [
 const limitations = [
   {
     title: 'Quantum Computing Integration',
-    description: 'Currently limited by quantum hardware availability',
+    description: 'Currently limited by quantum hardware availability and qubit stability',
     icon: Cpu,
     challenge: 'Hardware Access',
-    solution: 'Hybrid classical-quantum algorithms'
+    solution: 'Hybrid classical-quantum algorithms',
+    progress: 35,
+    status: 'In Progress',
+    milestones: ['Algorithm design', 'Simulator testing', 'Cloud quantum access']
   },
   {
     title: 'Neural Network Scaling',
-    description: 'Training large models requires distributed computing',
+    description: 'Training large models requires distributed computing and optimized architectures',
     icon: Brain,
     challenge: 'Computational Resources',
-    solution: 'Optimized model architectures'
+    solution: 'Optimized model architectures with pruning',
+    progress: 68,
+    status: 'Active',
+    milestones: ['Data pipeline', 'Model optimization', 'Distributed training']
   },
   {
     title: 'Real-time Data Processing',
-    description: 'Processing terabytes of streaming data with sub-second latency',
+    description: 'Processing terabytes of streaming data with sub-second latency requirements',
     icon: TrendingUp,
     challenge: 'Network Bandwidth',
-    solution: 'Edge computing optimization'
+    solution: 'Edge computing with intelligent caching',
+    progress: 82,
+    status: 'Near Complete',
+    milestones: ['Stream processing', 'Edge deployment', 'Latency optimization']
   },
   {
     title: 'Cross-platform Compatibility',
-    description: 'Ensuring seamless operation across all devices and OS',
+    description: 'Ensuring seamless operation across all devices, browsers, and operating systems',
     icon: Monitor,
     challenge: 'Fragmentation',
-    solution: 'WebAssembly and containerization'
+    solution: 'WebAssembly and containerization strategy',
+    progress: 91,
+    status: 'Almost Done',
+    milestones: ['Browser testing', 'Mobile optimization', 'PWA support']
   }
 ]
 
@@ -107,13 +119,27 @@ export default function AdvancedFeatures() {
   }, [])
 
   const getTerminalCommands = () => ({
-    'help': 'Available commands: help, status, deploy, scan, monitor, clear, uptime, version',
+    'help': 'Available commands: help, status, deploy, scan, monitor, clear, uptime, version, ls, pwd, whoami, date, echo, history, neofetch, systeminfo, ps, df, free, top, ifconfig, ping',
     'status': 'All systems operational. CPU: 45% | Memory: 62% | Network: 125Mbps | Active Users: 342',
     'deploy': 'Initiating deployment... [████████████] 100%\nDeployment successful! Version 2.4.1 now live.',
     'scan': 'Running security scan...\n✓ No vulnerabilities found\n✓ Dependencies up to date\n✓ SSL certificates valid\nScan complete in 2.3s',
     'monitor': 'Real-time monitoring activated\nCPU: ████████░░ 45%\nMEM: ███████░░░ 62%\nNET: █████████░ 125Mbps',
     'uptime': `System uptime: ${Math.floor(Math.random() * 99) + 1} days, ${Math.floor(Math.random() * 23)} hours, ${Math.floor(Math.random() * 59)} minutes`,
-    'version': 'Advanced Dev Platform v2.4.1\nBuild: 2026.05.07\nNode: v22.x\nReact: v19.x',
+    'version': 'Advanced Dev Platform v2.4.1\nBuild: 2026.05.07\nNode: v22.x\nReact: v19.x\nFramer Motion: v12.x',
+    'ls': 'about.md  projects/  skills.json  contact.html  public/\nCV.pdf  README.md  node_modules/  package.json',
+    'pwd': '/home/desalegn/portfolio',
+    'whoami': 'desalegn',
+    'date': new Date().toLocaleString('en-US', { dateStyle: 'full', timeStyle: 'long' }),
+    'echo': (args) => `Output: ${args.join(' ')}`,
+    'history': '1  help\n2  status\n3  deploy\n4  scan\n5  monitor\n6  ls\n7  pwd\n8  whoami',
+    'neofetch': 'OS: Modern Portfolio OS v2.4.1\nHost: Desalegn\'s Portfolio\nKernel: React 19.x\nShell: Terminal v1.0\nCPU: Advanced RISC Processor\nMemory: 2.1GB / 8GB',
+    'systeminfo': 'System Information:\n------------------\nOS Name: Modern Portfolio OS\nVersion: 2.4.1 Build 2026\nTotal Physical Memory: 8,192 MB\nAvailable Physical Memory: 3,072 MB\nSystem Manufacturer: Desalegn Tech',
+    'ps': 'PID   USER   CPU%  MEM%  COMMAND\n1234  desalegn  45%   62%   node server.js\n5678  desalegn  12%   8%    vite build\n9012  desalegn  5%    3%    npm run dev',
+    'df': 'Filesystem     Size  Used  Avail  Use%\n/dev/root      100G   45G    55G   45%\n/dev/home      200G  120G    80G   60%',
+    'free': '              total    used    free   shared  buff/cache  available\nMem:         8192MB   5120MB  1024MB   512MB      1536MB      3072MB\nSwap:        4096MB   1024MB  3072MB',
+    'top': 'Tasks: 45 total, 2 running, 43 sleeping\nCPU: 45.2% usr, 12.3% sys, 42.5% idle\nMem: 5120MB used, 3072MB free, 1536MB buff/cache',
+    'ifconfig': 'eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n        inet 192.168.1.100  netmask 255.255.255.0\n        inet6 fe80::215:5dff:fe00:311  prefixlen 64',
+    'ping': (args) => `PING ${args[0] || 'localhost'} (${args[0] || '127.0.0.1'}): 56 data bytes\n64 bytes from ${args[0] || '127.0.0.1'}: icmp_seq=0 ttl=64 time=0.045 ms\n64 bytes from ${args[0] || '127.0.0.1'}: icmp_seq=1 ttl=64 time=0.032 ms\n--- ${args[0] || 'localhost'} ping statistics ---\n2 packets transmitted, 2 packets received, 0% packet loss`,
     'clear': 'CLEAR_TERMINAL'
   })
 
@@ -126,7 +152,9 @@ export default function AdvancedFeatures() {
   const handleTerminalCommand = (e) => {
     e.preventDefault()
     if (terminalInput.trim()) {
-      const cmd = terminalInput.toLowerCase().trim()
+      const parts = terminalInput.trim().split(/\s+/)
+      const cmd = parts[0].toLowerCase()
+      const args = parts.slice(1)
       const newCommand = `$ ${terminalInput}`
       setTerminalHistory(prev => [...prev, newCommand])
       setIsProcessing(true)
@@ -135,7 +163,12 @@ export default function AdvancedFeatures() {
       setTimeout(() => {
         let response
         if (terminalCommands[cmd]) {
-          response = terminalCommands[cmd]
+          const command = terminalCommands[cmd]
+          if (typeof command === 'function') {
+            response = command(args)
+          } else {
+            response = command
+          }
         } else if (cmd.startsWith('npm ') || cmd.startsWith('git ') || cmd.startsWith('docker ')) {
           response = `Executing: ${terminalInput}\n✓ Command completed successfully`
         } else {
@@ -372,55 +405,124 @@ export default function AdvancedFeatures() {
            </div>
           </motion.div>
 
-          {/* Technical Limitations */}
-        <motion.div 
-          initial={fadeIn}
-          className="mb-12 sm:mb-16"
-        >
-          <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6 sm:mb-8 text-center">
-            Engineering Challenges & Solutions
-          </h3>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-            {limitations.map((limitation, index) => {
-              const IconComponent = limitation.icon
-              return (
-                <motion.div
-                  key={index}
-                  initial={{ opacity: 0, x: -20 }}
-                  whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: index * 0.1 }}
-                  className="p-4 sm:p-6 rounded-xl glass-card border border-red-200 dark:border-red-900/30"
-                >
-                  <div className="flex items-start gap-3 mb-3">
-                    <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/20">
-                      <IconComponent size={18} className="text-red-600 dark:text-red-400" />
+          {/* Engineering Challenges & Solutions */}
+          <motion.div
+            initial={fadeIn}
+            className="mb-12 sm:mb-16"
+          >
+            <h3 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white mb-6 sm:mb-8 text-center">
+              Engineering Challenges & Solutions
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+              {limitations.map((limitation, index) => {
+                const IconComponent = limitation.icon
+                const [isExpanded, setIsExpanded] = useState(false)
+                return (
+                  <motion.div
+                    key={index}
+                    initial={{ opacity: 0, x: -20 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    transition={{ delay: index * 0.1 }}
+                    className="p-4 sm:p-6 rounded-xl glass-card border border-red-200 dark:border-red-900/30 hover:border-red-400/50 transition-all"
+                  >
+                    <div className="flex items-start gap-3 mb-3">
+                      <div className="p-2 rounded-lg bg-red-100 dark:bg-red-900/20">
+                        <IconComponent size={18} className="text-red-600 dark:text-red-400" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="font-bold text-gray-900 dark:text-white">
+                            {limitation.title}
+                          </h4>
+                          <span className={`text-xs px-2 py-1 rounded-full font-semibold ${
+                            limitation.status === 'In Progress' ? 'bg-yellow-100 text-yellow-600 dark:bg-yellow-900/30 dark:text-yellow-400' :
+                            limitation.status === 'Active' ? 'bg-blue-100 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400' :
+                            limitation.status === 'Near Complete' ? 'bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400' :
+                            'bg-purple-100 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400'
+                          }`}>
+                            {limitation.status}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
+                          {limitation.description}
+                        </p>
+                      </div>
                     </div>
-                    <h4 className="font-bold text-gray-900 dark:text-white">
-                      {limitation.title}
-                    </h4>
-                  </div>
-                  <p className="text-sm text-gray-600 dark:text-gray-400 mb-3">
-                    {limitation.description}
-                  </p>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <Lock size={14} className="text-red-500" />
-                      <span className="text-xs font-semibold text-red-600 dark:text-red-400">
-                        Challenge: {limitation.challenge}
-                      </span>
+
+                    {/* Progress Bar */}
+                    <div className="mb-3">
+                      <div className="flex justify-between text-xs mb-1">
+                        <span className="text-gray-600 dark:text-gray-400">Progress</span>
+                        <span className="font-bold text-gray-900 dark:text-white">{limitation.progress}%</span>
+                      </div>
+                      <div className="w-full h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          whileInView={{ width: `${limitation.progress}%` }}
+                          transition={{ duration: 1, delay: index * 0.2 }}
+                          className={`h-full rounded-full ${
+                            limitation.progress < 50 ? 'bg-red-500' :
+                            limitation.progress < 75 ? 'bg-yellow-500' :
+                            'bg-green-500'
+                          }`}
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <Zap size={14} className="text-green-500" />
-                      <span className="text-xs font-semibold text-green-600 dark:text-green-400">
-                        Solution: {limitation.solution}
-                      </span>
+
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <Lock size={14} className="text-red-500" />
+                        <span className="text-xs font-semibold text-red-600 dark:text-red-400">
+                          Challenge: {limitation.challenge}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <Zap size={14} className="text-green-500" />
+                        <span className="text-xs font-semibold text-green-600 dark:text-green-400">
+                          Solution: {limitation.solution}
+                        </span>
+                      </div>
                     </div>
-                  </div>
-                </motion.div>
-              )
-            })}
-          </div>
-        </motion.div>
+
+                    {/* Expandable Milestones */}
+                    {limitation.milestones && (
+                      <div className="mt-3">
+                        <button
+                          onClick={() => setIsExpanded(!isExpanded)}
+                          className="text-xs text-primary hover:text-primary/80 font-semibold flex items-center gap-1"
+                        >
+                          <span>Milestones ({limitation.milestones.length})</span>
+                          <motion.span
+                            animate={{ rotate: isExpanded ? 180 : 0 }}
+                            className="inline-block"
+                          >
+                            ▼
+                          </motion.span>
+                        </button>
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              className="overflow-hidden mt-2 space-y-1"
+                            >
+                              {limitation.milestones.map((milestone, idx) => (
+                                <div key={idx} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
+                                  <CheckCircle size={12} className="text-green-500" />
+                                  {milestone}
+                                </div>
+                              ))}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    )}
+                  </motion.div>
+                )
+              })}
+            </div>
+          </motion.div>
 
          {/* Interactive Terminal */}
          <motion.div
@@ -487,23 +589,23 @@ export default function AdvancedFeatures() {
                      <div className="text-gray-500">
                        <div className="mb-2">Welcome to Advanced Development Terminal v2.4.1</div>
                        <div>Type 'help' for available commands or click a quick command below.</div>
-                       <div className="mt-4 flex flex-wrap gap-2">
-                         {['status', 'deploy', 'scan', 'monitor'].map((cmd) => (
-                           <button
-                             key={cmd}
-                             onClick={() => {
-                               setTerminalInput(cmd)
-                               setTimeout(() => {
-                                 const event = { preventDefault: () => {} }
-                                 handleTerminalCommand(event)
-                               }, 100)
-                             }}
-                             className="px-2 py-1 text-xs bg-gray-800 hover:bg-gray-700 rounded border border-gray-600 transition-colors"
-                           >
-                             {cmd}
-                           </button>
-                         ))}
-                       </div>
+                        <div className="mt-4 flex flex-wrap gap-2">
+                          {['status', 'deploy', 'scan', 'monitor', 'ls', 'whoami', 'date', 'neofetch'].map((cmd) => (
+                            <button
+                              key={cmd}
+                              onClick={() => {
+                                setTerminalInput(cmd)
+                                setTimeout(() => {
+                                  const event = { preventDefault: () => {} }
+                                  handleTerminalCommand(event)
+                                }, 100)
+                              }}
+                              className="px-2 py-1 text-xs bg-gray-800 hover:bg-gray-700 rounded border border-gray-600 transition-colors"
+                            >
+                              {cmd}
+                            </button>
+                          ))}
+                        </div>
                      </div>
                    )}
                     {terminalHistory.map((line, index) => (
