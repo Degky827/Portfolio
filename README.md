@@ -18,10 +18,11 @@ A modern personal portfolio built with React, Vite and Tailwind CSS that showcas
 This repo contains a single-page portfolio site built with React (JSX) and Tailwind CSS, using Vite as the dev server/bundler. It includes components for the navbar, hero, projects, skills, contact, and a CV modal which links PDF certificates in the `public/` folder.
 
 The site features an **Advanced Features** page with interactive elements including:
-- Live system metrics dashboard with real-time updates
-- Animated counters for statistics
-- Fully functional interactive terminal with commands
-- Technical challenges and solutions showcase
+- Live system metrics dashboard with real-time updates and circular progress indicators
+- Animated counters for statistics (triggered on scroll)
+- Fully functional interactive terminal with 16+ commands including argument support
+- Enhanced Engineering Challenges & Solutions with progress bars, status badges, and expandable milestones
+- Expandable feature cards with additional details
 
 ## Prerequisites
 
@@ -81,7 +82,7 @@ If you use `pnpm` or `yarn`, replace `npm run` accordingly.
 ### Advanced Features Page (`/advanced`)
 - **Live System Metrics Dashboard**: Real-time CPU, memory, network, and active user metrics with circular progress indicators that update every 2 seconds
 - **Animated Counters**: Statistics animate when scrolled into view using Framer Motion's `useInView`
-- **Interactive Terminal**: Fully functional terminal emulator with commands:
+- **Interactive Terminal**: Fully functional terminal emulator with 16+ commands:
   - `help` - List available commands
   - `status` - Show system status
   - `deploy` - Simulate deployment
@@ -90,8 +91,27 @@ If you use `pnpm` or `yarn`, replace `npm run` accordingly.
   - `uptime` - Show system uptime
   - `version` - Display version info
   - `clear` - Clear terminal history
+  - `ls` - List directory contents
+  - `pwd` - Print working directory
+  - `whoami` - Display current user
+  - `date` - Show current date/time
+  - `echo [text]` - Echo text (accepts arguments)
+  - `history` - Show command history
+  - `neofetch` - Display system info with ASCII art style
+  - `systeminfo` - Detailed system information
+  - `ps` - List running processes
+  - `df` - Show disk space usage
+  - `free` - Display memory usage
+  - `top` - Show running tasks
+  - `ifconfig` - Network interface configuration
+  - `ping [host]` - Ping a host (accepts arguments)
   - Also supports `npm`, `git`, and `docker` commands
-- **Technical Challenges Section**: Showcases engineering challenges with solutions
+  - Quick command buttons for easy access
+- **Engineering Challenges & Solutions**: Enhanced with:
+  - Progress bars showing completion percentage (animated)
+  - Status badges (In Progress, Active, Near Complete, Almost Done)
+  - Expandable milestones for each challenge
+  - Color-coded progress indicators
 - **Feature Details**: Expandable cards showing additional feature information when clicked
 
 ### Other Features
