@@ -38,8 +38,15 @@ export default function Contact() {
 
     // Check if EmailJS is configured
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      setResult('EmailJS not configured. Please email me directly at desalegnky827@gmail.com')
-      setResultType('error')
+      // Fallback: open mailto link with form data
+      const formData = new FormData(form.current)
+      const name = formData.get('from_name') || ''
+      const email = formData.get('reply_to') || ''
+      const message = formData.get('message') || ''
+      const mailtoLink = `mailto:desalegnky827@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      window.location.href = mailtoLink
+      setResult('Opening your email client...')
+      setResultType('success')
       setIsSubmitting(false)
       return
     }
@@ -51,7 +58,14 @@ export default function Contact() {
       e.target.reset()
     } catch (error) {
       console.error('EmailJS error:', error)
-      setResult('Failed to send. Please email me directly at desalegnky827@gmail.com')
+      // Fallback to mailto on EmailJS failure
+      const formData = new FormData(form.current)
+      const name = formData.get('from_name') || ''
+      const email = formData.get('reply_to') || ''
+      const message = formData.get('message') || ''
+      const mailtoLink = `mailto:desalegnky827@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      window.location.href = mailtoLink
+      setResult('EmailJS failed. Opening your email client instead...')
       setResultType('error')
     }
 
