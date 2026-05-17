@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback, lazy, Suspense } from 'react'
+import { useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Hero from './components/Hero'
 import About from './components/About'
 import Skills from './components/Skills'
-import Projects from './components/Projects'
-import AdvancedFeatures from './components/AdvancedFeatures'
-import Contact from './components/Contact'
 import Footer from './components/Footer'
-import CVModal from './components/CVModal'
 import ErrorBoundary from './components/ErrorBoundary'
+
+const Projects = lazy(() => import('./components/Projects'))
+const Contact = lazy(() => import('./components/Contact'))
 
 function App() {
   const [darkMode, setDarkMode] = useState(() => {
@@ -16,7 +16,17 @@ function App() {
     return saved ? JSON.parse(saved) : false
   })
   const [scrollProgress, setScrollProgress] = useState(0)
-  const [showCV, setShowCV] = useState(false)
+  const location = useLocation()
+
+  const scrollToSection = useCallback((hash) => {
+    const id = hash.replace('#', '').replace('/', '') || 'home'
+    const target = document.getElementById(id)
+    if (target) {
+      requestAnimationFrame(() => {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    }
+  }, [])
 
   useEffect(() => {
     if (darkMode) {
@@ -38,10 +48,15 @@ function App() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  useEffect(() => {
+    if (location.hash) {
+      scrollToSection(location.hash)
+    }
+  }, [location.hash, scrollToSection])
+
   return (
     <ErrorBoundary>
       <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
-        {/* Scroll Progress Bar */}
         <div
           className="fixed top-0 left-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent z-[9999] transition-all duration-100"
           style={{ width: `${scrollProgress}%` }}
@@ -57,19 +72,21 @@ function App() {
           onClick={() => setDarkMode(!darkMode)}
           aria-label={`Switch to ${darkMode ? 'light' : 'dark'} theme`}
         >
-          {darkMode ? '☀️' : '🌙'}
+          {darkMode ? '\u2600\uFE0F' : '\uD83C\uDF19'}
         </button>
-        <Navbar onOpenCV={() => setShowCV(true)} />
+        <Navbar />
         <main>
-          <Hero onOpenCV={() => setShowCV(true)} />
-          <About onOpenCV={() => setShowCV(true)} />
+          <Hero />
+          <About />
           <Skills />
-          <AdvancedFeatures />
-          <Projects />
-          <Contact />
+          <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" /></div>}>
+            <Projects />
+          </Suspense>
+          <Suspense fallback={<div className="h-64 flex items-center justify-center"><div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" /></div>}>
+            <Contact />
+          </Suspense>
         </main>
         <Footer />
-        <CVModal isOpen={showCV} onClose={() => setShowCV(false)} />
       </div>
     </ErrorBoundary>
   )

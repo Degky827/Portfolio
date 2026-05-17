@@ -24,7 +24,7 @@ const aboutSections = [
   }
 ]
 
-export default function About({ onOpenCV }) {
+export default function About() {
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -164,49 +164,20 @@ export default function About({ onOpenCV }) {
             </motion.div>
           </div>
 
-          {/* CV Download Section */}
+          {/* Certificates List */}
           <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true, margin: "-50px" }}
-            transition={{ duration: 0.8, delay: 0.3 }}
-            className="mt-10 sm:mt-12 lg:mt-16"
+            className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200 dark:border-slate-700"
           >
-            <div className="relative overflow-hidden rounded-2xl sm:rounded-[1.5rem] md:rounded-[2rem]">
-              {/* Background Gradient */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary via-secondary to-accent" />
-              
-              {/* Animated Shine Effect */}
-              <motion.div
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent"
-                animate={{ x: ['-100%', '200%'] }}
-                transition={{ duration: 3, repeat: Infinity, repeatDelay: 2 }}
-                style={{ width: '50%' }}
-              />
-              
-              {/* Content */}
-              <div className="relative p-6 sm:p-8 md:p-10 lg:p-12 flex flex-col md:flex-row items-center justify-between gap-6">
-                <div className="flex items-center gap-4 sm:gap-5 text-white">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/20 backdrop-blur-sm rounded-2xl flex items-center justify-center">
-                    <FileText className="w-8 h-8 sm:w-10 sm:h-10" />
-                  </div>
-                  <div>
-                    <h3 className="text-xl sm:text-2xl md:text-3xl font-black mb-1 sm:mb-2">Download My Resume</h3>
-                    <p className="text-white/80 text-sm sm:text-base">Get a detailed overview of my skills, experience, and achievements</p>
-                  </div>
-                </div>
-                
-                <motion.button
-                  onClick={onOpenCV}
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="group flex items-center gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-white text-primary font-bold sm:font-black text-sm sm:text-base rounded-full shadow-xl hover:shadow-2xl transition-all whitespace-nowrap"
-                >
-                  <Download className="w-5 h-5 sm:w-6 sm:h-6 group-hover:animate-bounce" />
-                  <span>View & Download</span>
-                </motion.button>
-              </div>
-            </div>
+            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+              I hold certificates in{' '}
+              <span className="font-bold text-gray-900 dark:text-white">Ethio Coders</span>,{' '}
+              <span className="font-bold text-gray-900 dark:text-white">e-SHE Online Learning</span>,{' '}
+              <span className="font-bold text-gray-900 dark:text-white">Networking Designing</span>,{' '}
+              <span className="font-bold text-gray-900 dark:text-white">Hackathon Computation in 24h</span>.
+            </p>
           </motion.div>
         </div>
       </div>
