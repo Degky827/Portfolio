@@ -1,7 +1,7 @@
 [
   {
     "title": "SHQMS",
-    "description": "A comprehensive quality management system for tracking and managing quality processes. Built with modern web technologies for streamlined operations.",
+    "description": "A comprehensive Patient management system for tracking and managing quality processes. Built with modern web technologies for streamlined operations.",
     "tags": ["React", "Vercel", "QMS"],
     "icon": "Monitor",
     "color": "#ef4444",
@@ -11,14 +11,14 @@
   {
     "title": "LTTMS",
     "description": "Lake Tana Tourism Management System - a comprehensive platform for managing tourism operations around Lake Tana. Features intuitive interface and efficient workflow management.",
-    "tags": ["React", "Tourism", "Vercel"],
+    "tags": ["Next.js", "Tourism", "Vercel"],
     "icon": "Layers",
     "color": "#f97316",
-    "liveUrl": "https://lttms-98vb-r21kan81w-desalegnkasayemuluyekasaye-techs-projects.vercel.app",
+    "liveUrl": "https://lttms-98vb.vercel.app/",
     "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/LTTMS"
   },
   {
-    "title": "Network Design",
+    "title": "Network Designing project",
     "description": "Enterprise network architecture with secure and scalable infrastructure solutions. Implementing robust systems for modern business requirements.",
     "tags": ["Cisco", "Security", "Infrastructure"],
     "icon": "Wifi",
@@ -27,7 +27,7 @@
     "repoUrl": "#"
   },
   {
-    "title": "System Integration",
+    "title": "Bahir Dar University Learning Management System (LMS)",
     "description": "Seamlessly integrating software systems with network infrastructure. Automating workflows and optimizing business processes.",
     "tags": ["Integration", "Automation", "DevOps"],
     "icon": "Layers",
