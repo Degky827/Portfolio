@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Zap, Menu, X, Mail, ChevronRight, MapPin, Phone, Download } from 'lucide-react'
 
@@ -6,14 +7,14 @@ const navLinks = [
   { id: 'home', label: 'Home' },
   { id: 'about', label: 'About' },
   { id: 'skills', label: 'Skills' },
-  { id: 'advanced', label: 'Advanced' },
   { id: 'projects', label: 'Projects' },
   { id: 'contact', label: 'Contact' },
 ]
 
-export default function Navbar({ onOpenCV }) {
+export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const handleScroll = () => {
@@ -25,6 +26,7 @@ export default function Navbar({ onOpenCV }) {
 
   const handleNavClick = (e, targetId) => {
     e.preventDefault()
+    navigate(`/${targetId}`)
     const target = document.getElementById(targetId)
     if (target) {
       target.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -97,7 +99,6 @@ export default function Navbar({ onOpenCV }) {
             transition={{ delay: 0.8 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={onOpenCV}
             className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-primary to-secondary text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full hover:shadow-lg hover:shadow-primary/40 transition-all shadow-md cursor-pointer"
           >
             <Download size={14} className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
@@ -164,16 +165,18 @@ export default function Navbar({ onOpenCV }) {
                 </ul>
 
                 <div className="mt-auto space-y-6 sm:space-y-8">
-                  {/* Download CV Button */}
-                  <motion.button
-                    onClick={() => { setIsOpen(false); onOpenCV(); }}
+                  {/* Resume CV Button */}
+                  <motion.a
+                    href="/Desalegn_Kasaye_Resume.pdf"
+                    download="Desalegn_Kasaye_Resume.pdf"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
+                    onClick={() => setIsOpen(false)}
                     className="flex items-center justify-center gap-3 w-full py-4 bg-primary text-white font-bold uppercase tracking-wider rounded-2xl hover:bg-secondary transition-colors shadow-lg shadow-primary/30"
                   >
                     <Download size={20} />
-                    <span>View & Download CV</span>
-                  </motion.button>
+                    <span>Resume CV</span>
+                  </motion.a>
 
                   {/* Contact Info Card */}
                   <div className="p-5 sm:p-6 md:p-8 glass-panel rounded-2xl sm:rounded-[1.5rem] noise-bg relative overflow-hidden group">

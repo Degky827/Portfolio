@@ -1,0 +1,35 @@
+[
+  {
+    "title": "DesiYedgrl",
+    "description": "A modern web application built with Base44 platform, delivering a seamless user experience with responsive design and interactive features.",
+    "features": ["Responsive", "Interactive", "Modern UI"],
+    "platform": "Web",
+    "icon": "Globe",
+    "color": "#ec4899",
+    "appUrl": "https://desiyedgrl.base44.app",
+    "repoUrl": "#",
+    "rating": 4.5
+  },
+  {
+    "title": "Scientific Calculator",
+    "description": "A feature-rich scientific calculator with advanced mathematical functions. Supports trigonometric, logarithmic, and statistical operations.",
+    "features": ["Trigonometry", "Logarithms", "Statistics", "Responsive"],
+    "platform": "Web",
+    "icon": "Monitor",
+    "color": "#06b6d4",
+    "appUrl": "https://desalegnkasayemuluyekasaye-tech.github.io/scientific-calculator/",
+    "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/scientific-calculator",
+    "rating": 4.6
+  },
+  {
+    "title": "AlgorismApp",
+    "description": "An interactive platform for learning and visualizing algorithms. Features step-by-step explanations and real-time code execution.",
+    "features": ["Algorithm visualization", "Step-by-step", "Code execution", "Education"],
+    "platform": "Web",
+    "icon": "Code",
+    "color": "#84cc16",
+    "appUrl": "https://desalegnkasayemuluyekasaye-tech.github.io/Algo_App/",
+    "repoUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/Algo_App",
+    "rating": 4.7
+  }
+]
