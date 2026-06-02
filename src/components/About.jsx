@@ -1,25 +1,21 @@
 import { motion } from 'framer-motion'
-import { GraduationCap, Briefcase, Rocket, Target, Code, Award, Users, TrendingUp, Download, FileText } from 'lucide-react'
+import { Code, Award, Users, TrendingUp, Download, FileText } from 'lucide-react'
 
 const aboutSections = [
   {
     title: 'Education & Background',
-    icon: <GraduationCap size={24} />,
     content: "I hold a Bachelor's degree in Computer Science , providing a deep foundation in both software systems and digital protection."
   },
   {
     title: 'Professional Focus',
-    icon: <Briefcase size={24} />,
     content: "I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security."
   },
   {
     title: 'Expertise Areas',
-    icon: <Rocket size={24} />,
     content: "From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions."
   },
   {
     title: 'Mission & Approach',
-    icon: <Target size={24} />,
     content: "My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional."
   }
 ]
@@ -49,7 +45,7 @@ export default function About() {
   }
 
   return (
-    <section id="about" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-slate-900 transition-colors duration-500 overflow-hidden">
+    <section id="about" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -94,18 +90,13 @@ export default function About() {
                   whileHover={{ scale: 1.02, x: 10 }}
                   className="group p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2rem] glass-card hover:bg-white dark:hover:bg-slate-800 transition-all duration-300"
                 >
-                  <div className="flex items-start gap-4 sm:gap-6">
-                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-white transition-all duration-300 flex-shrink-0">
-                      {section.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-lg sm:text-xl md:text-2xl font-black mb-2 sm:mb-3 text-gray-900 dark:text-white group-hover:text-primary transition-colors font-display">
-                        {section.title}
-                      </h3>
-                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                        {section.content}
-                      </p>
-                    </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 opacity-50 font-normal group-hover:opacity-100 group-hover:font-black group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all duration-300 font-display">
+                      {section.title}
+                    </h3>
+                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                      {section.content}
+                    </p>
                   </div>
                 </motion.div>
               ))}

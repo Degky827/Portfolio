@@ -1,6 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Filter, ChevronDown, Tag, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play } from 'lucide-react'
-import { useState, useMemo, useRef, useEffect } from 'react'
+import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play } from 'lucide-react'
+import { useState, useMemo } from 'react'
 import projectsData from '../data/projects.json'
 import mobileAppsData from '../data/mobileApps.json'
 
@@ -33,62 +33,15 @@ export default function Projects() {
   const [activeTab, setActiveTab] = useState('web')
   const [searchTerm, setSearchTerm] = useState('')
   const [activeTag, setActiveTag] = useState('All')
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false)
-  const [searchType, setSearchType] = useState('all')
-  const searchRef = useRef(null)
-
-  const allTags = useMemo(() => {
-    const tags = new Set()
-    projectsData.forEach(p => p.tags.forEach(t => tags.add(t)))
-    return ['All', ...Array.from(tags).sort()]
-  }, [])
-
   const filteredProjects = useMemo(() => {
     return projectsData.filter(project => {
-      const matchesSearch = searchTerm === '' || 
-        (searchType === 'all' && (
-          project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          project.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          project.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase()))
-        )) ||
-        (searchType === 'title' && project.title.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (searchType === 'description' && project.description.toLowerCase().includes(searchTerm.toLowerCase())) ||
-        (searchType === 'tags' && project.tags.some(tag => tag.toLowerCase().includes(searchTerm.toLowerCase())))
-      const matchesTag = activeTag === 'All' || project.tags.includes(activeTag)
-      return matchesSearch && matchesTag
+      if (!searchTerm) return true
+      const term = searchTerm.toLowerCase()
+      return project.title.toLowerCase().includes(term) ||
+        project.description.toLowerCase().includes(term) ||
+        project.tags.some(tag => tag.toLowerCase().includes(term))
     })
-  }, [searchTerm, activeTag, searchType])
-
-  const searchSuggestions = useMemo(() => {
-    if (!searchTerm || searchTerm.length < 2) return []
-    
-    const suggestions = new Set()
-    projectsData.forEach(project => {
-      if (searchType === 'all' || searchType === 'title') {
-        if (project.title.toLowerCase().includes(searchTerm.toLowerCase())) {
-          suggestions.add(project.title)
-        }
-      }
-      if (searchType === 'all' || searchType === 'tags') {
-        project.tags.forEach(tag => {
-          if (tag.toLowerCase().includes(searchTerm.toLowerCase())) {
-            suggestions.add(tag)
-          }
-        })
-      }
-    })
-    return Array.from(suggestions).slice(0, 5)
-  }, [searchTerm, searchType])
-
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (searchRef.current && !searchRef.current.contains(event.target)) {
-        setIsDropdownOpen(false)
-      }
-    }
-    document.addEventListener('mousedown', handleClickOutside)
-    return () => document.removeEventListener('mousedown', handleClickOutside)
-  }, [])
+  }, [searchTerm])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -135,7 +88,7 @@ export default function Projects() {
   }, [searchTerm])
 
   return (
-    <section id="projects" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-slate-900 transition-colors duration-500 overflow-hidden" aria-label="Projects section">
+    <section id="projects" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden" aria-label="Projects section">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -190,127 +143,7 @@ export default function Projects() {
 
         {activeTab === 'web' ? (
         <>
-        {/* Search and Filter */}
-        <motion.div
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="max-w-5xl lg:max-w-7xl mx-auto mb-8 sm:mb-10 space-y-4"
-        >
-          {/* Enhanced Search Bar with Dropdown */}
-          <div className="relative max-w-2xl mx-auto" ref={searchRef}>
-            <div className="relative">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
-              <input
-                type="text"
-                placeholder="Search projects by title, description, or tags..."
-                value={searchTerm}
-                onChange={(e) => {
-                  setSearchTerm(e.target.value)
-                  setIsDropdownOpen(true)
-                }}
-                onFocus={() => setIsDropdownOpen(true)}
-                className="w-full pl-12 pr-24 py-3 bg-gray-50 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-full text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                aria-label="Search projects"
-              />
-              
-              {/* Search Type Selector */}
-              <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
-                <select
-                  value={searchType}
-                  onChange={(e) => setSearchType(e.target.value)}
-                  className="px-2 py-1 text-xs bg-white dark:bg-slate-700 border border-gray-200 dark:border-slate-600 rounded-lg text-gray-600 dark:text-gray-300 focus:outline-none focus:ring-1 focus:ring-primary/50"
-                >
-                  <option value="all">All</option>
-                  <option value="title">Title</option>
-                  <option value="description">Description</option>
-                  <option value="tags">Tags</option>
-                </select>
-                {searchTerm && (
-                  <button
-                    onClick={() => {
-                      setSearchTerm('')
-                      setIsDropdownOpen(false)
-                    }}
-                    className="p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-                    aria-label="Clear search"
-                  >
-                    <X size={16} />
-                  </button>
-                )}
-              </div>
-            </div>
 
-            {/* Dropdown Suggestions */}
-            {isDropdownOpen && (searchSuggestions.length > 0 || searchTerm.length > 0) && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                className="absolute top-full left-0 right-0 mt-2 bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl shadow-xl z-50 overflow-hidden"
-              >
-                {searchSuggestions.length > 0 ? (
-                  <div className="max-h-60 overflow-y-auto">
-                    {searchSuggestions.map((suggestion, index) => (
-                      <button
-                        key={index}
-                        onClick={() => {
-                          setSearchTerm(suggestion)
-                          setIsDropdownOpen(false)
-                        }}
-                        className="w-full px-4 py-3 text-left hover:bg-gray-50 dark:hover:bg-slate-700 transition-colors flex items-center gap-3 border-b border-gray-100 dark:border-slate-700 last:border-b-0"
-                      >
-                        {allTags.includes(suggestion) ? (
-                          <Tag size={16} className="text-primary flex-shrink-0" />
-                        ) : (
-                          <Search size={16} className="text-gray-400 flex-shrink-0" />
-                        )}
-                        <span className="text-gray-900 dark:text-white truncate">
-                          {suggestion}
-                        </span>
-                      </button>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="px-4 py-3 text-gray-500 dark:text-gray-400 text-center">
-                    No suggestions found
-                  </div>
-                )}
-              </motion.div>
-            )}
-          </div>
-
-          {/* Tag Filter Dropdown */}
-          <div className="flex justify-center">
-            <div className="relative">
-              <select
-                value={activeTag}
-                onChange={(e) => setActiveTag(e.target.value)}
-                className="appearance-none bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 rounded-xl px-6 py-3 pr-12 text-sm font-bold text-gray-900 dark:text-white cursor-pointer hover:border-primary/50 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all shadow-lg"
-                aria-label="Filter projects by tag"
-              >
-                {allTags.map(tag => (
-                  <option key={tag} value={tag}>
-                    {tag}
-                  </option>
-                ))}
-              </select>
-              
-              {/* Custom Dropdown Arrow */}
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                <ChevronDown 
-                  size={20} 
-                  className="text-gray-400 dark:text-gray-500 transition-transform duration-300"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Results Count */}
-          <p className="text-center text-sm text-gray-500 dark:text-gray-400">
-            Showing {filteredProjects.length} of {projectsData.length} projects
-          </p>
-        </motion.div>
 
         {/* Projects Grid */}
         <motion.div
@@ -354,9 +187,9 @@ export default function Projects() {
                 {/* Top Section: Icon & Actions */}
                 <div className="flex justify-between items-start mb-4 relative z-10">
                   <motion.div
-                    whileHover={shouldReduceMotion ? {} : { rotate: 5, scale: 1.1 }}
-                    className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl glass-card group-hover:bg-primary group-hover:text-white transition-all duration-300"
-                    style={{ color: project.color }}
+                    whileHover={shouldReduceMotion ? {} : { rotate: 5, scale: 1.15 }}
+                    className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl transition-all duration-300 shadow-sm"
+                    style={{ color: project.color, backgroundColor: `${project.color}14`, borderColor: `${project.color}30` }}
                   >
                     {renderIcon(project.icon, project.color)}
                   </motion.div>
@@ -365,7 +198,10 @@ export default function Projects() {
                       href={project.repoUrl}
                       target="_blank"
                       rel="noopener noreferrer nofollow"
-                      className="p-1.5 glass-card rounded-lg hover:bg-primary hover:text-white transition-all duration-300 text-gray-400"
+                      className="p-1.5 rounded-lg transition-all duration-200 text-gray-400 hover:text-white"
+                      style={{ backgroundColor: 'transparent' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = project.color; e.currentTarget.style.borderColor = 'transparent' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '' }}
                       title={`View ${project.title} source code`}
                       aria-label={`View ${project.title} source code on GitHub`}
                     >
@@ -375,7 +211,10 @@ export default function Projects() {
                       href={project.liveUrl}
                       target="_blank"
                       rel="noopener noreferrer nofollow"
-                      className="p-1.5 glass-card rounded-lg hover:bg-primary hover:text-white transition-all duration-300 text-gray-400"
+                      className="p-1.5 rounded-lg transition-all duration-200 text-gray-400 hover:text-white"
+                      style={{ backgroundColor: 'transparent' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = project.color; e.currentTarget.style.borderColor = 'transparent' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '' }}
                       title={`View ${project.title} live site`}
                       aria-label={`View ${project.title} live demo`}
                     >
@@ -398,7 +237,8 @@ export default function Projects() {
                       <span
                         key={i}
                         role="listitem"
-                        className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full glass-card text-gray-400 dark:text-gray-500 group-hover:border-primary/20 transition-all"
+                        className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full border transition-all duration-200 hover:scale-105"
+                        style={{ color: project.color, borderColor: `${project.color}40`, backgroundColor: `${project.color}10` }}
                       >
                         {tag}
                       </span>

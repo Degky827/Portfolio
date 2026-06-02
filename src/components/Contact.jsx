@@ -73,9 +73,9 @@ export default function Contact() {
   }
 
   const contactInfo = [
-    { icon: <Mail size={20} aria-hidden="true" />, label: 'Email', value: 'desalegnky827@gmail.com', href: 'mailto:desalegnky827@gmail.com' },
-    { icon: <Phone size={20} aria-hidden="true" />, label: 'Phone', value: '+251 908720092', href: 'tel:+251908720092' },
-    { icon: <MapPin size={20} aria-hidden="true" />, label: 'Location', value: 'Bahirdar, Ethiopia', href: null }
+    { icon: <Mail size={20} aria-hidden="true" />, label: 'Email', value: 'desalegnky827@gmail.com', href: 'mailto:desalegnky827@gmail.com', color: '#3b82f6' },
+    { icon: <Phone size={20} aria-hidden="true" />, label: 'Phone', value: '+251 908720092', href: 'tel:+251908720092', color: '#22c55e' },
+    { icon: <MapPin size={20} aria-hidden="true" />, label: 'Location', value: 'Bahirdar, Ethiopia', href: null, color: '#f59e0b' }
   ]
 
   const containerVariants = {
@@ -96,7 +96,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-slate-900/50 transition-colors duration-500 relative overflow-hidden" aria-label="Contact section">
+    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-black/50 transition-colors duration-500 relative overflow-hidden" aria-label="Contact section">
       {/* Background Decor */}
       <motion.div
         animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
@@ -154,32 +154,46 @@ export default function Contact() {
                 </p>
 
                 <div className="space-y-6 sm:space-y-8 md:space-y-10 mb-8 sm:mb-10 md:mb-14">
-                  {contactInfo.map((info, index) => (
-                    <motion.div
-                      key={index}
-                      whileHover={{ x: 10 }}
-                      className="flex items-center gap-4 sm:gap-5 md:gap-6 group"
-                    >
-                      <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl glass-card flex items-center justify-center text-white group-hover:bg-white group-hover:text-primary transition-all duration-300 flex-shrink-0" aria-hidden="true">
-                        {info.icon}
-                      </div>
-                      <div className="min-w-0">
-                        <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/50 mb-1">{info.label}</span>
-                        {info.href ? (
-                          <a href={info.href} className="text-sm sm:text-base md:text-lg lg:text-xl font-bold hover:text-accent transition-colors font-display tracking-tight break-all">{info.value}</a>
-                        ) : (
-                          <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold font-display tracking-tight">{info.value}</span>
-                        )}
-                      </div>
-                    </motion.div>
-                  ))}
+                  {contactInfo.map((info, index) => {
+                    const hoverBg = index === 0 ? '#3b82f6' : index === 1 ? '#22c55e' : '#f59e0b'
+                    return (
+                      <motion.div
+                        key={index}
+                        whileHover={{ x: 10 }}
+                        className="flex items-center gap-4 sm:gap-5 md:gap-6 group"
+                      >
+                        <div
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl glass-card flex items-center justify-center text-black transition-all duration-300 flex-shrink-0"
+                          style={{ '--hover-bg': hoverBg }}
+                          onMouseEnter={e => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.borderColor = 'transparent' }}
+                          onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.borderColor = '' }}
+                          aria-hidden="true"
+                        >
+                          {info.icon}
+                        </div>
+                        <div className="min-w-0">
+                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/50 mb-1">{info.label}</span>
+                          {info.href ? (
+                            <a
+                              href={info.href}
+                              className="text-sm sm:text-base md:text-lg lg:text-xl font-bold transition-colors font-display tracking-tight break-all"
+                              onMouseEnter={e => { e.currentTarget.style.color = hoverBg }}
+                              onMouseLeave={e => { e.currentTarget.style.color = '' }}
+                            >{info.value}</a>
+                          ) : (
+                            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold font-display tracking-tight">{info.value}</span>
+                          )}
+                        </div>
+                      </motion.div>
+                    )
+                  })}
                 </div>
 
                 <div className="flex gap-3 sm:gap-4 md:gap-5" role="list" aria-label="Social media links">
                   {[
-                    { title: 'LinkedIn', icon: <LinkedinIcon size={18} />, href: "https://linkedin.com/in/dk-cs-3rd" },
-                    { title: 'GitHub', icon: <GithubIcon size={18} />, href: "https://github.com/desalegnkasayemuluyekasaye-tech" },
-                    { title: 'Telegram', icon: <TelegramIcon size={18} />, href: "https://t.me/Ds35kg" }
+                    { title: 'LinkedIn', icon: <LinkedinIcon size={18} />, href: "https://linkedin.com/in/dk-cs-3rd", brand: '#0A66C2' },
+                    { title: 'GitHub', icon: <GithubIcon size={18} />, href: "https://github.com/desalegnkasayemuluyekasaye-tech", brand: '#f0f6fc' },
+                    { title: 'Telegram', icon: <TelegramIcon size={18} />, href: "https://t.me/Ds35kg", brand: '#0088cc' }
                   ].map((social, idx) => (
                     <motion.a
                       key={idx}
@@ -189,7 +203,9 @@ export default function Contact() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl glass-card flex items-center justify-center hover:bg-white hover:text-primary transition-all duration-300"
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl glass-card flex items-center justify-center text-black transition-all duration-300"
+                      onMouseEnter={e => { e.currentTarget.style.background = social.brand; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'transparent' }}
+                      onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.color = ''; e.currentTarget.style.borderColor = '' }}
                       title={social.title}
                       aria-label={social.title}
                     >
@@ -208,7 +224,7 @@ export default function Contact() {
               <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} aria-label="Contact form">
                 <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Your Name</label>
+                    <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Your Name</label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                         <User size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -219,13 +235,13 @@ export default function Contact() {
                         type="text"
                         required
                         placeholder="e.g. Alex Johnson"
-                        className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
+                        className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
                         aria-describedby={result ? "form-message" : undefined}
                       />
                     </div>
                   </div>
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Email Address</label>
+                    <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Email Address</label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                         <Mail size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -236,14 +252,14 @@ export default function Contact() {
                         type="email"
                         required
                         placeholder="e.g. alex@example.com"
-                        className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
+                        className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
                       />
                     </div>
                   </div>
                 </div>
 
                 <div className="space-y-2 sm:space-y-3">
-                  <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-400 dark:text-gray-500 ml-1">Your Message</label>
+                  <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Your Message</label>
                   <div className="relative group">
                     <span className="absolute left-4 sm:left-5 top-5 sm:top-6 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                       <MessageSquare size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -254,7 +270,7 @@ export default function Contact() {
                       required
                       placeholder="Tell me about your project or vision..."
                       rows="5"
-                      className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-slate-900 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base resize-none shadow-sm"
+                      className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base resize-none shadow-sm"
                     />
                   </div>
                 </div>
@@ -280,7 +296,7 @@ export default function Contact() {
                   disabled={isSubmitting}
                   whileHover={{ scale: 1.02, translateY: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-4 sm:py-5 bg-primary hover:bg-secondary text-white font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-secondary/30 transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 disabled:cursor-not-allowed group relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  className="w-full py-4 sm:py-5 bg-gradient-to-r from-primary to-secondary text-white font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-secondary/30 transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 disabled:cursor-not-allowed group relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   aria-label={isSubmitting ? 'Sending message...' : 'Send message'}
                 >
                   <span className="relative z-10 flex items-center gap-2 sm:gap-3">

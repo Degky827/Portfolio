@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Code2, Globe, Rocket, MapPin, Coffee, Download, Zap, Star } from 'lucide-react'
+import { ArrowRight, Sparkles, Code2, Globe, Rocket, MapPin, Download, Zap, Star, GraduationCap, Award, BookOpen, Cpu } from 'lucide-react'
 
 export default function Hero() {
   const [typedText, setTypedText] = useState('')
@@ -57,7 +57,7 @@ export default function Hero() {
   }
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-slate-900 transition-colors duration-500">
+    <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-black transition-colors duration-500">
       {/* Cursor Glow Effect */}
       <motion.div
         className="fixed w-[500px] h-[500px] rounded-full pointer-events-none z-0"
@@ -142,35 +142,108 @@ export default function Hero() {
               transition={{ type: 'spring', stiffness: 300 }}
               className="relative flex-shrink-0"
             >
-              <div className="w-40 h-52 sm:w-52 sm:h-64 md:w-64 md:h-80 lg:w-72 lg:h-88 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] overflow-hidden border-4 sm:border-8 border-white/50 dark:border-slate-700/50 shadow-2xl relative z-10">
-                <img 
-                  src="/BDU1601297.png" 
-                  alt="Desalegn Profile" 
-                  className="w-full h-full object-contain object-top"
+              {/* Concentric Multi-Layered Progress Form */}
+              <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 lg:w-72 lg:h-72 relative">
+
+                {/* Layer 1: Outer pulsing neon glow */}
+                <motion.div
+                  animate={{ scale: [1, 1.06, 1], opacity: [0.2, 0.4, 0.2] }}
+                  transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute -inset-6 rounded-full bg-cyan-400/10 blur-3xl"
                 />
-              </div>
-              <motion.div 
-                animate={{ rotate: 360 }}
-                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                className="absolute inset-[-10px] sm:inset-[-15px] md:inset-[-20px] rounded-[2.5rem] sm:rounded-[3rem] md:rounded-[3.5rem] border-2 border-dashed border-primary/30 pointer-events-none"
-              />
-              
-              {/* Status Badge */}
-              <motion.div 
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 1, type: 'spring' }}
-                className="absolute -bottom-2 -right-2 sm:-bottom-3 sm:-right-3 w-12 h-12 sm:w-14 sm:h-14 glass-panel rounded-xl sm:rounded-2xl flex items-center justify-center shadow-xl z-20"
-              >
-                <div className="relative">
-                  <Coffee size={20} className="text-primary" />
-                  <motion.div
-                    animate={{ scale: [1, 1.5, 1], opacity: [1, 0, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full"
+
+                {/* Layer 2: SVG Audio Waveform Equalizer (outer border) */}
+                <svg
+                  viewBox="0 0 100 100"
+                  className="absolute inset-0 w-full h-full z-[9] overflow-visible"
+                  style={{ filter: 'drop-shadow(0 0 6px rgba(6,182,212,0.3))' }}
+                >
+                  <defs>
+                    <linearGradient id="eqGrad" x1="0" y1="0" x2="1" y2="1">
+                      <stop offset="0%" stopColor="#06b6d4" />
+                      <stop offset="50%" stopColor="#22c55e" />
+                      <stop offset="100%" stopColor="#f59e0b" />
+                    </linearGradient>
+                  </defs>
+                  <circle cx="50" cy="50" r="46" fill="none" stroke="rgba(6,182,212,0.15)" strokeWidth="2" />
+                  {Array.from({ length: 20 }).map((_, i) => {
+                    const angle = (i * 360) / 20
+                    const rad = (angle * Math.PI) / 180
+                    const innerR = 44
+                    const baseR = 47
+                    const extendR = 5
+                    const x1 = 50 + Math.cos(rad) * innerR
+                    const y1 = 50 + Math.sin(rad) * innerR
+                    const bx2 = 50 + Math.cos(rad) * baseR
+                    const by2 = 50 + Math.sin(rad) * baseR
+                    return (
+                      <motion.line
+                        key={i}
+                        x1={x1} y1={y1}
+                        x2={bx2} y2={by2}
+                        stroke="url(#eqGrad)"
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        initial={false}
+                        animate={{
+                          x2: [
+                            bx2,
+                            bx2 + Math.cos(rad) * extendR,
+                            bx2,
+                            bx2 + Math.cos(rad) * extendR * 0.6,
+                            bx2,
+                          ],
+                          y2: [
+                            by2,
+                            by2 + Math.sin(rad) * extendR,
+                            by2,
+                            by2 + Math.sin(rad) * extendR * 0.6,
+                            by2,
+                          ],
+                        }}
+                        transition={{
+                          duration: 1.8,
+                          repeat: Infinity,
+                          delay: (i * 360 / 20) / 360 * 1.8,
+                          ease: "easeInOut",
+                        }}
+                      />
+                    )
+                  })}
+                </svg>
+
+                {/* Layer 3: Multi-segmented circular progress bar (rotating slowly) */}
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: 'conic-gradient(from 0deg, transparent 0deg, transparent 6deg, #2563eb 6deg, #2563eb 135deg, #10b981 135deg, #10b981 255deg, #f59e0b 255deg, #f59e0b 354deg, transparent 354deg, transparent 360deg)',
+                    WebkitMask: 'radial-gradient(farthest-side, transparent calc(100% - 14px), #000 calc(100% - 13px), #000 calc(100% - 3px), transparent calc(100% - 2px))',
+                    mask: 'radial-gradient(farthest-side, transparent calc(100% - 14px), #000 calc(100% - 13px), #000 calc(100% - 3px), transparent calc(100% - 2px))',
+                  }}
+                />
+
+                {/* Layer 4: Glowing white indicator gap accent at top */}
+                <motion.div
+                  animate={{ opacity: [0.4, 0.9, 0.4] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute top-[3px] left-1/2 -translate-x-1/2 w-[6px] h-[6px] rounded-full bg-white shadow-lg z-[12]"
+                  style={{ boxShadow: '0 0 10px rgba(255,255,255,0.8), 0 0 20px rgba(255,255,255,0.4)' }}
+                />
+
+                {/* Layer 5: Inner crisp white ring framing the portrait */}
+                <div className="absolute inset-[14px] rounded-full border-[3px] border-white/95 shadow-md z-[11]" />
+
+                {/* Layer 6: Seamless circular portrait (head + shoulders visible) */}
+                <div className="absolute inset-[21px] rounded-full overflow-hidden z-10 bg-[#dce5f0] shadow-sm pt-[14px]">
+                  <img 
+                    src="/BDU1601297.png" 
+                    alt="Desalegn Profile" 
+                    className="w-full h-full object-cover object-[center_18%]"
                   />
                 </div>
-              </motion.div>
+              </div>
             </motion.div>
 
             {/* Content */}
@@ -184,13 +257,13 @@ export default function Hero() {
                 transition={{ delay: 0.5 }}
                 className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full border border-primary/20 hover-lift"
               >
-                <Zap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary animate-pulse" />
-                <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-[0.2em]">Available for Work</span>
+                <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary animate-pulse" />
+                <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-[0.2em]">Student Developer</span>
                 <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
               </motion.div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-white leading-tight">
-                Hi, I'm <span className="gradient-text">Desalegn</span>
+                Hi, I'm <span className="gradient-text"><span className="inline-flex items-center justify-center h-8 sm:h-10 px-1.5 rounded-xl bg-gradient-to-br from-purple-900 to-purple-700 text-white text-[9px] sm:text-[11px] font-black mr-1.5 -mt-1 align-middle shadow-lg">ደካ</span> Desalegn</span>
                 <br />
                 <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
                   {typedText}
@@ -228,24 +301,24 @@ export default function Hero() {
               {/* Stats */}
               <motion.div variants={itemVariants} className="flex gap-6 sm:gap-10 lg:gap-12 justify-center lg:justify-start pt-6 sm:pt-10 border-t border-gray-100 dark:border-slate-700/50">
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-primary/10 rounded-lg sm:rounded-xl text-primary"><Rocket size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
+                  <div className="p-2 sm:p-3 bg-primary/10 rounded-lg sm:rounded-xl text-primary"><Award size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
                   <div className="flex flex-col">
-                    <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">5+</span>
-                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Experience</span>
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">3+</span>
+                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Top Certifications</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-secondary/10 rounded-lg sm:rounded-xl text-secondary"><Code2 size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
+                  <div className="p-2 sm:p-3 bg-secondary/10 rounded-lg sm:rounded-xl text-secondary"><BookOpen size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
                   <div className="flex flex-col">
-                    <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">50+</span>
-                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Projects</span>
+                    <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">15+</span>
+                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Class Projects</span>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-accent/10 rounded-lg sm:rounded-xl text-accent"><Globe size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
+                  <div className="p-2 sm:p-3 bg-accent/10 rounded-lg sm:rounded-xl text-accent"><Cpu size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
                   <div className="flex flex-col">
                     <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">30+</span>
-                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Skills</span>
+                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Core Skills</span>
                   </div>
                 </div>
               </motion.div>
