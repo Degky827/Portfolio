@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion'
-import { Zap, ArrowUp, Mail } from 'lucide-react'
+import { ArrowUp, Mail } from 'lucide-react'
 
 const GithubIcon = ({ size = 24 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -69,8 +69,8 @@ export default function Footer() {
             className="md:col-span-2"
           >
             <div className="flex items-center gap-3 text-2xl sm:text-3xl font-black mb-4 sm:mb-6 md:mb-8">
-              <span className="w-10 h-10 sm:w-12 sm:h-12 bg-primary text-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30">
-                <Zap size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-[11px] sm:text-sm font-black">
+                ደካ
               </span>
               <span className="tracking-tight uppercase">Desalegn</span>
             </div>

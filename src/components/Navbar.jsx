@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Zap, Menu, X, Mail, ChevronRight, MapPin, Phone, Download } from 'lucide-react'
+import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download } from 'lucide-react'
 
 const navLinks = [
   { id: 'home', label: 'Home' },
@@ -53,8 +53,8 @@ export default function Navbar() {
           className="flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl font-black tracking-tighter"
           onClick={(e) => handleNavClick(e, 'home')}
         >
-          <div className="w-8 h-8 sm:w-10 sm:h-10 bg-primary text-white rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg shadow-primary/30">
-            <Zap size={18} className="w-4 h-4 sm:w-6 sm:h-6" fill="currentColor" />
+          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-[10px] sm:text-xs font-black">
+            ደካ
           </div>
           <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent font-display">
             DESALEGN
@@ -122,15 +122,15 @@ export default function Navbar() {
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: '100%', opacity: 0 }}
                 transition={{ type: 'spring', damping: 30, stiffness: 150 }}
-                className="fixed top-0 right-0 h-full w-full sm:w-96 bg-white/95 dark:bg-slate-900/95 backdrop-blur-2xl z-[1001] shadow-2xl p-6 sm:p-8 md:p-10 flex flex-col"
+                className="fixed top-0 right-0 h-full w-full sm:w-96 bg-white/95 dark:bg-black/95 backdrop-blur-2xl z-[1001] shadow-2xl p-6 sm:p-8 md:p-10 flex flex-col"
               >
                 <div className="flex justify-between items-center mb-10 sm:mb-14 md:mb-16">
                   <motion.div 
                     initial={{ scale: 0.5, rotate: -45 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    className="w-12 h-12 sm:w-14 sm:h-14 bg-primary text-white rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg shadow-primary/30"
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-sm sm:text-base font-black"
                   >
-                    <Zap size={24} className="w-6 h-6 sm:w-8 sm:h-8" fill="currentColor" />
+                    ደካ
                   </motion.div>
                   <motion.button 
                     whileHover={{ scale: 1.1, rotate: 90 }}

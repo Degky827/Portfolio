@@ -56,7 +56,7 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-white dark:bg-slate-900 transition-colors duration-300">
+      <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
         <div
           className="fixed top-0 left-0 h-1 bg-gradient-to-r from-primary via-secondary to-accent z-[9999] transition-all duration-100"
           style={{ width: `${scrollProgress}%` }}
