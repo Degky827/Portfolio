@@ -7,18 +7,41 @@ const analyticsRoutes = require('./routes/analytics')
 const app = express()
 
 // ---------------------------------------------------------------------------
-// Middleware
+// CORS — accept multiple origins from env (comma-separated)
 // ---------------------------------------------------------------------------
-app.use(cors({ origin: config.corsOrigin, credentials: true }))
+const corsOptions = {
+  origin(origin, callback) {
+    // Allow requests with no origin (server-to-server, curl, etc.)
+    if (!origin || config.corsOrigins.includes(origin)) {
+      callback(null, true)
+    } else {
+      callback(null, false)
+    }
+  },
+  credentials: true,
+}
+
+app.use(cors(corsOptions))
 app.use(express.json({ strict: true }))
 
 // ---------------------------------------------------------------------------
 // Routes
 // ---------------------------------------------------------------------------
 app.get('/api/health', (_req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+  res.json({
+    status: 'ok',
+    message: 'Server running smoothly',
+    timestamp: new Date().toISOString(),
+  })
 })
 app.use('/api/analytics', analyticsRoutes)
+
+// ---------------------------------------------------------------------------
+// 404 fallback
+// ---------------------------------------------------------------------------
+app.use((_req, res) => {
+  res.status(404).json({ error: 'Route not found' })
+})
 
 // ---------------------------------------------------------------------------
 // Start
@@ -26,11 +49,23 @@ app.use('/api/analytics', analyticsRoutes)
 async function start() {
   await connectDB()
 
-  app.listen(config.port, () => {
+  const server = app.listen(config.port, () => {
     console.log(
       `Server running on port ${config.port} [${config.nodeEnv}]`,
     )
   })
+
+  // Graceful shutdown
+  const shutdown = async (signal) => {
+    console.log(`\n${signal} received. Shutting down gracefully...`)
+    server.close(() => {
+      console.log('HTTP server closed.')
+      process.exit(0)
+    })
+  }
+
+  process.on('SIGTERM', () => shutdown('SIGTERM'))
+  process.on('SIGINT', () => shutdown('SIGINT'))
 }
 
 start()
