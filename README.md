@@ -1,167 +1,176 @@
 # Modernize-Portifolio
 
-A modern personal portfolio built with React, Vite and Tailwind CSS that showcases projects, skills, certificates and CV for Desalegn Kasaye.
+A full-stack MERN portfolio for Desalegn Kasaye — React frontend with Tailwind CSS + Express/MongoDB backend with 2FA-protected analytics dashboard.
 
-## Contents
+## Architecture
 
-- **Overview** — What this project is and its purpose.
-- **Prerequisites** — Tools you need installed.
-- **Setup** — Install dependencies and run locally.
-- **Available scripts** — Common npm commands.
-- **Project structure** — Short description of important files and folders.
-- **Features** — Key features and components overview.
-- **How to update certificates & projects** — Step-by-step for common edits.
-- **Deploying** — Quick deploy notes (Vercel / GitHub Pages).
-
-## Overview
-
-This repo contains a single-page portfolio site built with React (JSX) and Tailwind CSS, using Vite as the dev server/bundler. It includes components for the navbar, hero, projects, skills, contact, and a CV modal which links PDF certificates in the `public/` folder.
-
-The site features an **Advanced Features** page with interactive elements including:
-- Live system metrics dashboard with real-time updates and circular progress indicators
-- Animated counters for statistics (triggered on scroll)
-- Fully functional interactive terminal with 16+ commands including argument support
-- Enhanced Engineering Challenges & Solutions with progress bars, status badges, and expandable milestones
-- Expandable feature cards with additional details
+```
+modernize-portifo/
+├── frontend/          React + Vite + Tailwind CSS
+│   ├── src/
+│   │   ├── components/   UI components (Navbar, Footer, sections)
+│   │   ├── hooks/        Custom hooks (dark mode, scroll, tracking)
+│   │   ├── pages/        Route pages (Home, Login, Admin)
+│   │   ├── context/      Auth state management
+│   │   └── services/     Axios API client with JWT interceptor
+│   └── dist/             Production build
+├── backend/           Express + Mongoose + MongoDB Atlas
+│   ├── routes/        auth.js, analytics.js
+│   ├── middleware/     JWT authentication middleware
+│   ├── controllers/   Route handlers for visit tracking
+│   ├── models/        Admin, Visit Mongoose schemas
+│   ├── config/        DB connection, env-based config
+│   └── utils/         IP geolocation, user-agent parsing
+└── README.md
+```
 
 ## Prerequisites
 
-- Node.js >= 16 (recommended) and npm or pnpm
-- Git (for cloning and deployments)
+- Node.js >= 18
+- MongoDB Atlas cluster (or local MongoDB)
+- Git
 
-## Setup (local)
+## Setup
 
-1. Clone the repository:
+### 1. Clone & install
 
 ```bash
 git clone https://github.com/your-repo/modernize-portifo.git
 cd modernize-portifo
+
+# Install frontend dependencies
+cd frontend && npm install
+
+# Install backend dependencies
+cd ../backend && npm install
 ```
 
-2. Install dependencies:
+### 2. Environment variables
 
-```bash
-npm install
-# or
-pnpm install
+**Backend** — `backend/.env`:
+
+```env
+PORT=5000
+NODE_ENV=development
+MONGO_URI=mongodb+srv://<user>:<pass>@cluster.xxxxx.mongodb.net/portfolio
+JWT_SECRET=a_random_64_char_string
+JWT_EXPIRES_IN=7d
+CORS_ORIGINS=http://localhost:5173
+FRONTEND_URL=http://localhost:5173
 ```
 
-3. Start the dev server:
+**Frontend** — `frontend/.env`:
+
+```env
+VITE_API_URL=http://localhost:5000/api
+VITE_EMAILJS_SERVICE_ID=your_service_id
+VITE_EMAILJS_TEMPLATE_ID=your_template_id
+VITE_EMAILJS_PUBLIC_KEY=your_public_key
+```
+
+### 3. Run locally
 
 ```bash
+# Terminal 1 — Backend
+cd backend
+npm run dev
+
+# Terminal 2 — Frontend
+cd frontend
 npm run dev
 ```
 
-The site will be available at `http://localhost:5173/` (default Vite port).
+Frontend: `http://localhost:5173`  
+Backend: `http://localhost:5000`  
+Health check: `http://localhost:5000/api/health`
 
-## Available scripts
+## Admin & 2FA Setup
 
-- `npm run dev` — Start Vite dev server.
-- `npm run build` — Build production bundle to `dist/`.
-- `npm run preview` — Preview the production build locally.
+Requires one-time setup after deploying:
 
-If you use `pnpm` or `yarn`, replace `npm run` accordingly.
+```bash
+# 1. Register admin
+curl -X POST http://localhost:5000/api/auth/register-admin \
+  -H "Content-Type: application/json" \
+  -d '{"email":"admin@example.com","password":"yourStrongPassword123"}'
 
-## Project structure
+# 2. Open in browser to scan QR code into Google Authenticator
+# http://localhost:5000/api/auth/setup-2fa?email=admin@example.com
 
-- `index.html` — App entry HTML.
-- `src/main.jsx` — React entry, mounts the app.
-- `src/App.jsx` — Main app wrapper.
-- `src/components/` — UI components used across the site:
-  - `Navbar.jsx` — Top navigation and mobile menu with smooth scroll to sections.
-  - `Hero.jsx` — Landing hero section.
-  - `AdvancedFeatures.jsx` — Interactive advanced features page with live metrics, animated counters, and functional terminal.
-  - `Projects.jsx` — Featured projects grid (live + repo links).
-  - `CVModal.jsx` — Resume modal and certificates list (loads PDFs from `public/`).
-  - Other components: `About.jsx`, `Skills.jsx`, `Contact.jsx`, `Footer.jsx`, etc.
-- `public/` — Static assets served as-is (images, PDFs, .pkt file). Any PDF placed here is available at `/<filename>`.
-- `vite.config.js`, `postcss.config.js`, `package.json` — build tooling and scripts.
+# 3. Navigate to http://localhost:5173/login
+#    Enter email + password → 6-digit code → analytics dashboard
+```
+
+## API Endpoints
+
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| GET | `/api/health` | No | Server health check |
+| POST | `/api/analytics/log-visit` | No | Log a portfolio visit (with location + device data) |
+| GET | `/api/analytics/metrics` | JWT | Get visit statistics (protected) |
+| POST | `/api/auth/register-admin` | No | One-time admin registration |
+| GET | `/api/auth/setup-2fa` | No | Generate TOTP secret + QR code |
+| POST | `/api/auth/admin-login` | No | Two-phase login (password → 2FA → JWT) |
+
+## Frontend Routes
+
+| Path | Component | Description |
+|------|-----------|-------------|
+| `/` | Home | Portfolio landing page with all sections |
+| `/login` | Login | Two-step admin sign-in (credentials + 2FA) |
+| `/admin` | Admin | Secure analytics dashboard |
 
 ## Features
 
-### Advanced Features Page (`/advanced`)
-- **Live System Metrics Dashboard**: Real-time CPU, memory, network, and active user metrics with circular progress indicators that update every 2 seconds
-- **Animated Counters**: Statistics animate when scrolled into view using Framer Motion's `useInView`
-- **Interactive Terminal**: Fully functional terminal emulator with 16+ commands:
-  - `help` - List available commands
-  - `status` - Show system status
-  - `deploy` - Simulate deployment
-  - `scan` - Run security scan
-  - `monitor` - Display live metrics
-  - `uptime` - Show system uptime
-  - `version` - Display version info
-  - `clear` - Clear terminal history
-  - `ls` - List directory contents
-  - `pwd` - Print working directory
-  - `whoami` - Display current user
-  - `date` - Show current date/time
-  - `echo [text]` - Echo text (accepts arguments)
-  - `history` - Show command history
-  - `neofetch` - Display system info with ASCII art style
-  - `systeminfo` - Detailed system information
-  - `ps` - List running processes
-  - `df` - Show disk space usage
-  - `free` - Display memory usage
-  - `top` - Show running tasks
-  - `ifconfig` - Network interface configuration
-  - `ping [host]` - Ping a host (accepts arguments)
-  - Also supports `npm`, `git`, and `docker` commands
-  - Quick command buttons for easy access
-- **Engineering Challenges & Solutions**: Enhanced with:
-  - Progress bars showing completion percentage (animated)
-  - Status badges (In Progress, Active, Near Complete, Almost Done)
-  - Expandable milestones for each challenge
-  - Color-coded progress indicators
-- **Feature Details**: Expandable cards showing additional feature information when clicked
+- **Portfolio sections**: Hero, About, Skills, Projects, Contact (smooth-scroll navigation)
+- **Dark mode**: Persistent theme toggle
+- **Visit tracking**: Automatic IP geolocation, device/browser/OS detection
+- **Admin dashboard**: 2FA-protected analytics with:
+  - Total view count
+  - Visit history table (When / Who / Where / Device / Browser-OS)
+- **Responsive design**: Mobile-first with animated navbar drawer
+- **Framer Motion animations**: Entrance animations, scroll-triggered reveals
 
-### Other Features
-- **Dark Mode Toggle**: Switch between light and dark themes (persisted in localStorage)
-- **Smooth Scrolling**: Navigation links smoothly scroll to corresponding sections
-- **Responsive Design**: Mobile-friendly with hamburger menu
-- **CV Modal**: View and download resume with certificate links
-- **Contact Form**: Functional contact section with social media links
+## Deployment
 
-## How to update certificates (step-by-step)
+### Backend (Render)
 
-1. Add or replace certificate PDF files in the `public/` folder. Example filenames in this repo:
-   - `learner_transcript.pdf`
-   - `Networking_Academy_Learn-A-Thon_2026_certificate_desalegnkasayemuluyekasaye-gmail-com_d61d7bd1-93a4-418b-af56-08b473aa9b6d.pdf`
+1. Push to GitHub
+2. In Render dashboard → **New Web Service** → connect repo
+3. Settings:
+   - **Root Directory**: `backend`
+   - **Build Command**: `npm install`
+   - **Start Command**: `node server.js`
+4. Add environment variables (`MONGO_URI`, `JWT_SECRET`, etc.)
+5. Deploy
 
-2. Open `src/components/CVModal.jsx` and update the `certificates` array to add/remove entries. Each item should contain:
+### Frontend (Vercel)
 
-```js
-{ name: 'Certificate Title', issuer: 'Issuer Name', file: '/filename.pdf' }
-```
+1. Push to GitHub
+2. In Vercel dashboard → **Add New Project** → connect repo
+3. Settings:
+   - **Root Directory**: `frontend`
+   - **Framework Preset**: Vite
+4. Add environment variable `VITE_API_URL` pointing to your Render backend URL
+5. Deploy
 
-3. Save the file and the dev server will hot-reload. Verify the certificate link opens the PDF in a new tab.
+## Security
 
-## How to update projects (step-by-step)
+- Passwords hashed with bcryptjs (12 salt rounds)
+- TOTP-based two-factor authentication via speakeasy + Google Authenticator
+- JWT tokens for session management (configurable expiry)
+- JWT auth middleware protects the analytics metrics endpoint
+- Admin password and 2FA secret are never exposed in API responses
 
-1. Edit `src/components/Projects.jsx` and locate the `projectsData` array.
-2. To change a project's live URL, update the `liveUrl` value for that project object.
-3. To change the repo link, update `repoUrl`.
-4. Save and verify the links in the Projects section.
+## Scripts
 
-Notes: ensure `liveUrl` values are valid URLs. The components expect each project item to include `title`, `description`, `tags`, `icon`, `color`, `liveUrl`, and `repoUrl`.
+### Backend
 
-## Deploying
+- `npm run dev` — Start with nodemon (auto-restart)
+- `npm start` — Start for production
 
-- Vercel: Connect the GitHub repo to Vercel and deploy. Vercel will run the Vite build automatically.
-- GitHub Pages: Build (`npm run build`) then deploy the `dist/` contents to GitHub Pages using a static hosting action or gh-pages.
+### Frontend
 
-## Environment & secrets
-
-This project uses no server-side secrets by default. If you add environment variables for builds, place them in a `.env` file (do not commit secrets to the repo).
-
-## Troubleshooting
-
-- If you see a JSX syntax error in `src/components/Projects.jsx`, open that file and remove any stray JavaScript expressions inside JSX elements (for example an accidental `liveUrl: '...'` inside an `<a>` tag). See commit history for a recent fix.
-- If assets from `public/` do not load, ensure filenames match exactly and do not contain leading spaces.
-
-## Maintenance notes
-
-- Keep certificate filenames short and consistent for easier linking (recommended: `issuer-name_title_year.pdf`). If you rename files in `public/`, update `CVModal.jsx` accordingly.
-- Use commits with descriptive messages when updating certificates or projects.
-
-
-File: [README.md](README.md)
+- `npm run dev` — Vite dev server
+- `npm run build` — Production build
+- `npm run preview` — Preview production build
