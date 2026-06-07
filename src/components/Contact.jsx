@@ -234,7 +234,7 @@ export default function Contact() {
                         name="from_name"
                         type="text"
                         required
-                        placeholder="e.g. Alex Johnson"
+                        placeholder="e.g. Desalegn Kasaye"
                         className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
                         aria-describedby={result ? "form-message" : undefined}
                       />
@@ -251,7 +251,7 @@ export default function Contact() {
                         name="reply_to"
                         type="email"
                         required
-                        placeholder="e.g. alex@example.com"
+                        placeholder="e.g. desiye@example.com"
                         className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
                       />
                     </div>
@@ -268,7 +268,7 @@ export default function Contact() {
                       id="message"
                       name="message"
                       required
-                      placeholder="Tell me about your project or vision..."
+                      placeholder="Tell me about your project idea or vision..."
                       rows="5"
                       className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base resize-none shadow-sm"
                     />
