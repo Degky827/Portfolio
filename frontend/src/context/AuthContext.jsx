@@ -1,23 +1,24 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react'
-import api from '../services/api'
 
 const AuthContext = createContext(null)
 
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem('user')
-    return saved ? JSON.parse(saved) : null
+    try {
+      const saved = localStorage.getItem('user')
+      return saved ? JSON.parse(saved) : null
+    } catch {
+      return null
+    }
   })
 
   const [token, setToken] = useState(() => localStorage.getItem('token'))
 
-  const login = useCallback(async (email, password) => {
-    const { data } = await api.post('/auth/login', { email, password })
-    localStorage.setItem('token', data.token)
-    localStorage.setItem('user', JSON.stringify(data.user))
-    setToken(data.token)
-    setUser(data.user)
-    return data
+  const setAuth = useCallback((newToken, newUser) => {
+    localStorage.setItem('token', newToken)
+    localStorage.setItem('user', JSON.stringify(newUser))
+    setToken(newToken)
+    setUser(newUser)
   }, [])
 
   const logout = useCallback(() => {
@@ -30,8 +31,8 @@ export function AuthProvider({ children }) {
   const isAuthenticated = useMemo(() => !!token, [token])
 
   const value = useMemo(
-    () => ({ user, token, isAuthenticated, login, logout }),
-    [user, token, isAuthenticated, login, logout],
+    () => ({ user, token, isAuthenticated, setAuth, logout }),
+    [user, token, isAuthenticated, setAuth, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

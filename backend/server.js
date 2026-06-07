@@ -3,6 +3,7 @@ const cors = require('cors')
 const config = require('./config/index')
 const connectDB = require('./config/db')
 const analyticsRoutes = require('./routes/analytics')
+const authRoutes = require('./routes/auth')
 
 const app = express()
 
@@ -35,6 +36,7 @@ app.get('/api/health', (_req, res) => {
   })
 })
 app.use('/api/analytics', analyticsRoutes)
+app.use('/api/auth', authRoutes)
 
 // ---------------------------------------------------------------------------
 // 404 fallback
