@@ -2,6 +2,7 @@ import { useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
+import { logPortfolioVisit } from '../../services/api'
 
 const GithubIcon = ({ size = 24, className = '' }) => (
   <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -36,14 +37,15 @@ export default function Contact() {
     const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
     const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
+    const formData = new FormData(form.current)
+    const name = formData.get('from_name') || ''
+
     // Check if EmailJS is configured
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      // Fallback: open mailto link with form data
-      const formData = new FormData(form.current)
-      const name = formData.get('from_name') || ''
       const email = formData.get('reply_to') || ''
       const message = formData.get('message') || ''
       const mailtoLink = `mailto:desalegnky827@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      logPortfolioVisit(name)
       window.location.href = mailtoLink
       setResult('Opening your email client...')
       setResultType('success')
@@ -53,17 +55,16 @@ export default function Contact() {
 
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
+      logPortfolioVisit(name)
       setResult('Message sent successfully! I will get back to you soon.')
       setResultType('success')
       e.target.reset()
     } catch (error) {
       console.error('EmailJS error:', error)
-      // Fallback to mailto on EmailJS failure
-      const formData = new FormData(form.current)
-      const name = formData.get('from_name') || ''
       const email = formData.get('reply_to') || ''
       const message = formData.get('message') || ''
       const mailtoLink = `mailto:desalegnky827@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      logPortfolioVisit(name)
       window.location.href = mailtoLink
       setResult('EmailJS failed. Opening your email client instead...')
       setResultType('error')

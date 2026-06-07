@@ -45,6 +45,18 @@ export default function Footer() {
     }
   ]
 
+  const scrollToSection = (e, targetId) => {
+    e.preventDefault()
+    if (targetId === 'home') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    } else {
+      const target = document.getElementById(targetId)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
+    }
+  }
+
   const scrollToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -106,7 +118,11 @@ export default function Footer() {
             <ul className="space-y-3 sm:space-y-4 md:space-y-6">
               {['Home', 'About', 'Skills', 'Projects', 'Contact'].map((item) => (
                 <li key={item}>
-                  <a href={`#${item.toLowerCase()}`} className="text-sm sm:text-base md:text-lg text-gray-400 hover:text-white transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold">
+                  <a
+                    href={`#${item.toLowerCase()}`}
+                    onClick={(e) => scrollToSection(e, item.toLowerCase())}
+                    className="text-sm sm:text-base md:text-lg text-gray-400 hover:text-white transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold"
+                  >
                     <span className="w-0 sm:w-0 group-hover:w-3 h-0.5 sm:h-1 bg-primary rounded-full transition-all duration-300"></span>
                     {item}
                   </a>

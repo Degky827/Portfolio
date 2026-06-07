@@ -2,8 +2,13 @@ const mongoose = require('mongoose')
 const config = require('./index')
 
 async function connectDB() {
+  const opts = {
+    serverSelectionTimeoutMS: 5000,
+    socketTimeoutMS: 45000,
+  }
+
   try {
-    const conn = await mongoose.connect(config.mongoUri)
+    const conn = await mongoose.connect(config.mongoUri, opts)
     console.log(`MongoDB connected: ${conn.connection.host}`)
   } catch (error) {
     console.error(`MongoDB connection error: ${error.message}`)

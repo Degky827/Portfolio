@@ -38,3 +38,11 @@ export const endpoints = {
   analytics: '/analytics',
   auth: '/auth',
 }
+
+export async function logPortfolioVisit(viewerName = 'Anonymous') {
+  try {
+    await api.post('/analytics/log-visit', { viewerName })
+  } catch (error) {
+    console.warn('[tracking] Failed to log visit:', error.message)
+  }
+}
