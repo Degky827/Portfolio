@@ -1,8 +1,8 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play } from 'lucide-react'
 import { useState, useMemo } from 'react'
-import projectsData from '../data/projects.json'
-import mobileAppsData from '../data/mobileApps.json'
+import projectsData from '../../data/projects.json'
+import mobileAppsData from '../../data/mobileApps.json'
 
 const iconMap = {
   Globe,
