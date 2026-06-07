@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import { Routes, Route, useLocation } from 'react-router-dom'
+import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './hooks'
 import ErrorBoundary from './components/common/ErrorBoundary'
 import ScrollProgressBar from './components/common/ScrollProgressBar'
@@ -7,7 +7,8 @@ import ThemeToggle from './components/common/ThemeToggle'
 import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import Home from './pages/Home'
-import AdminDashboard from './pages/AdminDashboard'
+import Login from './pages/Login'
+import Admin from './pages/Admin'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -19,29 +20,36 @@ function ScrollToTop() {
   return null
 }
 
-function App() {
+function PublicLayout() {
   const [darkMode, setDarkMode] = useDarkMode()
 
+  return (
+    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
+      <ScrollProgressBar />
+      <ThemeToggle darkMode={darkMode} onToggle={() => setDarkMode((prev) => !prev)} />
+      <Navbar />
+      <main>
+        <Outlet />
+      </main>
+      <Footer />
+    </div>
+  )
+}
+
+function App() {
   usePageTracking()
 
   return (
-    <>
+    <ErrorBoundary>
       <ScrollToTop />
-      <ErrorBoundary>
-        <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
-          <ScrollProgressBar />
-          <ThemeToggle darkMode={darkMode} onToggle={() => setDarkMode((prev) => !prev)} />
-          <Navbar />
-          <main>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/admin" element={<AdminDashboard />} />
-            </Routes>
-          </main>
-          <Footer />
-        </div>
-      </ErrorBoundary>
-    </>
+      <Routes>
+        <Route element={<PublicLayout />}>
+          <Route path="/" element={<Home />} />
+        </Route>
+        <Route path="/login" element={<Login />} />
+        <Route path="/admin" element={<Admin />} />
+      </Routes>
+    </ErrorBoundary>
   )
 }
 
