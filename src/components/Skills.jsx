@@ -98,10 +98,10 @@ const cardsData = [
   },
 ]
 
-function SkillIcon({ skill, className }) {
+function SkillIcon({ skill, className, style }) {
   const Icon = skillIconMap[skill]
   if (!Icon) return null
-  return <Icon className={className} />
+  return <Icon className={className} style={style} />
 }
 
 export default function Skills() {
@@ -171,53 +171,51 @@ export default function Skills() {
               const IconComponent = card.headerIcon
               const color = card.theme.primary
               return (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 border border-transparent hover:border-gray-200 dark:border-transparent dark:hover:border-slate-700 transition-all duration-300 group"
-                >
-                  {/* Card Content */}
-                  <div className="p-5 sm:p-6 flex flex-col flex-1">
-                    {/* Header */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
-                        style={{ color, backgroundColor: `${color}14` }}
-                      >
-                        <IconComponent size={20} />
-                      </div>
-                      <h3
-                        className="text-sm sm:text-base font-bold tracking-wide"
-                        style={{ color }}
-                      >
-                        {card.category}
-                      </h3>
-                    </div>
-
-                    {/* Skills */}
-                    <div className="space-y-2.5 flex-1">
-                      {card.skills.map((skill, i) => (
+                  <motion.div
+                    key={index}
+                    variants={itemVariants}
+                    className="bg-white dark:bg-black text-black dark:text-white rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 border border-transparent hover:border-gray-200 dark:border-transparent dark:hover:border-slate-700 transition-all duration-300 group"
+                  >
+                    {/* Card Content */}
+                    <div className="p-5 sm:p-6 flex flex-col flex-1">
+                      {/* Header */}
+                      <div className="flex items-center gap-3 mb-4">
                         <div
-                          key={i}
-                          className="flex items-center gap-2.5 group/skill"
+                          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
+                          style={{ color, backgroundColor: `${color}14` }}
                         >
-                          <SkillIcon
-                            skill={skill}
-                            className="w-[18px] h-[18px] flex-shrink-0 transition-transform duration-200 group-hover/skill:scale-110"
-                            style={{ color }}
-                          />
-                          <span
-                            className="text-sm font-medium leading-tight transition-colors duration-200 group-hover/skill:text-gray-900 dark:group-hover/skill:text-gray-200"
-                            style={{ color: '#222222' }}
-                          >
-                            {skill}
-                          </span>
+                          <IconComponent size={20} />
                         </div>
-                      ))}
-                    </div>
+                        <h3
+                          className="text-sm sm:text-base font-bold tracking-wide opacity-30 group-hover:opacity-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-300"
+                        >
+                          {card.category}
+                        </h3>
+                      </div>
+
+                      {/* Skills */}
+                      <div className="space-y-2.5 flex-1">
+                        {card.skills.map((skill, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center gap-2.5 group/skill"
+                          >
+                            <SkillIcon
+                              skill={skill}
+                              className="w-[18px] h-[18px] flex-shrink-0 transition-transform duration-200 group-hover/skill:scale-110 dark:opacity-100"
+                              style={{ color }}
+                            />
+                            <span
+                              className="text-sm font-medium leading-tight transition-colors duration-200 group-hover/skill:text-gray-900 dark:group-hover/skill:text-gray-200"
+                            >
+                              {skill}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
 
                     {/* Status Dot */}
-                    <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                       <div
                         className="w-2 h-2 rounded-full"
                         style={{ backgroundColor: color }}
@@ -239,53 +237,51 @@ export default function Skills() {
               const IconComponent = card.headerIcon
               const color = card.theme.primary
               return (
-                <motion.div
-                  key={index + 4}
-                  variants={itemVariants}
-                  className="bg-white rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 border border-transparent hover:border-gray-200 dark:border-transparent dark:hover:border-slate-700 transition-all duration-300 group"
-                >
-                  {/* Card Content */}
-                  <div className="p-5 sm:p-6 flex flex-col flex-1">
-                    {/* Header */}
-                    <div className="flex items-center gap-3 mb-4">
-                      <div
-                        className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
-                        style={{ color, backgroundColor: `${color}14` }}
-                      >
-                        <IconComponent size={20} />
-                      </div>
-                      <h3
-                        className="text-sm sm:text-base font-bold tracking-wide"
-                        style={{ color }}
-                      >
-                        {card.category}
-                      </h3>
-                    </div>
-
-                    {/* Skills */}
-                    <div className="space-y-2.5 flex-1">
-                      {card.skills.map((skill, i) => (
+                  <motion.div
+                    key={index + 4}
+                    variants={itemVariants}
+                    className="bg-white dark:bg-black text-black dark:text-white rounded-2xl shadow-sm overflow-hidden flex flex-col hover:shadow-xl hover:-translate-y-1 border border-transparent hover:border-gray-200 dark:border-transparent dark:hover:border-slate-700 transition-all duration-300 group"
+                  >
+                    {/* Card Content */}
+                    <div className="p-5 sm:p-6 flex flex-col flex-1">
+                      {/* Header */}
+                      <div className="flex items-center gap-3 mb-4">
                         <div
-                          key={i}
-                          className="flex items-center gap-2.5 group/skill"
+                          className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-all duration-300 group-hover:scale-110 group-hover:shadow-lg"
+                          style={{ color, backgroundColor: `${color}14` }}
                         >
-                          <SkillIcon
-                            skill={skill}
-                            className="w-[18px] h-[18px] flex-shrink-0 transition-transform duration-200 group-hover/skill:scale-110"
-                            style={{ color }}
-                          />
-                          <span
-                            className="text-sm font-medium leading-tight transition-colors duration-200 group-hover/skill:text-gray-900 dark:group-hover/skill:text-gray-200"
-                            style={{ color: '#222222' }}
-                          >
-                            {skill}
-                          </span>
+                          <IconComponent size={20} />
                         </div>
-                      ))}
-                    </div>
+                        <h3
+                          className="text-sm sm:text-base font-bold tracking-wide opacity-30 group-hover:opacity-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-all duration-300"
+                        >
+                          {card.category}
+                        </h3>
+                      </div>
+
+                      {/* Skills */}
+                      <div className="space-y-2.5 flex-1">
+                        {card.skills.map((skill, i) => (
+                          <div
+                            key={i}
+                            className="flex items-center gap-2.5 group/skill"
+                          >
+                            <SkillIcon
+                              skill={skill}
+                              className="w-[18px] h-[18px] flex-shrink-0 transition-transform duration-200 group-hover/skill:scale-110 dark:opacity-100"
+                              style={{ color }}
+                            />
+                            <span
+                              className="text-sm font-medium leading-tight transition-colors duration-200 group-hover/skill:text-gray-900 dark:group-hover/skill:text-gray-200"
+                            >
+                              {skill}
+                            </span>
+                          </div>
+                        ))}
+                      </div>
 
                     {/* Status Dot */}
-                    <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100">
+                    <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-gray-100 dark:border-gray-800">
                       <div
                         className="w-2 h-2 rounded-full"
                         style={{ backgroundColor: color }}
