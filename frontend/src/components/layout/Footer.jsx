@@ -1,5 +1,7 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUp, Mail } from 'lucide-react'
+import { getFooterContent } from '../../services/footerService'
 
 const GithubIcon = ({ size = 24 }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
@@ -21,29 +23,47 @@ const TelegramIcon = ({ size = 24 }) => (
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
-  
-  const socialLinks = [
-    { 
-      href: 'mailto:desalegnky827@gmail.com', 
-      title: 'Email', 
-      icon: <Mail size={20} />
-    },
-    { 
-      href: 'https://linkedin.com/in/dk-cs-3rd', 
-      title: 'LinkedIn', 
-      icon: <LinkedinIcon size={20} />
-    },
-    { 
-      href: 'https://github.com/desalegnkasayemuluyekasaye-tech', 
-      title: 'GitHub', 
-      icon: <GithubIcon size={20} />
-    },
-    { 
-      href: 'https://t.me/Ds35kg', 
-      title: 'Telegram', 
-      icon: <TelegramIcon size={20} />
-    }
-  ]
+  const [content, setContent] = useState(null)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { content } = await getFooterContent()
+        setContent(content)
+      } catch {
+        // fall back to hardcoded
+      }
+    })()
+  }, [])
+
+  const socialLinks = content?.socialLinks?.length > 0
+    ? content.socialLinks.map((s) => {
+        const iconMap = {
+          Email: <Mail size={20} />,
+          LinkedIn: <LinkedinIcon size={20} />,
+          Github: <GithubIcon size={20} />,
+          GitHub: <GithubIcon size={20} />,
+          Telegram: <TelegramIcon size={20} />,
+        }
+        return {
+          href: s.url,
+          title: s.platform,
+          icon: iconMap[s.platform] || <Mail size={20} />,
+        }
+      })
+    : [
+        { href: 'mailto:desalegnky827@gmail.com', title: 'Email', icon: <Mail size={20} /> },
+        { href: 'https://linkedin.com/in/dk-cs-3rd', title: 'LinkedIn', icon: <LinkedinIcon size={20} /> },
+        { href: 'https://github.com/desalegnkasayemuluyekasaye-tech', title: 'GitHub', icon: <GithubIcon size={20} /> },
+        { href: 'https://t.me/Ds35kg', title: 'Telegram', icon: <TelegramIcon size={20} /> },
+      ]
+
+  const quickLinkItems = content?.quickLinks?.length > 0
+    ? content.quickLinks
+    : ['Home', 'About', 'Skills', 'Projects', 'Contact'].map((item) => ({ label: item, url: `#${item.toLowerCase()}` }))
+
+  const contactEmail = '' // would need contact endpoint too, keep hardcoded
+  const footerDesc = content?.footerDescription || 'Building robust digital experiences through modern web development and secure network infrastructure.'
 
   const scrollToSection = (e, targetId) => {
     e.preventDefault()
@@ -87,7 +107,7 @@ export default function Footer() {
               <span className="tracking-tight uppercase">Desalegn</span>
             </div>
             <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-sm mb-6 sm:mb-8 md:mb-10 leading-relaxed">
-              Building robust digital experiences through modern web development and secure network infrastructure.
+              {footerDesc}
             </p>
             <div className="flex gap-3 sm:gap-4 md:gap-5">
               {socialLinks.map((link, index) => (
@@ -116,15 +136,24 @@ export default function Footer() {
           >
             <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40 mb-6 sm:mb-8 md:mb-10">Explore</h4>
             <ul className="space-y-3 sm:space-y-4 md:space-y-6">
-              {['Home', 'About', 'Skills', 'Projects', 'Contact'].map((item) => (
-                <li key={item}>
+              {quickLinkItems.map((item, idx) => (
+                <li key={idx}>
                   <a
-                    href={`#${item.toLowerCase()}`}
-                    onClick={(e) => scrollToSection(e, item.toLowerCase())}
+                    href={item.url}
+                    onClick={(e) => {
+                      e.preventDefault()
+                      const targetId = item.url.replace('#', '')
+                      if (targetId === 'home') {
+                        window.scrollTo({ top: 0, behavior: 'smooth' })
+                      } else {
+                        const target = document.getElementById(targetId)
+                        if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                      }
+                    }}
                     className="text-sm sm:text-base md:text-lg text-gray-400 hover:text-white transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold"
                   >
                     <span className="w-0 sm:w-0 group-hover:w-3 h-0.5 sm:h-1 bg-primary rounded-full transition-all duration-300"></span>
-                    {item}
+                    {item.label}
                   </a>
                 </li>
               ))}
@@ -172,7 +201,7 @@ export default function Footer() {
           viewport={{ once: true }}
           className="pt-6 sm:pt-10 md:pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 md:gap-8 text-gray-500 text-xs sm:text-sm font-medium sm:font-bold uppercase tracking-wider"
         >
-          <p>© {currentYear} Desalegn. Built with passion and precision.</p>
+          <p>{content?.copyrightText || `© ${currentYear} Desalegn. Built with passion and precision.`}</p>
           <div className="flex items-center gap-2 sm:gap-3">
             <span>Made with</span>
             <motion.span 
