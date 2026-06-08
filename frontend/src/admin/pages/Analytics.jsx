@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { motion } from 'framer-motion'
 import { RefreshCw } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
@@ -108,7 +109,11 @@ export default function Analytics() {
   ]
 
   return (
-    <div>
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+    >
       <PageHeader
         title="Analytics"
         subtitle={`${totalCount.toLocaleString()} total visits recorded`}
@@ -140,6 +145,6 @@ export default function Analytics() {
         pageSize={10}
         loading={loading}
       />
-    </div>
+    </motion.div>
   )
 }
