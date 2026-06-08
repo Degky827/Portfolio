@@ -1,26 +1,47 @@
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Code, Award, Users, TrendingUp, Download, FileText } from 'lucide-react'
-
-const aboutSections = [
-  {
-    title: 'Education & Background',
-    content: "I hold a Bachelor's degree in Computer Science , providing a deep foundation in both software systems and digital protection."
-  },
-  {
-    title: 'Professional Focus',
-    content: "I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security."
-  },
-  {
-    title: 'Expertise Areas',
-    content: "From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions."
-  },
-  {
-    title: 'Mission & Approach',
-    content: "My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional."
-  }
-]
+import { getAboutContent } from '../../services/aboutService'
 
 export default function About() {
+  const [content, setContent] = useState(null)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { content } = await getAboutContent()
+        setContent(content)
+      } catch {
+        // fall back to hardcoded content
+      }
+    })()
+  }, [])
+
+  const aboutSections = content
+    ? [
+        { title: 'Education & Background', content: content.education?.length
+            ? content.education.map((e) => `${e.degree} — ${e.institution} (${e.year})`).join(', ')
+            : content.description || "I hold a Bachelor's degree in Computer Science, providing a deep foundation in both software systems and digital protection." },
+        { title: 'Professional Focus', content: content.description || "I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security." },
+        { title: 'Expertise Areas', content: content.experience?.length
+            ? content.experience.map((e) => `${e.role} at ${e.company}`).join(', ')
+            : "From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions." },
+        { title: 'Mission & Approach', content: "My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional." },
+      ]
+    : [
+        { title: 'Education & Background', content: "I hold a Bachelor's degree in Computer Science, providing a deep foundation in both software systems and digital protection." },
+        { title: 'Professional Focus', content: "I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security." },
+        { title: 'Expertise Areas', content: "From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions." },
+        { title: 'Mission & Approach', content: "My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional." },
+      ]
+
+  const subtitleText = content?.subtitle || 'A passionate developer and network designer dedicated to building secure and scalable digital experiences.'
+  const locationText = content?.location || 'Bahirdar'
+  const yearsExp = content?.yearsOfExperience || 5
+  const achievementsList = content?.achievements || []
+  const statClients = achievementsList.length > 0 ? achievementsList[0]?.title || '50+ Clients' : '50+ Clients'
+  const statNetwork = achievementsList.length > 1 ? achievementsList[1]?.title || 'Network Designer' : 'Network Designer'
+
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
@@ -62,10 +83,10 @@ export default function About() {
             About Me
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
-            Get to Know Me
+            {content?.title || 'Get to Know Me'}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
-            A passionate developer and network designer dedicated to building secure and scalable digital experiences.
+            {subtitleText}
           </p>
         </motion.div>
 
@@ -128,7 +149,7 @@ export default function About() {
                       <span className="text-purple-400">const</span> <span className="text-blue-400">developer</span> = {'{'}<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">name:</span> <span className="text-green-400">"Desalegn"</span>,<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">role:</span> <span className="text-green-400">"Full-Stack Dev"</span>,<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">location:</span> <span className="text-green-400">"Bahirdar"</span>,<br/>
+                      &nbsp;&nbsp;<span className="text-slate-400">location:</span> <span className="text-green-400">"{locationText}"</span>,<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">skills:</span> [<span className="text-green-400">"React"</span>, <span className="text-green-400">"Node"</span>],<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">available:</span> <span className="text-orange-400">true</span><br/>
                       {'}'};
@@ -140,22 +161,22 @@ export default function About() {
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6 border-t border-slate-700/50 bg-slate-800/30">
                   <div className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
                     <Award className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-yellow-400" />
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">Network Designer</span>
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">{statNetwork}</span>
                   </div>
                   <div className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
                     <Users className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-blue-400" />
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">50+ Clients</span>
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">{statClients}</span>
                   </div>
                   <div className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
                     <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-green-400" />
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">5+ Years</span>
+                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">{yearsExp}+ Years</span>
                   </div>
                 </div>
               </div>
             </motion.div>
           </div>
 
-          {/* Certificates List */}
+          {/* Certificates / Achievements List */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -164,10 +185,25 @@ export default function About() {
           >
             <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
               I hold certificates in{' '}
-              <span className="font-bold text-gray-900 dark:text-white">Ethio Coders</span>,{' '}
-              <span className="font-bold text-gray-900 dark:text-white">e-SHE Online Learning</span>,{' '}
-              <span className="font-bold text-gray-900 dark:text-white">Networking Designing</span>,{' '}
-              <span className="font-bold text-gray-900 dark:text-white">Hackathon Computation in 24h</span>.
+              {content?.achievements?.length > 0
+                ? content.achievements.map((a, i) => (
+                    <span key={i}>
+                      {i > 0 && <span>, </span>}
+                      <span className="font-bold text-gray-900 dark:text-white">{a.title}</span>
+                    </span>
+                  ))
+                : [
+                    { title: 'Ethio Coders' },
+                    { title: 'e-SHE Online Learning' },
+                    { title: 'Networking Designing' },
+                    { title: 'Hackathon Computation in 24h' },
+                  ].map((a, i) => (
+                    <span key={i}>
+                      {i > 0 && <span>, </span>}
+                      <span className="font-bold text-gray-900 dark:text-white">{a.title}</span>
+                    </span>
+                  ))
+              }.
             </p>
           </motion.div>
         </div>
