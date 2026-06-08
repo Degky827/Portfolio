@@ -8,7 +8,7 @@ import Navbar from './components/layout/Navbar'
 import Footer from './components/layout/Footer'
 import Home from './pages/Home'
 import Login from './pages/Login'
-import Admin from './pages/Admin'
+import AdminRoutes from './admin/routes/AdminRoutes'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -47,7 +47,7 @@ function App() {
           <Route path="/" element={<Home />} />
         </Route>
         <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<Admin />} />
+        <Route path="/admin/*" element={<AdminRoutes />} />
       </Routes>
     </ErrorBoundary>
   )

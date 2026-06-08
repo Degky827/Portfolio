@@ -1,17 +1,11 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play } from 'lucide-react'
-import { useState, useMemo } from 'react'
-import projectsData from '../../data/projects.json'
+import { useState, useMemo, useEffect } from 'react'
+import api from '../../services/api'
 import mobileAppsData from '../../data/mobileApps.json'
 
-const iconMap = {
-  Globe,
-  Rocket,
-  Wifi,
-  Layers,
-  Monitor,
-  Code
-}
+const iconOptions = [Globe, Rocket, Wifi, Layers, Monitor, Code]
+const colorOptions = ['#ef4444', '#f97316', '#10b981', '#f59e0b', '#6366f1', '#8b5cf6', '#3b82f6', '#ec4899']
 
 const mobileIconMap = {
   Smartphone,
@@ -32,16 +26,41 @@ export default function Projects() {
   const shouldReduceMotion = useReducedMotion()
   const [activeTab, setActiveTab] = useState('web')
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeTag, setActiveTag] = useState('All')
+  const [projectsData, setProjectsData] = useState([])
+  const [loadingProjects, setLoadingProjects] = useState(true)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { data } = await api.get('/projects?public=true&limit=50')
+        setProjectsData(data.projects || [])
+      } catch {
+        setProjectsData([])
+      } finally {
+        setLoadingProjects(false)
+      }
+    })()
+  }, [])
+
+  const mapProject = (project, index) => ({
+    title: project.title,
+    description: project.shortDescription,
+    tags: project.technologies || [],
+    icon: iconOptions[index % iconOptions.length],
+    color: colorOptions[index % colorOptions.length],
+    liveUrl: project.liveDemoUrl || '#',
+    repoUrl: project.githubUrl || '#',
+  })
+
   const filteredProjects = useMemo(() => {
-    return projectsData.filter(project => {
+    return projectsData.map(mapProject).filter(project => {
       if (!searchTerm) return true
       const term = searchTerm.toLowerCase()
       return project.title.toLowerCase().includes(term) ||
         project.description.toLowerCase().includes(term) ||
         project.tags.some(tag => tag.toLowerCase().includes(term))
     })
-  }, [searchTerm])
+  }, [projectsData, searchTerm])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -66,8 +85,7 @@ export default function Projects() {
     },
   }
 
-  const renderIcon = (iconName, color) => {
-    const IconComponent = iconMap[iconName] || Globe
+  const renderIcon = (IconComponent, _color) => {
     return <IconComponent size={32} />
   }
 

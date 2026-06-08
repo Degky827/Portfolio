@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useAuth } from '../context/AuthContext'
@@ -14,10 +14,11 @@ export default function Login() {
   const { setAuth, isAuthenticated } = useAuth()
   const navigate = useNavigate()
 
-  if (isAuthenticated) {
-    navigate('/admin', { replace: true })
-    return null
-  }
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/admin', { replace: true })
+    }
+  }, [isAuthenticated, navigate])
 
   const handleCredentialsSubmit = async (e) => {
     e.preventDefault()

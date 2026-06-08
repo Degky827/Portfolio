@@ -4,6 +4,7 @@ const config = require('./config/index')
 const connectDB = require('./config/db')
 const analyticsRoutes = require('./routes/analytics')
 const authRoutes = require('./routes/auth')
+const projectRoutes = require('./routes/projects')
 
 const app = express()
 
@@ -37,6 +38,10 @@ app.get('/api/health', (_req, res) => {
 })
 app.use('/api/analytics', analyticsRoutes)
 app.use('/api/auth', authRoutes)
+app.use('/api/projects', projectRoutes)
+
+// Serve uploaded files
+app.use('/uploads', express.static('uploads'))
 
 // ---------------------------------------------------------------------------
 // 404 fallback
