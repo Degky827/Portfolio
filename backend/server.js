@@ -5,6 +5,12 @@ const connectDB = require('./config/db')
 const analyticsRoutes = require('./routes/analytics')
 const authRoutes = require('./routes/auth')
 const projectRoutes = require('./routes/projects')
+const certificateRoutes = require('./routes/certificates')
+const skillRoutes = require('./routes/skills')
+const homeContentRoutes = require('./routes/homeContent')
+const aboutRoutes = require('./routes/about')
+const contactRoutes = require('./routes/contact')
+const footerRoutes = require('./routes/footer')
 
 const app = express()
 
@@ -39,6 +45,12 @@ app.get('/api/health', (_req, res) => {
 app.use('/api/analytics', analyticsRoutes)
 app.use('/api/auth', authRoutes)
 app.use('/api/projects', projectRoutes)
+app.use('/api/certificates', certificateRoutes)
+app.use('/api/skills', skillRoutes)
+app.use('/api/home-content', homeContentRoutes)
+app.use('/api/about', aboutRoutes)
+app.use('/api/contact', contactRoutes)
+app.use('/api/footer', footerRoutes)
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'))

@@ -6,15 +6,17 @@ import Dashboard from '../pages/Dashboard'
 import Analytics from '../pages/Analytics'
 import Projects from '../pages/Projects'
 import ProjectForm from '../pages/ProjectForm'
+import Certificates from '../pages/Certificates'
+import CertificateForm from '../pages/CertificateForm'
+import Skills from '../pages/Skills'
+import SkillForm from '../pages/SkillForm'
+import HomeContent from '../pages/HomeContent'
+import AboutContent from '../pages/AboutContent'
+import ContactContent from '../pages/ContactContent'
+import FooterContent from '../pages/FooterContent'
 import PlaceholderPage from '../pages/PlaceholderPage'
 
 const placeholderPages = [
-  { path: 'certificates', title: 'Certificates', description: 'Manage your certificates and credentials' },
-  { path: 'skills', title: 'Skills', description: 'Manage your skills and technologies' },
-  { path: 'home', title: 'Home', description: 'Edit your homepage content' },
-  { path: 'about', title: 'About', description: 'Edit your about section' },
-  { path: 'contact', title: 'Contact', description: 'Manage contact form and information' },
-  { path: 'footer', title: 'Footer', description: 'Edit your footer content' },
   { path: 'settings', title: 'Settings', description: 'Configure your portfolio settings' },
 ]
 
@@ -51,6 +53,16 @@ export default function AdminRoutes() {
         <Route path="projects" element={<Projects />} />
         <Route path="projects/new" element={<ProjectForm />} />
         <Route path="projects/:id" element={<ProjectForm />} />
+        <Route path="certificates" element={<Certificates />} />
+        <Route path="certificates/new" element={<CertificateForm />} />
+        <Route path="certificates/:id" element={<CertificateForm />} />
+        <Route path="skills" element={<Skills />} />
+        <Route path="skills/new" element={<SkillForm />} />
+        <Route path="skills/:id" element={<SkillForm />} />
+        <Route path="home" element={<HomeContent />} />
+        <Route path="about" element={<AboutContent />} />
+        <Route path="contact" element={<ContactContent />} />
+        <Route path="footer" element={<FooterContent />} />
         {placeholderPages.map(renderPlaceholder)}
       </Route>
     </Routes>

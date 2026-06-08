@@ -1,8 +1,9 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 import { logPortfolioVisit } from '../../services/api'
+import { getContactContent } from '../../services/contactService'
 
 const GithubIcon = ({ size = 24, className = '' }) => (
   <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -27,6 +28,18 @@ export default function Contact() {
   const [result, setResult] = useState('')
   const [resultType, setResultType] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [content, setContent] = useState(null)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { content } = await getContactContent()
+        setContent(content)
+      } catch {
+        // fall back to hardcoded
+      }
+    })()
+  }, [])
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -40,11 +53,12 @@ export default function Contact() {
     const formData = new FormData(form.current)
     const name = formData.get('from_name') || ''
 
-    // Check if EmailJS is configured
+    const emailTo = content?.email || 'desalegnky827@gmail.com'
+
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
       const email = formData.get('reply_to') || ''
       const message = formData.get('message') || ''
-      const mailtoLink = `mailto:desalegnky827@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
       logPortfolioVisit(name)
       window.location.href = mailtoLink
       setResult('Opening your email client...')
@@ -63,7 +77,7 @@ export default function Contact() {
       console.error('EmailJS error:', error)
       const email = formData.get('reply_to') || ''
       const message = formData.get('message') || ''
-      const mailtoLink = `mailto:desalegnky827@gmail.com?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
       logPortfolioVisit(name)
       window.location.href = mailtoLink
       setResult('EmailJS failed. Opening your email client instead...')
@@ -74,9 +88,15 @@ export default function Contact() {
   }
 
   const contactInfo = [
-    { icon: <Mail size={20} aria-hidden="true" />, label: 'Email', value: 'desalegnky827@gmail.com', href: 'mailto:desalegnky827@gmail.com', color: '#3b82f6' },
-    { icon: <Phone size={20} aria-hidden="true" />, label: 'Phone', value: '+251 908720092', href: 'tel:+251908720092', color: '#22c55e' },
-    { icon: <MapPin size={20} aria-hidden="true" />, label: 'Location', value: 'Bahirdar, Ethiopia', href: null, color: '#f59e0b' }
+    { icon: <Mail size={20} aria-hidden="true" />, label: 'Email', value: content?.email || 'desalegnky827@gmail.com', href: `mailto:${content?.email || 'desalegnky827@gmail.com'}`, color: '#3b82f6' },
+    { icon: <Phone size={20} aria-hidden="true" />, label: 'Phone', value: content?.phone || '+251 908720092', href: `tel:${content?.phone || '+251908720092'}`, color: '#22c55e' },
+    { icon: <MapPin size={20} aria-hidden="true" />, label: 'Location', value: content?.address || 'Bahirdar, Ethiopia', href: content?.mapLink || null, color: '#f59e0b' }
+  ]
+
+  const socialItems = [
+    { title: 'LinkedIn', icon: <LinkedinIcon size={18} />, href: content?.linkedin || "https://linkedin.com/in/dk-cs-3rd", brand: '#0A66C2' },
+    { title: 'GitHub', icon: <GithubIcon size={18} />, href: content?.github || "https://github.com/desalegnkasayemuluyekasaye-tech", brand: '#f0f6fc' },
+    { title: 'Telegram', icon: <TelegramIcon size={18} />, href: content?.telegram || "https://t.me/Ds35kg", brand: '#0088cc' }
   ]
 
   const containerVariants = {
@@ -191,11 +211,7 @@ export default function Contact() {
                 </div>
 
                 <div className="flex gap-3 sm:gap-4 md:gap-5" role="list" aria-label="Social media links">
-                  {[
-                    { title: 'LinkedIn', icon: <LinkedinIcon size={18} />, href: "https://linkedin.com/in/dk-cs-3rd", brand: '#0A66C2' },
-                    { title: 'GitHub', icon: <GithubIcon size={18} />, href: "https://github.com/desalegnkasayemuluyekasaye-tech", brand: '#f0f6fc' },
-                    { title: 'Telegram', icon: <TelegramIcon size={18} />, href: "https://t.me/Ds35kg", brand: '#0088cc' }
-                  ].map((social, idx) => (
+                  {socialItems.map((social, idx) => (
                     <motion.a
                       key={idx}
                       role="listitem"
