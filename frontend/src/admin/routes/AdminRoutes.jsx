@@ -32,23 +32,27 @@ export default function AdminRoutes() {
 
   if (!isAuthenticated) return null
 
+  function renderPlaceholder(page) {
+    return (
+      <Route
+        key={page.path}
+        path={page.path}
+        element={<PlaceholderPage title={page.title} description={page.description} />}
+      />
+    )
+  }
+
   return (
-    <AdminLayout>
-      <Routes>
-        <Route index element={<Navigate to="/admin/dashboard" replace />} />
+    <Routes>
+      <Route element={<AdminLayout />}>
+        <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="analytics" element={<Analytics />} />
         <Route path="projects" element={<Projects />} />
         <Route path="projects/new" element={<ProjectForm />} />
         <Route path="projects/:id" element={<ProjectForm />} />
-        {placeholderPages.map((page) => (
-          <Route
-            key={page.path}
-            path={page.path}
-            element={<PlaceholderPage title={page.title} description={page.description} />}
-          />
-        ))}
-      </Routes>
-    </AdminLayout>
+        {placeholderPages.map(renderPlaceholder)}
+      </Route>
+    </Routes>
   )
 }

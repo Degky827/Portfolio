@@ -7,6 +7,19 @@ import api from '../../services/api'
 import StatCard from '../components/StatCard'
 import PageHeader from '../components/PageHeader'
 
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.08, delayChildren: 0.1 },
+  },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 20 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
+}
+
 export default function Dashboard() {
   const { isAuthenticated, logout } = useAuth()
   const navigate = useNavigate()
@@ -43,10 +56,10 @@ export default function Dashboard() {
   if (!isAuthenticated) return null
 
   const statCards = [
-    { title: 'Total Portfolio Views', value: stats?.totalCount, icon: Eye, delay: 0 },
-    { title: 'Unique Visitors', value: stats?.uniqueVisitors, icon: Users, delay: 0.1 },
-    { title: "Today's Visitors", value: stats?.todayCount, icon: UserCheck, delay: 0.2 },
-    { title: "This Month's Visitors", value: stats?.monthCount, icon: CalendarDays, delay: 0.3 },
+    { title: 'Total Portfolio Views', value: stats?.totalCount, icon: Eye },
+    { title: 'Unique Visitors', value: stats?.uniqueVisitors, icon: Users },
+    { title: "Today's Visitors", value: stats?.todayCount, icon: UserCheck },
+    { title: "This Month's Visitors", value: stats?.monthCount, icon: CalendarDays },
   ]
 
   const quickActions = [
@@ -56,34 +69,35 @@ export default function Dashboard() {
   ]
 
   return (
-    <div>
-      <PageHeader
-        title="Dashboard"
-        subtitle="Welcome back! Here is your portfolio overview."
-      />
+    <motion.div variants={containerVariants} initial="hidden" animate="visible">
+      <motion.div variants={itemVariants}>
+        <PageHeader
+          title="Dashboard"
+          subtitle="Welcome back! Here is your portfolio overview."
+        />
+      </motion.div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
+        <motion.div
+          variants={itemVariants}
+          className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm"
+        >
           {error}
           <button onClick={fetchStats} className="ml-3 underline font-medium">
             Retry
           </button>
-        </div>
+        </motion.div>
       )}
 
-      {/* Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        {statCards.map((card) => (
-          <StatCard key={card.title} {...card} loading={loading} />
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
+        {statCards.map((card, i) => (
+          <StatCard key={card.title} {...card} loading={loading} delay={i * 0.08} />
         ))}
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Recent Activity */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
+          variants={itemVariants}
           className="lg:col-span-2 bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm"
         >
           <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-slate-800">
@@ -103,8 +117,14 @@ export default function Dashboard() {
                 </div>
               ))
             ) : stats?.recentVisits?.length ? (
-              stats.recentVisits.map((visit) => (
-                <div key={visit._id} className="p-4 sm:px-6 py-3 flex items-center gap-4">
+              stats.recentVisits.map((visit, i) => (
+                <motion.div
+                  key={visit._id}
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.4 + i * 0.05 }}
+                  className="p-4 sm:px-6 py-3 flex items-center gap-4 hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors"
+                >
                   <div className="w-10 h-10 rounded-full bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary font-bold text-sm shrink-0">
                     {(visit.visitorName || 'A')[0].toUpperCase()}
                   </div>
@@ -123,7 +143,7 @@ export default function Dashboard() {
                   <span className="text-xs text-gray-400 shrink-0">
                     {formatTimeAgo(visit.timestamp)}
                   </span>
-                </div>
+                </motion.div>
               ))
             ) : (
               <div className="p-6 text-center text-gray-400">No recent activity.</div>
@@ -131,11 +151,8 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Quick Actions */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
+          variants={itemVariants}
           className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm"
         >
           <div className="p-4 sm:p-6 border-b border-gray-200 dark:border-slate-800">
@@ -143,24 +160,26 @@ export default function Dashboard() {
           </div>
           <div className="p-4 sm:p-6 space-y-3">
             {quickActions.map((action) => (
-              <button
+              <motion.button
                 key={action.label}
+                whileHover={{ scale: 1.02, x: 4 }}
+                whileTap={{ scale: 0.98 }}
                 onClick={action.onClick}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors group"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors group text-left"
               >
                 <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${action.color}`}>
                   <action.icon size={20} />
                 </div>
-                <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-300 text-left">
+                <span className="flex-1 text-sm font-medium text-gray-700 dark:text-gray-300">
                   {action.label}
                 </span>
                 <ArrowRight size={16} className="text-gray-400 group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors" />
-              </button>
+              </motion.button>
             ))}
           </div>
         </motion.div>
       </div>
-    </div>
+    </motion.div>
   )
 }
 
