@@ -1,17 +1,13 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowLeft, Save } from 'lucide-react'
+import { ArrowLeft, Save, X } from 'lucide-react'
+import RichTextEditor from '../components/RichTextEditor'
 import ImageUpload from '../components/ImageUpload'
 import { createProject, updateProject, getProject } from '../../services/projectService'
 
 const categories = [
-  'Web App',
-  'Mobile App',
-  'Network',
-  'API',
-  'Library',
-  'Other',
+  'Web App', 'Mobile App', 'Network', 'API', 'Library', 'Other',
 ]
 
 export default function ProjectForm() {
@@ -65,6 +61,11 @@ export default function ProjectForm() {
     })()
   }, [id, isEditing])
 
+  const techTags = useMemo(
+    () => form.technologies.split(',').map((t) => t.trim()).filter(Boolean),
+    [form.technologies],
+  )
+
   const validate = () => {
     const errs = {}
     if (!form.title.trim()) errs.title = 'Title is required'
@@ -84,7 +85,7 @@ export default function ProjectForm() {
     const fd = new FormData()
     fd.append('title', form.title.trim())
     fd.append('shortDescription', form.shortDescription.trim())
-    fd.append('fullDescription', form.fullDescription.trim())
+    fd.append('fullDescription', form.fullDescription)
     fd.append('technologies', form.technologies)
     fd.append('githubUrl', form.githubUrl.trim())
     fd.append('liveDemoUrl', form.liveDemoUrl.trim())
@@ -113,6 +114,11 @@ export default function ProjectForm() {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
     setForm((prev) => ({ ...prev, [field]: value }))
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
+  }
+
+  const removeTechTag = (tag) => {
+    const next = techTags.filter((t) => t !== tag)
+    setForm((prev) => ({ ...prev, technologies: next.join(', ') }))
   }
 
   if (fetching) {
@@ -190,12 +196,10 @@ export default function ProjectForm() {
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                   Full Description
                 </label>
-                <textarea
+                <RichTextEditor
                   value={form.fullDescription}
-                  onChange={set('fullDescription')}
-                  rows={6}
+                  onChange={(val) => setForm((prev) => ({ ...prev, fullDescription: val }))}
                   placeholder="Detailed description of the project..."
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
                 />
               </div>
 
@@ -210,6 +214,21 @@ export default function ProjectForm() {
                   placeholder="e.g. React, Node.js, MongoDB"
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
                 />
+                {techTags.length > 0 && (
+                  <div className="flex flex-wrap gap-1.5 mt-2">
+                    {techTags.map((tag) => (
+                      <span
+                        key={tag}
+                        className="inline-flex items-center gap-1 px-2.5 py-1 text-xs font-medium rounded-full bg-primary/10 text-primary border border-primary/20"
+                      >
+                        {tag}
+                        <button type="button" onClick={() => removeTechTag(tag)} className="hover:text-red-400 transition-colors">
+                          <X size={12} />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
             </motion.div>
 
