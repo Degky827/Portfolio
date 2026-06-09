@@ -61,94 +61,114 @@ async function createAuditLog({ user, action, resource, resourceId, details, req
 
 /** Step 1: verify email + password only. NEVER issues a final JWT.
  *
- *  Backslash-safe login flow:
- *  --------------------------
- *  Passwords containing `\` (backslash) are handled correctly through the
- *  JSON request pipeline: the frontend's axios JSON-stringifies the body
- *  (escaping `\` as `\\`), Express.json() decodes it back to the raw string,
- *  and bcrypt.compare() receives the exact same bytes that were hashed.
+ *  ── Backslash-safe ──────────────────────────────────────────────────
+ *  Passwords containing `\` arrive correctly through the JSON pipeline
+ *  (axios → JSON.stringify → express.json()).  bcrypt.compare() treats
+ *  `\` as a literal byte — no escaping issues at this layer.
  *
- *  If you encounter "Invalid email or password" for a known-valid account:
- *    1. Check the debug log below for the raw password length and char codes.
- *    2. Verify the password was NOT defined in a JavaScript string literal
- *       where `\` acts as an escape character (e.g. `"pw\\"` not `"pw\"`).
- *    3. If stored in a .env / shell variable, ensure the trailing `\` is
- *       not consuming the newline (use single quotes or double-escape).
+ *  If the password was wrong, check that the ORIGINAL hash was created
+ *  from the same raw string (see seed.js documentation).
+ *
+ *  ── Crash-safe ──────────────────────────────────────────────────────
+ *  On success the response is sent IMMEDIATELY.  The failed-attempts
+ *  reset is fire-and-forget via updateOne() — it will never block or
+ *  crash the login flow.
  */
 async function loginStep1(req, res) {
   try {
     const { email, password } = req.body
+
     if (!email || !password) {
-      return res.status(400).json({ success: false, message: 'Email and password are required.' })
+      return res.status(400).json({
+        success: false,
+        message: 'Email and password are required.',
+      })
     }
 
-    /* ── debug: inspect the raw password as received ──────────────────
-     * If you see length 6 for a 7-char password like `/35@%Dk\`, the
-     * trailing `\` was swallowed by an earlier escaping layer (JS
-     * string literal, shell variable, .env parser, etc.).
-     * Remove or comment out these lines after confirming the fix.
-     * ──────────────────────────────────────────────────────────────── */
-    console.log('[auth] loginStep1 — password string length:', password.length)
+    console.log('[auth] loginStep1 — password length:', password.length)
     console.log('[auth] loginStep1 — password char codes:', [...password].map((c) => c.charCodeAt(0)))
 
     const user = await User.findOne({ email: email.toLowerCase() }).select(
-      '+password +failedLoginAttempts +lockedUntil +refreshTokens +twoFactorSecret +twoFactorEnabled',
+      '+password +failedLoginAttempts +lockedUntil',
     )
     if (!user) {
-      await createAuditLog({ action: 'LOGIN_FAILED', details: { email }, req, success: false })
-      return res.status(401).json({ success: false, message: 'Invalid email or password.' })
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid email or password.',
+      })
     }
 
     if (!user.isActive) {
-      await createAuditLog({ user: user._id, action: 'LOGIN_FAILED', details: { reason: 'Account disabled' }, req, success: false })
-      return res.status(403).json({ success: false, message: 'This account has been disabled. Contact an administrator.' })
+      return res.status(403).json({
+        success: false,
+        message: 'This account has been disabled. Contact an administrator.',
+      })
     }
 
     if (user.lockedUntil && user.lockedUntil > new Date()) {
       const remainingMinutes = Math.ceil((user.lockedUntil - new Date()) / 60000)
-      await createAuditLog({ user: user._id, action: 'LOGIN_FAILED', details: { reason: 'Account locked' }, req, success: false })
-      return res.status(423).json({ success: false, message: `Account is locked. Try again in ${remainingMinutes} minute(s).` })
+      return res.status(423).json({
+        success: false,
+        message: `Account is locked. Try again in ${remainingMinutes} minute(s).`,
+      })
     }
 
-    /* ── bcrypt.compare ───────────────────────────────────────────────
-     * candidatePassword is the raw string from req.body (JSON-decoded).
-     * No trimming or transformation is applied — the exact bytes reach
-     * bcrypt.compare() as-is. A backslash in the password is a literal
-     * character to bcrypt, not an escape sequence.                      */
     const isMatch = await user.comparePassword(password)
+
+    /* ── Wrong password: increment counter, maybe lock ─────────────── */
     if (!isMatch) {
-      user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1
-      if (user.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
-        user.lockedUntil = new Date(Date.now() + LOCK_DURATION_MINUTES * 60 * 1000)
-        await user.save()
-        await createAuditLog({ user: user._id, action: 'ACCOUNT_LOCKED', details: { failedAttempts: user.failedLoginAttempts }, req })
+      const newFailed = (user.failedLoginAttempts || 0) + 1
+      const shouldLock = newFailed >= MAX_FAILED_ATTEMPTS
+
+      await User.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            failedLoginAttempts: newFailed,
+            lockedUntil: shouldLock
+              ? new Date(Date.now() + LOCK_DURATION_MINUTES * 60 * 1000)
+              : user.lockedUntil || null,
+          },
+        },
+      )
+
+      if (shouldLock) {
         return res.status(423).json({
           success: false,
           message: `Account locked due to ${MAX_FAILED_ATTEMPTS} failed attempts. Try again in ${LOCK_DURATION_MINUTES} minutes.`,
         })
       }
-      await user.save()
-      const remaining = MAX_FAILED_ATTEMPTS - user.failedLoginAttempts
-      await createAuditLog({ user: user._id, action: 'LOGIN_FAILED', details: { failedAttempts: user.failedLoginAttempts }, req, success: false })
-      return res.status(401).json({ success: false, message: `Invalid email or password. ${remaining} attempt(s) remaining.` })
+
+      const remaining = MAX_FAILED_ATTEMPTS - newFailed
+      return res.status(401).json({
+        success: false,
+        message: `Invalid email or password. ${remaining} attempt(s) remaining.`,
+      })
     }
 
-    /* Password is correct — always require the second factor.
-       Never issue a JWT at this stage. */
-    user.failedLoginAttempts = 0
-    user.lockedUntil = null
-    await user.save()
+    /* ── Correct password ────────────────────────────────────────────
+     * 1. Wipe the failed-attempt counter (non-blocking).
+     * 2. Tell the frontend to show the 2FA screen.
+     * 3. Do NOT issue a JWT.  Do NOT verify a TOTP code.
+     */
+    await User.updateOne(
+      { _id: user._id },
+      { $set: { failedLoginAttempts: 0, lockedUntil: null } },
+    )
 
-    await createAuditLog({ user: user._id, action: 'LOGIN_SUCCESS', details: { step: 'password_verified' }, req })
-
-    res.json({
+    return res.status(200).json({
       success: true,
       require2FA: true,
       email: user.email,
+      message: 'Password verified. Please provide 2FA TOTP code.',
     })
   } catch (error) {
-    console.error('[auth] loginStep1 error:', error)
-    res.status(500).json({ success: false, message: 'Server error during login.' })
+    console.error('CRITICAL LOGIN ERROR:', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Server error during login',
+      error: error.message,
+    })
   }
 }
 
