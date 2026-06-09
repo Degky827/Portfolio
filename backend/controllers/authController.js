@@ -59,13 +59,37 @@ async function createAuditLog({ user, action, resource, resourceId, details, req
   }
 }
 
-/** Step 1: verify email + password only. NEVER issues a final JWT. */
+/** Step 1: verify email + password only. NEVER issues a final JWT.
+ *
+ *  Backslash-safe login flow:
+ *  --------------------------
+ *  Passwords containing `\` (backslash) are handled correctly through the
+ *  JSON request pipeline: the frontend's axios JSON-stringifies the body
+ *  (escaping `\` as `\\`), Express.json() decodes it back to the raw string,
+ *  and bcrypt.compare() receives the exact same bytes that were hashed.
+ *
+ *  If you encounter "Invalid email or password" for a known-valid account:
+ *    1. Check the debug log below for the raw password length and char codes.
+ *    2. Verify the password was NOT defined in a JavaScript string literal
+ *       where `\` acts as an escape character (e.g. `"pw\\"` not `"pw\"`).
+ *    3. If stored in a .env / shell variable, ensure the trailing `\` is
+ *       not consuming the newline (use single quotes or double-escape).
+ */
 async function loginStep1(req, res) {
   try {
     const { email, password } = req.body
     if (!email || !password) {
       return res.status(400).json({ success: false, message: 'Email and password are required.' })
     }
+
+    /* ── debug: inspect the raw password as received ──────────────────
+     * If you see length 6 for a 7-char password like `/35@%Dk\`, the
+     * trailing `\` was swallowed by an earlier escaping layer (JS
+     * string literal, shell variable, .env parser, etc.).
+     * Remove or comment out these lines after confirming the fix.
+     * ──────────────────────────────────────────────────────────────── */
+    console.log('[auth] loginStep1 — password string length:', password.length)
+    console.log('[auth] loginStep1 — password char codes:', [...password].map((c) => c.charCodeAt(0)))
 
     const user = await User.findOne({ email: email.toLowerCase() }).select(
       '+password +failedLoginAttempts +lockedUntil +refreshTokens +twoFactorSecret +twoFactorEnabled',
@@ -86,6 +110,11 @@ async function loginStep1(req, res) {
       return res.status(423).json({ success: false, message: `Account is locked. Try again in ${remainingMinutes} minute(s).` })
     }
 
+    /* ── bcrypt.compare ───────────────────────────────────────────────
+     * candidatePassword is the raw string from req.body (JSON-decoded).
+     * No trimming or transformation is applied — the exact bytes reach
+     * bcrypt.compare() as-is. A backslash in the password is a literal
+     * character to bcrypt, not an escape sequence.                      */
     const isMatch = await user.comparePassword(password)
     if (!isMatch) {
       user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1
