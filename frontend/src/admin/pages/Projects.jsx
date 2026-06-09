@@ -5,6 +5,7 @@ import {
   Plus, Search, X, ExternalLink, Eye, Edit2, Trash2,
   Star, StarOff, FolderKanban, ImageOff,
 } from 'lucide-react'
+import { useAuth } from '../../context/AuthContext'
 import PageHeader from '../components/PageHeader'
 import ConfirmModal from '../components/ConfirmModal'
 import Toast from '../components/Toast'
@@ -17,6 +18,8 @@ const statusStyles = {
 
 export default function Projects() {
   const navigate = useNavigate()
+  const { userRole } = useAuth()
+  const canModify = userRole === 'super_admin' || userRole === 'admin'
   const [projects, setProjects] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [categories, setCategories] = useState([])
@@ -312,20 +315,24 @@ export default function Projects() {
                               <ExternalLink size={16} />
                             </a>
                           )}
-                          <button
-                            onClick={() => navigate(`/admin/projects/${project._id}`)}
-                            className="p-2 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
-                            title="Edit project"
-                          >
-                            <Edit2 size={16} />
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(project)}
-                            className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                            title="Delete project"
-                          >
-                            <Trash2 size={16} />
-                          </button>
+                          {canModify && (
+                            <button
+                              onClick={() => navigate(`/admin/projects/${project._id}`)}
+                              className="p-2 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
+                              title="Edit project"
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                          )}
+                          {canModify && (
+                            <button
+                              onClick={() => setDeleteTarget(project)}
+                              className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                              title="Delete project"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>

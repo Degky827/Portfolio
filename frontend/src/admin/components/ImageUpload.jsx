@@ -1,8 +1,10 @@
 import { useState, useRef } from 'react'
-import { Upload, X, ImageIcon } from 'lucide-react'
+import { Upload, X, ImageIcon, Library } from 'lucide-react'
+import MediaPicker from './MediaPicker'
 
-export default function ImageUpload({ value, onChange, error }) {
+export default function ImageUpload({ value, onChange, error, label = 'Image' }) {
   const [preview, setPreview] = useState(value || '')
+  const [pickerOpen, setPickerOpen] = useState(false)
   const inputRef = useRef(null)
 
   const handleFile = (file) => {
@@ -30,15 +32,20 @@ export default function ImageUpload({ value, onChange, error }) {
     if (inputRef.current) inputRef.current.value = ''
   }
 
+  const handleMediaSelect = (url) => {
+    setPreview(url)
+    onChange(url)
+  }
+
   return (
     <div>
       <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-        Project Image
+        {label}
       </label>
       <div
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
-        onClick={() => inputRef.current?.click()}
+        onClick={() => !preview && inputRef.current?.click()}
         className={`relative border-2 border-dashed rounded-xl p-4 text-center cursor-pointer transition-colors ${
           preview
             ? 'border-transparent'
@@ -81,6 +88,24 @@ export default function ImageUpload({ value, onChange, error }) {
           className="hidden"
         />
       </div>
+
+      {!preview && (
+        <button
+          type="button"
+          onClick={() => setPickerOpen(true)}
+          className="mt-2 w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-slate-800 transition-colors"
+        >
+          <Library size={16} />
+          Browse Media Library
+        </button>
+      )}
+
+      <MediaPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onSelect={handleMediaSelect}
+      />
+
       {error && <p className="text-xs text-red-500 mt-1">{error}</p>}
     </div>
   )

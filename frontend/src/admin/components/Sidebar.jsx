@@ -3,20 +3,25 @@ import { motion } from 'framer-motion'
 import {
   LayoutDashboard, BarChart3, FolderKanban, Award, Code2,
   Home, UserCircle, Mail, FileText, Settings, X, ChevronLeft, ChevronRight,
+  Image, Users, User,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
+import { useAuth } from '../../context/AuthContext'
+import { canAccess } from './RoleGuard'
 
-const navItems = [
-  { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
-  { path: '/admin/projects', label: 'Projects', icon: FolderKanban },
-  { path: '/admin/certificates', label: 'Certificates', icon: Award },
-  { path: '/admin/skills', label: 'Skills', icon: Code2 },
-  { path: '/admin/home', label: 'Home', icon: Home },
-  { path: '/admin/about', label: 'About', icon: UserCircle },
-  { path: '/admin/contact', label: 'Contact', icon: Mail },
-  { path: '/admin/footer', label: 'Footer', icon: FileText },
-  { path: '/admin/settings', label: 'Settings', icon: Settings },
+const allNavItems = [
+  { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['super_admin', 'admin', 'editor'] },
+  { path: '/admin/analytics', label: 'Analytics', icon: BarChart3, roles: ['super_admin', 'admin'] },
+  { path: '/admin/projects', label: 'Projects', icon: FolderKanban, roles: ['super_admin', 'admin', 'editor'] },
+  { path: '/admin/certificates', label: 'Certificates', icon: Award, roles: ['super_admin', 'admin', 'editor'] },
+  { path: '/admin/skills', label: 'Skills', icon: Code2, roles: ['super_admin', 'admin', 'editor'] },
+  { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
+  { path: '/admin/home', label: 'Home', icon: Home, roles: ['super_admin', 'admin', 'editor'] },
+  { path: '/admin/about', label: 'About', icon: UserCircle, roles: ['super_admin', 'admin', 'editor'] },
+  { path: '/admin/contact', label: 'Contact', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
+  { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
+  { path: '/admin/users', label: 'Users', icon: Users, roles: ['super_admin'] },
+  { path: '/admin/settings', label: 'Settings', icon: Settings, roles: ['super_admin', 'admin'] },
 ]
 
 const sidebarVariants = {
@@ -33,10 +38,12 @@ const itemVariants = {
 
 export default function Sidebar() {
   const { mobileOpen, closeMobile, collapsed, toggleCollapsed } = useAdmin()
+  const { userRole, logout } = useAuth()
+
+  const navItems = allNavItems.filter((item) => canAccess(userRole, item.roles))
 
   return (
     <>
-      {/* Mobile drawer */}
       <motion.aside
         initial={false}
         animate={mobileOpen ? 'mobileOpen' : 'mobileClosed'}
@@ -45,10 +52,10 @@ export default function Sidebar() {
         className="fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 lg:hidden flex flex-col"
       >
         <Header onClose={closeMobile} />
-        <NavItems collapsed={false} onItemClick={closeMobile} />
+        <NavItems collapsed={false} onItemClick={closeMobile} items={navItems} />
+        <ProfileFooter collapsed={false} userRole={userRole} onLogout={logout} />
       </motion.aside>
 
-      {/* Desktop sidebar */}
       <motion.aside
         initial={false}
         animate={{ width: collapsed ? 80 : 280 }}
@@ -56,7 +63,8 @@ export default function Sidebar() {
         className="fixed inset-y-0 left-0 z-30 bg-white dark:bg-slate-900 border-r border-gray-200 dark:border-slate-800 hidden lg:flex flex-col overflow-hidden"
       >
         <DesktopHeader collapsed={collapsed} onToggle={toggleCollapsed} />
-        <NavItems collapsed={collapsed} onItemClick={closeMobile} />
+        <NavItems collapsed={collapsed} onItemClick={closeMobile} items={navItems} />
+        <ProfileFooter collapsed={collapsed} userRole={userRole} onLogout={logout} />
       </motion.aside>
     </>
   )
@@ -128,10 +136,10 @@ function DesktopHeader({ collapsed, onToggle }) {
   )
 }
 
-function NavItems({ collapsed, onItemClick }) {
+function NavItems({ collapsed, onItemClick, items }) {
   return (
     <nav className="flex-1 p-3 space-y-1 overflow-y-auto overflow-x-hidden">
-      {navItems.map((item) => (
+      {items.map((item) => (
         <NavLink
           key={item.path}
           to={item.path}
@@ -175,5 +183,33 @@ function NavItems({ collapsed, onItemClick }) {
         </NavLink>
       ))}
     </nav>
+  )
+}
+
+function ProfileFooter({ collapsed, userRole, onLogout }) {
+  return (
+    <div className="border-t border-gray-200 dark:border-slate-800 p-3 shrink-0">
+      <NavLink to="/admin/profile" className="block">
+        <motion.div
+          whileHover="hover"
+          whileTap="tap"
+          variants={itemVariants}
+          className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 hover:text-gray-900 dark:hover:text-white transition-colors"
+        >
+          <User size={20} className="shrink-0" />
+          {!collapsed && (
+            <motion.span
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.15 }}
+              className="whitespace-nowrap"
+            >
+              Profile
+            </motion.span>
+          )}
+        </motion.div>
+      </NavLink>
+    </div>
   )
 }

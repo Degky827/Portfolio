@@ -26,6 +26,7 @@ export default function HomeContent() {
     },
   })
   const [profileImageFile, setProfileImageFile] = useState(null)
+  const [profileImageUrl, setProfileImageUrl] = useState('')
   const [existingImage, setExistingImage] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -86,6 +87,7 @@ export default function HomeContent() {
     fd.append('secondaryButtonLink', form.secondaryButtonLink)
     fd.append('socialLinks', JSON.stringify(form.socialLinks))
     if (profileImageFile) fd.append('profileImage', profileImageFile)
+    else if (profileImageUrl) fd.append('profileImageUrl', profileImageUrl)
 
     try {
       await updateHomeContent(fd)
@@ -274,7 +276,10 @@ export default function HomeContent() {
             >
               <ImageUpload
                 value={existingImage}
-                onChange={setProfileImageFile}
+                onChange={(val) => {
+                  if (typeof val === 'string') { setProfileImageUrl(val); setProfileImageFile(null) }
+                  else { setProfileImageFile(val); setProfileImageUrl('') }
+                }}
               />
             </motion.div>
           </div>

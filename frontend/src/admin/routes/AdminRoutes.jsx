@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
-import { Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import RoleGuard from '../components/RoleGuard'
+import ProtectedRoute from '../components/ProtectedRoute'
 import AdminLayout from '../components/AdminLayout'
 import Dashboard from '../pages/Dashboard'
 import Analytics from '../pages/Analytics'
@@ -14,57 +15,72 @@ import HomeContent from '../pages/HomeContent'
 import AboutContent from '../pages/AboutContent'
 import ContactContent from '../pages/ContactContent'
 import FooterContent from '../pages/FooterContent'
+import MediaLibrary from '../pages/MediaLibrary'
+import UserManagement from '../pages/UserManagement'
+import Profile from '../pages/Profile'
 import PlaceholderPage from '../pages/PlaceholderPage'
 
 const placeholderPages = [
-  { path: 'settings', title: 'Settings', description: 'Configure your portfolio settings' },
+  { path: 'settings', title: 'Settings', description: 'Configure your portfolio settings', roles: ['super_admin', 'admin'] },
 ]
 
 export default function AdminRoutes() {
-  const { isAuthenticated, logout } = useAuth()
-  const navigate = useNavigate()
-  const location = useLocation()
-
-  useEffect(() => {
-    if (!isAuthenticated) {
-      logout()
-      navigate('/login', { state: { from: location.pathname }, replace: true })
-    }
-  }, [isAuthenticated, logout, navigate, location.pathname])
-
-  if (!isAuthenticated) return null
+  const { user } = useAuth()
 
   function renderPlaceholder(page) {
     return (
       <Route
         key={page.path}
         path={page.path}
-        element={<PlaceholderPage title={page.title} description={page.description} />}
+        element={
+          <RoleGuard roles={page.roles}>
+            <PlaceholderPage title={page.title} description={page.description} />
+          </RoleGuard>
+        }
       />
     )
   }
 
   return (
-    <Routes>
-      <Route element={<AdminLayout />}>
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="analytics" element={<Analytics />} />
-        <Route path="projects" element={<Projects />} />
-        <Route path="projects/new" element={<ProjectForm />} />
-        <Route path="projects/:id" element={<ProjectForm />} />
-        <Route path="certificates" element={<Certificates />} />
-        <Route path="certificates/new" element={<CertificateForm />} />
-        <Route path="certificates/:id" element={<CertificateForm />} />
-        <Route path="skills" element={<Skills />} />
-        <Route path="skills/new" element={<SkillForm />} />
-        <Route path="skills/:id" element={<SkillForm />} />
-        <Route path="home" element={<HomeContent />} />
-        <Route path="about" element={<AboutContent />} />
-        <Route path="contact" element={<ContactContent />} />
-        <Route path="footer" element={<FooterContent />} />
-        {placeholderPages.map(renderPlaceholder)}
-      </Route>
-    </Routes>
+    <ProtectedRoute>
+      <Routes>
+        <Route element={<AdminLayout />}>
+          <Route index element={<Navigate to="dashboard" replace />} />
+          <Route path="dashboard" element={<Dashboard />} />
+          <Route
+            path="analytics"
+            element={
+              <RoleGuard roles={['super_admin', 'admin']}>
+                <Analytics />
+              </RoleGuard>
+            }
+          />
+          <Route path="projects" element={<Projects />} />
+          <Route path="projects/new" element={<ProjectForm />} />
+          <Route path="projects/:id" element={<ProjectForm />} />
+          <Route path="certificates" element={<Certificates />} />
+          <Route path="certificates/new" element={<CertificateForm />} />
+          <Route path="certificates/:id" element={<CertificateForm />} />
+          <Route path="media" element={<MediaLibrary />} />
+          <Route path="skills" element={<Skills />} />
+          <Route path="skills/new" element={<SkillForm />} />
+          <Route path="skills/:id" element={<SkillForm />} />
+          <Route path="home" element={<HomeContent />} />
+          <Route path="about" element={<AboutContent />} />
+          <Route path="contact" element={<ContactContent />} />
+          <Route path="footer" element={<FooterContent />} />
+          <Route
+            path="users"
+            element={
+              <RoleGuard roles={['super_admin']}>
+                <UserManagement />
+              </RoleGuard>
+            }
+          />
+          <Route path="profile" element={<Profile />} />
+          {placeholderPages.map(renderPlaceholder)}
+        </Route>
+      </Routes>
+    </ProtectedRoute>
   )
 }

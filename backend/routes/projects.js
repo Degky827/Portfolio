@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { body, validationResult } = require('express-validator')
-const { authenticateToken } = require('../middleware/auth')
+const { authenticateToken, authorizeRoles } = require('../middleware/auth')
 const upload = require('../config/upload')
 const {
   createProject,
@@ -29,28 +29,34 @@ const projectValidation = [
   body('category').trim().notEmpty().withMessage('Category is required'),
 ]
 
+router.get('/', getProjects)
+router.get('/:id', getProject)
+
 router.post(
   '/',
   authenticateToken,
+  authorizeRoles('super_admin', 'admin', 'editor'),
   upload.single('image'),
   projectValidation,
   handleValidation,
   createProject,
 )
 
-router.get('/', getProjects)
-
-router.get('/:id', getProject)
-
 router.put(
   '/:id',
   authenticateToken,
+  authorizeRoles('super_admin', 'admin'),
   upload.single('image'),
   projectValidation,
   handleValidation,
   updateProject,
 )
 
-router.delete('/:id', authenticateToken, deleteProject)
+router.delete(
+  '/:id',
+  authenticateToken,
+  authorizeRoles('super_admin', 'admin'),
+  deleteProject,
+)
 
 module.exports = router

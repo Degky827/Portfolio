@@ -4,6 +4,8 @@ if (process.env.NODE_ENV !== 'production') {
   require('dotenv').config({ path: path.resolve(__dirname, '..', '.env') })
 }
 
+const REQUIRED_VARS = ['JWT_SECRET']
+
 const config = {
   port: parseInt(process.env.PORT, 10) || 5000,
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -17,6 +19,18 @@ const config = {
       process.env.CORS_ORIGIN ||
       'http://localhost:5173',
   ),
+}
+
+const missing = REQUIRED_VARS.filter((name) => !process.env[name])
+if (missing.length > 0) {
+  console.error(
+    `[config] Missing required environment variables: ${missing.join(', ')}` +
+      '\n  Set them in backend/.env or in your deployment environment.' +
+      '\n  See backend/.env.example for documentation.',
+  )
+  if (process.env.NODE_ENV === 'production') {
+    process.exit(1)
+  }
 }
 
 /**

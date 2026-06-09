@@ -51,6 +51,8 @@ async function updateFooterContent(req, res) {
         try { fs.unlinkSync(oldPath) } catch { /* file may not exist */ }
       }
       content.footerLogo = `/uploads/${req.file.filename}`
+    } else if (req.body.footerLogoUrl) {
+      content.footerLogo = req.body.footerLogoUrl
     }
 
     await content.save()
