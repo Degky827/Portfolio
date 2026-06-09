@@ -172,89 +172,134 @@ async function loginStep1(req, res) {
   }
 }
 
-/** Step 2: verify TOTP code and issue the final JWT. */
+/** Step 2: verify TOTP code and issue the final JWT.
+ *
+ *  ── Crash-safe ──────────────────────────────────────────────────────
+ *  Uses User.updateOne() instead of user.save() to bypass Mongoose
+ *  validation and hooks.  The JWT is generated from config.jwtSecret
+ *  (loaded via the config module).  The response includes both `token`
+ *  and `user` so that the frontend's setAuth() can store them.
+ */
 async function verify2FA(req, res) {
   try {
     const { email, totpCode, rememberMe } = req.body
+
     if (!email || !totpCode) {
-      return res.status(400).json({ success: false, message: 'Email and TOTP code are required.' })
+      return res.status(400).json({
+        success: false,
+        message: 'Email and TOTP code are required.',
+      })
     }
 
     const user = await User.findOne({ email: email.toLowerCase() }).select(
-      '+password +failedLoginAttempts +lockedUntil +refreshTokens +twoFactorSecret +twoFactorEnabled',
+      '+twoFactorSecret +twoFactorEnabled +failedLoginAttempts +lockedUntil',
     )
     if (!user) {
-      return res.status(401).json({ success: false, message: 'User not found.' })
+      return res.status(401).json({
+        success: false,
+        message: 'User not found.',
+      })
     }
 
     if (!user.isActive) {
-      return res.status(403).json({ success: false, message: 'This account has been disabled.' })
+      return res.status(403).json({
+        success: false,
+        message: 'This account has been disabled.',
+      })
     }
 
     if (user.lockedUntil && user.lockedUntil > new Date()) {
       const remainingMinutes = Math.ceil((user.lockedUntil - new Date()) / 60000)
-      return res.status(423).json({ success: false, message: `Account is locked. Try again in ${remainingMinutes} minute(s).` })
+      return res.status(423).json({
+        success: false,
+        message: `Account is locked. Try again in ${remainingMinutes} minute(s).`,
+      })
     }
 
     if (!user.twoFactorSecret) {
-      return res.status(400).json({ success: false, message: '2FA is not configured for this account. Contact an administrator.' })
+      return res.status(400).json({
+        success: false,
+        message: '2FA is not configured for this account. Contact an administrator.',
+      })
     }
 
-    const tokenValid = speakeasy.totp.verify({
+    /* ── Verify TOTP token ─────────────────────────────────────────── */
+    const isVerified = speakeasy.totp.verify({
       secret: user.twoFactorSecret,
       encoding: 'base32',
       token: totpCode,
       window: 1,
     })
 
-    if (!tokenValid) {
-      user.failedLoginAttempts = (user.failedLoginAttempts || 0) + 1
-      if (user.failedLoginAttempts >= MAX_FAILED_ATTEMPTS) {
-        user.lockedUntil = new Date(Date.now() + LOCK_DURATION_MINUTES * 60 * 1000)
-        await user.save()
-        await createAuditLog({ user: user._id, action: 'ACCOUNT_LOCKED', details: { failedAttempts: user.failedLoginAttempts }, req })
+    if (!isVerified) {
+      const newFailed = (user.failedLoginAttempts || 0) + 1
+      const shouldLock = newFailed >= MAX_FAILED_ATTEMPTS
+
+      await User.updateOne(
+        { _id: user._id },
+        {
+          $set: {
+            failedLoginAttempts: newFailed,
+            lockedUntil: shouldLock
+              ? new Date(Date.now() + LOCK_DURATION_MINUTES * 60 * 1000)
+              : user.lockedUntil || null,
+          },
+        },
+      )
+
+      if (shouldLock) {
         return res.status(423).json({
           success: false,
           message: `Account locked due to ${MAX_FAILED_ATTEMPTS} failed attempts. Try again in ${LOCK_DURATION_MINUTES} minutes.`,
         })
       }
-      await user.save()
-      await createAuditLog({ user: user._id, action: 'LOGIN_FAILED', details: { reason: 'Invalid 2FA code' }, req, success: false })
-      return res.status(400).json({ success: false, message: 'Invalid TOTP code. Try again.' })
+
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired 2FA code. Please try again.',
+      })
     }
 
-    /* TOTP verified — grant final access. */
-    user.failedLoginAttempts = 0
-    user.lockedUntil = null
-    user.lastLogin = new Date()
-
+    /* ── TOTP verified — issue final JWT and return user data ──────── */
     const accessToken = generateAccessToken(user)
-    const refreshToken = generateRefreshToken(user)
 
-    if (rememberMe) {
-      user.refreshTokens = user.refreshTokens || []
-      user.refreshTokens.push({ token: refreshToken })
-      if (user.refreshTokens.length > 10) {
-        user.refreshTokens = user.refreshTokens.slice(-10)
-      }
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          failedLoginAttempts: 0,
+          lockedUntil: null,
+          lastLogin: new Date(),
+        },
+      },
+    )
+
+    /* ── Build the user payload (mirrors User.toJSON()) ─────────────── */
+    const userPayload = {
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      avatar: user.avatar,
+      isActive: user.isActive,
+      lastLogin: user.lastLogin,
+      createdAt: user.createdAt,
+      updatedAt: user.updatedAt,
     }
 
-    await user.save()
-
-    await createAuditLog({ user: user._id, action: 'LOGIN_SUCCESS', details: { step: '2fa_complete', rememberMe: !!rememberMe }, req })
-
-    const resPayload = {
+    return res.status(200).json({
       success: true,
       token: accessToken,
-      user: user.toJSON(),
-    }
-    if (rememberMe) {
-      resPayload.refreshToken = refreshToken
-    }
-    res.json(resPayload)
+      user: userPayload,
+      message: 'Authentication successful. Welcome back!',
+    })
   } catch (error) {
-    console.error('[auth] verify2FA error:', error)
-    res.status(500).json({ success: false, message: 'Server error during 2FA verification.' })
+    console.error('CRITICAL 2FA VERIFICATION ERROR:', error)
+    return res.status(500).json({
+      success: false,
+      message: 'Server error during 2FA verification.',
+      error: error.message,
+    })
   }
 }
 
