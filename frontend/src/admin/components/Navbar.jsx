@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, LogOut, User, ChevronDown } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useAdmin } from '../context/AdminContext'
+import ThemeToggle from './ThemeToggle'
+import NotificationBell from './NotificationBell'
 
 const pageTitles = {
   '/admin/dashboard': 'Dashboard',
@@ -17,6 +19,13 @@ const pageTitles = {
   '/admin/contact': 'Contact',
   '/admin/footer': 'Footer',
   '/admin/settings': 'Settings',
+  '/admin/backup': 'Backup & Restore',
+  '/admin/activity-logs': 'Activity Logs',
+  '/admin/import-export': 'Import / Export',
+  '/admin/system-config': 'System Config',
+  '/admin/notifications': 'Notifications',
+  '/admin/maintenance': 'Maintenance',
+  '/admin/theme': 'Theme Settings',
 }
 
 export default function Navbar() {
@@ -32,7 +41,7 @@ export default function Navbar() {
   }
 
   const pageTitle = Object.entries(pageTitles).reduce((title, [path, label]) => {
-    if (location.pathname.startsWith('/admin/projects')) return 'Projects'
+    if (location.pathname.startsWith('/admin/projects') || location.pathname.startsWith('/admin/certificates') || location.pathname.startsWith('/admin/skills')) return label
     if (location.pathname.startsWith(path)) return label
     return title
   }, 'Dashboard')
@@ -55,7 +64,9 @@ export default function Navbar() {
           </h2>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1">
+          <ThemeToggle compact />
+          <NotificationBell />
           <div className="relative">
             <motion.button
               whileHover={{ scale: 1.02 }}

@@ -3,7 +3,8 @@ import { motion } from 'framer-motion'
 import {
   LayoutDashboard, BarChart3, FolderKanban, Award, Code2,
   Home, UserCircle, Mail, FileText, Settings, X, ChevronLeft, ChevronRight,
-  Image, Users, User, HardDrive,
+  Image, Users, User, HardDrive, Activity, Download, Wrench, Bell,
+  HeartPulse, Palette,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
@@ -12,16 +13,22 @@ import { canAccess } from './RoleGuard'
 const allNavItems = [
   { path: '/admin/dashboard', label: 'Dashboard', icon: LayoutDashboard, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/analytics', label: 'Analytics', icon: BarChart3, roles: ['super_admin', 'admin'] },
+  { path: '/admin/activity-logs', label: 'Activity Logs', icon: Activity, roles: ['super_admin', 'admin'] },
+  { path: '/admin/notifications', label: 'Notifications', icon: Bell, roles: ['super_admin', 'admin'] },
   { path: '/admin/projects', label: 'Projects', icon: FolderKanban, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/certificates', label: 'Certificates', icon: Award, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/skills', label: 'Skills', icon: Code2, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
+  { path: '/admin/import-export', label: 'Import / Export', icon: Download, roles: ['super_admin', 'admin'] },
+  { path: '/admin/maintenance', label: 'Maintenance', icon: HeartPulse, roles: ['super_admin'] },
   { path: '/admin/home', label: 'Home', icon: Home, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/about', label: 'About', icon: UserCircle, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/contact', label: 'Contact', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/users', label: 'Users', icon: Users, roles: ['super_admin'] },
   { path: '/admin/settings', label: 'Settings', icon: Settings, roles: ['super_admin', 'admin'] },
+  { path: '/admin/theme', label: 'Theme', icon: Palette, roles: ['super_admin', 'admin'] },
+  { path: '/admin/system-config', label: 'System Config', icon: Wrench, roles: ['super_admin'] },
   { path: '/admin/backup', label: 'Backup & Restore', icon: HardDrive, roles: ['super_admin', 'admin'] },
 ]
 

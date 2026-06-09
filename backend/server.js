@@ -15,6 +15,11 @@ const footerRoutes = require('./routes/footer')
 const mediaRoutes = require('./routes/media')
 const settingsRoutes = require('./routes/settings')
 const backupRoutes = require('./routes/backups')
+const activityLogRoutes = require('./routes/activityLogs')
+const importExportRoutes = require('./routes/importExport')
+const systemConfigRoutes = require('./routes/systemConfig')
+const maintenanceRoutes = require('./routes/maintenance')
+const notificationRoutes = require('./routes/notifications')
 
 const app = express()
 
@@ -59,6 +64,11 @@ app.use('/api/footer', footerRoutes)
 app.use('/api/media', mediaRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/backups', backupRoutes)
+app.use('/api/activity-logs', activityLogRoutes)
+app.use('/api/import-export', importExportRoutes)
+app.use('/api/system-config', systemConfigRoutes)
+app.use('/api/maintenance', maintenanceRoutes)
+app.use('/api/notifications', notificationRoutes)
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'))

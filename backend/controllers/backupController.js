@@ -7,6 +7,7 @@ const AboutContent = require('../models/AboutContent')
 const ContactContent = require('../models/ContactContent')
 const FooterContent = require('../models/FooterContent')
 const Settings = require('../models/Settings')
+const { createNotification } = require('./notificationController')
 
 const COLLECTIONS = [
   { model: Project, key: 'projects' },
@@ -78,6 +79,7 @@ async function createBackup(req, res) {
     })
     const obj = backup.toObject()
     delete obj.data
+    createNotification({ type: 'backup_completed', title: 'Backup Completed', message: `Manual backup "${name}" created successfully.`, link: '/admin/backup' })
     res.status(201).json({ success: true, backup: obj })
   } catch (error) {
     console.error('[backup] create error:', error)
@@ -184,6 +186,8 @@ async function restoreBackup(req, res) {
         await restoreCollection(model, docs)
       }
     }
+
+    createNotification({ type: 'restore_completed', title: 'Restore Completed', message: `Backup "${backup.name}" was restored successfully.`, link: '/admin/backup' })
 
     res.json({
       success: true,
