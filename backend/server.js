@@ -25,11 +25,15 @@ const notificationRoutes = require('./routes/notifications')
 const app = express()
 
 // ---------------------------------------------------------------------------
+// Cookie parser — must be registered before any route that reads cookies
+// ---------------------------------------------------------------------------
+app.use(cookieParser())
+
+// ---------------------------------------------------------------------------
 // CORS — accept multiple origins from env (comma-separated)
 // ---------------------------------------------------------------------------
 const corsOptions = {
   origin(origin, callback) {
-    // Allow requests with no origin (server-to-server, curl, etc.)
     if (!origin || config.corsOrigins.includes(origin)) {
       callback(null, true)
     } else {
@@ -41,7 +45,6 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 app.use(express.json({ strict: true }))
-app.use(cookieParser())
 
 // ---------------------------------------------------------------------------
 // Routes

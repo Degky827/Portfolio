@@ -290,7 +290,7 @@ async function verify2FA(req, res) {
     res.cookie('token', accessToken, {
       httpOnly: true,
       secure: config.nodeEnv === 'production',
-      sameSite: 'strict',
+      sameSite: config.nodeEnv === 'production' ? 'strict' : 'lax',
       maxAge: 60 * 60 * 1000, // 1 hour
     })
 
@@ -323,7 +323,7 @@ async function logout(req, res) {
     res.cookie('token', '', {
       httpOnly: true,
       secure: config.nodeEnv === 'production',
-      sameSite: 'strict',
+      sameSite: config.nodeEnv === 'production' ? 'strict' : 'lax',
       expires: new Date(0),
     })
 
