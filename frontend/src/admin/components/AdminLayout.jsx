@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { AdminProvider, useAdmin } from '../context/AdminContext'
+import { ThemeProvider } from '../context/ThemeContext'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
 
@@ -48,8 +49,10 @@ function LayoutInner() {
 
 export default function AdminLayout() {
   return (
-    <AdminProvider>
-      <LayoutInner />
-    </AdminProvider>
+    <ThemeProvider>
+      <AdminProvider>
+        <LayoutInner />
+      </AdminProvider>
+    </ThemeProvider>
   )
 }
