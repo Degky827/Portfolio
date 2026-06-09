@@ -17,7 +17,7 @@ async function createCertificate(req, res) {
       expirationDate: expirationDate || null,
       credentialId: credentialId || '',
       verificationUrl: verificationUrl || '',
-      certificateImage: req.file ? `/uploads/${req.file.filename}` : '',
+      certificateImage: req.file ? `/uploads/${req.file.filename}` : req.body.certificateImageUrl || '',
       description: description || '',
       skillsCovered: skillsCovered || [],
       featured: featured === true || featured === 'true',
@@ -132,6 +132,8 @@ async function updateCertificate(req, res) {
         try { fs.unlinkSync(oldPath) } catch { /* file may not exist */ }
       }
       certificate.certificateImage = `/uploads/${req.file.filename}`
+    } else if (req.body.certificateImageUrl) {
+      certificate.certificateImage = req.body.certificateImageUrl
     }
 
     await certificate.save()

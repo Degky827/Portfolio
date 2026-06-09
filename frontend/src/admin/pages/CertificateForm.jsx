@@ -23,6 +23,7 @@ export default function CertificateForm() {
     status: 'active',
   })
   const [imageFile, setImageFile] = useState(null)
+  const [imageUrl, setImageUrl] = useState('')
   const [existingImage, setExistingImage] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(isEditing)
@@ -83,6 +84,7 @@ export default function CertificateForm() {
     fd.append('featured', form.featured)
     fd.append('status', form.status)
     if (imageFile) fd.append('certificateImage', imageFile)
+    else if (imageUrl) fd.append('certificateImageUrl', imageUrl)
 
     try {
       if (isEditing) {
@@ -311,7 +313,10 @@ export default function CertificateForm() {
             >
               <ImageUpload
                 value={existingImage}
-                onChange={setImageFile}
+                onChange={(val) => {
+                  if (typeof val === 'string') { setImageUrl(val); setImageFile(null) }
+                  else { setImageFile(val); setImageUrl('') }
+                }}
                 error={errors.certificateImage}
               />
             </motion.div>

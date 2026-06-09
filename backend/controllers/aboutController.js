@@ -65,6 +65,8 @@ async function updateAboutContent(req, res) {
         try { fs.unlinkSync(oldPath) } catch { /* file may not exist */ }
       }
       content.profileImage = `/uploads/${req.file.filename}`
+    } else if (req.body.profileImageUrl) {
+      content.profileImage = req.body.profileImageUrl
     }
 
     await content.save()

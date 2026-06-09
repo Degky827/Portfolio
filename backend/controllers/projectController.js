@@ -17,7 +17,7 @@ async function createProject(req, res) {
       technologies: technologies || [],
       githubUrl: githubUrl || '',
       liveDemoUrl: liveDemoUrl || '',
-      image: req.file ? `/uploads/${req.file.filename}` : '',
+      image: req.file ? `/uploads/${req.file.filename}` : req.body.imageUrl || '',
       category,
       featured: featured === true || featured === 'true',
       displayOrder: parseInt(displayOrder, 10) || 0,
@@ -148,6 +148,8 @@ async function updateProject(req, res) {
         try { fs.unlinkSync(oldPath) } catch { /* file may not exist */ }
       }
       project.image = `/uploads/${req.file.filename}`
+    } else if (req.body.imageUrl) {
+      project.image = req.body.imageUrl
     }
 
     await project.save()

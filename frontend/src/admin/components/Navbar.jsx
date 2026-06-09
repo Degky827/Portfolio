@@ -99,7 +99,15 @@ export default function Navbar() {
                       <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
                         {user?.email}
                       </p>
+                      <p className="text-xs text-gray-400 mt-0.5 capitalize">{user?.role?.replace('_', ' ')}</p>
                     </div>
+                    <button
+                      onClick={() => { setDropdownOpen(false); navigate('/admin/profile') }}
+                      className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 font-medium transition-colors"
+                    >
+                      <User size={16} />
+                      Profile
+                    </button>
                     <button
                       onClick={handleLogout}
                       className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 font-medium transition-colors"

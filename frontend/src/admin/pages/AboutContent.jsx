@@ -24,6 +24,7 @@ export default function AboutContent() {
     achievements: [],
   })
   const [profileImageFile, setProfileImageFile] = useState(null)
+  const [profileImageUrl, setProfileImageUrl] = useState('')
   const [existingImage, setExistingImage] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -99,6 +100,7 @@ export default function AboutContent() {
     fd.append('experience', JSON.stringify(form.experience))
     fd.append('achievements', JSON.stringify(form.achievements))
     if (profileImageFile) fd.append('profileImage', profileImageFile)
+    else if (profileImageUrl) fd.append('profileImageUrl', profileImageUrl)
     try {
       await updateAboutContent(fd)
       setToast({ message: 'About content updated successfully', type: 'success' })
@@ -249,7 +251,10 @@ export default function AboutContent() {
               transition={{ delay: 0.1 }}
               className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6"
             >
-              <ImageUpload value={existingImage} onChange={setProfileImageFile} />
+              <ImageUpload value={existingImage} onChange={(val) => {
+                if (typeof val === 'string') { setProfileImageUrl(val); setProfileImageFile(null) }
+                else { setProfileImageFile(val); setProfileImageUrl('') }
+              }} />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}

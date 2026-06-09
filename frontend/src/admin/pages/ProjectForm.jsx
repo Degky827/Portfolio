@@ -32,6 +32,7 @@ export default function ProjectForm() {
     status: 'active',
   })
   const [imageFile, setImageFile] = useState(null)
+  const [imageUrl, setImageUrl] = useState('')
   const [existingImage, setExistingImage] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(isEditing)
@@ -92,6 +93,7 @@ export default function ProjectForm() {
     fd.append('displayOrder', form.displayOrder)
     fd.append('status', form.status)
     if (imageFile) fd.append('image', imageFile)
+    else if (imageUrl) fd.append('imageUrl', imageUrl)
 
     try {
       if (isEditing) {
@@ -323,7 +325,10 @@ export default function ProjectForm() {
             >
               <ImageUpload
                 value={existingImage}
-                onChange={setImageFile}
+                onChange={(val) => {
+                  if (typeof val === 'string') { setImageUrl(val); setImageFile(null) }
+                  else { setImageFile(val); setImageUrl('') }
+                }}
                 error={errors.image}
               />
             </motion.div>

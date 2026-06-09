@@ -18,6 +18,7 @@ export default function FooterContent() {
     status: 'active',
   })
   const [logoFile, setLogoFile] = useState(null)
+  const [logoUrl, setLogoUrl] = useState('')
   const [existingLogo, setExistingLogo] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -79,6 +80,7 @@ export default function FooterContent() {
     fd.append('quickLinks', JSON.stringify(form.quickLinks))
     fd.append('socialLinks', JSON.stringify(form.socialLinks))
     if (logoFile) fd.append('footerLogo', logoFile)
+    else if (logoUrl) fd.append('footerLogoUrl', logoUrl)
     try {
       await updateFooterContent(fd)
       setToast({ message: 'Footer content updated successfully', type: 'success' })
@@ -181,7 +183,10 @@ export default function FooterContent() {
               transition={{ delay: 0.1 }}
               className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6"
             >
-              <ImageUpload value={existingLogo} onChange={setLogoFile} />
+              <ImageUpload value={existingLogo} onChange={(val) => {
+                if (typeof val === 'string') { setLogoUrl(val); setLogoFile(null) }
+                else { setLogoFile(val); setLogoUrl('') }
+              }} />
             </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
