@@ -1,4 +1,7 @@
 import { createContext, useContext, useState, useCallback, useMemo } from 'react'
+import { getMe } from '../services/authService'
+
+const AUTH_FLAG = 'opencode_auth'
 
 const AuthContext = createContext(null)
 
@@ -13,10 +16,12 @@ export function AuthProvider({ children }) {
   })
 
   const [token, setToken] = useState(() => localStorage.getItem('token'))
+  const [cookieAuth, setCookieAuth] = useState(() => localStorage.getItem(AUTH_FLAG) === 'true')
 
   const setAuth = useCallback((newToken, newUser, rememberMe) => {
     localStorage.setItem('token', newToken)
     localStorage.setItem('user', JSON.stringify(newUser))
+    localStorage.setItem(AUTH_FLAG, 'true')
     if (rememberMe) {
       localStorage.setItem('rememberMe', 'true')
     } else {
@@ -24,6 +29,7 @@ export function AuthProvider({ children }) {
     }
     setToken(newToken)
     setUser(newUser)
+    setCookieAuth(true)
   }, [])
 
   const setUserData = useCallback((newUser) => {
@@ -36,11 +42,13 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('user')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('rememberMe')
+    localStorage.removeItem(AUTH_FLAG)
     setToken(null)
     setUser(null)
+    setCookieAuth(false)
   }, [])
 
-  const isAuthenticated = useMemo(() => !!token, [token])
+  const isAuthenticated = useMemo(() => !!(token || cookieAuth), [token, cookieAuth])
   const userRole = useMemo(() => user?.role || null, [user])
 
   const hasRole = useCallback(
@@ -61,8 +69,9 @@ export function AuthProvider({ children }) {
       setUserData,
       logout,
       hasRole,
+      cookieAuth,
     }),
-    [user, token, isAuthenticated, userRole, setAuth, setUserData, logout, hasRole],
+    [user, token, isAuthenticated, userRole, setAuth, setUserData, logout, hasRole, cookieAuth],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, LogOut, User, ChevronDown } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { useAdmin } from '../context/AdminContext'
+import { logout as logoutApi } from '../../services/authService'
 import ThemeToggle from './ThemeToggle'
 import NotificationBell from './NotificationBell'
 
@@ -35,7 +36,8 @@ export default function Navbar() {
   const location = useLocation()
   const [dropdownOpen, setDropdownOpen] = useState(false)
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    try { await logoutApi() } catch { /* cookie cleared regardless */ }
     logout()
     navigate('/login', { replace: true })
   }

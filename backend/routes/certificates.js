@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { body, validationResult } = require('express-validator')
-const { authenticateToken } = require('../middleware/auth')
+const { authenticateToken, authorizeRoles } = require('../middleware/auth')
 const upload = require('../config/upload')
 const {
   createCertificate,
@@ -32,6 +32,7 @@ const certificateValidation = [
 router.post(
   '/',
   authenticateToken,
+  authorizeRoles('super_admin', 'admin', 'editor'),
   upload.single('certificateImage'),
   certificateValidation,
   handleValidation,
@@ -45,12 +46,13 @@ router.get('/:id', getCertificate)
 router.put(
   '/:id',
   authenticateToken,
+  authorizeRoles('super_admin', 'admin'),
   upload.single('certificateImage'),
   certificateValidation,
   handleValidation,
   updateCertificate,
 )
 
-router.delete('/:id', authenticateToken, deleteCertificate)
+router.delete('/:id', authenticateToken, authorizeRoles('super_admin', 'admin'), deleteCertificate)
 
 module.exports = router
