@@ -13,6 +13,8 @@ const aboutRoutes = require('./routes/about')
 const contactRoutes = require('./routes/contact')
 const footerRoutes = require('./routes/footer')
 const mediaRoutes = require('./routes/media')
+const settingsRoutes = require('./routes/settings')
+const backupRoutes = require('./routes/backups')
 
 const app = express()
 
@@ -55,6 +57,8 @@ app.use('/api/about', aboutRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/api/footer', footerRoutes)
 app.use('/api/media', mediaRoutes)
+app.use('/api/settings', settingsRoutes)
+app.use('/api/backups', backupRoutes)
 
 // Serve uploaded files
 app.use('/uploads', express.static('uploads'))

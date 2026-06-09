@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import {
   LayoutDashboard, BarChart3, FolderKanban, Award, Code2,
   Home, UserCircle, Mail, FileText, Settings, X, ChevronLeft, ChevronRight,
-  Image, Users, User,
+  Image, Users, User, HardDrive,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
@@ -22,6 +22,7 @@ const allNavItems = [
   { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
   { path: '/admin/users', label: 'Users', icon: Users, roles: ['super_admin'] },
   { path: '/admin/settings', label: 'Settings', icon: Settings, roles: ['super_admin', 'admin'] },
+  { path: '/admin/backup', label: 'Backup & Restore', icon: HardDrive, roles: ['super_admin', 'admin'] },
 ]
 
 const sidebarVariants = {

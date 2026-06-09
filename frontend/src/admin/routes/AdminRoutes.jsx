@@ -18,28 +18,11 @@ import FooterContent from '../pages/FooterContent'
 import MediaLibrary from '../pages/MediaLibrary'
 import UserManagement from '../pages/UserManagement'
 import Profile from '../pages/Profile'
-import PlaceholderPage from '../pages/PlaceholderPage'
-
-const placeholderPages = [
-  { path: 'settings', title: 'Settings', description: 'Configure your portfolio settings', roles: ['super_admin', 'admin'] },
-]
+import Settings from '../pages/Settings'
+import Backup from '../pages/Backup'
 
 export default function AdminRoutes() {
   const { user } = useAuth()
-
-  function renderPlaceholder(page) {
-    return (
-      <Route
-        key={page.path}
-        path={page.path}
-        element={
-          <RoleGuard roles={page.roles}>
-            <PlaceholderPage title={page.title} description={page.description} />
-          </RoleGuard>
-        }
-      />
-    )
-  }
 
   return (
     <ProtectedRoute>
@@ -78,7 +61,22 @@ export default function AdminRoutes() {
             }
           />
           <Route path="profile" element={<Profile />} />
-          {placeholderPages.map(renderPlaceholder)}
+          <Route
+            path="settings"
+            element={
+              <RoleGuard roles={['super_admin', 'admin']}>
+                <Settings />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="backup"
+            element={
+              <RoleGuard roles={['super_admin', 'admin']}>
+                <Backup />
+              </RoleGuard>
+            }
+          />
         </Route>
       </Routes>
     </ProtectedRoute>
