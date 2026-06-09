@@ -1,4 +1,5 @@
 const cloudinary = require('cloudinary').v2
+const { CloudinaryStorage } = require('multer-storage-cloudinary')
 const path = require('path')
 
 if (process.env.NODE_ENV !== 'production') {
@@ -17,4 +18,15 @@ const isCloudinaryConfigured = Boolean(
   process.env.CLOUDINARY_API_SECRET,
 )
 
-module.exports = { cloudinary, isCloudinaryConfigured }
+const portfolioStorage = new CloudinaryStorage({
+  cloudinary,
+  params: {
+    folder: 'portfolio_assets',
+    resource_type: 'auto',
+    transformation: [
+      { width: 1000, height: 1000, crop: 'limit', quality: 'auto', format: 'auto' },
+    ],
+  },
+})
+
+module.exports = { cloudinary, isCloudinaryConfigured, portfolioStorage }

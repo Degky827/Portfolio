@@ -16,24 +16,17 @@ async function uploadMedia(req, res) {
     let publicId = ''
 
     if (isCloudinaryConfigured) {
-      try {
-        const result = await cloudinary.uploader.upload(file.path, {
-          folder: 'portfolio',
-          resource_type: 'auto',
-        })
-        url = result.secure_url
-        publicId = result.public_id
-        fs.unlinkSync(file.path)
-      } catch (cloudErr) {
-        console.error('[media] Cloudinary upload failed, falling back to local:', cloudErr.message)
-        url = `/uploads/${file.filename}`
-      }
+      // multer-storage-cloudinary already uploaded; path = URL, filename = public_id
+      url = file.path
+      publicId = file.filename
     } else {
       url = `/uploads/${file.filename}`
+      // Clean up local temp file if cloudinary upload failed
+      try { fs.unlinkSync(file.path) } catch { /* ok */ }
     }
 
     const media = await Media.create({
-      filename: file.filename,
+      filename: publicId || file.filename,
       originalName: file.originalname,
       publicId,
       url,
