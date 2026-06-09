@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { authenticateToken, authorizeRoles } = require('../middleware/auth')
+const { authenticateToken, authorizeSuperAdmin } = require('../middleware/auth')
 const {
   getUsers, getUser, createUser, updateUser, deleteUser,
 } = require('../controllers/userController')
@@ -7,7 +7,7 @@ const {
 const router = Router()
 
 router.use(authenticateToken)
-router.use(authorizeRoles('super_admin'))
+router.use(authorizeSuperAdmin)
 
 router.get('/', getUsers)
 router.get('/:id', getUser)

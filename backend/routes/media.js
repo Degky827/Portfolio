@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { authenticateToken, authorizeRoles } = require('../middleware/auth')
+const { authenticateToken, authorizeSuperAdmin } = require('../middleware/auth')
 const { uploadSingle } = require('../config/cloudinaryUpload')
 const {
   uploadMedia,
@@ -11,10 +11,10 @@ const {
 
 const router = Router()
 
-router.post('/upload', authenticateToken, authorizeRoles('super_admin', 'admin'), uploadSingle('file'), uploadMedia)
+router.post('/upload', authenticateToken, authorizeSuperAdmin, uploadSingle('file'), uploadMedia)
 router.get('/', getMedia)
 router.get('/:id', getMediaItem)
-router.put('/:id', authenticateToken, authorizeRoles('super_admin', 'admin'), updateMedia)
-router.delete('/:id', authenticateToken, authorizeRoles('super_admin', 'admin'), deleteMedia)
+router.put('/:id', authenticateToken, authorizeSuperAdmin, updateMedia)
+router.delete('/:id', authenticateToken, authorizeSuperAdmin, deleteMedia)
 
 module.exports = router

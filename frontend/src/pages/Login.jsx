@@ -3,7 +3,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff, LogIn, AlertCircle, Shield, ArrowLeft, Smartphone } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
-import { login as loginApi, verify2FA as verify2FAApi, getMe } from '../services/authService'
+import { login as loginApi, verify2FA as verify2FAApi } from '../services/authService'
 
 const TOTP_LENGTH = 6
 
@@ -89,9 +89,8 @@ export default function Login() {
     const code = totpCode.join('')
 
     try {
-      await verify2FAApi(verifiedEmail, code, rememberMe)
-      const { user: userData } = await getMe()
-      setAuth('cookie', userData, rememberMe)
+      const data = await verify2FAApi(verifiedEmail, code, rememberMe)
+      setAuth('cookie', data.user, rememberMe)
       navigate(from, { replace: true })
     } catch (err) {
       setTotpCode(Array.from({ length: TOTP_LENGTH }, () => ''))
