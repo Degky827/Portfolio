@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { body, validationResult } = require('express-validator')
-const { authenticateToken, authorizeRoles } = require('../middleware/auth')
+const { authenticateToken, authorizeSuperAdmin } = require('../middleware/auth')
 const upload = require('../config/upload')
 const {
   createProject,
@@ -35,7 +35,7 @@ router.get('/:id', getProject)
 router.post(
   '/',
   authenticateToken,
-  authorizeRoles('super_admin', 'admin', 'editor'),
+  authorizeSuperAdmin,
   upload.single('image'),
   projectValidation,
   handleValidation,
@@ -45,7 +45,7 @@ router.post(
 router.put(
   '/:id',
   authenticateToken,
-  authorizeRoles('super_admin', 'admin'),
+  authorizeSuperAdmin,
   upload.single('image'),
   projectValidation,
   handleValidation,
@@ -55,7 +55,7 @@ router.put(
 router.delete(
   '/:id',
   authenticateToken,
-  authorizeRoles('super_admin', 'admin'),
+  authorizeSuperAdmin,
   deleteProject,
 )
 

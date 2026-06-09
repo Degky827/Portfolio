@@ -147,10 +147,18 @@ async function loginStep1(req, res) {
     }
 
     /* ── Correct password ────────────────────────────────────────────
-     * 1. Wipe the failed-attempt counter (non-blocking).
-     * 2. Tell the frontend to show the 2FA screen.
-     * 3. Do NOT issue a JWT.  Do NOT verify a TOTP code.
+     * 1. Reject non-super-admin immediately.
+     * 2. Wipe the failed-attempt counter (non-blocking).
+     * 3. Tell the frontend to show the 2FA screen.
+     * 4. Do NOT issue a JWT.  Do NOT verify a TOTP code.
      */
+    if (user.role !== 'super_admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Only super administrators can access this system.',
+      })
+    }
+
     await User.updateOne(
       { _id: user._id },
       { $set: { failedLoginAttempts: 0, lockedUntil: null } },
@@ -213,6 +221,13 @@ async function verify2FA(req, res) {
       return res.status(423).json({
         success: false,
         message: `Account is locked. Try again in ${remainingMinutes} minute(s).`,
+      })
+    }
+
+    if (user.role !== 'super_admin') {
+      return res.status(403).json({
+        success: false,
+        message: 'Access denied. Only super administrators can access this system.',
       })
     }
 
@@ -291,7 +306,7 @@ async function verify2FA(req, res) {
       httpOnly: true,
       secure: config.nodeEnv === 'production',
       sameSite: config.nodeEnv === 'production' ? 'strict' : 'lax',
-      maxAge: 60 * 60 * 1000, // 1 hour
+      maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000,
     })
 
     return res.status(200).json({
