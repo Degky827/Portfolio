@@ -1,0 +1,287 @@
+const Project = require('../models/Project')
+const Certificate = require('../models/Certificate')
+const Skill = require('../models/Skill')
+
+function toCSV(items, fields) {
+  const esc = (v) => {
+    const s = v == null ? '' : String(v)
+    return `"${s.replace(/"/g, '""')}"`
+  }
+  const header = fields.map((f) => `"${f.label}"`).join(',')
+  const rows = items.map((item) =>
+    fields.map((f) => esc(f.get ? f.get(item) : item[f.key])).join(','),
+  )
+  return [header, ...rows].join('\n')
+}
+
+const EXPORT_CONFIG = {
+  projects: {
+    model: Project,
+    fields: [
+      { key: 'title', label: 'Title' },
+      { key: 'shortDescription', label: 'Short Description' },
+      { key: 'fullDescription', label: 'Full Description' },
+      {
+        label: 'Technologies',
+        get: (p) => (Array.isArray(p.technologies) ? p.technologies.join(';') : ''),
+      },
+      { key: 'githubUrl', label: 'GitHub URL' },
+      { key: 'liveDemoUrl', label: 'Live Demo URL' },
+      { key: 'category', label: 'Category' },
+      { key: 'featured', label: 'Featured' },
+      { key: 'displayOrder', label: 'Display Order' },
+      { key: 'status', label: 'Status' },
+    ],
+  },
+  certificates: {
+    model: Certificate,
+    fields: [
+      { key: 'title', label: 'Title' },
+      { key: 'organization', label: 'Organization' },
+      { key: 'issueDate', label: 'Issue Date' },
+      { key: 'expirationDate', label: 'Expiration Date' },
+      { key: 'credentialId', label: 'Credential ID' },
+      { key: 'credentialUrl', label: 'Credential URL' },
+      { key: 'category', label: 'Category' },
+      { key: 'featured', label: 'Featured' },
+      { key: 'displayOrder', label: 'Display Order' },
+      { key: 'status', label: 'Status' },
+    ],
+  },
+  skills: {
+    model: Skill,
+    fields: [
+      { key: 'name', label: 'Name' },
+      { key: 'category', label: 'Category' },
+      { key: 'proficiency', label: 'Proficiency' },
+      { key: 'displayOrder', label: 'Display Order' },
+    ],
+  },
+}
+
+const IMPORT_CONFIG = {
+  projects: {
+    model: Project,
+    titleField: 'title',
+    parseRow: (row) => ({
+      title: row.title,
+      shortDescription: row.shortDescription || '',
+      fullDescription: row.fullDescription || '',
+      technologies: row.technologies
+        ? row.technologies.split(';').map((s) => s.trim()).filter(Boolean)
+        : [],
+      githubUrl: row.githubUrl || '',
+      liveDemoUrl: row.liveDemoUrl || '',
+      category: row.category || '',
+      featured: row.featured === true || row.featured === 'true' || row.featured === 'Yes',
+      displayOrder: parseInt(row.displayOrder, 10) || 0,
+      status: row.status || 'active',
+    }),
+  },
+  certificates: {
+    model: Certificate,
+    titleField: 'title',
+    parseRow: (row) => ({
+      title: row.title,
+      organization: row.organization || '',
+      issueDate: row.issueDate || undefined,
+      expirationDate: row.expirationDate || undefined,
+      credentialId: row.credentialId || '',
+      credentialUrl: row.credentialUrl || '',
+      category: row.category || '',
+      featured: row.featured === true || row.featured === 'true' || row.featured === 'Yes',
+      displayOrder: parseInt(row.displayOrder, 10) || 0,
+      status: row.status || 'active',
+    }),
+  },
+  skills: {
+    model: Skill,
+    titleField: 'name',
+    parseRow: (row) => ({
+      name: row.name,
+      category: row.category || '',
+      proficiency: parseInt(row.proficiency, 10) || 50,
+      displayOrder: parseInt(row.displayOrder, 10) || 0,
+    }),
+  },
+}
+
+async function exportData(req, res) {
+  try {
+    const type = req.query.type || 'all'
+    const format = req.query.format || 'json'
+
+    const types = type === 'all'
+      ? ['projects', 'certificates', 'skills']
+      : [type]
+
+    const result = {}
+
+    for (const t of types) {
+      const cfg = EXPORT_CONFIG[t]
+      if (!cfg) continue
+      const items = await cfg.model.find().lean()
+      result[t] = items
+    }
+
+    if (format === 'csv') {
+      const parts = []
+      for (const t of types) {
+        const cfg = EXPORT_CONFIG[t]
+        if (!cfg) continue
+        const items = result[t] || []
+        parts.push(`--- ${t.toUpperCase()} ---`)
+        parts.push(toCSV(items, cfg.fields))
+      }
+      const csv = parts.join('\n\n')
+      res.setHeader('Content-Type', 'text/csv')
+      res.setHeader('Content-Disposition', `attachment; filename="portfolio-${type}-export.csv"`)
+      return res.send(csv)
+    }
+
+    res.setHeader('Content-Type', 'application/json')
+    res.setHeader('Content-Disposition', `attachment; filename="portfolio-${type}-export.json"`)
+    res.json(type === 'all' ? result : result[type])
+  } catch (error) {
+    console.error('[importExport] export error:', error)
+    res.status(500).json({ success: false, message: 'Failed to export data' })
+  }
+}
+
+async function previewImport(req, res) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file uploaded' })
+    }
+
+    const type = req.body.type
+    if (!type || !IMPORT_CONFIG[type]) {
+      return res.status(400).json({ success: false, message: 'Invalid or missing import type' })
+    }
+
+    const cfg = IMPORT_CONFIG[type]
+    const raw = req.file.buffer.toString('utf8')
+    const isCSV = req.file.originalname.endsWith('.csv')
+    let rows
+
+    try {
+      if (isCSV) {
+        rows = parseCSV(raw)
+      } else {
+        const parsed = JSON.parse(raw)
+        rows = Array.isArray(parsed) ? parsed : [parsed]
+      }
+    } catch {
+      return res.status(400).json({ success: false, message: `Invalid ${isCSV ? 'CSV' : 'JSON'} file format` })
+    }
+
+    const existing = await cfg.model.find().select(cfg.titleField).lean()
+    const existingTitles = new Set(
+      existing.map((e) => (e[cfg.titleField] || '').toLowerCase().trim()),
+    )
+
+    const valid = []
+    const invalid = []
+    const duplicates = []
+
+    rows.forEach((row, i) => {
+      const title = (row[cfg.titleField] || '').trim()
+      if (!title) {
+        invalid.push({ row: i + 1, errors: [`Missing required field: ${cfg.titleField}`] })
+        return
+      }
+      if (existingTitles.has(title.toLowerCase())) {
+        duplicates.push({ row: i + 1, title })
+        return
+      }
+      try {
+        const parsed = cfg.parseRow(row)
+        valid.push(parsed)
+      } catch {
+        invalid.push({ row: i + 1, errors: ['Failed to parse row'] })
+      }
+    })
+
+    const summary = {
+      total: rows.length,
+      valid: valid.length,
+      invalid: invalid.length,
+      duplicates: duplicates.length,
+    }
+
+    res.json({ success: true, summary, valid, invalid, duplicates, type })
+  } catch (error) {
+    console.error('[importExport] preview error:', error)
+    res.status(500).json({ success: false, message: 'Failed to preview import' })
+  }
+}
+
+async function executeImport(req, res) {
+  try {
+    const { type, items } = req.body
+    if (!type || !IMPORT_CONFIG[type]) {
+      return res.status(400).json({ success: false, message: 'Invalid import type' })
+    }
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ success: false, message: 'No items to import' })
+    }
+
+    const cfg = IMPORT_CONFIG[type]
+    const parsed = items.map((item) => cfg.parseRow(item))
+    const created = await cfg.model.insertMany(parsed)
+
+    res.json({
+      success: true,
+      message: `Successfully imported ${created.length} ${type}`,
+      count: created.length,
+    })
+  } catch (error) {
+    console.error('[importExport] import error:', error)
+    res.status(500).json({ success: false, message: 'Failed to import data' })
+  }
+}
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n')
+  if (lines.length < 2) return []
+
+  const parseLine = (line) => {
+    const result = []
+    let current = ''
+    let inQuotes = false
+    for (let i = 0; i < line.length; i++) {
+      const ch = line[i]
+      if (ch === '"') {
+        if (inQuotes && i + 1 < line.length && line[i + 1] === '"') {
+          current += '"'
+          i++
+        } else {
+          inQuotes = !inQuotes
+        }
+      } else if (ch === ',' && !inQuotes) {
+        result.push(current.trim())
+        current = ''
+      } else {
+        current += ch
+      }
+    }
+    result.push(current.trim())
+    return result
+  }
+
+  const headers = parseLine(lines[0])
+  const rows = []
+
+  for (let i = 1; i < lines.length; i++) {
+    const values = parseLine(lines[i])
+    const row = {}
+    headers.forEach((h, j) => {
+      row[h] = values[j] || ''
+    })
+    rows.push(row)
+  }
+
+  return rows
+}
+
+module.exports = { exportData, previewImport, executeImport }
