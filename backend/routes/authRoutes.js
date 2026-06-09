@@ -1,13 +1,10 @@
-const { Router } = require('express')
+const express = require('express')
 const rateLimit = require('express-rate-limit')
-const {
-  loginStep1, verify2FA, logout, refresh, getMe,
-  setup2FA, verify2FASetup, disable2FA,
-} = require('../controllers/authController')
+const router = express.Router()
+const { loginStep1, verify2FA, logout, refresh, getMe, setup2FA, verify2FASetup, disable2FA } = require('../controllers/authController')
 const { authenticateToken } = require('../middleware/auth')
 
-const router = Router()
-
+// Rate limiters
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
   max: 10,
@@ -24,8 +21,11 @@ const totpLimiter = rateLimit({
   legacyHeaders: false,
 })
 
+// ── PUBLIC ROUTES (no auth middleware) ────────────────────────────
 router.post('/login', loginLimiter, loginStep1)
 router.post('/verify-2fa', totpLimiter, verify2FA)
+
+// ── PROTECTED ROUTES (authenticateToken required) ─────────────────
 router.post('/logout', authenticateToken, logout)
 router.post('/refresh', refresh)
 router.get('/me', authenticateToken, getMe)
