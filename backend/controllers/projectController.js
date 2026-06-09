@@ -1,6 +1,17 @@
 const fs = require('fs')
 const path = require('path')
+const { JSDOM } = require('jsdom')
+const DOMPurify = require('dompurify')(new JSDOM('').window)
 const Project = require('../models/Project')
+const ALLOWED_TAGS = [
+  'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+  'p', 'br', 'hr',
+  'ul', 'ol', 'li',
+  'blockquote', 'pre', 'code',
+  'strong', 'b', 'em', 'i', 'u', 's', 'strike',
+  'a', 'img',
+  'span', 'div',
+]
 
 async function createProject(req, res) {
   try {
@@ -13,7 +24,7 @@ async function createProject(req, res) {
     const project = await Project.create({
       title,
       shortDescription,
-      fullDescription: fullDescription || '',
+      fullDescription: fullDescription ? DOMPurify.sanitize(fullDescription, { ALLOWED_TAGS }) : '',
       technologies: technologies || [],
       githubUrl: githubUrl || '',
       liveDemoUrl: liveDemoUrl || '',
@@ -136,6 +147,8 @@ async function updateProject(req, res) {
           project[field] = typeof req.body[field] === 'string'
             ? req.body[field].split(',').map((s) => s.trim()).filter(Boolean)
             : req.body[field] || []
+        } else if (field === 'fullDescription') {
+          project[field] = DOMPurify.sanitize(req.body[field], { ALLOWED_TAGS })
         } else {
           project[field] = req.body[field]
         }

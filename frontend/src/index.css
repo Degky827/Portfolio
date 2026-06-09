@@ -197,3 +197,99 @@ h1, h2, h3, h4, h5, h6 {
 .dark .admin-sidebar-nav::-webkit-scrollbar-thumb {
   background: theme('colors.slate.700');
 }
+
+/* ── Quill Rich Text Editor Dark Theme ───────────────────────────── */
+.rich-text-editor .ql-container {
+  font-family: var(--font-sans);
+  font-size: 0.9rem;
+  border-bottom: none;
+  min-height: 220px;
+}
+
+.rich-text-editor .ql-editor {
+  padding: 1rem 1.25rem;
+  line-height: 1.7;
+}
+
+.dark .rich-text-editor .ql-container {
+  border-color: theme('colors.slate.700');
+}
+
+.dark .rich-text-editor .ql-toolbar {
+  background: theme('colors.slate.800');
+  border-color: theme('colors.slate.700');
+  border-radius: 12px 12px 0 0;
+}
+
+.dark .rich-text-editor .ql-container {
+  background: theme('colors.slate.800/50');
+  border-radius: 0 0 12px 12px;
+}
+
+.dark .rich-text-editor .ql-editor {
+  color: #f1f5f9;
+}
+
+.dark .rich-text-editor .ql-editor.ql-blank::before {
+  color: theme('colors.slate.500');
+}
+
+.dark .rich-text-editor .ql-toolbar .ql-stroke {
+  stroke: theme('colors.slate.400');
+}
+
+.dark .rich-text-editor .ql-toolbar .ql-fill {
+  fill: theme('colors.slate.400');
+}
+
+.dark .rich-text-editor .ql-toolbar .ql-picker {
+  color: theme('colors.slate.400');
+}
+
+.dark .rich-text-editor .ql-toolbar button:hover .ql-stroke,
+.dark .rich-text-editor .ql-toolbar button.ql-active .ql-stroke {
+  stroke: var(--color-primary);
+}
+
+.dark .rich-text-editor .ql-toolbar button:hover .ql-fill,
+.dark .rich-text-editor .ql-toolbar button.ql-active .ql-fill {
+  fill: var(--color-primary);
+}
+
+.dark .rich-text-editor .ql-toolbar button:hover,
+.dark .rich-text-editor .ql-toolbar button.ql-active {
+  color: var(--color-primary);
+}
+
+.dark .rich-text-editor .ql-toolbar .ql-picker:hover .ql-picker-label,
+.dark .rich-text-editor .ql-toolbar .ql-picker.ql-expanded .ql-picker-label {
+  color: var(--color-primary);
+}
+
+.dark .rich-text-editor .ql-toolbar .ql-picker-options {
+  background: theme('colors.slate.800');
+  border-color: theme('colors.slate.700');
+}
+
+.dark .rich-text-editor .ql-editor code {
+  background: theme('colors.slate.700');
+  color: #f472b6;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.85em;
+}
+
+.dark .rich-text-editor .ql-editor pre.ql-syntax {
+  background: theme('colors.slate.900');
+  color: #e2e8f0;
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid theme('colors.slate.700');
+}
+
+.dark .rich-text-editor .ql-editor blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 1rem;
+  color: theme('colors.slate.400');
+}
