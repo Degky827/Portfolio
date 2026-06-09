@@ -1,0 +1,13 @@
+import api from './api'
+
+export async function getSettings() {
+  const { data } = await api.get('/settings')
+  return data
+}
+
+export async function updateSettings(formData) {
+  const { data } = await api.put('/settings', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}
