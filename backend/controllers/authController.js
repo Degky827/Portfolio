@@ -260,7 +260,7 @@ async function verify2FA(req, res) {
       })
     }
 
-    /* ── TOTP verified — issue final JWT and return user data ──────── */
+    /* ── TOTP verified — issue final JWT as httpOnly cookie ────────── */
     const accessToken = generateAccessToken(user)
 
     await User.updateOne(
@@ -287,9 +287,15 @@ async function verify2FA(req, res) {
       updatedAt: user.updatedAt,
     }
 
+    res.cookie('token', accessToken, {
+      httpOnly: true,
+      secure: config.nodeEnv === 'production',
+      sameSite: 'strict',
+      maxAge: 60 * 60 * 1000, // 1 hour
+    })
+
     return res.status(200).json({
       success: true,
-      token: accessToken,
       user: userPayload,
       message: 'Authentication successful. Welcome back!',
     })
@@ -305,9 +311,6 @@ async function verify2FA(req, res) {
 
 async function logout(req, res) {
   try {
-    const authHeader = req.headers['authorization']
-    const token = authHeader && authHeader.split(' ')[1]
-
     if (req.body.refreshToken && req.user) {
       req.user.refreshTokens = (req.user.refreshTokens || []).filter(
         (rt) => rt.token !== req.body.refreshToken,
@@ -315,9 +318,16 @@ async function logout(req, res) {
       await req.user.save()
     }
 
-    await createAuditLog({ user: req.user?._id, action: 'LOGOUT', details: { tokenPresent: !!token }, req })
+    await createAuditLog({ user: req.user?._id, action: 'LOGOUT', details: {}, req })
 
-    res.json({ success: true, message: 'Logged out successfully.' })
+    res.cookie('token', '', {
+      httpOnly: true,
+      secure: config.nodeEnv === 'production',
+      sameSite: 'strict',
+      expires: new Date(0),
+    })
+
+    res.json({ success: true, message: 'Logged out successfully. Cookie cleared.' })
   } catch (error) {
     console.error('[auth] logout error:', error)
     res.status(500).json({ success: false, message: 'Server error during logout.' })

@@ -1,7 +1,10 @@
 import { Navigate, useLocation } from 'react-router-dom'
 
+const AUTH_FLAG = 'opencode_auth'
+
 export default function ProtectedRoute({ children }) {
   const token = localStorage.getItem('token')
+  const cookieAuth = localStorage.getItem(AUTH_FLAG) === 'true'
   const user = (() => {
     try {
       const saved = localStorage.getItem('user')
@@ -12,7 +15,7 @@ export default function ProtectedRoute({ children }) {
   })()
   const location = useLocation()
 
-  if (!token || !user) {
+  if (!(token || cookieAuth) || !user) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />
   }
 
