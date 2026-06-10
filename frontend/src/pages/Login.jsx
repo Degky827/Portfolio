@@ -94,6 +94,7 @@ export default function Login() {
       const data = await verify2FAApi(verifiedEmail, code, rememberMe)
       navigatingRef.current = true
       setAuth('cookie', data.user, rememberMe)
+      await new Promise((r) => setTimeout(r, 150))
       navigate(from, { replace: true })
     } catch (err) {
       setTotpCode(Array.from({ length: TOTP_LENGTH }, () => ''))
