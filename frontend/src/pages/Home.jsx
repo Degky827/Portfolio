@@ -1,7 +1,9 @@
+import { useEffect, useState } from 'react'
 import { lazy, Suspense } from 'react'
 import Hero from '../components/sections/Hero'
 import About from '../components/sections/About'
 import Skills from '../components/sections/Skills'
+import { getHomeContent } from '../services/homeContentService'
 
 const Projects = lazy(() => import('../components/sections/Projects'))
 const Contact = lazy(() => import('../components/sections/Contact'))
@@ -13,10 +15,18 @@ const spinner = (
 )
 
 export default function Home() {
+  const [content, setContent] = useState(null)
+
+  useEffect(() => {
+    getHomeContent()
+      .then((res) => setContent(res.content))
+      .catch(() => {})
+  }, [])
+
   return (
     <>
-      <Hero />
-      <About />
+      <Hero content={content?.hero} />
+      <About content={content?.about} />
       <Skills />
       <Suspense fallback={spinner}>
         <Projects />

@@ -1,46 +1,29 @@
-import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Code, Award, Users, TrendingUp, Download, FileText } from 'lucide-react'
-import { getAboutContent } from '../../services/aboutService'
+import { Code, Award, Users, TrendingUp } from 'lucide-react'
 
-export default function About() {
-  const [content, setContent] = useState(null)
+const hardcodedSections = [
+  { title: 'Education & Background', content: "I hold a Bachelor's degree in Computer Science, providing a deep foundation in both software systems and digital protection." },
+  { title: 'Professional Focus', content: "I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security." },
+  { title: 'Expertise Areas', content: "From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions." },
+  { title: 'Mission & Approach', content: "My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional." },
+]
 
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const { content } = await getAboutContent()
-        setContent(content)
-      } catch {
-        // fall back to hardcoded content
-      }
-    })()
-  }, [])
+const hardcodedAchievements = [
+  { title: 'Ethio Coders' },
+  { title: 'e-SHE Online Learning' },
+  { title: 'Networking Designing' },
+  { title: 'Hackathon Computation in 24h' },
+]
 
-  const aboutSections = content
-    ? [
-        { title: 'Education & Background', content: content.education?.length
-            ? content.education.map((e) => `${e.degree} — ${e.institution} (${e.year})`).join(', ')
-            : content.description || "I hold a Bachelor's degree in Computer Science, providing a deep foundation in both software systems and digital protection." },
-        { title: 'Professional Focus', content: content.description || "I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security." },
-        { title: 'Expertise Areas', content: content.experience?.length
-            ? content.experience.map((e) => `${e.role} at ${e.company}`).join(', ')
-            : "From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions." },
-        { title: 'Mission & Approach', content: "My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional." },
-      ]
-    : [
-        { title: 'Education & Background', content: "I hold a Bachelor's degree in Computer Science, providing a deep foundation in both software systems and digital protection." },
-        { title: 'Professional Focus', content: "I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security." },
-        { title: 'Expertise Areas', content: "From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions." },
-        { title: 'Mission & Approach', content: "My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional." },
-      ]
-
-  const subtitleText = content?.subtitle || 'A passionate developer and network designer dedicated to building secure and scalable digital experiences.'
+export default function About({ content }) {
+  const title = content?.title || 'Get to Know Me'
+  const subtitle = content?.subtitle || 'A passionate developer and network designer dedicated to building secure and scalable digital experiences.'
   const locationText = content?.location || 'Bahirdar'
   const yearsExp = content?.yearsOfExperience || 5
-  const achievementsList = content?.achievements || []
-  const statClients = achievementsList.length > 0 ? achievementsList[0]?.title || '50+ Clients' : '50+ Clients'
-  const statNetwork = achievementsList.length > 1 ? achievementsList[1]?.title || 'Network Designer' : 'Network Designer'
+  const achievementsList = content?.achievements?.length > 0 ? content.achievements : hardcodedAchievements
+  const statClients = content?.statClients || '50+ Clients'
+  const statNetwork = content?.statNetwork || 'Network Designer'
+  const aboutSections = content?.sections?.length > 0 ? content.sections : hardcodedSections
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -83,10 +66,10 @@ export default function About() {
             About Me
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
-            {content?.title || 'Get to Know Me'}
+            {title}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
-            {subtitleText}
+            {subtitle}
           </p>
         </motion.div>
 
@@ -185,25 +168,12 @@ export default function About() {
           >
             <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
               I hold certificates in{' '}
-              {content?.achievements?.length > 0
-                ? content.achievements.map((a, i) => (
-                    <span key={i}>
-                      {i > 0 && <span>, </span>}
-                      <span className="font-bold text-gray-900 dark:text-white">{a.title}</span>
-                    </span>
-                  ))
-                : [
-                    { title: 'Ethio Coders' },
-                    { title: 'e-SHE Online Learning' },
-                    { title: 'Networking Designing' },
-                    { title: 'Hackathon Computation in 24h' },
-                  ].map((a, i) => (
-                    <span key={i}>
-                      {i > 0 && <span>, </span>}
-                      <span className="font-bold text-gray-900 dark:text-white">{a.title}</span>
-                    </span>
-                  ))
-              }.
+              {achievementsList.map((a, i) => (
+                <span key={i}>
+                  {i > 0 && <span>, </span>}
+                  <span className="font-bold text-gray-900 dark:text-white">{a.title}</span>
+                </span>
+              ))}.
             </p>
           </motion.div>
         </div>
