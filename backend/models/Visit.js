@@ -15,6 +15,26 @@ const visitSchema = new mongoose.Schema(
       type: String,
       trim: true,
     },
+    page: {
+      type: String,
+      trim: true,
+      default: '/',
+    },
+    referrer: {
+      type: String,
+      trim: true,
+      default: 'Direct',
+    },
+    visitorId: {
+      type: String,
+      trim: true,
+      index: true,
+    },
+    visitorType: {
+      type: String,
+      enum: ['new', 'returning'],
+      default: 'new',
+    },
     location: {
       country: { type: String, trim: true },
       region: { type: String, trim: true },

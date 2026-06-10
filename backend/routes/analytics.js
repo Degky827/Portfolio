@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { logVisit, getMetrics, getDashboardStats } = require('../controllers/analyticsController')
+const { logVisit, getMetrics, getDashboardStats, getAnalyticsDashboard } = require('../controllers/analyticsController')
 const { authenticateToken } = require('../middleware/auth')
 
 const router = Router()
@@ -7,5 +7,6 @@ const router = Router()
 router.post('/log-visit', logVisit)
 router.get('/metrics', authenticateToken, getMetrics)
 router.get('/stats', authenticateToken, getDashboardStats)
+router.get('/analytics-dashboard', authenticateToken, getAnalyticsDashboard)
 
 module.exports = router
