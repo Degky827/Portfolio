@@ -1,6 +1,6 @@
 # Modernize-Portifolio
 
-A full-stack MERN portfolio for Desalegn Kasaye — React frontend with Tailwind CSS + Express/MongoDB backend with a 2FA-protected enterprise-grade admin dashboard featuring real public portfolio visitor analytics.
+A full-stack MERN portfolio for Desalegn — React frontend with Tailwind CSS + Express/MongoDB backend with a 2FA-protected enterprise-grade admin dashboard featuring real public portfolio visitor analytics.
 
 ## Architecture
 
@@ -109,52 +109,54 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 
 ## API Endpoints
 
-| Method | Path | Auth | Description |
-|--------|------|------|-------------|
-| GET | `/api/health` | No | Server health check |
-| POST | `/api/analytics/log-visit` | No | Log a portfolio visit (enriched with page, referrer, visitorId) |
-| GET | `/api/analytics/metrics` | JWT | Paginated visit log with search, date/country/device/browser/source filters |
-| GET | `/api/analytics/stats` | JWT | Dashboard aggregate stats (total, unique, today, week, month, recent) |
-| GET | `/api/analytics/analytics-dashboard` | JWT | Full analytics dashboard data (trends, device/browser/country/source distribution) |
-| POST | `/api/auth/register-admin` | No | One-time admin registration |
-| GET | `/api/auth/setup-2fa` | No | Generate TOTP secret + QR code |
-| POST | `/api/auth/admin-login` | No | Two-phase login (password → 2FA → JWT) |
+| Method | Path                                 | Auth | Description                                                                        |
+| ------ | ------------------------------------ | ---- | ---------------------------------------------------------------------------------- |
+| GET    | `/api/health`                        | No   | Server health check                                                                |
+| POST   | `/api/analytics/log-visit`           | No   | Log a portfolio visit (enriched with page, referrer, visitorId)                    |
+| GET    | `/api/analytics/metrics`             | JWT  | Paginated visit log with search, date/country/device/browser/source filters        |
+| GET    | `/api/analytics/stats`               | JWT  | Dashboard aggregate stats (total, unique, today, week, month, recent)              |
+| GET    | `/api/analytics/analytics-dashboard` | JWT  | Full analytics dashboard data (trends, device/browser/country/source distribution) |
+| POST   | `/api/auth/register-admin`           | No   | One-time admin registration                                                        |
+| GET    | `/api/auth/setup-2fa`                | No   | Generate TOTP secret + QR code                                                     |
+| POST   | `/api/auth/admin-login`              | No   | Two-phase login (password → 2FA → JWT)                                             |
 
 ## Frontend Routes
 
-| Path | Component | Description |
-|------|-----------|-------------|
-| `/` | Home | Portfolio landing page with all sections |
-| `/login` | Login | Two-step admin sign-in (credentials + 2FA) |
-| `/admin/dashboard` | Dashboard | Overview with stat cards, recent activity, traffic bars |
-| `/admin/analytics` | Analytics | Full visitor analytics with 6 charts, filters, enriched table |
-| `/admin/projects` | Projects | Portfolio project CRUD |
-| `/admin/skills` | Skills | Technology skill management |
-| `/admin/certificates` | Certificates | Certificate CRUD |
-| `/admin/home` | Home CMS | Hero section content editor |
-| `/admin/about` | About CMS | Biography, experience, education editor |
-| `/admin/contact` | Contact CMS | Contact info & social links editor |
-| `/admin/media` | Media Library | File/image upload management |
-| `/admin/footer` | Footer CMS | Footer content editor |
-| `/admin/notifications` | Notifications | System notification list |
-| `/admin/activity-logs` | Activity Logs | Admin action audit trail |
-| `/admin/settings` | Settings | Portfolio configuration |
-| `/admin/backup` | Backup | Database backup & restore |
-| `/admin/import-export` | Import/Export | Data import/export tools |
-| `/admin/maintenance` | Maintenance | DB health, indexes, orphan files |
-| `/admin/system-config` | System Config | System-wide settings |
-| `/admin/profile` | Profile | Admin account profile |
-| `/admin/theme` | Appearance | Light/dark/system theme configuration |
+| Path                   | Component     | Description                                                   |
+| ---------------------- | ------------- | ------------------------------------------------------------- |
+| `/`                    | Home          | Portfolio landing page with all sections                      |
+| `/login`               | Login         | Two-step admin sign-in (credentials + 2FA)                    |
+| `/admin/dashboard`     | Dashboard     | Overview with stat cards, recent activity, traffic bars       |
+| `/admin/analytics`     | Analytics     | Full visitor analytics with 6 charts, filters, enriched table |
+| `/admin/projects`      | Projects      | Portfolio project CRUD                                        |
+| `/admin/skills`        | Skills        | Technology skill management                                   |
+| `/admin/certificates`  | Certificates  | Certificate CRUD                                              |
+| `/admin/home`          | Home CMS      | Hero section content editor                                   |
+| `/admin/about`         | About CMS     | Biography, experience, education editor                       |
+| `/admin/contact`       | Contact CMS   | Contact info & social links editor                            |
+| `/admin/media`         | Media Library | File/image upload management                                  |
+| `/admin/footer`        | Footer CMS    | Footer content editor                                         |
+| `/admin/notifications` | Notifications | System notification list                                      |
+| `/admin/activity-logs` | Activity Logs | Admin action audit trail                                      |
+| `/admin/settings`      | Settings      | Portfolio configuration                                       |
+| `/admin/backup`        | Backup        | Database backup & restore                                     |
+| `/admin/import-export` | Import/Export | Data import/export tools                                      |
+| `/admin/maintenance`   | Maintenance   | DB health, indexes, orphan files                              |
+| `/admin/system-config` | System Config | System-wide settings                                          |
+| `/admin/profile`       | Profile       | Admin account profile                                         |
+| `/admin/theme`         | Appearance    | Light/dark/system theme configuration                         |
 
 ## Features
 
 ### Portfolio
+
 - **Sections**: Hero, About, Skills, Projects, Contact (smooth-scroll navigation)
 - **Dark mode**: Persistent theme toggle with system preference support
 - **Responsive**: Mobile-first with animated navbar drawer
 - **Framer Motion**: Entrance animations, scroll-triggered reveals
 
 ### Visit Tracking
+
 - **Automatic**: IP geolocation (country/city/region via ipapi.co)
 - **Device detection**: Desktop, mobile, tablet via ua-parser-js
 - **Browser/OS**: Chrome, Firefox, Safari, Edge, etc.
@@ -163,6 +165,7 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 - **Admin exclusion**: `/admin` routes, `/login`, and local IPs are never tracked
 
 ### Admin Dashboard (2FA-protected)
+
 - **Sidebar**: 5 navigation groups with accordion, Cmd+K search, collapse mode, mobile drawer
 - **Navbar**: Dynamic breadcrumbs, global search modal, account dropdown, notification bell
 - **Dashboard**: Welcome hero, 5 animated stat cards, traffic bar chart, recent activity feed, quick actions
