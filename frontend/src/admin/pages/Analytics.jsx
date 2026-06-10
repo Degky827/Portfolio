@@ -1,150 +1,531 @@
 import { useEffect, useState, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { RefreshCw } from 'lucide-react'
-import { useAuth } from '../../context/AuthContext'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  RefreshCw, Eye, Users, UserCheck, CalendarDays, TrendingUp,
+  Monitor, Globe, Link, Filter, X, ChevronDown,
+} from 'lucide-react'
+import {
+  LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
+  XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
+  Area, AreaChart,
+} from 'recharts'
 import api from '../../services/api'
 import PageHeader from '../components/PageHeader'
+import StatCard from '../components/StatCard'
 import DataTable from '../components/DataTable'
 
+const DEVICE_COLORS = { Desktop: '#7c3aed', Mobile: '#3b82f6', Tablet: '#f59e0b', Unknown: '#6b7280' }
+const BROWSER_COLORS = ['#7c3aed', '#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#ec4899', '#06b6d4', '#8b5cf6', '#6b7280', '#14b8a6']
+const PIE_COLORS = ['#7c3aed', '#3b82f6', '#f59e0b', '#ef4444', '#10b981', '#ec4899', '#06b6d4', '#8b5cf6', '#14b8a6', '#f97316']
+
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: { transition: { staggerChildren: 0.05, delayChildren: 0.05 } },
+}
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 16 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
+}
+
+const initialFilters = { dateFrom: '', dateTo: '', country: '', deviceType: '', browser: '', source: '' }
+
 export default function Analytics() {
-  const { isAuthenticated, logout } = useAuth()
-  const navigate = useNavigate()
+  const [data, setData] = useState(null)
   const [visits, setVisits] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [loading, setLoading] = useState(true)
+  const [visitsLoading, setVisitsLoading] = useState(true)
   const [error, setError] = useState('')
+  const [showFilters, setShowFilters] = useState(false)
+  const [filters, setFilters] = useState(initialFilters)
 
-  const fetchVisits = useCallback(async () => {
+  const activeFilterCount = Object.values(filters).filter(Boolean).length
+
+  const fetchDashboard = useCallback(async () => {
     try {
       setLoading(true)
+      const params = new URLSearchParams()
+      Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v) })
+      const { data: res } = await api.get(`/analytics/analytics-dashboard?${params}`)
+      if (res.success) setData(res)
       setError('')
-      const { data } = await api.get('/analytics/metrics?limit=100')
-      if (data.success) {
-        setVisits(data.visits || [])
-        setTotalCount(data.totalCount || 0)
-      }
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 403) {
-        logout()
-        navigate('/login', { replace: true })
+        setError('Session expired. Please refresh the page.')
         return
       }
       setError('Failed to load analytics data.')
     } finally {
       setLoading(false)
     }
-  }, [logout, navigate])
+  }, [filters])
 
-  useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login', { replace: true })
-      return
+  const fetchVisits = useCallback(async () => {
+    try {
+      setVisitsLoading(true)
+      const params = new URLSearchParams({ limit: '100' })
+      Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v) })
+      const { data: res } = await api.get(`/analytics/metrics?${params}`)
+      if (res.success) {
+        setVisits(res.visits || [])
+        setTotalCount(res.totalCount || 0)
+      }
+    } catch { /* noop */ } finally {
+      setVisitsLoading(false)
     }
-    fetchVisits()
-  }, [isAuthenticated, navigate, fetchVisits])
+  }, [filters])
 
-  if (!isAuthenticated) return null
+  useEffect(() => { fetchDashboard() }, [fetchDashboard])
+  useEffect(() => { fetchVisits() }, [fetchVisits])
 
-  const columns = [
+  function handleFilterChange(key, value) {
+    setFilters((prev) => ({ ...prev, [key]: value }))
+  }
+
+  function clearFilters() {
+    setFilters(initialFilters)
+  }
+
+  const stats = data?.stats
+  const trends7 = data?.trends7days || []
+  const trends30 = data?.trends30days || []
+  const deviceDist = data?.deviceDistribution || []
+  const browserDist = data?.browserDistribution || []
+  const topCountries = data?.topCountries || []
+  const trafficSources = data?.trafficSources || []
+
+  function formatDateLabel(dateStr) {
+    const d = new Date(dateStr + 'T00:00:00')
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
+
+  function CustomTooltip({ active, payload, label }) {
+    if (!active || !payload?.length) return null
+    return (
+      <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 shadow-lg text-sm">
+        <p className="text-gray-500 dark:text-gray-400 font-medium mb-1">{label}</p>
+        {payload.map((p, i) => (
+          <p key={i} className="font-bold text-gray-900 dark:text-white">
+            {p.name}: {p.value.toLocaleString()}
+          </p>
+        ))}
+      </div>
+    )
+  }
+
+  const statCards = [
+    { title: 'Total Views', value: stats?.totalViews, icon: Eye, accent: 'primary', delay: 0, loading },
+    { title: 'Unique Visitors', value: stats?.uniqueVisitors, icon: Users, accent: 'blue', delay: 0.05, loading },
+    { title: "Today's Visitors", value: stats?.todayCount, icon: UserCheck, accent: 'green', delay: 0.1, loading },
+    { title: 'This Week', value: stats?.weekCount, icon: TrendingUp, accent: 'cyan', delay: 0.15, loading },
+    { title: 'This Month', value: stats?.monthCount, icon: CalendarDays, accent: 'orange', delay: 0.2, loading },
+  ]
+
+  const tableColumns = [
     {
-      header: 'When',
+      header: 'Date & Time',
       accessor: 'timestamp',
       render: (row) => (
-        <div>
-          <span className="font-medium">
-            {new Date(row.timestamp).toLocaleDateString()}
+        <div className="flex flex-col">
+          <span className="font-medium text-gray-900 dark:text-white text-sm">
+            {new Date(row.timestamp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
           </span>
-          <span className="text-gray-400 ml-2">
-            {new Date(row.timestamp).toLocaleTimeString([], {
-              hour: '2-digit',
-              minute: '2-digit',
-            })}
+          <span className="text-xs text-gray-400">
+            {new Date(row.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
           </span>
         </div>
       ),
     },
     {
-      header: 'Who',
-      accessor: 'visitorName',
+      header: 'Visitor',
+      accessor: 'visitorType',
       render: (row) => (
-        <span className="font-medium text-gray-900 dark:text-white">
-          {row.visitorName}
+        <div className="flex items-center gap-2">
+          <span className={`px-2 py-0.5 rounded-full text-[10px] font-semibold ${
+            row.visitorType === 'new'
+              ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+              : 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+          }`}>
+            {row.visitorType === 'new' ? 'New' : 'Returning'}
+          </span>
+        </div>
+      ),
+    },
+    {
+      header: 'Country',
+      accessor: 'country',
+      render: (row) => (
+        <span className="text-gray-700 dark:text-gray-300">
+          {row.location?.country || 'Unknown'}
         </span>
       ),
     },
     {
-      header: 'Where',
-      accessor: 'location',
+      header: 'City',
+      accessor: 'city',
       render: (row) => (
-        <span className="text-gray-600 dark:text-gray-400">
-          {row.location
-            ? [row.location.city, row.location.region, row.location.country]
-                .filter(Boolean)
-                .join(', ') || 'Unknown'
-            : 'Unknown'}
+        <span className="text-gray-500 dark:text-gray-400">
+          {row.location?.city || '-'}
         </span>
       ),
     },
     {
       header: 'Device',
       accessor: 'deviceType',
+      render: (row) => {
+        const dt = row.deviceInfo?.deviceType || 'Unknown'
+        return (
+          <span className="inline-flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
+            <Monitor size={14} className="text-gray-400" />
+            {dt.charAt(0).toUpperCase() + dt.slice(1)}
+          </span>
+        )
+      },
+    },
+    {
+      header: 'Browser',
+      accessor: 'browser',
       className: 'hidden md:table-cell',
       render: (row) => (
-        <span className="text-gray-600 dark:text-gray-400">
-          {row.deviceInfo?.deviceType || 'Unknown'}
-        </span>
+        <span className="text-gray-600 dark:text-gray-400">{row.deviceInfo?.browser || 'Unknown'}</span>
       ),
     },
     {
-      header: 'Browser / OS',
-      accessor: 'browserOs',
+      header: 'OS',
+      accessor: 'os',
       className: 'hidden lg:table-cell',
       render: (row) => (
-        <span className="text-gray-600 dark:text-gray-400">
-          {[row.deviceInfo?.browser, row.deviceInfo?.os].filter(Boolean).join(' / ') || 'Unknown'}
+        <span className="text-gray-600 dark:text-gray-400">{row.deviceInfo?.os || 'Unknown'}</span>
+      ),
+    },
+    {
+      header: 'Referrer',
+      accessor: 'referrer',
+      className: 'hidden xl:table-cell',
+      render: (row) => (
+        <span className={`px-2 py-0.5 rounded text-[11px] font-medium ${
+          row.referrer === 'Direct'
+            ? 'bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-gray-400'
+            : 'bg-primary/10 text-primary dark:bg-primary/20'
+        }`}>
+          {row.referrer || 'Direct'}
         </span>
       ),
     },
   ]
 
   return (
+    <motion.div variants={containerVariants} initial="hidden" animate="visible">
+      <motion.div variants={itemVariants}>
+        <PageHeader
+          title="Analytics"
+          description="Real public portfolio visitor analytics"
+          actions={
+            <div className="flex items-center gap-2">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowFilters(!showFilters)}
+                className={`flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium border transition-colors ${
+                  showFilters || activeFilterCount > 0
+                    ? 'bg-primary/10 border-primary text-primary'
+                    : 'bg-gray-100 dark:bg-slate-800 border-gray-200 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-slate-700'
+                }`}
+              >
+                <Filter size={14} />
+                Filters
+                {activeFilterCount > 0 && (
+                  <span className="w-5 h-5 rounded-full bg-primary text-white text-[10px] font-bold flex items-center justify-center">
+                    {activeFilterCount}
+                  </span>
+                )}
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => { fetchDashboard(); fetchVisits() }}
+                disabled={loading}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50"
+              >
+                <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
+                {loading ? 'Loading...' : 'Refresh'}
+              </motion.button>
+            </div>
+          }
+        />
+      </motion.div>
+
+      <AnimatePresence>
+        {showFilters && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            className="mb-6 overflow-hidden"
+          >
+            <motion.div
+              initial={{ y: -8 }}
+              animate={{ y: 0 }}
+              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 sm:p-5 shadow-sm"
+            >
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Date From</label>
+                  <input
+                    type="date"
+                    value={filters.dateFrom}
+                    onChange={(e) => handleFilterChange('dateFrom', e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Date To</label>
+                  <input
+                    type="date"
+                    value={filters.dateTo}
+                    onChange={(e) => handleFilterChange('dateTo', e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Country</label>
+                  <input
+                    type="text"
+                    value={filters.country}
+                    onChange={(e) => handleFilterChange('country', e.target.value)}
+                    placeholder="e.g. United States"
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Device</label>
+                  <select
+                    value={filters.deviceType}
+                    onChange={(e) => handleFilterChange('deviceType', e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="">All Devices</option>
+                    <option value="desktop">Desktop</option>
+                    <option value="mobile">Mobile</option>
+                    <option value="tablet">Tablet</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Browser</label>
+                  <select
+                    value={filters.browser}
+                    onChange={(e) => handleFilterChange('browser', e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="">All Browsers</option>
+                    <option value="Chrome">Chrome</option>
+                    <option value="Edge">Edge</option>
+                    <option value="Firefox">Firefox</option>
+                    <option value="Safari">Safari</option>
+                    <option value="Opera">Opera</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">Source</label>
+                  <select
+                    value={filters.source}
+                    onChange={(e) => handleFilterChange('source', e.target.value)}
+                    className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="">All Sources</option>
+                    <option value="Direct">Direct</option>
+                    <option value="Google">Google</option>
+                    <option value="LinkedIn">LinkedIn</option>
+                    <option value="GitHub">GitHub</option>
+                    <option value="Facebook">Facebook</option>
+                    <option value="Twitter">Twitter</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+              {activeFilterCount > 0 && (
+                <div className="mt-3 flex justify-end">
+                  <button
+                    onClick={clearFilters}
+                    className="flex items-center gap-1 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                  >
+                    <X size={12} />
+                    Clear all filters
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <motion.div variants={itemVariants} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-6">
+        {statCards.map((card) => (
+          <StatCard key={card.title} {...card} />
+        ))}
+      </motion.div>
+
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <ChartCard title="Visitor Trend (7 Days)" icon={TrendingUp} loading={loading}>
+          <ResponsiveContainer width="100%" height={240}>
+            <AreaChart data={trends7}>
+              <defs>
+                <linearGradient id="gradient7" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#7c3aed" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.4} />
+              <XAxis dataKey="date" tickFormatter={formatDateLabel} stroke="#9ca3af" fontSize={11} tickMargin={8} />
+              <YAxis stroke="#9ca3af" fontSize={11} tickMargin={8} />
+              <Tooltip content={<CustomTooltip />} />
+              <Area type="monotone" dataKey="count" stroke="#7c3aed" strokeWidth={2} fill="url(#gradient7)" name="Visits" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Visitor Trend (30 Days)" icon={TrendingUp} loading={loading}>
+          <ResponsiveContainer width="100%" height={240}>
+            <AreaChart data={trends30}>
+              <defs>
+                <linearGradient id="gradient30" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.3} />
+                  <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.4} />
+              <XAxis dataKey="date" tickFormatter={formatDateLabel} stroke="#9ca3af" fontSize={11} tickMargin={8} interval="preserveStartEnd" />
+              <YAxis stroke="#9ca3af" fontSize={11} tickMargin={8} />
+              <Tooltip content={<CustomTooltip />} />
+              <Area type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={2} fill="url(#gradient30)" name="Visits" />
+            </AreaChart>
+          </ResponsiveContainer>
+        </ChartCard>
+      </motion.div>
+
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <ChartCard title="Browser Distribution" icon={Monitor} loading={loading}>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={browserDist} layout="vertical" margin={{ left: 20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.4} horizontal={false} />
+              <XAxis type="number" stroke="#9ca3af" fontSize={11} tickMargin={8} />
+              <YAxis type="category" dataKey="name" stroke="#9ca3af" fontSize={11} tickMargin={8} width={70} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="value" name="Visits" radius={[0, 6, 6, 0]}>
+                {browserDist.map((entry, i) => (
+                  <Cell key={i} fill={BROWSER_COLORS[i % BROWSER_COLORS.length]} />
+                ))}
+              </Bar>
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Device Distribution" icon={Monitor} loading={loading}>
+          <div className="flex items-center justify-center h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={deviceDist}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={50}
+                  dataKey="value"
+                  nameKey="name"
+                  label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
+                >
+                  {deviceDist.map((entry, i) => (
+                    <Cell key={i} fill={DEVICE_COLORS[entry.name] || PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+      </motion.div>
+
+      <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+        <ChartCard title="Top Countries" icon={Globe} loading={loading}>
+          <ResponsiveContainer width="100%" height={240}>
+            <BarChart data={topCountries} layout="vertical" margin={{ left: 20 }}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.4} horizontal={false} />
+              <XAxis type="number" stroke="#9ca3af" fontSize={11} tickMargin={8} />
+              <YAxis type="category" dataKey="country" stroke="#9ca3af" fontSize={11} tickMargin={8} width={100} />
+              <Tooltip content={<CustomTooltip />} />
+              <Bar dataKey="count" name="Visits" radius={[0, 6, 6, 0]} fill="#7c3aed" />
+            </BarChart>
+          </ResponsiveContainer>
+        </ChartCard>
+
+        <ChartCard title="Traffic Sources" icon={Link} loading={loading}>
+          <div className="flex items-center justify-center h-[240px]">
+            <ResponsiveContainer width="100%" height="100%">
+              <PieChart>
+                <Pie
+                  data={trafficSources}
+                  cx="50%"
+                  cy="50%"
+                  outerRadius={80}
+                  innerRadius={50}
+                  dataKey="count"
+                  nameKey="source"
+                  label={({ source, percent }) => `${source} ${(percent * 100).toFixed(0)}%`}
+                  labelLine={false}
+                >
+                  {trafficSources.map((entry, i) => (
+                    <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
+                  ))}
+                </Pie>
+                <Tooltip content={<CustomTooltip />} />
+              </PieChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+      </motion.div>
+
+      <motion.div variants={itemVariants}>
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm">
+          <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
+            <h2 className="text-base font-bold text-gray-900 dark:text-white">Visitor Log</h2>
+            <span className="text-xs text-gray-400">
+              {totalCount.toLocaleString()} total {totalCount === 1 ? 'visit' : 'visits'}
+            </span>
+          </div>
+          <DataTable
+            columns={tableColumns}
+            data={visits}
+            searchable
+            pageSize={10}
+            loading={visitsLoading}
+            emptyMessage="No visitor data yet."
+          />
+        </div>
+      </motion.div>
+    </motion.div>
+  )
+}
+
+function ChartCard({ title, icon: Icon, children, loading }) {
+  return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.3 }}
+      className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm overflow-hidden"
     >
-      <PageHeader
-        title="Analytics"
-        subtitle={`${totalCount.toLocaleString()} total visits recorded`}
-        actions={
-          <button
-            onClick={fetchVisits}
-            disabled={loading}
-            className="flex items-center gap-2 px-4 py-2 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
-          >
-            <RefreshCw size={16} className={loading ? 'animate-spin' : ''} />
-            Refresh
-          </button>
-        }
-      />
-
-      {error && (
-        <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
-          {error}
-          <button onClick={fetchVisits} className="ml-3 underline font-medium">
-            Retry
-          </button>
-        </div>
-      )}
-
-      <DataTable
-        columns={columns}
-        data={visits}
-        searchable
-        pageSize={10}
-        loading={loading}
-      />
+      <div className="flex items-center gap-2.5 px-4 sm:px-6 py-3 border-b border-gray-200 dark:border-slate-800">
+        <Icon size={15} className="text-primary" />
+        <h3 className="text-sm font-bold text-gray-900 dark:text-white">{title}</h3>
+      </div>
+      <div className="p-3 sm:p-4">
+        {loading ? (
+          <div className="flex items-center justify-center h-[240px]">
+            <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+          </div>
+        ) : children}
+      </div>
     </motion.div>
   )
 }
