@@ -129,7 +129,7 @@ export default function MediaPicker({ open, onClose, onSelect }) {
                       }`}
                     >
                       <img
-                        src={item.url.startsWith('http') ? item.url : `http://localhost:5000${item.url}`}
+                        src={item.url.startsWith('http') ? item.url : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${item.url}`}
                         alt=""
                         className="w-full h-full object-cover"
                       />

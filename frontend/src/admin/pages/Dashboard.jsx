@@ -1,9 +1,10 @@
-import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Eye, Users, UserCheck, CalendarDays, ExternalLink, RefreshCw,
   ArrowRight, BarChart3, Clock, Globe, MapPin, Sparkles,
+  Plus, Image, Award, Shield,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
@@ -23,7 +24,18 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.4, ease: 'easeOut' } },
 }
 
-const greetings = ['Welcome back', 'Good to see you', 'Hey there', 'Hello again', 'Great to have you']
+const getGreeting = () => {
+  const h = new Date().getHours()
+  if (h < 12) return { text: 'Good Morning', emoji: '☀️' }
+  if (h < 17) return { text: 'Good Afternoon', emoji: '🌤️' }
+  return { text: 'Good Evening', emoji: '🌙' }
+}
+
+const formatCurrentDate = () => {
+  return new Date().toLocaleDateString('en-US', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  })
+}
 
 export default function Dashboard() {
   const { user } = useAuth()
@@ -31,8 +43,25 @@ export default function Dashboard() {
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [lastLogin, setLastLogin] = useState('')
 
-  const greeting = useMemo(() => greetings[Math.floor(Math.random() * greetings.length)], [])
+  useEffect(() => {
+    const stored = localStorage.getItem('adminLastLogin')
+    const now = new Date().toLocaleString('en-US', {
+      month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit',
+    })
+    if (stored) {
+      setLastLogin(stored)
+    } else {
+      localStorage.setItem('adminLastLogin', now)
+      setLastLogin(now)
+    }
+  }, [])
+
+  const greeting = getGreeting()
+  const currentDate = formatCurrentDate()
+  const firstName = user?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'Admin'
+  const roleDisplay = user?.role?.replace('_', ' ') || 'Admin'
 
   const fetchStats = useCallback(async () => {
     try {
@@ -79,7 +108,6 @@ export default function Dashboard() {
       <motion.div variants={itemVariants}>
         <PageHeader
           title="Dashboard"
-          description={`${greeting}, ${user?.name || user?.email?.split('@')[0] || 'Admin'}! Here is your portfolio overview.`}
           actions={
             <motion.button
               whileHover={{ scale: 1.02 }}
@@ -93,6 +121,66 @@ export default function Dashboard() {
             </motion.button>
           }
         />
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-5 sm:p-6 shadow-sm">
+          <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+            <div>
+              <h2 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white">
+                {greeting.emoji} {greeting.text}, {firstName} 👋
+              </h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{currentDate}</p>
+              <div className="flex items-center gap-3 mt-2">
+                <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary capitalize">
+                  {roleDisplay}
+                </span>
+                <span className="text-xs text-gray-400 flex items-center gap-1">
+                  <Clock size={12} />
+                  Last login: {lastLogin}
+                </span>
+              </div>
+            </div>
+          </div>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-3">
+            Welcome back to your Portfolio Control Center.
+          </p>
+          <div className="flex flex-wrap gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-slate-800">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate('/admin/projects/new')}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
+            >
+              <Plus size={16} />
+              Add Project
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate('/admin/media')}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-500/20 transition-colors"
+            >
+              <Image size={16} />
+              Upload Media
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate('/admin/certificates')}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 hover:bg-amber-100 dark:hover:bg-amber-500/20 transition-colors"
+            >
+              <Award size={16} />
+              Add Certificate
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => navigate('/admin/backup')}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 hover:bg-emerald-100 dark:hover:bg-emerald-500/20 transition-colors"
+            >
+              <Shield size={16} />
+              Create Backup
+            </motion.button>
+          </div>
+        </div>
       </motion.div>
 
       {error && (

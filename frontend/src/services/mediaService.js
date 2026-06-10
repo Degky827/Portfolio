@@ -16,9 +16,10 @@ export async function getMediaItem(id) {
   return data
 }
 
-export async function uploadMedia(formData) {
+export async function uploadMedia(formData, onProgress) {
   const { data } = await api.post('/media/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: onProgress,
   })
   return data
 }

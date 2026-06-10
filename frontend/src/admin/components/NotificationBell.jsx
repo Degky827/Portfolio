@@ -12,6 +12,7 @@ const typeConfig = {
   failed_login: { icon: Shield, color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30' },
   backup_completed: { icon: Download, color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/30' },
   restore_completed: { icon: RefreshCw, color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/30' },
+  content_updated: { icon: RefreshCw, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30' },
   system_warning: { icon: AlertTriangle, color: 'text-orange-500', bg: 'bg-orange-100 dark:bg-orange-900/30' },
 }
 
