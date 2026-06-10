@@ -19,15 +19,33 @@ const socialKeys = [
   'facebook', 'instagram', 'youtube', 'email',
 ]
 
-function deleteUpload(filePath) {
-  if (filePath && filePath.startsWith('/uploads/')) {
-    const fullPath = path.resolve(__dirname, '..', filePath)
-    try {
-      fs.unlinkSync(fullPath)
-    } catch {
-      /* file may not exist */
-    }
+function getFileUrl(file) {
+  if (!file) return null
+  // Cloudinary uploads store the full URL in file.path
+  if (file.path && (file.path.startsWith('http://') || file.path.startsWith('https://'))) {
+    return file.path
   }
+  // Local fallback
+  return `/uploads/${file.filename}`
+}
+
+function deleteUpload(filePath) {
+  if (!filePath) return
+  if (filePath.startsWith('/uploads/')) {
+    const fullPath = path.resolve(__dirname, '..', filePath)
+    try { fs.unlinkSync(fullPath) } catch { /* file may not exist */ }
+  }
+  // Cloudinary cleanup could be added here if public IDs were stored
+}
+
+function handleFileField(files, body, fieldName, urlFieldName) {
+  if (files[fieldName]) {
+    return getFileUrl(files[fieldName][0])
+  }
+  if (body[urlFieldName] !== undefined) {
+    return body[urlFieldName]
+  }
+  return undefined // no change
 }
 
 async function getHomeContent(_req, res) {
@@ -70,11 +88,17 @@ async function updateHomeContent(req, res) {
       content.hero.ctaButtons = parseJSON(req.body.heroCtaButtons, content.hero.ctaButtons)
     }
 
-    if (files.heroProfilePhoto) {
+    const heroPhoto = handleFileField(files, req.body, 'heroProfilePhoto', 'heroPhotoUrl')
+    if (heroPhoto !== undefined) {
       deleteUpload(content.hero.profilePhoto.url)
-      content.hero.profilePhoto.url = `/uploads/${files.heroProfilePhoto[0].filename}`
-    } else if (req.body.heroPhotoUrl) {
-      content.hero.profilePhoto.url = req.body.heroPhotoUrl
+      content.hero.profilePhoto.url = heroPhoto
+    }
+
+    // ─── LOGO ─────────────────────────────────────────────────────────────────
+    const logo = handleFileField(files, req.body, 'logoImage', 'logoUrl')
+    if (logo !== undefined) {
+      deleteUpload(content.logoImage)
+      content.logoImage = logo
     }
 
     // ─── ABOUT ───────────────────────────────────────────────────────────────
@@ -100,11 +124,10 @@ async function updateHomeContent(req, res) {
     if (req.body.ctaButtonText !== undefined) content.cta.buttonText = req.body.ctaButtonText
     if (req.body.ctaButtonLink !== undefined) content.cta.buttonLink = req.body.ctaButtonLink
 
-    if (files.ctaBackgroundImage) {
+    const ctaBg = handleFileField(files, req.body, 'ctaBackgroundImage', 'ctaBackgroundUrl')
+    if (ctaBg !== undefined) {
       deleteUpload(content.cta.backgroundImage)
-      content.cta.backgroundImage = `/uploads/${files.ctaBackgroundImage[0].filename}`
-    } else if (req.body.ctaBackgroundUrl) {
-      content.cta.backgroundImage = req.body.ctaBackgroundUrl
+      content.cta.backgroundImage = ctaBg
     }
 
     // ─── SOCIAL LINKS ────────────────────────────────────────────────────────
@@ -133,11 +156,10 @@ async function updateHomeContent(req, res) {
       content.seo.metaKeywords = parseJSON(req.body.seoKeywords, content.seo.metaKeywords)
     }
 
-    if (files.seoOgImage) {
+    const seoOg = handleFileField(files, req.body, 'seoOgImage', 'seoOgUrl')
+    if (seoOg !== undefined) {
       deleteUpload(content.seo.ogImage)
-      content.seo.ogImage = `/uploads/${files.seoOgImage[0].filename}`
-    } else if (req.body.seoOgUrl) {
-      content.seo.ogImage = req.body.seoOgUrl
+      content.seo.ogImage = seoOg
     }
 
     // ─── PUBLISHED ───────────────────────────────────────────────────────────

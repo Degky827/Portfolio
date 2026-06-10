@@ -88,6 +88,8 @@ const defaultForm = {
     metaKeywords: [],
     ogImage: '',
   },
+  logoImage: '',
+
   published: false,
 }
 
@@ -167,16 +169,6 @@ function DynamicList({ items, onAdd, onRemove, onChange, renderItem, addLabel = 
 
 export default function HomeContent() {
   const [form, setForm] = useState(defaultForm)
-  const [files, setFiles] = useState({
-    heroProfilePhoto: null,
-    ctaBackgroundImage: null,
-    seoOgImage: null,
-  })
-  const [existingImages, setExistingImages] = useState({
-    heroProfilePhoto: '',
-    ctaBackgroundImage: '',
-    seoOgImage: '',
-  })
   const [activeTab, setActiveTab] = useState('hero')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -244,12 +236,8 @@ export default function HomeContent() {
               metaKeywords: content.seo?.metaKeywords ?? [],
               ogImage: content.seo?.ogImage ?? '',
             },
+            logoImage: content.logoImage ?? '',
             published: content.published ?? false,
-          })
-          setExistingImages({
-            heroProfilePhoto: content.hero?.profilePhoto?.url ?? '',
-            ctaBackgroundImage: content.cta?.backgroundImage ?? '',
-            seoOgImage: content.seo?.ogImage ?? '',
           })
         }
       } catch {
@@ -274,17 +262,9 @@ export default function HomeContent() {
     })
   }
 
-  function handleImageChange(field) {
+  function handleImageChange(formField) {
     return (val) => {
-      if (val === null) {
-        setFiles((prev) => ({ ...prev, [field]: null }))
-        setExistingImages((prev) => ({ ...prev, [field]: '' }))
-      } else if (typeof val === 'string') {
-        setExistingImages((prev) => ({ ...prev, [field]: val }))
-        setFiles((prev) => ({ ...prev, [field]: null }))
-      } else {
-        setFiles((prev) => ({ ...prev, [field]: val }))
-      }
+      updateForm(formField, val || '')
     }
   }
 
@@ -436,25 +416,17 @@ export default function HomeContent() {
 
     fd.append('published', form.published ? 'true' : 'false')
 
-    if (files.heroProfilePhoto) fd.append('heroProfilePhoto', files.heroProfilePhoto)
-    else if (existingImages.heroProfilePhoto && !existingImages.heroProfilePhoto.startsWith('/uploads/')) {
-      fd.append('heroPhotoUrl', existingImages.heroProfilePhoto)
-    }
-
-    if (files.ctaBackgroundImage) fd.append('ctaBackgroundImage', files.ctaBackgroundImage)
-    else if (existingImages.ctaBackgroundImage && !existingImages.ctaBackgroundImage.startsWith('/uploads/')) {
-      fd.append('ctaBackgroundUrl', existingImages.ctaBackgroundImage)
-    }
-
-    if (files.seoOgImage) fd.append('seoOgImage', files.seoOgImage)
-    else if (existingImages.seoOgImage && !existingImages.seoOgImage.startsWith('/uploads/')) {
-      fd.append('seoOgUrl', existingImages.seoOgImage)
-    }
+    // Image URLs (already uploaded to Cloudinary via ImageUpload component)
+    fd.append('heroPhotoUrl', form.hero.profilePhoto.url || '')
+    fd.append('logoUrl', form.logoImage || '')
+    fd.append('ctaBackgroundUrl', form.cta.backgroundImage || '')
+    fd.append('seoOgUrl', form.seo.ogImage || '')
 
     try {
       const { content } = await updateHomeContent(fd)
       setForm((prev) => ({
         ...prev,
+        logoImage: content.logoImage ?? prev.logoImage,
         hero: {
           ...prev.hero,
           profilePhoto: {
@@ -471,12 +443,6 @@ export default function HomeContent() {
           ogImage: content.seo?.ogImage ?? prev.seo.ogImage,
         },
       }))
-      setExistingImages({
-        heroProfilePhoto: content.hero?.profilePhoto?.url ?? existingImages.heroProfilePhoto,
-        ctaBackgroundImage: content.cta?.backgroundImage ?? existingImages.ctaBackgroundImage,
-        seoOgImage: content.seo?.ogImage ?? existingImages.seoOgImage,
-      })
-      setFiles({ heroProfilePhoto: null, ctaBackgroundImage: null, seoOgImage: null })
       setToast({ message: 'Home content saved successfully', type: 'success' })
     } catch (err) {
       setToast({
@@ -658,9 +624,10 @@ export default function HomeContent() {
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Profile Photo</h3>
                     <Field label="Photo">
                       <ImageUpload
-                        value={existingImages.heroProfilePhoto}
-                        onChange={handleImageChange('heroProfilePhoto')}
+                        value={form.hero.profilePhoto.url}
+                        onChange={handleImageChange('hero.profilePhoto.url')}
                         label="Profile Photo"
+                        folder="profile-photos"
                       />
                     </Field>
                     <Field label="Alt Text">
@@ -670,6 +637,17 @@ export default function HomeContent() {
                         placeholder="Desalegn Profile"
                       />
                     </Field>
+                  </Card>
+
+                  <Card>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Logo</h3>
+                    <p className="text-sm text-gray-400">Upload your site logo. Supports PNG, JPG, SVG, WebP.</p>
+                    <ImageUpload
+                      value={form.logoImage}
+                      onChange={handleImageChange('logoImage')}
+                      label="Site Logo"
+                      folder="logos"
+                    />
                   </Card>
                 </div>
               </div>
@@ -831,9 +809,10 @@ export default function HomeContent() {
                   <Card>
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Background Image</h3>
                     <ImageUpload
-                      value={existingImages.ctaBackgroundImage}
-                      onChange={handleImageChange('ctaBackgroundImage')}
+                      value={form.cta.backgroundImage}
+                      onChange={handleImageChange('cta.backgroundImage')}
                       label="CTA Background"
+                      folder="backgrounds"
                     />
                   </Card>
                 </div>
@@ -1044,9 +1023,10 @@ export default function HomeContent() {
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">OG Image</h3>
                     <p className="text-sm text-gray-400">Image shown when your portfolio is shared on social media.</p>
                     <ImageUpload
-                      value={existingImages.seoOgImage}
-                      onChange={handleImageChange('seoOgImage')}
+                      value={form.seo.ogImage}
+                      onChange={handleImageChange('seo.ogImage')}
                       label="OG Image"
+                      folder="og-images"
                     />
                   </Card>
 

@@ -15,12 +15,9 @@ const cloudinaryUpload = multer({
   },
 })
 
-function uploadSingle(fieldName) {
+function wrapMulter(uploadInstance) {
   return (req, res, next) => {
-    const upload = isCloudinaryConfigured
-      ? cloudinaryUpload.single(fieldName)
-      : localUpload.single(fieldName)
-    upload(req, res, (err) => {
+    uploadInstance(req, res, (err) => {
       if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
           return res.status(400).json({ success: false, message: 'File exceeds 10MB limit' })
@@ -35,4 +32,16 @@ function uploadSingle(fieldName) {
   }
 }
 
-module.exports = { uploadSingle }
+function uploadSingle(fieldName) {
+  return wrapMulter(
+    (isCloudinaryConfigured ? cloudinaryUpload : localUpload).single(fieldName),
+  )
+}
+
+function uploadFields(fieldConfig) {
+  return wrapMulter(
+    (isCloudinaryConfigured ? cloudinaryUpload : localUpload).fields(fieldConfig),
+  )
+}
+
+module.exports = { uploadSingle, uploadFields }

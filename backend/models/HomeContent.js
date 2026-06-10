@@ -79,6 +79,8 @@ const homeContentSchema = new mongoose.Schema(
       fileName: { type: String, default: 'Resume.pdf' },
     },
 
+    logoImage: { type: String, default: '' },
+
     theme: {
       primaryColor: { type: String, default: '#6366f1' },
       secondaryColor: { type: String, default: '#10b981' },
