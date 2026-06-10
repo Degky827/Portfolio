@@ -7,6 +7,15 @@ const router = Router()
 
 router.get('/', getHomeContent)
 
-router.put('/', authenticateToken, upload.single('profileImage'), updateHomeContent)
+router.put(
+  '/',
+  authenticateToken,
+  upload.fields([
+    { name: 'heroProfilePhoto', maxCount: 1 },
+    { name: 'ctaBackgroundImage', maxCount: 1 },
+    { name: 'seoOgImage', maxCount: 1 },
+  ]),
+  updateHomeContent,
+)
 
 module.exports = router

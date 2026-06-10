@@ -1,14 +1,44 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, Code2, Globe, Rocket, MapPin, Download, Zap, Star, GraduationCap, Award, BookOpen, Cpu } from 'lucide-react'
+import { ArrowRight, Sparkles, Code2, Globe, Rocket, MapPin, Download, Zap, Star, GraduationCap, Award, BookOpen, Cpu, Users, Trophy, Shield, Wifi, Server, Palette, Video, Terminal, Heart, Briefcase, Coffee, Smile } from 'lucide-react'
 
-export default function Hero() {
+const iconMap = {
+  Award, BookOpen, Cpu, Code2, Globe, Rocket, Star, Zap,
+  Users, Trophy, Shield, Wifi, Server, Palette, Video,
+  Terminal, GraduationCap, Sparkles, Download, MapPin,
+  Heart, Briefcase, Coffee, Smile,
+}
+
+function getIcon(name) {
+  return iconMap[name] || Award
+}
+
+export default function Hero({ content }) {
   const [typedText, setTypedText] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const fullText = 'Developer and Network Designer'
+
+  const greeting = content?.greeting ?? "Hi, I'm"
+  const fullName = content?.fullName ?? 'Desalegn'
+  const nameAmharic = content?.nameAmharic ?? 'ደካ'
+  const badge = content?.professionalBadge ?? 'Student Developer'
+  const fullText = content?.typingWords?.[0] ?? 'Developer and Network Designer'
+  const introduction = content?.shortIntroduction ?? "Passionate about creating <span class=\"text-primary font-semibold\">secure</span>, <span class=\"text-secondary font-semibold\">scalable</span> digital solutions and designing robust network architectures. Specializing in modern web development and enterprise networking."
+  const profilePhotoUrl = content?.profilePhoto?.url || '/BDU1601297.png'
+  const profilePhotoAlt = content?.profilePhoto?.alt || 'Desalegn Profile'
+  const stats = content?.statistics?.length > 0
+    ? content.statistics
+    : [
+        { label: 'Top Certifications', value: '3+', icon: 'Award', color: '#6366f1' },
+        { label: 'Class Projects', value: '15+', icon: 'BookOpen', color: '#10b981' },
+        { label: 'Core Skills', value: '30+', icon: 'Cpu', color: '#f59e0b' },
+      ]
+  const ctaButtons = content?.ctaButtons?.length > 0
+    ? content.ctaButtons
+    : [{ text: 'Get In Touch', link: '#contact', openNewTab: false, icon: 'ArrowRight' }]
 
   useEffect(() => {
     let index = 0
+    setTypedText('')
     const timer = setInterval(() => {
       if (index <= fullText.length) {
         setTypedText(fullText.slice(0, index))
@@ -18,7 +48,7 @@ export default function Hero() {
       }
     }, 50)
     return () => clearInterval(timer)
-  }, [])
+  }, [fullText])
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -30,6 +60,19 @@ export default function Hero() {
 
   const scrollToContact = () => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
+  }
+
+  const handleCtaClick = (btn) => {
+    if (btn.openNewTab) {
+      window.open(btn.link, '_blank')
+    } else if (btn.link) {
+      const id = btn.link.replace('#', '')
+      const el = document.getElementById(id)
+      if (el) el.scrollIntoView({ behavior: 'smooth' })
+      else window.location.href = btn.link
+    } else {
+      scrollToContact()
+    }
   }
 
   const containerVariants = {
@@ -238,8 +281,8 @@ export default function Hero() {
                 {/* Layer 6: Seamless circular portrait (head + shoulders visible) */}
                 <div className="absolute inset-[21px] rounded-full overflow-hidden z-10 bg-[#dce5f0] shadow-sm pt-[14px]">
                   <img 
-                    src="/BDU1601297.png" 
-                    alt="Desalegn Profile" 
+                    src={profilePhotoUrl}
+                    alt={profilePhotoAlt}
                     className="w-full h-full object-cover object-[center_18%]"
                   />
                 </div>
@@ -258,12 +301,18 @@ export default function Hero() {
                 className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full border border-primary/20 hover-lift"
               >
                 <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary animate-pulse" />
-                <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-[0.2em]">Student Developer</span>
+                <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-[0.2em]">{badge}</span>
                 <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
               </motion.div>
 
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-white leading-tight">
-                Hi, I'm <span className="gradient-text"><span className="inline-flex items-center justify-center h-8 sm:h-10 px-1.5 rounded-xl bg-gradient-to-br from-purple-900 to-purple-700 text-white text-[9px] sm:text-[11px] font-black mr-1.5 -mt-1 align-middle shadow-lg">ደካ</span> Desalegn</span>
+                {greeting}{' '}
+                <span className="gradient-text">
+                  <span className="inline-flex items-center justify-center h-8 sm:h-10 px-1.5 rounded-xl bg-gradient-to-br from-purple-900 to-purple-700 text-white text-[9px] sm:text-[11px] font-black mr-1.5 -mt-1 align-middle shadow-lg">
+                    {nameAmharic}
+                  </span>{' '}
+                  {fullName}
+                </span>
                 <br />
                 <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl">
                   {typedText}
@@ -278,49 +327,46 @@ export default function Hero() {
               <motion.p 
                 variants={itemVariants}
                 className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-500 dark:text-gray-400 max-w-2xl lg:max-w-none leading-relaxed"
-              >
-                Passionate about creating <span className="text-primary font-semibold">secure</span>, <span className="text-secondary font-semibold">scalable</span> digital solutions and designing robust network architectures. 
-                Specializing in modern web development and enterprise networking.
-              </motion.p>
+                dangerouslySetInnerHTML={{ __html: introduction }}
+              />
 
               <motion.div 
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
               >
-                <motion.button
-                  whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(99, 102, 241, 0.3)" }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={scrollToContact}
-                  className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-full transition-all shadow-lg pulse-on-hover"
-                >
-                  Get In Touch
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-                </motion.button>
+                {ctaButtons.map((btn, i) => (
+                  <motion.button
+                    key={i}
+                    whileHover={{ scale: 1.05, boxShadow: "0 20px 40px rgba(99, 102, 241, 0.3)" }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCtaClick(btn)}
+                    className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-primary to-secondary text-white font-bold rounded-full transition-all shadow-lg pulse-on-hover"
+                  >
+                    {btn.text || 'Get In Touch'}
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                ))}
               </motion.div>
 
               {/* Stats */}
               <motion.div variants={itemVariants} className="flex gap-6 sm:gap-10 lg:gap-12 justify-center lg:justify-start pt-6 sm:pt-10 border-t border-gray-100 dark:border-slate-700/50">
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-primary/10 rounded-lg sm:rounded-xl text-primary"><Award size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
-                  <div className="flex flex-col">
-                    <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">3+</span>
-                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Top Certifications</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-secondary/10 rounded-lg sm:rounded-xl text-secondary"><BookOpen size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
-                  <div className="flex flex-col">
-                    <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">15+</span>
-                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Class Projects</span>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2 sm:gap-4">
-                  <div className="p-2 sm:p-3 bg-accent/10 rounded-lg sm:rounded-xl text-accent"><Cpu size={18} className="w-5 h-5 sm:w-6 sm:h-6" /></div>
-                  <div className="flex flex-col">
-                    <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">30+</span>
-                    <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">Core Skills</span>
-                  </div>
-                </div>
+                {stats.map((stat, i) => {
+                  const StatIcon = getIcon(stat.icon)
+                  return (
+                    <div key={i} className="flex items-center gap-2 sm:gap-4">
+                      <div
+                        className="p-2 sm:p-3 rounded-lg sm:rounded-xl"
+                        style={{ backgroundColor: `${stat.color}1A`, color: stat.color }}
+                      >
+                        <StatIcon size={18} className="w-5 h-5 sm:w-6 sm:h-6" />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-white leading-none">{stat.value}</span>
+                        <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">{stat.label}</span>
+                      </div>
+                    </div>
+                  )
+                })}
               </motion.div>
             </motion.div>
           </motion.div>
