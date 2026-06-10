@@ -302,10 +302,12 @@ async function verify2FA(req, res) {
       updatedAt: user.updatedAt,
     }
 
+    const isProduction = config.nodeEnv === 'production'
+
     res.cookie('token', accessToken, {
       httpOnly: true,
-      secure: config.nodeEnv === 'production',
-      sameSite: config.nodeEnv === 'production' ? 'strict' : 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000,
     })
 
@@ -335,10 +337,12 @@ async function logout(req, res) {
 
     await createAuditLog({ user: req.user?._id, action: 'LOGOUT', details: {}, req })
 
+    const isProduction = config.nodeEnv === 'production'
+
     res.cookie('token', '', {
       httpOnly: true,
-      secure: config.nodeEnv === 'production',
-      sameSite: config.nodeEnv === 'production' ? 'strict' : 'lax',
+      secure: isProduction,
+      sameSite: isProduction ? 'none' : 'lax',
       expires: new Date(0),
     })
 
