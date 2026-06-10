@@ -20,7 +20,7 @@ const PIE_COLORS = ['#7c3aed', '#3b82f6', '#f59e0b', '#ef4444', '#10b981', '#ec4
 
 const containerVariants = {
   hidden: { opacity: 0 },
-  visible: { transition: { staggerChildren: 0.05, delayChildren: 0.05 } },
+  visible: { opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.05 } },
 }
 
 const itemVariants = {
@@ -256,6 +256,29 @@ export default function Analytics() {
         />
       </motion.div>
 
+      {error && (
+        <motion.div variants={itemVariants} className="mb-6">
+          <div className="p-5 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-2xl text-red-600 dark:text-red-400 text-sm flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
+                <X size={16} />
+              </div>
+              <div>
+                <p className="font-medium">{error}</p>
+                <p className="text-xs text-red-500/70 mt-0.5">Check the backend server and API endpoint availability.</p>
+              </div>
+            </div>
+            <button
+              onClick={() => { fetchDashboard(); fetchVisits() }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 font-medium text-xs transition-colors shrink-0"
+            >
+              <RefreshCw size={12} />
+              Retry
+            </button>
+          </div>
+        </motion.div>
+      )}
+
       <AnimatePresence>
         {showFilters && (
           <motion.div
@@ -366,6 +389,29 @@ export default function Analytics() {
         ))}
       </motion.div>
 
+      {!loading && !error && data && stats?.totalViews === 0 && (
+        <motion.div variants={itemVariants} className="mb-8">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-8 sm:p-12 text-center">
+            <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
+              <Eye size={28} className="text-gray-400" />
+            </div>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No visitor analytics available yet</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
+              Visitor data will appear here once public users start browsing your portfolio. Admin page visits are not tracked.
+            </p>
+            <button
+              onClick={() => { fetchDashboard(); fetchVisits() }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
+            >
+              <RefreshCw size={14} />
+              Refresh
+            </button>
+          </div>
+        </motion.div>
+      )}
+
+      {(loading || !data || stats?.totalViews > 0) && (
+      <>
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <ChartCard title="Visitor Trend (7 Days)" icon={TrendingUp} loading={loading}>
           <ResponsiveContainer width="100%" height={240}>
@@ -491,7 +537,7 @@ export default function Analytics() {
           <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
             <h2 className="text-base font-bold text-gray-900 dark:text-white">Visitor Log</h2>
             <span className="text-xs text-gray-400">
-              {totalCount.toLocaleString()} total {totalCount === 1 ? 'visit' : 'visits'}
+              {(totalCount || 0).toLocaleString()} total {(totalCount || 0) === 1 ? 'visit' : 'visits'}
             </span>
           </div>
           <DataTable
@@ -504,6 +550,8 @@ export default function Analytics() {
           />
         </div>
       </motion.div>
+      </>
+      )}
     </motion.div>
   )
 }
