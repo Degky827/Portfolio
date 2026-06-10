@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, useMemo, useEffect } from 'react'
-import { getMe } from '../services/authService'
+import api from '../services/api'
 
 const AUTH_FLAG = 'opencode_auth'
 
@@ -19,29 +19,42 @@ export function AuthProvider({ children }) {
   const [cookieAuth, setCookieAuth] = useState(() => localStorage.getItem(AUTH_FLAG) === 'true')
   const [loading, setLoading] = useState(true)
 
+  const clearAuth = useCallback(() => {
+    localStorage.removeItem('token')
+    localStorage.removeItem('user')
+    localStorage.removeItem(AUTH_FLAG)
+    setToken(null)
+    setUser(null)
+    setCookieAuth(false)
+  }, [])
+
   useEffect(() => {
     let cancelled = false
 
-    async function verifyStoredAuth() {
-      if (token || cookieAuth) {
-        try {
-          const data = await getMe()
-          if (cancelled) return
-          setUser(data.user || data)
-        } catch {
-          if (cancelled) return
-          localStorage.removeItem('token')
-          localStorage.removeItem('user')
-          localStorage.removeItem(AUTH_FLAG)
-          setToken(null)
-          setUser(null)
-          setCookieAuth(false)
-        }
+    async function checkAuthUser() {
+      if (!(token || cookieAuth)) {
+        if (!cancelled) setLoading(false)
+        return
       }
-      if (!cancelled) setLoading(false)
+
+      try {
+        const res = await api.get('/auth/me')
+        if (cancelled) return
+        if (res.data.success && res.data.user) {
+          setUser(res.data.user)
+          setCookieAuth(true)
+        } else {
+          clearAuth()
+        }
+      } catch {
+        if (cancelled) return
+        clearAuth()
+      } finally {
+        if (!cancelled) setLoading(false)
+      }
     }
 
-    verifyStoredAuth()
+    checkAuthUser()
     return () => { cancelled = true }
   }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -65,15 +78,10 @@ export function AuthProvider({ children }) {
   }, [])
 
   const logout = useCallback(() => {
-    localStorage.removeItem('token')
-    localStorage.removeItem('user')
     localStorage.removeItem('refreshToken')
     localStorage.removeItem('rememberMe')
-    localStorage.removeItem(AUTH_FLAG)
-    setToken(null)
-    setUser(null)
-    setCookieAuth(false)
-  }, [])
+    clearAuth()
+  }, [clearAuth])
 
   const isAuthenticated = useMemo(() => !!(token || cookieAuth), [token, cookieAuth])
   const userRole = useMemo(() => user?.role || null, [user])

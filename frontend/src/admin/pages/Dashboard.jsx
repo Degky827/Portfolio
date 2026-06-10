@@ -1,6 +1,5 @@
 import { useEffect, useState, useCallback } from 'react'
 import { motion } from 'framer-motion'
-import { useNavigate } from 'react-router-dom'
 import { Eye, Users, UserCheck, CalendarDays, ExternalLink, RefreshCw, ArrowRight, BarChart3 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
@@ -21,8 +20,7 @@ const itemVariants = {
 }
 
 export default function Dashboard() {
-  const { isAuthenticated, logout } = useAuth()
-  const navigate = useNavigate()
+  const { isAuthenticated } = useAuth()
   const [stats, setStats] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
@@ -35,23 +33,18 @@ export default function Dashboard() {
       setStats(data)
     } catch (err) {
       if (err.response?.status === 401 || err.response?.status === 403) {
-        logout()
-        navigate('/login', { replace: true })
+        setError('Session expired. Please refresh the page.')
         return
       }
       setError('Failed to load dashboard data.')
     } finally {
       setLoading(false)
     }
-  }, [logout, navigate])
+  }, [])
 
   useEffect(() => {
-    if (!isAuthenticated) {
-      navigate('/login', { replace: true })
-      return
-    }
     fetchStats()
-  }, [isAuthenticated, navigate, fetchStats])
+  }, [fetchStats])
 
   if (!isAuthenticated) return null
 
