@@ -1,26 +1,32 @@
 # Modernize-Portifolio
 
-A full-stack MERN portfolio for Desalegn Kasaye — React frontend with Tailwind CSS + Express/MongoDB backend with 2FA-protected analytics dashboard.
+A full-stack MERN portfolio for Desalegn Kasaye — React frontend with Tailwind CSS + Express/MongoDB backend with a 2FA-protected enterprise-grade admin dashboard featuring real public portfolio visitor analytics.
 
 ## Architecture
 
 ```
 modernize-portifo/
-├── frontend/          React + Vite + Tailwind CSS
+├── frontend/              React + Vite + Tailwind CSS
 │   ├── src/
-│   │   ├── components/   UI components (Navbar, Footer, sections)
-│   │   ├── hooks/        Custom hooks (dark mode, scroll, tracking)
-│   │   ├── pages/        Route pages (Home, Login, Admin)
-│   │   ├── context/      Auth state management
-│   │   └── services/     Axios API client with JWT interceptor
-│   └── dist/             Production build
-├── backend/           Express + Mongoose + MongoDB Atlas
-│   ├── routes/        auth.js, analytics.js
-│   ├── middleware/     JWT authentication middleware
-│   ├── controllers/   Route handlers for visit tracking
-│   ├── models/        Admin, Visit Mongoose schemas
-│   ├── config/        DB connection, env-based config
-│   └── utils/         IP geolocation, user-agent parsing
+│   │   ├── components/       UI components (Navbar, Footer, sections)
+│   │   ├── hooks/            Custom hooks (dark mode, scroll, tracking)
+│   │   ├── pages/            Route pages (Home, Login)
+│   │   ├── context/          Auth state management
+│   │   ├── services/         Axios API client with JWT interceptor
+│   │   └── admin/            Admin dashboard (8 pages, 15+ components)
+│   │       ├── components/   Sidebar, Navbar, DataTable, StatCard, ...
+│   │       ├── pages/        Dashboard, Analytics, Projects, CMS, ...
+│   │       ├── context/      Admin sidebar/theme state
+│   │       ├── layout/       AdminLayout with AnimatePresence routing
+│   │       └── routes/       Admin route definitions
+│   └── dist/                 Production build
+├── backend/               Express + Mongoose + MongoDB Atlas
+│   ├── routes/            auth.js, analytics.js
+│   ├── middleware/        JWT authentication middleware
+│   ├── controllers/       Route handlers (analytics, auth, portfolio)
+│   ├── models/            Admin, Visit, Project, Skill, etc.
+│   ├── config/            DB connection, env-based config
+│   └── utils/             IP geolocation, user-agent parsing
 └── README.md
 ```
 
@@ -106,8 +112,10 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 | Method | Path | Auth | Description |
 |--------|------|------|-------------|
 | GET | `/api/health` | No | Server health check |
-| POST | `/api/analytics/log-visit` | No | Log a portfolio visit (with location + device data) |
-| GET | `/api/analytics/metrics` | JWT | Get visit statistics (protected) |
+| POST | `/api/analytics/log-visit` | No | Log a portfolio visit (enriched with page, referrer, visitorId) |
+| GET | `/api/analytics/metrics` | JWT | Paginated visit log with search, date/country/device/browser/source filters |
+| GET | `/api/analytics/stats` | JWT | Dashboard aggregate stats (total, unique, today, week, month, recent) |
+| GET | `/api/analytics/analytics-dashboard` | JWT | Full analytics dashboard data (trends, device/browser/country/source distribution) |
 | POST | `/api/auth/register-admin` | No | One-time admin registration |
 | GET | `/api/auth/setup-2fa` | No | Generate TOTP secret + QR code |
 | POST | `/api/auth/admin-login` | No | Two-phase login (password → 2FA → JWT) |
@@ -118,18 +126,55 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 |------|-----------|-------------|
 | `/` | Home | Portfolio landing page with all sections |
 | `/login` | Login | Two-step admin sign-in (credentials + 2FA) |
-| `/admin` | Admin | Secure analytics dashboard |
+| `/admin/dashboard` | Dashboard | Overview with stat cards, recent activity, traffic bars |
+| `/admin/analytics` | Analytics | Full visitor analytics with 6 charts, filters, enriched table |
+| `/admin/projects` | Projects | Portfolio project CRUD |
+| `/admin/skills` | Skills | Technology skill management |
+| `/admin/certificates` | Certificates | Certificate CRUD |
+| `/admin/home` | Home CMS | Hero section content editor |
+| `/admin/about` | About CMS | Biography, experience, education editor |
+| `/admin/contact` | Contact CMS | Contact info & social links editor |
+| `/admin/media` | Media Library | File/image upload management |
+| `/admin/footer` | Footer CMS | Footer content editor |
+| `/admin/notifications` | Notifications | System notification list |
+| `/admin/activity-logs` | Activity Logs | Admin action audit trail |
+| `/admin/settings` | Settings | Portfolio configuration |
+| `/admin/backup` | Backup | Database backup & restore |
+| `/admin/import-export` | Import/Export | Data import/export tools |
+| `/admin/maintenance` | Maintenance | DB health, indexes, orphan files |
+| `/admin/system-config` | System Config | System-wide settings |
+| `/admin/profile` | Profile | Admin account profile |
+| `/admin/theme` | Appearance | Light/dark/system theme configuration |
 
 ## Features
 
-- **Portfolio sections**: Hero, About, Skills, Projects, Contact (smooth-scroll navigation)
-- **Dark mode**: Persistent theme toggle
-- **Visit tracking**: Automatic IP geolocation, device/browser/OS detection
-- **Admin dashboard**: 2FA-protected analytics with:
-  - Total view count
-  - Visit history table (When / Who / Where / Device / Browser-OS)
-- **Responsive design**: Mobile-first with animated navbar drawer
-- **Framer Motion animations**: Entrance animations, scroll-triggered reveals
+### Portfolio
+- **Sections**: Hero, About, Skills, Projects, Contact (smooth-scroll navigation)
+- **Dark mode**: Persistent theme toggle with system preference support
+- **Responsive**: Mobile-first with animated navbar drawer
+- **Framer Motion**: Entrance animations, scroll-triggered reveals
+
+### Visit Tracking
+- **Automatic**: IP geolocation (country/city/region via ipapi.co)
+- **Device detection**: Desktop, mobile, tablet via ua-parser-js
+- **Browser/OS**: Chrome, Firefox, Safari, Edge, etc.
+- **Referrer parsing**: Google, LinkedIn, GitHub, Direct, etc.
+- **Returning visitors**: Anonymous visitorId persisted in localStorage
+- **Admin exclusion**: `/admin` routes, `/login`, and local IPs are never tracked
+
+### Admin Dashboard (2FA-protected)
+- **Sidebar**: 5 navigation groups with accordion, Cmd+K search, collapse mode, mobile drawer
+- **Navbar**: Dynamic breadcrumbs, global search modal, account dropdown, notification bell
+- **Dashboard**: Welcome hero, 5 animated stat cards, traffic bar chart, recent activity feed, quick actions
+- **Analytics** (`/admin/analytics`):
+  - Stat cards: total views, unique visitors, today, week, month
+  - 6 charts: 7-day trend, 30-day trend, browser distribution, device distribution, top countries, traffic sources
+  - Interactive filters: date range, country, device, browser, source
+  - Enriched table: date/time, visitor type (new/returning), country, city, device, browser, OS, referrer
+- **DataTable**: Sticky header, column filters, checkboxes, pagination, search, row animations
+- **ConfirmModal**: Glassmorphism background, ESC/click-outside close, spring animations
+- **NotificationBell**: Tabbed (all/unread), categorized icons, mark read/delete actions
+- **Theme**: Light, dark, system modes with smooth CSS transitions
 
 ## Deployment
 
@@ -158,9 +203,11 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 
 - Passwords hashed with bcryptjs (12 salt rounds)
 - TOTP-based two-factor authentication via speakeasy + Google Authenticator
-- JWT tokens for session management (configurable expiry)
-- JWT auth middleware protects the analytics metrics endpoint
+- JWT tokens for session management (configurable expiry, httpOnly cookies)
+- All admin API endpoints protected by JWT middleware with super_admin role check
+- Account lockout after repeated failed login attempts
 - Admin password and 2FA secret are never exposed in API responses
+- Admin routes (`/admin/*`) excluded from visitor analytics tracking
 
 ## Scripts
 
