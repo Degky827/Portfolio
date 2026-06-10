@@ -30,20 +30,31 @@ const app = express()
 app.use(cookieParser())
 
 // ---------------------------------------------------------------------------
-// CORS — accept multiple origins from env (comma-separated)
+// CORS — authorize Vercel frontend + local dev
 // ---------------------------------------------------------------------------
+const allowedOrigins = [
+  'https://modernize-portifo.vercel.app',
+  'http://localhost:5173',
+  'http://localhost:3000',
+  ...config.corsOrigins.filter((o) => !o.startsWith('http://localhost')),
+]
+
 const corsOptions = {
   origin(origin, callback) {
-    if (!origin || config.corsOrigins.includes(origin)) {
+    if (!origin || allowedOrigins.includes(origin)) {
       callback(null, true)
     } else {
+      console.warn(`[cors] Blocked origin: ${origin}`)
       callback(null, false)
     }
   },
   credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
 }
 
 app.use(cors(corsOptions))
+
 app.use(express.json({ strict: true }))
 
 // ---------------------------------------------------------------------------
