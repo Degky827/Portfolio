@@ -20,6 +20,7 @@ export default function Login() {
   const [verifiedEmail, setVerifiedEmail] = useState('')
   const [totpCode, setTotpCode] = useState(Array.from({ length: TOTP_LENGTH }, () => ''))
   const inputRefs = useRef([])
+  const navigatingRef = useRef(false)
 
   const { setAuth, isAuthenticated } = useAuth()
   const navigate = useNavigate()
@@ -27,7 +28,8 @@ export default function Login() {
   const from = location.state?.from || '/admin/dashboard'
 
   useEffect(() => {
-    if (isAuthenticated) {
+    if (isAuthenticated && !navigatingRef.current) {
+      navigatingRef.current = true
       navigate(from, { replace: true })
     }
   }, [isAuthenticated, navigate, from])
@@ -90,6 +92,7 @@ export default function Login() {
 
     try {
       const data = await verify2FAApi(verifiedEmail, code, rememberMe)
+      navigatingRef.current = true
       setAuth('cookie', data.user, rememberMe)
       navigate(from, { replace: true })
     } catch (err) {
