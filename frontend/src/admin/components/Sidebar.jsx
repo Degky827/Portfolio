@@ -2,7 +2,7 @@ import { useState, useCallback, useMemo, useRef, useEffect, forwardRef } from 'r
 import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  LayoutDashboard, BarChart3, FolderKanban, Award, Code2,
+  LayoutDashboard, BarChart3, FolderKanban, Code2,
   Home, UserCircle, Mail, FileText, X, ChevronLeft, ChevronRight,
   Image, HardDrive, Activity, Download, Wrench, Bell,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
@@ -34,7 +34,6 @@ const navGroups = [
       { path: '/admin/home', label: 'Home', icon: Home, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/about', label: 'About', icon: UserCircle, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/skills', label: 'Skills', icon: Code2, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/certificates', label: 'Certificates', icon: Award, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/projects', label: 'Projects', icon: FolderKanban, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
       { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
@@ -404,7 +403,7 @@ function NavItem({ item, collapsed, onItemClick }) {
     if (item.path === '/admin/dashboard') {
       return location.pathname === '/admin/dashboard'
     }
-    if (item.path === '/admin/projects' || item.path === '/admin/certificates' || item.path === '/admin/skills') {
+    if (item.path === '/admin/projects' || item.path === '/admin/skills') {
       return location.pathname.startsWith(item.path)
     }
     return location.pathname === item.path

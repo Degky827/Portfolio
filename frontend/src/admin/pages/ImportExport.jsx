@@ -9,15 +9,13 @@ import { exportData, previewImport, executeImport } from '../../services/importE
 
 const EXPORT_TYPES = [
   { value: 'projects', label: 'Projects' },
-  { value: 'certificates', label: 'Certificates' },
   { value: 'skills', label: 'Skills' },
   { value: 'all', label: 'Complete Portfolio' },
 ]
 
 const IMPORT_TYPES = [
   { value: 'projects', label: 'Projects', desc: 'Title, description, technologies, URLs, category, status' },
-  { value: 'certificates', label: 'Certificates', desc: 'Title, organization, dates, credential info, status' },
-  { value: 'skills', label: 'Skills', desc: 'Name, category, proficiency, display order' },
+  { value: 'skills', label: 'Skills', desc: 'Name, category, proficiency, display order, certificate fields' },
 ]
 
 export default function ImportExport() {

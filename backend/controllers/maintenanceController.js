@@ -2,7 +2,6 @@ const mongoose = require('mongoose')
 const fs = require('fs')
 const path = require('path')
 const Project = require('../models/Project')
-const Certificate = require('../models/Certificate')
 const Skill = require('../models/Skill')
 const HomeContent = require('../models/HomeContent')
 const AboutContent = require('../models/AboutContent')
@@ -11,7 +10,7 @@ const FooterContent = require('../models/FooterContent')
 const Settings = require('../models/Settings')
 const Media = require('../models/Media')
 
-const MODELS_WITH_IMAGES = [Project, Certificate, Media]
+const MODELS_WITH_IMAGES = [Project, Media]
 
 async function healthCheck(_req, res) {
   try {

@@ -1,21 +1,45 @@
 const Skill = require('../models/Skill')
+const Category = require('../models/Category')
+
+const DEFAULT_CATEGORIES = [
+  { title: 'Frontend Development', icon: '', color: '#6366f1', order: 0, type: 'skills' },
+  { title: 'Backend Development', icon: '', color: '#10b981', order: 1, type: 'skills' },
+  { title: 'Mobile Development', icon: '', color: '#3b82f6', order: 2, type: 'skills' },
+  { title: 'Networking', icon: '', color: '#8b5cf6', order: 3, type: 'skills' },
+  { title: 'Tools', icon: '', color: '#ef4444', order: 4, type: 'skills' },
+  { title: 'Certificates', icon: '', color: '#14b8a6', order: 5, type: 'certificates' },
+]
+
+async function ensureDefaultCategories() {
+  const count = await Category.countDocuments()
+  if (count === 0) {
+    await Category.insertMany(DEFAULT_CATEGORIES)
+    console.log('[skills] Created default categories')
+  }
+}
 
 async function createSkill(req, res) {
   try {
     const {
       name, category, icon, proficiency,
       description, displayOrder, featured, status,
+      issuer, issueDate, certificateUrl,
     } = req.body
+
+    const isCert = category?.toLowerCase() === 'certificates'
 
     const skill = await Skill.create({
       name,
       category,
       icon: icon || '',
-      proficiency: parseInt(proficiency, 10) || 0,
+      proficiency: isCert ? null : (parseInt(proficiency, 10) || 0),
       description: description || '',
       displayOrder: parseInt(displayOrder, 10) || 0,
       featured: featured === true || featured === 'true',
       status: status || 'active',
+      issuer: issuer || '',
+      issueDate: issueDate || '',
+      certificateUrl: certificateUrl || '',
     })
 
     res.status(201).json({ success: true, skill })
@@ -31,6 +55,7 @@ async function createSkill(req, res) {
 
 async function getSkills(req, res) {
   try {
+    await ensureDefaultCategories()
     const page = Math.max(1, parseInt(req.query.page) || 1)
     const limit = Math.min(Math.max(1, parseInt(req.query.limit) || 20), 50)
     const search = req.query.search || ''
@@ -49,6 +74,7 @@ async function getSkills(req, res) {
       query.$or = [
         { name: { $regex: search, $options: 'i' } },
         { category: { $regex: search, $options: 'i' } },
+        { issuer: { $regex: search, $options: 'i' } },
       ]
     }
     if (category) {
@@ -60,12 +86,11 @@ async function getSkills(req, res) {
       query.featured = false
     }
 
-    const [totalCount, skills] = await Promise.all([
+    const [totalCount, skills, categories] = await Promise.all([
       Skill.countDocuments(query),
       Skill.find(query).sort({ displayOrder: 1, name: 1 }).skip(skip).limit(limit).lean(),
+      Category.find().sort({ order: 1 }).lean(),
     ])
-
-    const categories = await Skill.distinct('category')
 
     res.json({
       success: true,
@@ -105,16 +130,23 @@ async function updateSkill(req, res) {
       return res.status(404).json({ success: false, message: 'Skill not found' })
     }
 
+    const isCert = req.body.category
+      ? req.body.category.toLowerCase() === 'certificates'
+      : skill.category?.toLowerCase() === 'certificates'
+
     const fields = [
       'name', 'category', 'icon', 'proficiency',
       'description', 'displayOrder', 'featured', 'status',
+      'issuer', 'issueDate', 'certificateUrl',
     ]
 
     fields.forEach((field) => {
       if (req.body[field] !== undefined) {
         if (field === 'featured') {
           skill[field] = req.body[field] === true || req.body[field] === 'true'
-        } else if (field === 'proficiency' || field === 'displayOrder') {
+        } else if (field === 'proficiency') {
+          skill[field] = isCert ? null : (parseInt(req.body[field], 10) || 0)
+        } else if (field === 'displayOrder') {
           skill[field] = parseInt(req.body[field], 10) || 0
         } else {
           skill[field] = req.body[field]

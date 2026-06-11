@@ -1,5 +1,4 @@
 const Project = require('../models/Project')
-const Certificate = require('../models/Certificate')
 const Skill = require('../models/Skill')
 
 function toCSV(items, fields) {
@@ -27,21 +26,6 @@ const EXPORT_CONFIG = {
       },
       { key: 'githubUrl', label: 'GitHub URL' },
       { key: 'liveDemoUrl', label: 'Live Demo URL' },
-      { key: 'category', label: 'Category' },
-      { key: 'featured', label: 'Featured' },
-      { key: 'displayOrder', label: 'Display Order' },
-      { key: 'status', label: 'Status' },
-    ],
-  },
-  certificates: {
-    model: Certificate,
-    fields: [
-      { key: 'title', label: 'Title' },
-      { key: 'organization', label: 'Organization' },
-      { key: 'issueDate', label: 'Issue Date' },
-      { key: 'expirationDate', label: 'Expiration Date' },
-      { key: 'credentialId', label: 'Credential ID' },
-      { key: 'credentialUrl', label: 'Credential URL' },
       { key: 'category', label: 'Category' },
       { key: 'featured', label: 'Featured' },
       { key: 'displayOrder', label: 'Display Order' },
@@ -78,22 +62,6 @@ const IMPORT_CONFIG = {
       status: row.status || 'active',
     }),
   },
-  certificates: {
-    model: Certificate,
-    titleField: 'title',
-    parseRow: (row) => ({
-      title: row.title,
-      organization: row.organization || '',
-      issueDate: row.issueDate || undefined,
-      expirationDate: row.expirationDate || undefined,
-      credentialId: row.credentialId || '',
-      credentialUrl: row.credentialUrl || '',
-      category: row.category || '',
-      featured: row.featured === true || row.featured === 'true' || row.featured === 'Yes',
-      displayOrder: parseInt(row.displayOrder, 10) || 0,
-      status: row.status || 'active',
-    }),
-  },
   skills: {
     model: Skill,
     titleField: 'name',
@@ -112,7 +80,7 @@ async function exportData(req, res) {
     const format = req.query.format || 'json'
 
     const types = type === 'all'
-      ? ['projects', 'certificates', 'skills']
+      ? ['projects', 'skills']
       : [type]
 
     const result = {}

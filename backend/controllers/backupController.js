@@ -1,6 +1,5 @@
 const Backup = require('../models/Backup')
 const Project = require('../models/Project')
-const Certificate = require('../models/Certificate')
 const Skill = require('../models/Skill')
 const HomeContent = require('../models/HomeContent')
 const AboutContent = require('../models/AboutContent')
@@ -11,7 +10,6 @@ const { createNotification } = require('./notificationController')
 
 const COLLECTIONS = [
   { model: Project, key: 'projects' },
-  { model: Certificate, key: 'certificates' },
   { model: Skill, key: 'skills' },
   { model: HomeContent, key: 'homeContent' },
   { model: AboutContent, key: 'aboutContent' },

@@ -4,14 +4,14 @@ const skillSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Skill name is required'],
+      required: [true, 'Name is required'],
       trim: true,
-      maxlength: [100, 'Name cannot exceed 100 characters'],
+      maxlength: [200, 'Name cannot exceed 200 characters'],
     },
     category: {
       type: String,
       required: [true, 'Category is required'],
-      enum: ['Frontend', 'Backend', 'Database', 'DevOps', 'Tools', 'Other'],
+      trim: true,
     },
     icon: {
       type: String,
@@ -20,7 +20,7 @@ const skillSchema = new mongoose.Schema(
     },
     proficiency: {
       type: Number,
-      required: [true, 'Proficiency is required'],
+      default: null,
       min: [0, 'Minimum proficiency is 0'],
       max: [100, 'Maximum proficiency is 100'],
     },
@@ -40,6 +40,22 @@ const skillSchema = new mongoose.Schema(
       type: String,
       enum: ['active', 'inactive'],
       default: 'active',
+    },
+    // Certificate-specific fields (used when category = "Certificates")
+    issuer: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    issueDate: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    certificateUrl: {
+      type: String,
+      default: '',
+      trim: true,
     },
   },
   {
