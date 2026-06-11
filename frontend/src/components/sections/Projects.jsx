@@ -1,8 +1,9 @@
 import { motion, useReducedMotion } from 'framer-motion'
-import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play } from 'lucide-react'
-import { useState, useMemo } from 'react'
+import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { useState, useMemo, useEffect } from 'react'
 import projectsData from '../../data/projects.json'
 import mobileAppsData from '../../data/mobileApps.json'
+import { getProjects } from '../../services/projectService'
 
 const iconMap = {
   Globe,
@@ -10,7 +11,25 @@ const iconMap = {
   Wifi,
   Layers,
   Monitor,
-  Code
+  Code,
+}
+
+const statusIconMap = {
+  completed: CheckCircle,
+  in_progress: Clock,
+  planned: AlertCircle,
+}
+
+const statusLabels = {
+  completed: 'Completed',
+  in_progress: 'In Progress',
+  planned: 'Planned',
+}
+
+const statusColors = {
+  completed: '#10b981',
+  in_progress: '#f59e0b',
+  planned: '#3b82f6',
 }
 
 const mobileIconMap = {
@@ -32,16 +51,35 @@ export default function Projects() {
   const shouldReduceMotion = useReducedMotion()
   const [activeTab, setActiveTab] = useState('web')
   const [searchTerm, setSearchTerm] = useState('')
-  const [activeTag, setActiveTag] = useState('All')
+  const [dbProjects, setDbProjects] = useState([])
+  const [projectsLoading, setProjectsLoading] = useState(true)
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const data = await getProjects({ public: true, limit: 50 })
+        setDbProjects(data.projects || [])
+      } catch {
+        setDbProjects([])
+      } finally {
+        setProjectsLoading(false)
+      }
+    })()
+  }, [])
+
+  const hasDbProjects = dbProjects.length > 0
+  const displayProjects = hasDbProjects ? dbProjects : projectsData
+
   const filteredProjects = useMemo(() => {
-    return projectsData.filter(project => {
+    return displayProjects.filter(project => {
       if (!searchTerm) return true
       const term = searchTerm.toLowerCase()
-      return project.title.toLowerCase().includes(term) ||
-        project.description.toLowerCase().includes(term) ||
-        project.tags.some(tag => tag.toLowerCase().includes(term))
+      const title = (project.title || '').toLowerCase()
+      const desc = (project.shortDescription || project.description || '').toLowerCase()
+      const techs = project.technologies || project.tags || []
+      return title.includes(term) || desc.includes(term) || techs.some(tag => tag.toLowerCase().includes(term))
     })
-  }, [searchTerm])
+  }, [searchTerm, displayProjects])
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -155,17 +193,29 @@ export default function Projects() {
           role="tabpanel"
         >
           {filteredProjects.length > 0 ? (
-            filteredProjects.map((project, index) => (
+            filteredProjects.map((project, index) => {
+              const isLegacy = !!project.icon
+              const color = project.color || statusColors[project.status] || '#6366f1'
+              const title = project.title || ''
+              const desc = project.shortDescription || project.description || ''
+              const techs = project.technologies || project.tags || []
+              const liveUrl = project.liveDemoUrl || project.liveUrl || '#'
+              const repoUrl = project.githubUrl || project.repoUrl || ''
+              const thumbUrl = project.thumbnail || (project.images && project.images[0]) || ''
+              const statusIcon = project.status && statusIconMap[project.status]
+              const StatusIconComponent = statusIcon
+
+              return (
               <motion.div
-                key={index}
+                key={project._id || index}
                 variants={itemVariants}
                 whileHover={shouldReduceMotion ? {} : { y: -6, scale: 1.02 }}
                 className="group relative glass-panel noise-bg rounded-3xl p-5 sm:p-6 border border-transparent hover:border-primary/30 hover:shadow-xl transition-all duration-500 overflow-hidden cursor-pointer"
                 role="button"
                 tabIndex={0}
-                aria-label={`View ${project.title} project`}
-                onClick={() => window.open(project.liveUrl, '_blank', 'noopener noreferrer')}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(project.liveUrl, '_blank', 'noopener noreferrer') } }}
+                aria-label={`View ${title} project`}
+                onClick={() => { if (liveUrl !== '#') window.open(liveUrl, '_blank', 'noopener noreferrer') }}
+                onKeyDown={(e) => { if ((e.key === 'Enter' || e.key === ' ') && liveUrl !== '#') { e.preventDefault(); window.open(liveUrl, '_blank', 'noopener noreferrer') } }}
               >
                 {/* Hover Overlay */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-20 pointer-events-none rounded-3xl" />
@@ -173,7 +223,7 @@ export default function Projects() {
                 {/* Background Glow */}
                   <div
                     className="absolute -bottom-12 -right-12 w-32 h-32 blur-[80px] opacity-0 group-hover:opacity-30 transition-opacity duration-700 pointer-events-none"
-                    style={{ backgroundColor: project.color }}
+                    style={{ backgroundColor: color }}
                   />
 
                 {/* View Project Overlay Text */}
@@ -184,81 +234,113 @@ export default function Projects() {
                   </span>
                 </div>
 
-                {/* Top Section: Icon & Actions */}
+                {/* Top Section: Thumbnail/Icon & Actions */}
                 <div className="flex justify-between items-start mb-4 relative z-10">
+                  {thumbUrl ? (
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl overflow-hidden shadow-sm shrink-0">
+                      <img src={thumbUrl.startsWith('http') ? thumbUrl : `http://localhost:5000${thumbUrl}`} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ) : isLegacy ? (
                   <motion.div
                     whileHover={shouldReduceMotion ? {} : { rotate: 5, scale: 1.15 }}
                     className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl transition-all duration-300 shadow-sm"
-                    style={{ color: project.color, backgroundColor: `${project.color}14`, borderColor: `${project.color}30` }}
+                    style={{ color: color, backgroundColor: `${color}14`, borderColor: `${color}30` }}
                   >
-                    {renderIcon(project.icon, project.color)}
+                    {renderIcon(project.icon, color)}
                   </motion.div>
+                  ) : (
+                    <div className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-xl bg-primary/10 shadow-sm">
+                      <Code size={24} className="text-primary" />
+                    </div>
+                  )}
                   <div className="flex gap-2" onClick={e => e.stopPropagation()}>
+                    {repoUrl && repoUrl !== '#' && (
                     <a
-                      href={project.repoUrl}
+                      href={repoUrl}
                       target="_blank"
                       rel="noopener noreferrer nofollow"
                       className="p-1.5 rounded-lg transition-all duration-200 text-gray-400 hover:text-white"
                       style={{ backgroundColor: 'transparent' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = project.color; e.currentTarget.style.borderColor = 'transparent' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = color; e.currentTarget.style.borderColor = 'transparent' }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '' }}
-                      title={`View ${project.title} source code`}
-                      aria-label={`View ${project.title} source code on GitHub`}
+                      title={`View ${title} source code`}
+                      aria-label={`View ${title} source code on GitHub`}
                     >
                       <GithubIcon size={16} />
                     </a>
+                    )}
+                    {liveUrl !== '#' && (
                     <a
-                      href={project.liveUrl}
+                      href={liveUrl}
                       target="_blank"
                       rel="noopener noreferrer nofollow"
                       className="p-1.5 rounded-lg transition-all duration-200 text-gray-400 hover:text-white"
                       style={{ backgroundColor: 'transparent' }}
-                      onMouseEnter={e => { e.currentTarget.style.background = project.color; e.currentTarget.style.borderColor = 'transparent' }}
+                      onMouseEnter={e => { e.currentTarget.style.background = color; e.currentTarget.style.borderColor = 'transparent' }}
                       onMouseLeave={e => { e.currentTarget.style.background = 'transparent'; e.currentTarget.style.borderColor = '' }}
-                      title={`View ${project.title} live site`}
-                      aria-label={`View ${project.title} live demo`}
+                      title={`View ${title} live site`}
+                      aria-label={`View ${title} live demo`}
                     >
                       <ExternalLink size={16} />
                     </a>
+                    )}
                   </div>
                 </div>
 
                 {/* Content */}
                 <div className="relative z-10">
-                  <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white mb-1.5 group-hover:text-primary transition-colors leading-tight font-display">
-                    {project.title}
-                  </h3>
+                  <div className="flex items-center gap-2 mb-1.5">
+                    <h3 className="text-base sm:text-lg font-black text-gray-900 dark:text-white group-hover:text-primary transition-colors leading-tight font-display">
+                      {title}
+                    </h3>
+                    {project.status && StatusIconComponent && (
+                      <span className={`inline-flex items-center gap-1 px-2 py-0.5 text-[8px] font-bold uppercase tracking-wider rounded-full`}
+                        style={{ color: statusColors[project.status], backgroundColor: `${statusColors[project.status]}20`, borderColor: `${statusColors[project.status]}40`, borderWidth: 1 }}
+                      >
+                        <StatusIconComponent size={10} />
+                        {statusLabels[project.status]}
+                      </span>
+                    )}
+                  </div>
                   <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mb-3 sm:mb-4 leading-relaxed line-clamp-2">
-                    {project.description}
+                    {desc}
                   </p>
+                  {project.fullDescription && (
+                    <div
+                      className="text-xs sm:text-sm text-gray-600 dark:text-gray-300 mb-3 sm:mb-4 leading-relaxed prose prose-sm dark:prose-invert max-w-none line-clamp-3"
+                      dangerouslySetInnerHTML={{ __html: project.fullDescription }}
+                    />
+                  )}
 
                   <div className="flex flex-wrap gap-1.5 mb-3 sm:mb-4" role="list" aria-label="Project technologies">
-                    {project.tags.map((tag, i) => (
+                    {techs.slice(0, 5).map((tag, i) => (
                       <span
                         key={i}
                         role="listitem"
                         className="px-2 py-0.5 text-[9px] sm:text-[10px] font-bold uppercase tracking-wider rounded-full border transition-all duration-200 hover:scale-105"
-                        style={{ color: project.color, borderColor: `${project.color}40`, backgroundColor: `${project.color}10` }}
+                        style={{ color: color, borderColor: `${color}40`, backgroundColor: `${color}10` }}
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
 
+                  {liveUrl !== '#' && (
                   <motion.a
                     whileHover={shouldReduceMotion ? {} : { x: 5 }}
-                    href={project.liveUrl}
+                    href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-1.5 font-bold text-xs sm:text-sm group/btn transition-colors font-display"
-                    style={{ color: project.color }}
-                    aria-label={`View ${project.title} project details`}
+                    style={{ color: color }}
+                    aria-label={`View ${title} project details`}
                     onClick={e => e.stopPropagation()}
                   >
                     View Project
                     <ExternalLink size={14} />
                     <span className="group-hover/btn:translate-x-2 transition-transform duration-300">→</span>
                   </motion.a>
+                  )}
                 </div>
 
                 {/* Bottom Accent Line */}
@@ -266,10 +348,11 @@ export default function Projects() {
                   initial={{ scaleX: 0 }}
                   whileHover={shouldReduceMotion ? {} : { scaleX: 1 }}
                   className="absolute bottom-0 left-0 w-full h-0.5 origin-left z-10"
-                  style={{ backgroundColor: project.color }}
+                  style={{ backgroundColor: color }}
                 />
               </motion.div>
-            ))
+              )
+            })
           ) : (
             <div className="col-span-full text-center py-16">
               <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-slate-800 rounded-full flex items-center justify-center">

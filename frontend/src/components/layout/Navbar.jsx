@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download } from 'lucide-react'
+import { getHomeContent } from '../../services/homeContentService'
 
 const navLinks = [
   { id: 'home', label: 'Home' },
@@ -10,9 +11,34 @@ const navLinks = [
   { id: 'contact', label: 'Contact' },
 ]
 
+const initialContent = {
+  logoImage: '',
+  logoText: '',
+  resumeUrl: '',
+  resumeButtonText: 'Download CV',
+}
+
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [homeContent, setHomeContent] = useState(initialContent)
+
+  useEffect(() => {
+    getHomeContent()
+      .then((res) => {
+        if (res?.content) {
+          setHomeContent({
+            logoImage: res.content.logoImage || '',
+            logoText: res.content.logoText || '',
+            resumeUrl: res.content.resume?.url || '',
+            resumeButtonText: res.content.resumeButtonText || 'Download CV',
+          })
+        }
+      })
+      .catch(() => {})
+  }, [])
+
+  const { logoImage, logoText, resumeUrl, resumeButtonText } = homeContent
 
   useEffect(() => {
     const handleScroll = () => {
@@ -50,11 +76,15 @@ export default function Navbar() {
           className="flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl font-black tracking-tighter"
           onClick={(e) => handleNavClick(e, 'home')}
         >
-          <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-[10px] sm:text-xs font-black">
-            ደካ
-          </div>
+          {logoImage ? (
+            <img src={logoImage} alt={logoText || 'Logo'} className="h-8 sm:h-10 w-auto" />
+          ) : (
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-[10px] sm:text-xs font-black">
+              ደካ
+            </div>
+          )}
           <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent font-display">
-            DESALEGN
+            {logoText || 'DESALEGN'}
           </span>
         </motion.a>
         
@@ -89,8 +119,10 @@ export default function Navbar() {
             </motion.li>
           ))}
           <motion.a
-            href="/Desalegn_Kasaye_Resume.pdf"
-            download="Desalegn_Kasaye_Resume.pdf"
+            href={resumeUrl || '/Desalegn_Kasaye_Resume.pdf'}
+            download
+            target="_blank"
+            rel="noopener noreferrer"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
@@ -99,7 +131,7 @@ export default function Navbar() {
             className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-primary to-secondary text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full hover:shadow-lg hover:shadow-primary/40 transition-all shadow-md cursor-pointer"
           >
             <Download size={14} className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
-            <span>Resume CV</span>
+            <span>{resumeButtonText || 'Resume CV'}</span>
           </motion.a>
         </ul>
 
@@ -125,9 +157,13 @@ export default function Navbar() {
                   <motion.div 
                     initial={{ scale: 0.5, rotate: -45 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-sm sm:text-base font-black"
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-sm sm:text-base font-black overflow-hidden"
                   >
-                    ደካ
+                    {logoImage ? (
+                      <img src={logoImage} alt={logoText || 'Logo'} className="w-full h-full object-cover" />
+                    ) : (
+                      'ደካ'
+                    )}
                   </motion.div>
                   <motion.button 
                     whileHover={{ scale: 1.1, rotate: 90 }}
@@ -164,15 +200,17 @@ export default function Navbar() {
                 <div className="mt-auto space-y-6 sm:space-y-8">
                   {/* Resume CV Button */}
                   <motion.a
-                    href="/Desalegn_Kasaye_Resume.pdf"
-                    download="Desalegn_Kasaye_Resume.pdf"
+                    href={resumeUrl || '/Desalegn_Kasaye_Resume.pdf'}
+                    download
+                    target="_blank"
+                    rel="noopener noreferrer"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setIsOpen(false)}
                     className="flex items-center justify-center gap-3 w-full py-4 bg-primary text-white font-bold uppercase tracking-wider rounded-2xl hover:bg-secondary transition-colors shadow-lg shadow-primary/30"
                   >
                     <Download size={20} />
-                    <span>Resume CV</span>
+                    <span>{resumeButtonText || 'Resume CV'}</span>
                   </motion.a>
 
                   {/* Contact Info Card */}

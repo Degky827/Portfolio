@@ -4,7 +4,7 @@ import { motion } from 'framer-motion'
 import {
   Eye, Users, UserCheck, CalendarDays, ExternalLink, RefreshCw,
   ArrowRight, BarChart3, Clock, Globe, MapPin, Sparkles,
-  Plus, Image, Award, Shield,
+  Plus, Image, Award, Shield, FolderKanban,
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
@@ -90,11 +90,14 @@ export default function Dashboard() {
   const todayVsMonth = monthVisits > 0 ? Math.round((todayVisits / monthVisits) * 100) : 0
   const bounceRate = stats?.bounceRate ?? null
 
+  const projectCount = stats?.projectCount || 0
+  const publishedCount = stats?.publishedCount || 0
+
   const statCards = [
     { title: 'Total Views', value: totalVisits, icon: Eye, trend: stats?.trend?.total ?? null, accent: 'primary', subtitle: 'All time portfolio visits' },
     { title: 'Unique Visitors', value: uniqueV, icon: Users, trend: stats?.trend?.unique ?? null, accent: 'blue', subtitle: 'Distinct visitors' },
     { title: "Today's Visitors", value: todayVisits, icon: UserCheck, trend: stats?.trend?.today ?? null, accent: 'green', subtitle: 'vs. yesterday' },
-    { title: 'This Month', value: monthVisits, icon: CalendarDays, trend: stats?.trend?.month ?? null, accent: 'orange', subtitle: `${todayVsMonth}% of monthly total` },
+    { title: 'Total Projects', value: projectCount, icon: FolderKanban, trend: null, accent: 'purple', subtitle: `${publishedCount} published` },
   ]
 
   const quickActions = [

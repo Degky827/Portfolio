@@ -55,7 +55,8 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
-app.use(express.json({ strict: true }))
+app.use(express.json({ strict: true, limit: '10mb' }))
+app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
 // ---------------------------------------------------------------------------
 // Routes
@@ -94,6 +95,23 @@ app.use('/uploads', express.static('uploads'))
 // ---------------------------------------------------------------------------
 app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' })
+})
+
+// ---------------------------------------------------------------------------
+// Global error handler — catches body-parser / multer / unexpected errors
+// ---------------------------------------------------------------------------
+app.use((err, _req, res, _next) => {
+  console.error('[server] Unhandled error:', err)
+  if (err.type === 'entity.too.large') {
+    return res.status(413).json({ success: false, message: 'Request body too large. Max 10MB allowed.' })
+  }
+  if (err.name === 'SyntaxError' && err.status === 400) {
+    return res.status(400).json({ success: false, message: 'Invalid JSON in request body.' })
+  }
+  if (err.code === 'LIMIT_FILE_SIZE') {
+    return res.status(400).json({ success: false, message: 'File exceeds size limit.' })
+  }
+  res.status(err.status || 500).json({ success: false, message: err.message || 'Internal server error' })
 })
 
 // ---------------------------------------------------------------------------

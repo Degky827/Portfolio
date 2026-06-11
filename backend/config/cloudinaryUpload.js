@@ -32,6 +32,11 @@ function wrapMulter(uploadInstance) {
   }
 }
 
+const documentUpload = multer({
+  storage: portfolioStorage,
+  limits: { fileSize: 20 * 1024 * 1024 },
+})
+
 function uploadSingle(fieldName) {
   return wrapMulter(
     (isCloudinaryConfigured ? cloudinaryUpload : localUpload).single(fieldName),
@@ -44,4 +49,10 @@ function uploadFields(fieldConfig) {
   )
 }
 
-module.exports = { uploadSingle, uploadFields }
+function uploadSingleDocument(fieldName) {
+  return wrapMulter(
+    (isCloudinaryConfigured ? documentUpload : localUpload).single(fieldName),
+  )
+}
+
+module.exports = { uploadSingle, uploadFields, uploadSingleDocument }

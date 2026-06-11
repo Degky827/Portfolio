@@ -12,6 +12,11 @@ const typeConfig = {
   backup_completed: { label: 'Backup', classes: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' },
   restore_completed: { label: 'Restore', classes: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' },
   system_warning: { label: 'Warning', classes: 'bg-orange-50 dark:bg-orange-900/20 text-orange-700 dark:text-orange-400' },
+  project_created: { label: 'Project', classes: 'bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400' },
+  project_updated: { label: 'Project', classes: 'bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400' },
+  project_deleted: { label: 'Project', classes: 'bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-400' },
+  project_archived: { label: 'Project', classes: 'bg-purple-50 dark:bg-purple-900/20 text-purple-700 dark:text-purple-400' },
+  project_published: { label: 'Project', classes: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400' },
 }
 
 export default function Notifications() {
