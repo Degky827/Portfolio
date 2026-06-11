@@ -300,7 +300,7 @@ export default function Skills() {
   return (
     <section
       id="skills"
-      className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-black/50 transition-colors duration-500"
+      className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-[#0B1120] transition-colors duration-500"
       aria-label="Skills section"
     >
       <div className="container mx-auto px-4 sm:px-6">
@@ -314,15 +314,15 @@ export default function Skills() {
           <motion.span
             initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-gradient-to-r from-primary/10 to-secondary/10 rounded-full border border-primary/20 hover-lift"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full border border-primary/20"
           >
             <Code2 className="w-3 h-3 sm:w-4 sm:h-4" />
             My Expertise
           </motion.span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black gradient-text mb-4 sm:mb-6 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-[#F8FAFC] mb-4 sm:mb-6 tracking-tight">
             Technical Skills
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-[#94A3B8] max-w-2xl mx-auto leading-relaxed px-4">
             A comprehensive overview of the technologies and tools I master to build modern digital solutions.
           </p>
         </motion.div>
@@ -337,7 +337,7 @@ export default function Skills() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
-            className="glass-panel noise-bg p-6 sm:p-8 md:p-10 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden"
+            className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] p-6 sm:p-8 md:p-10 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-sm"
           >
             {topRow.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mb-6 lg:mb-8 relative z-10">
@@ -370,34 +370,27 @@ export default function Skills() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.5, duration: shouldReduceMotion ? 0.1 : 0.8 }}
-              className="mt-10 sm:mt-14 md:mt-18 pt-8 sm:pt-10 md:pt-14 border-t border-white/20 dark:border-slate-700/50 grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-16 relative z-10"
+              className="mt-10 sm:mt-14 md:mt-18 pt-8 sm:pt-10 md:pt-14 border-t border-gray-200 dark:border-[#334155] grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-16 relative z-10"
             >
               {[
-                { label: 'Technologies', value: `${skills.filter((s) => s.category?.toLowerCase() !== 'certificates').length}+`, color: 'primary' },
-                { label: 'Certificates', value: `${certificatesCard?.skills.length || 0}+`, color: 'secondary' },
-                { label: 'Categories', value: `${skillCards.length}+`, color: 'accent' },
+                { label: 'Technologies', value: `${skills.filter((s) => s.category?.toLowerCase() !== 'certificates').length}+` },
+                { label: 'Certificates', value: `${certificatesCard?.skills.length || 0}+` },
+                { label: 'Categories', value: `${skillCards.length}+` },
               ].map((stat, i) => (
                 <motion.div
                   key={i}
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   transition={{ delay: i * 0.1 }}
-                  className="text-center group flex flex-col items-center"
+                  className="text-center flex flex-col items-center"
                 >
-                  <motion.div
-                    whileHover={{ scale: 1.15, rotate: 5 }}
-                    className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-${stat.color}/10 text-${stat.color} mb-2 sm:mb-3 md:mb-4 group-hover:bg-gradient-to-r group-hover:from-${stat.color} group-hover:to-${stat.color === 'primary' ? 'secondary' : stat.color === 'secondary' ? 'accent' : 'primary'} group-hover:text-white transition-all duration-300 shadow-lg group-hover:shadow-xl`}
-                    aria-hidden="true"
-                  >
+                  <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-primary/10 text-primary mb-2 sm:mb-3 md:mb-4">
                     <Award size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
-                  </motion.div>
-                  <motion.span
-                    whileHover={{ scale: 1.1 }}
-                    className="block text-2xl sm:text-3xl md:text-4xl font-black gradient-text mb-1 group-hover:scale-110 transition-all font-display"
-                  >
+                  </div>
+                  <span className="block text-2xl sm:text-3xl md:text-4xl font-black text-gray-900 dark:text-[#F8FAFC] mb-1 font-display">
                     {stat.value}
-                  </motion.span>
-                  <span className="text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-gray-400 dark:text-gray-500 group-hover:text-primary transition-colors">
+                  </span>
+                  <span className="text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-gray-400 dark:text-[#94A3B8]">
                     {stat.label}
                   </span>
                 </motion.div>

@@ -360,9 +360,10 @@ async function updateMe(req, res) {
       req,
     })
 
-    res.json({ success: true, user: user.toJSON(), message: 'Profile updated successfully.' })
+    const json = user.toJSON()
+    res.json({ success: true, user: json, message: 'Profile updated successfully.' })
   } catch (error) {
-    console.error('[users] updateMe error:', error)
+    console.error('[users] updateMe error:', JSON.stringify(error, Object.getOwnPropertyNames(error)))
     if (error.code === 11000) {
       return res.status(400).json({ success: false, message: 'Email already in use.' })
     }

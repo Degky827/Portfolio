@@ -79,11 +79,11 @@ export default function Navbar() {
           {logoImage ? (
             <img src={logoImage} alt={logoText || 'Logo'} className="h-8 sm:h-10 w-auto" />
           ) : (
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-[10px] sm:text-xs font-black">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-[10px] sm:text-xs font-black">
               ደካ
             </div>
           )}
-          <span className="bg-gradient-to-r from-gray-900 to-gray-600 dark:from-white dark:to-gray-400 bg-clip-text text-transparent font-display">
+          <span className="text-gray-900 dark:text-[#F8FAFC] font-display">
             {logoText || 'DESALEGN'}
           </span>
         </motion.a>
@@ -128,7 +128,7 @@ export default function Navbar() {
             transition={{ delay: 0.8 }}
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-gradient-to-r from-primary to-secondary text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full hover:shadow-lg hover:shadow-primary/40 transition-all shadow-md cursor-pointer"
+            className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-primary hover:bg-[#4F46E5] text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full hover:shadow-lg transition-all shadow-md cursor-pointer"
           >
             <Download size={14} className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
             <span>{resumeButtonText || 'Resume CV'}</span>
@@ -157,7 +157,7 @@ export default function Navbar() {
                   <motion.div 
                     initial={{ scale: 0.5, rotate: -45 }}
                     animate={{ scale: 1, rotate: 0 }}
-                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-gradient-to-br from-purple-900 to-purple-700 text-white text-sm sm:text-base font-black overflow-hidden"
+                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-sm sm:text-base font-black overflow-hidden"
                   >
                     {logoImage ? (
                       <img src={logoImage} alt={logoText || 'Logo'} className="w-full h-full object-cover" />
@@ -214,9 +214,8 @@ export default function Navbar() {
                   </motion.a>
 
                   {/* Contact Info Card */}
-                  <div className="p-5 sm:p-6 md:p-8 glass-panel rounded-2xl sm:rounded-[1.5rem] noise-bg relative overflow-hidden group">
-                    <div className="absolute inset-0 bg-primary/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                    <div className="relative z-10 space-y-4 sm:space-y-5">
+                  <div className="p-5 sm:p-6 md:p-8 bg-gray-50 dark:bg-[#1E293B] rounded-2xl sm:rounded-[1.5rem] border border-gray-200 dark:border-[#334155]">
+                    <div className="space-y-4 sm:space-y-5">
                       <div className="flex items-center gap-3">
                         <MapPin size={18} className="text-primary" />
                         <span className="text-sm sm:text-base font-bold text-gray-600 dark:text-gray-400">Bahirdar, Ethiopia</span>
@@ -244,7 +243,7 @@ export default function Navbar() {
                         target="_blank"
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.1 }}
-                        className="w-10 h-10 sm:w-12 sm:h-12 glass-panel rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                        className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 dark:bg-[#1E293B] rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"
                       >
                         {social.icon}
                       </motion.a>

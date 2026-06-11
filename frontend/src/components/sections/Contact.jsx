@@ -117,20 +117,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-black/50 transition-colors duration-500 relative overflow-hidden" aria-label="Contact section">
-      {/* Background Decor */}
-      <motion.div
-        animate={{ scale: [1, 1.2, 1], opacity: [0.1, 0.15, 0.1] }}
-        transition={{ duration: 10, repeat: Infinity }}
-        className="absolute top-0 right-0 w-[400px] sm:w-[500px] md:w-[600px] h-[400px] sm:h-[500px] md:h-[600px] bg-primary/20 rounded-full blur-[100px] sm:blur-[120px] -z-10 translate-x-1/2 -translate-y-1/2"
-        aria-hidden="true"
-      />
-      <motion.div
-        animate={{ scale: [1, 1.1, 1], opacity: [0.1, 0.12, 0.1] }}
-        transition={{ duration: 12, repeat: Infinity }}
-        className="absolute bottom-0 left-0 w-[400px] sm:w-[500px] md:w-[600px] h-[400px] sm:h-[500px] md:h-[600px] bg-accent/20 rounded-full blur-[100px] sm:blur-[120px] -z-10 -translate-x-1/2 translate-y-1/2"
-        aria-hidden="true"
-      />
+    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-[#0B1120] transition-colors duration-500 relative overflow-hidden" aria-label="Contact section">
 
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
@@ -160,7 +147,7 @@ export default function Contact() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="glass-panel noise-bg rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] lg:rounded-[3.5rem] shadow-2xl max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
+          className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
         >
           <div className="grid lg:grid-cols-5 relative z-10">
             {/* Contact Info Sidebar */}
@@ -184,7 +171,7 @@ export default function Contact() {
                         className="flex items-center gap-4 sm:gap-5 md:gap-6 group"
                       >
                         <div
-                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl glass-card flex items-center justify-center text-black transition-all duration-300 flex-shrink-0"
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white/10 flex items-center justify-center text-white transition-all duration-300 flex-shrink-0"
                           style={{ '--hover-bg': hoverBg }}
                           onMouseEnter={e => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.borderColor = 'transparent' }}
                           onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.borderColor = '' }}
@@ -220,7 +207,7 @@ export default function Contact() {
                       href={social.href}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl glass-card flex items-center justify-center text-black transition-all duration-300"
+                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center text-white transition-all duration-300"
                       onMouseEnter={e => { e.currentTarget.style.background = social.brand; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'transparent' }}
                       onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.color = ''; e.currentTarget.style.borderColor = '' }}
                       title={social.title}
@@ -313,7 +300,7 @@ export default function Contact() {
                   disabled={isSubmitting}
                   whileHover={{ scale: 1.02, translateY: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-4 sm:py-5 bg-gradient-to-r from-primary to-secondary text-white font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-xl shadow-primary/20 hover:shadow-2xl hover:shadow-secondary/30 transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 disabled:cursor-not-allowed group relative overflow-hidden focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                  className="w-full py-4 sm:py-5 bg-primary hover:bg-[#4F46E5] text-white font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 disabled:cursor-not-allowed group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   aria-label={isSubmitting ? 'Sending message...' : 'Send message'}
                 >
                   <span className="relative z-10 flex items-center gap-2 sm:gap-3">

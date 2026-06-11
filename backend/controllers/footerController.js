@@ -22,7 +22,11 @@ async function updateFooterContent(req, res) {
       content = new FooterContent()
     }
 
-    const textFields = ['footerDescription', 'copyrightText', 'status']
+    const textFields = [
+      'footerDescription', 'copyrightText', 'status',
+      'brandName', 'builtWithText', 'madeWithText', 'iconKeyword',
+      'location', 'region', 'country', 'email', 'phone',
+    ]
     textFields.forEach((field) => {
       if (req.body[field] !== undefined) {
         content[field] = req.body[field]
