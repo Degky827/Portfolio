@@ -12,6 +12,12 @@ import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
 import { canAccess } from './RoleGuard'
 
+function getUserInitials(user) {
+  if (user?.displayName) return user.displayName.charAt(0).toUpperCase()
+  if (user?.name) return user.name.charAt(0).toUpperCase()
+  return 'D'
+}
+
 const navGroups = [
   {
     id: 'dashboard',
@@ -91,7 +97,7 @@ const dropdownVariants = {
 
 export default function Sidebar() {
   const { mobileOpen, closeMobile, collapsed, toggleCollapsed } = useAdmin()
-  const { userRole, logout } = useAuth()
+  const { user, userRole, logout } = useAuth()
   const location = useLocation()
   const [openMenus, setOpenMenus] = useState({ cms: true, communication: false, system: false })
   const [searchQuery, setSearchQuery] = useState('')
@@ -142,7 +148,7 @@ export default function Sidebar() {
 
   const sidebarContent = (
     <div className="flex flex-col h-full bg-white dark:bg-slate-900">
-      <DesktopHeader collapsed={collapsed} onToggle={toggleCollapsed} />
+      <DesktopHeader collapsed={collapsed} onToggle={toggleCollapsed} user={user} />
 
       {!collapsed && (
         <div className="px-3 pt-3 pb-1">
@@ -172,7 +178,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <ProfileFooter collapsed={collapsed} userRole={userRole} onLogout={logout} />
+      <ProfileFooter collapsed={collapsed} user={user} userRole={userRole} onLogout={logout} />
     </div>
   )
 
@@ -204,7 +210,7 @@ export default function Sidebar() {
                   <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-700 to-purple-900 text-white text-[9px] font-black flex items-center justify-center">
                     ደካ
                   </div>
-                  <span className="font-bold text-gray-900 dark:text-white">Admin Panel</span>
+                  <span className="font-bold text-gray-900 dark:text-white">{user?.displayName || user?.name || 'Desalegn Admin'}</span>
                 </div>
                 <button
                   onClick={closeMobile}
@@ -238,7 +244,7 @@ export default function Sidebar() {
                   />
                 ))}
               </nav>
-              <ProfileFooter collapsed={false} userRole={userRole} onLogout={logout} />
+              <ProfileFooter collapsed={false} user={user} userRole={userRole} onLogout={logout} />
             </motion.aside>
           </>
         )}
@@ -468,7 +474,7 @@ function NavItem({ item, collapsed, onItemClick }) {
   )
 }
 
-function DesktopHeader({ collapsed, onToggle }) {
+function DesktopHeader({ collapsed, onToggle, user }) {
   return (
     <div className="flex items-center h-16 border-b border-gray-200 dark:border-slate-800 shrink-0 overflow-hidden px-4">
       {collapsed ? (
@@ -484,7 +490,7 @@ function DesktopHeader({ collapsed, onToggle }) {
               ደካ
             </div>
             <span className="font-bold text-gray-900 dark:text-white whitespace-nowrap">
-              Admin Panel
+              {user?.displayName || user?.name || 'Desalegn Admin'}
             </span>
           </div>
           <button
@@ -511,7 +517,7 @@ function DesktopHeader({ collapsed, onToggle }) {
   )
 }
 
-function ProfileFooter({ collapsed, userRole, onLogout }) {
+function ProfileFooter({ collapsed, user, userRole, onLogout }) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
 
@@ -581,10 +587,10 @@ function ProfileFooter({ collapsed, userRole, onLogout }) {
           aria-expanded={open}
         >
           <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-700 to-purple-900 text-white text-[8px] font-black flex items-center justify-center shrink-0">
-            A
+            {getUserInitials(user)}
           </div>
           <div className="flex-1 text-left min-w-0">
-            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">Account</p>
+            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{user?.displayName || user?.name || 'Account'}</p>
             <p className="text-[10px] text-gray-400 dark:text-gray-500 capitalize truncate">
               {userRole?.replace('_', ' ') || 'Admin'}
             </p>

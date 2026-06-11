@@ -120,6 +120,10 @@ app.use((err, _req, res, _next) => {
 async function start() {
   await connectDB()
 
+  // Migrate old category values to new enum-compatible values
+  const { migrateOldCategories } = require('./controllers/skillController')
+  await migrateOldCategories()
+
   const server = app.listen(config.port, () => {
     console.log(
       `Server running on port ${config.port} [${config.nodeEnv}]`,

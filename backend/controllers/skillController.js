@@ -1,6 +1,28 @@
 const Skill = require('../models/Skill')
 const Category = require('../models/Category')
 
+const VALID_CATEGORIES = [
+  'Frontend Development',
+  'Backend Development',
+  'Mobile Development',
+  'Networking',
+  'Tools',
+  'Certificates',
+]
+
+const CATEGORY_MIGRATION_MAP = {
+  frontend: 'Frontend Development',
+  'frontend development': 'Frontend Development',
+  backend: 'Backend Development',
+  'backend development': 'Backend Development',
+  mobile: 'Mobile Development',
+  'mobile development': 'Mobile Development',
+  networking: 'Networking',
+  tools: 'Tools',
+  certificates: 'Certificates',
+  certificate: 'Certificates',
+}
+
 const DEFAULT_CATEGORIES = [
   { title: 'Frontend Development', icon: '', color: '#6366f1', order: 0, type: 'skills' },
   { title: 'Backend Development', icon: '', color: '#10b981', order: 1, type: 'skills' },
@@ -18,6 +40,23 @@ async function ensureDefaultCategories() {
   }
 }
 
+async function migrateOldCategories() {
+  const skills = await Skill.find({}).lean()
+  let updated = 0
+  for (const skill of skills) {
+    const old = skill.category?.trim().toLowerCase() || ''
+    const mapped = CATEGORY_MIGRATION_MAP[old]
+    if (mapped && skill.category !== mapped) {
+      await Skill.updateOne({ _id: skill._id }, { $set: { category: mapped } })
+      updated++
+      console.log(`[skills] Migrated skill "${skill.name}": "${skill.category}" → "${mapped}"`)
+    }
+  }
+  if (updated > 0) {
+    console.log(`[skills] Migrated ${updated} skill(s) to new category values`)
+  }
+}
+
 async function createSkill(req, res) {
   try {
     const {
@@ -25,6 +64,15 @@ async function createSkill(req, res) {
       description, displayOrder, featured, status,
       issuer, issueDate, certificateUrl,
     } = req.body
+
+    console.log('[skills] Incoming category:', JSON.stringify(category))
+
+    if (!VALID_CATEGORIES.includes(category)) {
+      return res.status(400).json({
+        success: false,
+        message: `"${category}" is not a valid category. Must be one of: ${VALID_CATEGORIES.join(', ')}`,
+      })
+    }
 
     const isCert = category?.toLowerCase() === 'certificates'
 
@@ -183,4 +231,4 @@ async function deleteSkill(req, res) {
   }
 }
 
-module.exports = { createSkill, getSkills, getSkill, updateSkill, deleteSkill }
+module.exports = { createSkill, getSkills, getSkill, updateSkill, deleteSkill, migrateOldCategories, VALID_CATEGORIES }

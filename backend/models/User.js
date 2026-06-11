@@ -30,6 +30,35 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    displayName: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    phone: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    bio: {
+      type: String,
+      default: '',
+    },
+    location: {
+      type: String,
+      default: '',
+      trim: true,
+    },
+    socialLinks: {
+      linkedin: { type: String, default: '' },
+      github: { type: String, default: '' },
+      portfolioUrl: { type: String, default: '' },
+    },
+    theme: {
+      type: String,
+      enum: ['light', 'dark', 'system'],
+      default: 'system',
+    },
     isActive: {
       type: Boolean,
       default: true,

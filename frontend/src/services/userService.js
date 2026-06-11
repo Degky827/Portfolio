@@ -24,3 +24,8 @@ export async function deleteUser(id) {
   const { data } = await api.delete(`/users/${id}`)
   return data
 }
+
+export async function updateMe(userData) {
+  const { data } = await api.patch('/auth/me', userData)
+  return data
+}
