@@ -210,7 +210,7 @@ export default function Navbar() {
                 aria-expanded={dropdownOpen}
               >
                 <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-700 to-purple-900 text-white text-[10px] font-black flex items-center justify-center shadow-sm">
-                  {user?.email?.charAt(0).toUpperCase() || 'A'}
+                  {user?.displayName?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase() || 'D'}
                 </div>
               </motion.button>
 
@@ -234,7 +234,7 @@ export default function Navbar() {
                       <div className="px-4 py-4 border-b border-gray-100 dark:border-slate-800">
                         <div className="flex items-center gap-3">
                           <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-700 to-purple-900 text-white text-sm font-black flex items-center justify-center shadow-sm">
-                            {user?.email?.charAt(0).toUpperCase() || 'A'}
+                            {user?.displayName?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase() || 'D'}
                           </div>
                           <div className="min-w-0">
                             <p className="text-sm font-bold text-gray-900 dark:text-white truncate">

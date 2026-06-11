@@ -1,9 +1,13 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, Eye, EyeOff, AlertCircle, Shield, Calendar, Clock, Mail, User as UserIcon } from 'lucide-react'
+import {
+  Save, Eye, EyeOff, AlertCircle, Shield, Calendar, Clock,
+  Mail, User as UserIcon, Phone, MapPin, Link, Code2, Globe, Image,
+} from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import { getMe } from '../../services/authService'
-import { updateUser } from '../../services/userService'
+import { updateMe } from '../../services/userService'
+import ImageUpload from '../components/ImageUpload'
 import Toast from '../components/Toast'
 
 export default function Profile() {
@@ -11,7 +15,14 @@ export default function Profile() {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [name, setName] = useState('')
+  const [displayName, setDisplayName] = useState('')
   const [avatar, setAvatar] = useState('')
+  const [phone, setPhone] = useState('')
+  const [bio, setBio] = useState('')
+  const [location, setLocation] = useState('')
+  const [linkedin, setLinkedin] = useState('')
+  const [github, setGithub] = useState('')
+  const [portfolioUrl, setPortfolioUrl] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
@@ -29,7 +40,14 @@ export default function Profile() {
         const { user } = await getMe()
         setProfile(user)
         setName(user.name || '')
+        setDisplayName(user.displayName || '')
         setAvatar(user.avatar || '')
+        setPhone(user.phone || '')
+        setBio(user.bio || '')
+        setLocation(user.location || '')
+        setLinkedin(user.socialLinks?.linkedin || '')
+        setGithub(user.socialLinks?.github || '')
+        setPortfolioUrl(user.socialLinks?.portfolioUrl || '')
       } catch {
         setServerError('Failed to load profile.')
       } finally {
@@ -65,9 +83,18 @@ export default function Profile() {
     setSaving(true)
     setServerError('')
     try {
-      const { user } = await updateUser(authUser._id, { name: name.trim(), avatar })
+      const body = {
+        name: name.trim(),
+        displayName: displayName.trim(),
+        avatar,
+        phone: phone.trim(),
+        bio,
+        location: location.trim(),
+        socialLinks: { linkedin, github, portfolioUrl },
+      }
+      const { user } = await updateMe(body)
       setProfile(user)
-      setUserData({ ...authUser, name: user.name, avatar: user.avatar })
+      setUserData({ ...authUser, name: user.name, avatar: user.avatar, displayName: user.displayName })
       setToast({ message: 'Profile updated successfully.', type: 'success' })
     } catch (err) {
       setServerError(err.response?.data?.message || 'Failed to update profile.')
@@ -82,7 +109,7 @@ export default function Profile() {
     setSaving(true)
     setServerError('')
     try {
-      await updateUser(authUser._id, {
+      await updateMe({
         currentPassword,
         password: newPassword,
       })
@@ -96,6 +123,10 @@ export default function Profile() {
       setSaving(false)
     }
   }
+
+  const displayInitial = profile?.displayName?.charAt(0)
+    || profile?.name?.charAt(0)
+    || 'D'
 
   if (loading) {
     return (
@@ -120,14 +151,20 @@ export default function Profile() {
   }
 
   return (
-    <div className="space-y-6 max-w-2xl">
+    <div className="space-y-6 max-w-3xl">
       <div>
         <h1 className="text-2xl font-black text-gray-900 dark:text-white">Admin Profile</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">Manage your account settings and password</p>
+        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+          Manage your account details, personal information, and password
+        </p>
       </div>
 
       {serverError && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3">
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3"
+        >
           <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
           <span className="text-red-700 dark:text-red-400 text-sm font-medium">{serverError}</span>
         </motion.div>
@@ -139,11 +176,21 @@ export default function Profile() {
         className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6"
       >
         <div className="flex items-center gap-4 mb-6 pb-6 border-b border-gray-200 dark:border-slate-800">
-          <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-700 to-purple-900 text-white text-xl font-black flex items-center justify-center shrink-0 shadow-lg">
-            {profile?.name?.charAt(0).toUpperCase() || 'A'}
-          </div>
+          {profile?.avatar ? (
+            <img
+              src={profile.avatar}
+              alt=""
+              className="w-16 h-16 rounded-full object-cover shrink-0 shadow-lg"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-700 to-purple-900 text-white text-xl font-black flex items-center justify-center shrink-0 shadow-lg">
+              {displayInitial}
+            </div>
+          )}
           <div>
-            <h2 className="text-lg font-black text-gray-900 dark:text-white">{profile?.name}</h2>
+            <h2 className="text-lg font-black text-gray-900 dark:text-white">
+              {profile?.displayName || profile?.name}
+            </h2>
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mt-1">
               <Mail size={14} />
               <span>{profile?.email}</span>
@@ -168,29 +215,134 @@ export default function Profile() {
           </div>
         </div>
 
-        <form onSubmit={handleProfileSubmit} className="space-y-4">
-          <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Full Name</label>
-            <input
-              type="text"
-              value={name}
-              onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: '' })) }}
-              className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
-            />
-            {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+        <form onSubmit={handleProfileSubmit} className="space-y-5">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                Full Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => { setName(e.target.value); setErrors((p) => ({ ...p, name: '' })) }}
+                className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 ${errors.name ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
+              />
+              {errors.name && <p className="text-red-500 text-xs mt-1">{errors.name}</p>}
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                Display Name
+              </label>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="e.g. Desalegn"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
           </div>
+
           <div>
-            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Avatar URL</label>
-            <input
-              type="text"
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+              Profile Photo
+            </label>
+            <ImageUpload
               value={avatar}
-              onChange={(e) => setAvatar(e.target.value)}
-              placeholder="https://..."
-              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              onChange={(url) => setAvatar(url)}
+              label="Upload Profile Photo"
+              folder="avatars"
             />
-            <p className="text-xs text-gray-400 mt-1">Optional. URL to an image for your avatar.</p>
           </div>
-          <div className="flex justify-end">
+
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+              Bio
+            </label>
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              rows={3}
+              placeholder="Tell us about yourself..."
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
+            />
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                <Phone size={12} className="inline mr-1" />
+                Phone Number
+              </label>
+              <input
+                type="text"
+                value={phone}
+                onChange={(e) => setPhone(e.target.value)}
+                placeholder="e.g. +251 911 234 567"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                <MapPin size={12} className="inline mr-1" />
+                Location
+              </label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="e.g. Addis Ababa, Ethiopia"
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+              />
+            </div>
+          </div>
+
+          <div className="border-t border-gray-200 dark:border-slate-800 pt-5">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">Social & Portfolio Links</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                  <Link size={12} className="inline mr-1" />
+                  LinkedIn URL
+                </label>
+                <input
+                  type="url"
+                  value={linkedin}
+                  onChange={(e) => setLinkedin(e.target.value)}
+                  placeholder="https://linkedin.com/in/..."
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                  <Code2 size={12} className="inline mr-1" />
+                  GitHub URL
+                </label>
+                <input
+                  type="url"
+                  value={github}
+                  onChange={(e) => setGithub(e.target.value)}
+                  placeholder="https://github.com/..."
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                  <Globe size={12} className="inline mr-1" />
+                  Portfolio URL
+                </label>
+                <input
+                  type="url"
+                  value={portfolioUrl}
+                  onChange={(e) => setPortfolioUrl(e.target.value)}
+                  placeholder="https://yourportfolio.com"
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-end pt-2">
             <button
               type="submit"
               disabled={saving}

@@ -165,12 +165,45 @@ async function updateUser(req, res) {
       return res.status(404).json({ success: false, message: 'User not found.' })
     }
 
-    const { name, email, role, isActive, password, currentPassword } = req.body
+    const {
+      name, email, role, isActive, password, currentPassword,
+      displayName, phone, bio, location, socialLinks, theme, avatar,
+    } = req.body
     const changes = []
 
     if (name !== undefined) {
       user.name = name.trim()
       changes.push('name')
+    }
+    if (displayName !== undefined) {
+      user.displayName = displayName.trim()
+      changes.push('displayName')
+    }
+    if (phone !== undefined) {
+      user.phone = phone.trim()
+      changes.push('phone')
+    }
+    if (bio !== undefined) {
+      user.bio = bio
+      changes.push('bio')
+    }
+    if (location !== undefined) {
+      user.location = location.trim()
+      changes.push('location')
+    }
+    if (socialLinks !== undefined) {
+      if (typeof socialLinks === 'object') {
+        Object.assign(user.socialLinks, socialLinks)
+        changes.push('socialLinks')
+      }
+    }
+    if (theme !== undefined) {
+      user.theme = theme
+      changes.push('theme')
+    }
+    if (avatar !== undefined) {
+      user.avatar = avatar
+      changes.push('avatar')
     }
     if (email !== undefined) {
       user.email = email.toLowerCase().trim()
@@ -282,4 +315,59 @@ async function deleteUser(req, res) {
   }
 }
 
-module.exports = { getUsers, getUser, createUser, updateUser, deleteUser }
+async function updateMe(req, res) {
+  try {
+    const allowed = ['name', 'displayName', 'phone', 'bio', 'location', 'socialLinks', 'avatar', 'theme']
+    const user = await User.findById(req.user._id)
+    if (!user) return res.status(404).json({ success: false, message: 'User not found.' })
+
+    const changes = []
+
+    for (const field of allowed) {
+      if (req.body[field] !== undefined) {
+        if (field === 'socialLinks' && typeof req.body.socialLinks === 'object') {
+          Object.assign(user.socialLinks, req.body.socialLinks)
+        } else if (field === 'name' || field === 'displayName' || field === 'phone' || field === 'location') {
+          user[field] = String(req.body[field]).trim()
+        } else {
+          user[field] = req.body[field]
+        }
+        changes.push(field)
+      }
+    }
+
+    if (req.body.currentPassword && req.body.password) {
+      const isMatch = await user.comparePassword(req.body.currentPassword)
+      if (!isMatch) {
+        return res.status(400).json({ success: false, message: 'Current password is incorrect.' })
+      }
+      user.password = req.body.password
+      changes.push('password')
+    }
+
+    if (changes.length === 0) {
+      return res.status(400).json({ success: false, message: 'No valid fields to update.' })
+    }
+
+    await user.save()
+
+    await createAuditLog({
+      user: req.user._id,
+      action: 'UPDATE',
+      resource: 'User',
+      resourceId: user._id,
+      details: { updatedFields: changes },
+      req,
+    })
+
+    res.json({ success: true, user: user.toJSON(), message: 'Profile updated successfully.' })
+  } catch (error) {
+    console.error('[users] updateMe error:', error)
+    if (error.code === 11000) {
+      return res.status(400).json({ success: false, message: 'Email already in use.' })
+    }
+    res.status(500).json({ success: false, message: 'Failed to update profile.' })
+  }
+}
+
+module.exports = { getUsers, getUser, createUser, updateUser, deleteUser, updateMe }
