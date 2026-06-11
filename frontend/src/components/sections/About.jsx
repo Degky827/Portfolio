@@ -49,7 +49,7 @@ export default function About({ content }) {
   }
 
   return (
-    <section id="about" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden">
+    <section id="about" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-[#0B1120] transition-colors duration-500 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -65,18 +65,15 @@ export default function About({ content }) {
           >
             About Me
           </motion.span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-[#F8FAFC] mb-4 sm:mb-6 tracking-tight">
             {title}
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-[#94A3B8] max-w-2xl mx-auto leading-relaxed px-4">
             {subtitle}
           </p>
         </motion.div>
 
-        <div className="glass-panel noise-bg p-6 sm:p-8 md:p-12 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden">
-          {/* Decorative Elements */}
-          <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-primary/10 rounded-full blur-[80px] sm:blur-[100px] -z-10 translate-x-1/2 -translate-y-1/2" />
-          <div className="absolute bottom-0 left-0 w-48 sm:w-64 h-48 sm:h-64 bg-accent/10 rounded-full blur-[80px] sm:blur-[100px] -z-10 -translate-x-1/2 translate-y-1/2" />
+        <div className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] p-6 sm:p-8 md:p-12 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-sm">
 
           <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start relative z-10">
             {/* Left: Info Cards */}
@@ -114,9 +111,8 @@ export default function About({ content }) {
               transition={{ duration: 0.8, delay: 0.2 }}
               className="sticky top-24"
             >
-              <div className="bg-slate-900 rounded-2xl sm:rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-slate-700/50 group relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent pointer-events-none" />
-                <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 bg-slate-800/50 border-b border-slate-700/50">
+              <div className="bg-[#0B1120] rounded-2xl sm:rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-[#334155] group relative">
+                <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 bg-[#111827] border-b border-[#334155]">
                   <div className="flex gap-1.5 sm:gap-2">
                     <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#ff5f56]"></div>
                     <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#ffbd2e]"></div>
