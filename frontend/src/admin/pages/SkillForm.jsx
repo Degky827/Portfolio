@@ -251,16 +251,11 @@ export default function SkillForm() {
                 <>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                      Skill Icon
+                      Skill Icon <span className="text-gray-400 font-normal normal-case">(auto-detected)</span>
                     </label>
-                    <input
-                      type="text"
-                      value={form.icon}
-                      onChange={set('icon')}
-                      placeholder="e.g. SiReact, FaNodeJs"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                    />
-                    <p className="text-xs text-gray-400 mt-1">Icon identifier for display on the portfolio</p>
+                    <div className="w-full px-4 py-3 rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800/50 text-gray-400 dark:text-gray-500 text-sm flex items-center gap-2">
+                      <span>Icon is auto-detected from the skill name</span>
+                    </div>
                   </div>
 
                   <div>
