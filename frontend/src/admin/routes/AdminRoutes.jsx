@@ -9,8 +9,6 @@ import ActivityLogs from '../pages/ActivityLogs'
 import NotificationsPage from '../pages/Notifications'
 import Projects from '../pages/Projects'
 import ProjectForm from '../pages/ProjectForm'
-import Certificates from '../pages/Certificates'
-import CertificateForm from '../pages/CertificateForm'
 import Skills from '../pages/Skills'
 import SkillForm from '../pages/SkillForm'
 import HomeContent from '../pages/HomeContent'
@@ -63,9 +61,6 @@ export default function AdminRoutes() {
           <Route path="projects" element={<Projects />} />
           <Route path="projects/new" element={<ProjectForm />} />
           <Route path="projects/:id" element={<ProjectForm />} />
-          <Route path="certificates" element={<Certificates />} />
-          <Route path="certificates/new" element={<CertificateForm />} />
-          <Route path="certificates/:id" element={<CertificateForm />} />
           <Route path="media" element={<MediaLibrary />} />
           <Route
             path="import-export"

@@ -3,32 +3,31 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Plus, Search, X, Edit2, Trash2,
-  Star, StarOff, Code2, BarChart3,
+  Star, StarOff, Code2,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import ConfirmModal from '../components/ConfirmModal'
 import Toast from '../components/Toast'
 import { getSkills, deleteSkill } from '../../services/skillService'
 
+const FIXED_CATEGORIES = [
+  { title: 'Frontend Development', color: '#6366f1' },
+  { title: 'Backend Development', color: '#10b981' },
+  { title: 'Mobile Development', color: '#3b82f6' },
+  { title: 'Networking', color: '#8b5cf6' },
+  { title: 'Tools', color: '#ef4444' },
+  { title: 'Certificates', color: '#14b8a6' },
+]
+
 const statusStyles = {
   active: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
   inactive: 'bg-gray-50 dark:bg-slate-800 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-slate-700',
-}
-
-const categoryColors = {
-  Frontend: 'text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-500/10',
-  Backend: 'text-green-600 bg-green-50 dark:text-green-400 dark:bg-green-500/10',
-  Database: 'text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-500/10',
-  DevOps: 'text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-500/10',
-  Tools: 'text-cyan-600 bg-cyan-50 dark:text-cyan-400 dark:bg-cyan-500/10',
-  Other: 'text-gray-600 bg-gray-50 dark:text-gray-400 dark:bg-gray-500/10',
 }
 
 export default function Skills() {
   const navigate = useNavigate()
   const [skills, setSkills] = useState([])
   const [totalCount, setTotalCount] = useState(0)
-  const [categories, setCategories] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
 
@@ -46,18 +45,17 @@ export default function Skills() {
   const [deleting, setDeleting] = useState(false)
   const [toast, setToast] = useState(null)
 
-  const fetchSkills = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     setLoading(true)
     setError('')
     try {
-      const data = await getSkills({
+      const skillsData = await getSkills({
         page, limit, search, category: categoryFilter,
         featured: featuredFilter, status: statusFilter,
       })
-      setSkills(data.skills || [])
-      setTotalCount(data.totalCount || 0)
-      setCategories(data.categories || [])
-      setTotalPages(data.pagination?.totalPages || 1)
+      setSkills(skillsData.skills || [])
+      setTotalCount(skillsData.totalCount || 0)
+      setTotalPages(skillsData.pagination?.totalPages || 1)
     } catch (err) {
       setError('Failed to load skills')
     } finally {
@@ -66,8 +64,8 @@ export default function Skills() {
   }, [page, limit, search, categoryFilter, featuredFilter, statusFilter])
 
   useEffect(() => {
-    fetchSkills()
-  }, [fetchSkills])
+    fetchData()
+  }, [fetchData])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -91,7 +89,7 @@ export default function Skills() {
       await deleteSkill(deleteTarget._id)
       setToast({ message: 'Skill deleted successfully', type: 'success' })
       setDeleteTarget(null)
-      fetchSkills()
+      fetchData()
     } catch {
       setToast({ message: 'Failed to delete skill', type: 'error' })
     } finally {
@@ -108,11 +106,16 @@ export default function Skills() {
     return 'text-red-600'
   }
 
+  const getCategoryColor = (name) => {
+    const cat = FIXED_CATEGORIES.find((c) => c.title.toLowerCase() === name?.toLowerCase())
+    return cat?.color || '#6366f1'
+  }
+
   return (
     <div>
       <PageHeader
-        title="Skills"
-        subtitle={`${totalCount} skill${totalCount !== 1 ? 's' : ''} total`}
+        title="Skills CMS"
+        subtitle={`${totalCount} skill${totalCount !== 1 ? 's' : ''} · ${FIXED_CATEGORIES.length} categories`}
         actions={
           <button
             onClick={() => navigate('/admin/skills/new')}
@@ -124,6 +127,7 @@ export default function Skills() {
         }
       />
 
+      {/* Filters */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-4 mb-6">
         <div className="flex flex-col sm:flex-row gap-3">
           <form onSubmit={handleSearch} className="flex-1 relative">
@@ -152,8 +156,8 @@ export default function Skills() {
             className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           >
             <option value="">All Categories</option>
-            {categories.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+            {FIXED_CATEGORIES.map((cat) => (
+              <option key={cat.title} value={cat.title}>{cat.title}</option>
             ))}
           </select>
 
@@ -191,7 +195,7 @@ export default function Skills() {
       {error && (
         <div className="mb-6 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl text-red-600 dark:text-red-400 text-sm">
           {error}
-          <button onClick={fetchSkills} className="ml-3 underline font-medium">Retry</button>
+          <button onClick={fetchData} className="ml-3 underline font-medium">Retry</button>
         </div>
       )}
 
@@ -252,78 +256,85 @@ export default function Skills() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                  {skills.map((skill) => (
-                    <tr
-                      key={skill._id}
-                      className="hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors"
-                    >
-                      <td className="px-4 sm:px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary shrink-0">
-                            <Code2 size={18} />
+                  {skills.map((skill) => {
+                    const catColor = getCategoryColor(skill.category)
+                    return (
+                      <tr
+                        key={skill._id}
+                        className="hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors"
+                      >
+                        <td className="px-4 sm:px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-primary/10 dark:bg-primary/20 flex items-center justify-center text-primary shrink-0">
+                              <Code2 size={18} />
+                            </div>
+                            <div className="min-w-0">
+                              <p className="font-medium text-gray-900 dark:text-white truncate max-w-[180px]">
+                                {skill.name}
+                              </p>
+                              <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate max-w-[180px]">
+                                {skill.description || skill.category}
+                              </p>
+                            </div>
                           </div>
-                          <div className="min-w-0">
-                            <p className="font-medium text-gray-900 dark:text-white truncate max-w-[180px]">
-                              {skill.name}
-                            </p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate max-w-[180px]">
-                              {skill.description || skill.category}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 hidden md:table-cell">
-                        <span className={`inline-flex px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full ${categoryColors[skill.category] || categoryColors.Other}`}>
-                          {skill.category}
-                        </span>
-                      </td>
-                      <td className="px-4 py-4 hidden sm:table-cell">
-                        <div className="flex items-center gap-2.5">
-                          <div className="flex-1 max-w-[100px] h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
-                            <motion.div
-                              initial={{ width: 0 }}
-                              animate={{ width: `${skill.proficiency}%` }}
-                              transition={{ duration: 1, ease: 'easeOut' }}
-                              className="h-full rounded-full bg-primary"
-                            />
-                          </div>
-                          <span className={`text-xs font-bold ${proficiencyColor(skill.proficiency)}`}>
-                            {skill.proficiency}%
+                        </td>
+                        <td className="px-4 py-4 hidden md:table-cell">
+                          <span
+                            className="inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border"
+                            style={{ borderColor: catColor, color: catColor, backgroundColor: `${catColor}14` }}
+                          >
+                            {skill.category}
                           </span>
-                        </div>
-                      </td>
-                      <td className="px-4 py-4 text-center hidden sm:table-cell">
-                        {skill.featured ? (
-                          <Star size={16} className="text-amber-500 fill-amber-500 mx-auto" />
-                        ) : (
-                          <StarOff size={16} className="text-gray-300 dark:text-gray-600 mx-auto" />
-                        )}
-                      </td>
-                      <td className="px-4 py-4 text-center">
-                        <span className={`inline-flex px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border ${statusStyles[skill.status] || statusStyles.inactive}`}>
-                          {skill.status}
-                        </span>
-                      </td>
-                      <td className="px-4 sm:px-6 py-4">
-                        <div className="flex items-center justify-end gap-1">
-                          <button
-                            onClick={() => navigate(`/admin/skills/${skill._id}`)}
-                            className="p-2 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
-                            title="Edit skill"
-                          >
-                            <Edit2 size={16} />
-                          </button>
-                          <button
-                            onClick={() => setDeleteTarget(skill)}
-                            className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
-                            title="Delete skill"
-                          >
-                            <Trash2 size={16} />
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
+                        </td>
+                        <td className="px-4 py-4 hidden sm:table-cell">
+                          <div className="flex items-center gap-2.5">
+                            <div className="flex-1 max-w-[100px] h-2 bg-gray-200 dark:bg-slate-700 rounded-full overflow-hidden">
+                              <motion.div
+                                initial={{ width: 0 }}
+                                animate={{ width: `${skill.proficiency}%` }}
+                                transition={{ duration: 1, ease: 'easeOut' }}
+                                className="h-full rounded-full"
+                                style={{ backgroundColor: catColor }}
+                              />
+                            </div>
+                            <span className={`text-xs font-bold ${proficiencyColor(skill.proficiency)}`}>
+                              {skill.proficiency}%
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-4 py-4 text-center hidden sm:table-cell">
+                          {skill.featured ? (
+                            <Star size={16} className="text-amber-500 fill-amber-500 mx-auto" />
+                          ) : (
+                            <StarOff size={16} className="text-gray-300 dark:text-gray-600 mx-auto" />
+                          )}
+                        </td>
+                        <td className="px-4 py-4 text-center">
+                          <span className={`inline-flex px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border ${statusStyles[skill.status] || statusStyles.inactive}`}>
+                            {skill.status}
+                          </span>
+                        </td>
+                        <td className="px-4 sm:px-6 py-4">
+                          <div className="flex items-center justify-end gap-1">
+                            <button
+                              onClick={() => navigate(`/admin/skills/${skill._id}`)}
+                              className="p-2 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
+                              title="Edit skill"
+                            >
+                              <Edit2 size={16} />
+                            </button>
+                            <button
+                              onClick={() => setDeleteTarget(skill)}
+                              className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                              title="Delete skill"
+                            >
+                              <Trash2 size={16} />
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    )
+                  })}
                 </tbody>
               </table>
             </div>
@@ -372,6 +383,7 @@ export default function Skills() {
         </>
       )}
 
+      {/* Delete Confirmation - Skill */}
       <ConfirmModal
         open={Boolean(deleteTarget)}
         title="Delete Skill"

@@ -2,12 +2,13 @@ const { Router } = require('express')
 const { body, validationResult } = require('express-validator')
 const { authenticateToken } = require('../middleware/auth')
 const {
-  createSkill,
-  getSkills,
-  getSkill,
-  updateSkill,
-  deleteSkill,
-} = require('../controllers/skillController')
+  createCategory,
+  getCategories,
+  getCategory,
+  updateCategory,
+  deleteCategory,
+  reorderCategories,
+} = require('../controllers/categoryController')
 
 const router = Router()
 
@@ -22,31 +23,34 @@ function handleValidation(req, res, next) {
   next()
 }
 
-const skillValidation = [
-  body('name').trim().notEmpty().withMessage('Name is required'),
-  body('category').trim().notEmpty().withMessage('Category is required'),
+const categoryValidation = [
+  body('title').trim().notEmpty().withMessage('Category title is required'),
 ]
 
 router.post(
   '/',
   authenticateToken,
-  skillValidation,
+  categoryValidation,
   handleValidation,
-  createSkill,
+  createCategory,
 )
 
-router.get('/', getSkills)
+router.get('/', getCategories)
 
-router.get('/:id', getSkill)
+router.get('/:id', getCategory)
+
+router.put(
+  '/reorder',
+  authenticateToken,
+  reorderCategories,
+)
 
 router.put(
   '/:id',
   authenticateToken,
-  skillValidation,
-  handleValidation,
-  updateSkill,
+  updateCategory,
 )
 
-router.delete('/:id', authenticateToken, deleteSkill)
+router.delete('/:id', authenticateToken, deleteCategory)
 
 module.exports = router
