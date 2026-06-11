@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import ImageUpload from '../components/ImageUpload'
+import FileUpload from '../components/FileUpload'
 import Toast from '../components/Toast'
 import { getHomeContent, updateHomeContent } from '../../services/homeContentService'
 
@@ -89,6 +90,12 @@ const defaultForm = {
     ogImage: '',
   },
   logoImage: '',
+  logoText: '',
+
+  resumeButtonText: 'Download CV',
+
+  contactButtonText: 'Get In Touch',
+  contactButtonLink: '#contact',
 
   published: false,
 }
@@ -237,6 +244,10 @@ export default function HomeContent() {
               ogImage: content.seo?.ogImage ?? '',
             },
             logoImage: content.logoImage ?? '',
+            logoText: content.logoText ?? '',
+            resumeButtonText: content.resumeButtonText ?? 'Download CV',
+            contactButtonText: content.contactButtonText ?? 'Get In Touch',
+            contactButtonLink: content.contactButtonLink ?? '#contact',
             published: content.published ?? false,
           })
         }
@@ -376,57 +387,71 @@ export default function HomeContent() {
     e.preventDefault()
     setLoading(true)
 
-    const fd = new FormData()
-    fd.append('heroGreeting', form.hero.greeting)
-    fd.append('heroFullName', form.hero.fullName)
-    fd.append('heroNameAmharic', form.hero.nameAmharic)
-    fd.append('heroBadge', form.hero.professionalBadge)
-    fd.append('heroIntroduction', form.hero.shortIntroduction)
-    fd.append('heroPhotoAlt', form.hero.profilePhoto.alt)
-    fd.append('heroTypingWords', JSON.stringify(form.hero.typingWords))
-    fd.append('heroStatistics', JSON.stringify(form.hero.statistics))
-    fd.append('heroCtaButtons', JSON.stringify(form.hero.ctaButtons))
-
-    fd.append('aboutTitle', form.about.title)
-    fd.append('aboutSubtitle', form.about.subtitle)
-    fd.append('aboutLocation', form.about.location)
-    fd.append('aboutYearsExp', String(form.about.yearsOfExperience))
-    fd.append('aboutStatClients', form.about.statClients)
-    fd.append('aboutStatNetwork', form.about.statNetwork)
-    fd.append('aboutSections', JSON.stringify(form.about.sections))
-    fd.append('aboutAchievements', JSON.stringify(form.about.achievements))
-
-    fd.append('ctaTitle', form.cta.title)
-    fd.append('ctaSubtitle', form.cta.subtitle)
-    fd.append('ctaButtonText', form.cta.buttonText)
-    fd.append('ctaButtonLink', form.cta.buttonLink)
-
-    fd.append('socialLinks', JSON.stringify(form.socialLinks))
-
-    fd.append('resumeUrl', form.resume.url)
-    fd.append('resumeFileName', form.resume.fileName)
-
-    fd.append('themePrimaryColor', form.theme.primaryColor)
-    fd.append('themeSecondaryColor', form.theme.secondaryColor)
-    fd.append('themeAccentColor', form.theme.accentColor)
-
-    fd.append('seoTitle', form.seo.metaTitle)
-    fd.append('seoDescription', form.seo.metaDescription)
-    fd.append('seoKeywords', JSON.stringify(form.seo.metaKeywords))
-
-    fd.append('published', form.published ? 'true' : 'false')
-
-    // Image URLs (already uploaded to Cloudinary via ImageUpload component)
-    fd.append('heroPhotoUrl', form.hero.profilePhoto.url || '')
-    fd.append('logoUrl', form.logoImage || '')
-    fd.append('ctaBackgroundUrl', form.cta.backgroundImage || '')
-    fd.append('seoOgUrl', form.seo.ogImage || '')
+    const payload = {
+      hero: {
+        greeting: form.hero.greeting,
+        fullName: form.hero.fullName,
+        nameAmharic: form.hero.nameAmharic,
+        professionalBadge: form.hero.professionalBadge,
+        shortIntroduction: form.hero.shortIntroduction,
+        typingWords: form.hero.typingWords,
+        profilePhoto: {
+          url: form.hero.profilePhoto.url || '',
+          alt: form.hero.profilePhoto.alt,
+        },
+        statistics: form.hero.statistics,
+        ctaButtons: form.hero.ctaButtons,
+      },
+      about: {
+        title: form.about.title,
+        subtitle: form.about.subtitle,
+        sections: form.about.sections,
+        achievements: form.about.achievements,
+        location: form.about.location,
+        yearsOfExperience: form.about.yearsOfExperience,
+        statClients: form.about.statClients,
+        statNetwork: form.about.statNetwork,
+      },
+      cta: {
+        title: form.cta.title,
+        subtitle: form.cta.subtitle,
+        buttonText: form.cta.buttonText,
+        buttonLink: form.cta.buttonLink,
+        backgroundImage: form.cta.backgroundImage || '',
+      },
+      socialLinks: form.socialLinks,
+      resume: {
+        url: form.resume.url,
+        fileName: form.resume.fileName,
+      },
+      theme: {
+        primaryColor: form.theme.primaryColor,
+        secondaryColor: form.theme.secondaryColor,
+        accentColor: form.theme.accentColor,
+      },
+      seo: {
+        metaTitle: form.seo.metaTitle,
+        metaDescription: form.seo.metaDescription,
+        metaKeywords: form.seo.metaKeywords,
+        ogImage: form.seo.ogImage || '',
+      },
+      logoImage: form.logoImage || '',
+      logoText: form.logoText,
+      resumeButtonText: form.resumeButtonText,
+      contactButtonText: form.contactButtonText,
+      contactButtonLink: form.contactButtonLink,
+      published: form.published,
+    }
 
     try {
-      const { content } = await updateHomeContent(fd)
+      const { content } = await updateHomeContent(payload)
       setForm((prev) => ({
         ...prev,
         logoImage: content.logoImage ?? prev.logoImage,
+        logoText: content.logoText ?? prev.logoText,
+        resumeButtonText: content.resumeButtonText ?? prev.resumeButtonText,
+        contactButtonText: content.contactButtonText ?? prev.contactButtonText,
+        contactButtonLink: content.contactButtonLink ?? prev.contactButtonLink,
         hero: {
           ...prev.hero,
           profilePhoto: {
@@ -648,6 +673,13 @@ export default function HomeContent() {
                       label="Site Logo"
                       folder="logos"
                     />
+                    <Field label="Logo Text">
+                      <Input
+                        value={form.logoText}
+                        onChange={(e) => updateForm('logoText', e.target.value)}
+                        placeholder="Desalegn Portfolio"
+                      />
+                    </Field>
                   </Card>
                 </div>
               </div>
@@ -807,6 +839,24 @@ export default function HomeContent() {
 
                 <div className="space-y-6">
                   <Card>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Hero Contact Button</h3>
+                    <p className="text-sm text-gray-400">Configure the main "Get In Touch" button on the hero section.</p>
+                    <Field label="Button Text">
+                      <Input
+                        value={form.contactButtonText}
+                        onChange={(e) => updateForm('contactButtonText', e.target.value)}
+                        placeholder="Get In Touch"
+                      />
+                    </Field>
+                    <Field label="Button Link">
+                      <Input
+                        value={form.contactButtonLink}
+                        onChange={(e) => updateForm('contactButtonLink', e.target.value)}
+                        placeholder="#contact"
+                      />
+                    </Field>
+                  </Card>
+                  <Card>
                     <h3 className="text-lg font-bold text-gray-900 dark:text-white">Background Image</h3>
                     <ImageUpload
                       value={form.cta.backgroundImage}
@@ -909,24 +959,49 @@ export default function HomeContent() {
 
             {/* ─── RESUME TAB ───────────────────────────────────────────────── */}
             {activeTab === 'resume' && (
-              <Card>
-                <h3 className="text-lg font-bold text-gray-900 dark:text-white">Resume / CV</h3>
-                <p className="text-sm text-gray-400">Link to your resume or CV file.</p>
-                <Field label="Resume URL">
-                  <Input
-                    value={form.resume.url}
-                    onChange={(e) => updateForm('resume.url', e.target.value)}
-                    placeholder="https://drive.google.com/your-resume"
-                  />
-                </Field>
-                <Field label="File Name">
-                  <Input
-                    value={form.resume.fileName}
-                    onChange={(e) => updateForm('resume.fileName', e.target.value)}
-                    placeholder="Resume.pdf"
-                  />
-                </Field>
-              </Card>
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 space-y-6">
+                  <Card>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Resume / CV</h3>
+                    <p className="text-sm text-gray-400">Upload your resume PDF. The public download button will use this file.</p>
+                    <FileUpload
+                      value={form.resume.url}
+                      onChange={(val) => updateForm('resume.url', val || '')}
+                      label="Resume PDF"
+                      folder="resumes"
+                    />
+                    <Field label="Resume File Name">
+                      <Input
+                        value={form.resume.fileName}
+                        onChange={(e) => updateForm('resume.fileName', e.target.value)}
+                        placeholder="Resume.pdf"
+                      />
+                    </Field>
+                  </Card>
+                </div>
+                <div className="space-y-6">
+                  <Card>
+                    <h3 className="text-lg font-bold text-gray-900 dark:text-white">Download Button</h3>
+                    <Field label="Button Text">
+                      <Input
+                        value={form.resumeButtonText}
+                        onChange={(e) => updateForm('resumeButtonText', e.target.value)}
+                        placeholder="Download CV"
+                      />
+                    </Field>
+                    <Field label="Current Resume URL">
+                      <Input
+                        value={form.resume.url}
+                        onChange={(e) => updateForm('resume.url', e.target.value)}
+                        placeholder="https://res.cloudinary.com/..."
+                      />
+                      {form.resume.url && (
+                        <p className="text-xs text-gray-400 mt-1 truncate">Current file: {form.resume.url.split('/').pop() || 'uploaded file'}</p>
+                      )}
+                    </Field>
+                  </Card>
+                </div>
+              </div>
             )}
 
             {/* ─── THEME TAB ────────────────────────────────────────────────── */}

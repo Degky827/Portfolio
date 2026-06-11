@@ -13,7 +13,7 @@ function getIcon(name) {
   return iconMap[name] || Award
 }
 
-export default function Hero({ content }) {
+export default function Hero({ content, contactButtonText, contactButtonLink }) {
   const [typedText, setTypedText] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
@@ -32,9 +32,11 @@ export default function Hero({ content }) {
         { label: 'Class Projects', value: '15+', icon: 'BookOpen', color: '#10b981' },
         { label: 'Core Skills', value: '30+', icon: 'Cpu', color: '#f59e0b' },
       ]
+  const contactBtnText = contactButtonText || 'Get In Touch'
+  const contactBtnLink = contactButtonLink || '#contact'
   const ctaButtons = content?.ctaButtons?.length > 0
-    ? content.ctaButtons
-    : [{ text: 'Get In Touch', link: '#contact', openNewTab: false, icon: 'ArrowRight' }]
+    ? content.ctaButtons.map((btn, i) => i === 0 ? { ...btn, text: contactBtnText, link: contactBtnLink } : btn)
+    : [{ text: contactBtnText, link: contactBtnLink, openNewTab: false, icon: 'ArrowRight' }]
 
   useEffect(() => {
     let index = 0

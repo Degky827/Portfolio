@@ -25,7 +25,11 @@ export default function Home() {
 
   return (
     <>
-      <Hero content={content?.hero} />
+      <Hero
+        content={content?.hero}
+        contactButtonText={content?.contactButtonText}
+        contactButtonLink={content?.contactButtonLink}
+      />
       <About content={content?.about} />
       <Skills />
       <Suspense fallback={spinner}>

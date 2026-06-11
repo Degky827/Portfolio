@@ -80,6 +80,12 @@ const homeContentSchema = new mongoose.Schema(
     },
 
     logoImage: { type: String, default: '' },
+    logoText: { type: String, default: '' },
+
+    resumeButtonText: { type: String, default: 'Download CV' },
+
+    contactButtonText: { type: String, default: 'Get In Touch' },
+    contactButtonLink: { type: String, default: '#contact' },
 
     theme: {
       primaryColor: { type: String, default: '#6366f1' },

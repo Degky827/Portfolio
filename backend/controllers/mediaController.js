@@ -150,4 +150,29 @@ async function deleteMedia(req, res) {
   }
 }
 
-module.exports = { uploadMedia, getMedia, getMediaItem, updateMedia, deleteMedia }
+async function uploadDocument(req, res) {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'No file provided' })
+    }
+
+    const file = req.file
+    let url = ''
+    let publicId = ''
+
+    if (isCloudinaryConfigured) {
+      url = file.path
+      publicId = file.filename
+    } else {
+      url = `/uploads/${file.filename}`
+      try { fs.unlinkSync(file.path) } catch { /* ok */ }
+    }
+
+    res.status(201).json({ success: true, url, publicId, originalName: file.originalname })
+  } catch (error) {
+    console.error('[media] uploadDocument error:', error)
+    res.status(500).json({ success: false, message: 'Failed to upload document' })
+  }
+}
+
+module.exports = { uploadMedia, getMedia, getMediaItem, updateMedia, deleteMedia, uploadDocument }

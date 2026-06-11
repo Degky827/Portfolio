@@ -24,6 +24,14 @@ export async function uploadMedia(formData, onProgress) {
   return data
 }
 
+export async function uploadDocument(formData, onProgress) {
+  const { data } = await api.post('/media/upload-document', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+    onUploadProgress: onProgress,
+  })
+  return data
+}
+
 export async function updateMedia(id, body) {
   const { data } = await api.put(`/media/${id}`, body)
   return data

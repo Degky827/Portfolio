@@ -5,9 +5,7 @@ export async function getHomeContent() {
   return data
 }
 
-export async function updateHomeContent(formData) {
-  const { data } = await api.put('/home-content', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+export async function updateHomeContent(body) {
+  const { data } = await api.put('/home-content', body)
   return data
 }

@@ -1,4 +1,5 @@
 const Visit = require('../models/Visit')
+const Project = require('../models/Project')
 const { extractIP, lookupLocation } = require('../utils/ipLookup')
 const { parseUserAgent } = require('../utils/parseUserAgent')
 
@@ -156,16 +157,18 @@ async function getDashboardStats(_req, res) {
 
     const baseFilter = publicOnlyFilter()
 
-    const [totalCount, uniqueVisitors, todayCount, weekCount, monthCount, recentVisits] = await Promise.all([
+    const [totalCount, uniqueVisitors, todayCount, weekCount, monthCount, recentVisits, projectCount, publishedCount] = await Promise.all([
       Visit.countDocuments(baseFilter),
       Visit.distinct('visitorId', baseFilter).then((ids) => ids.filter(Boolean).length),
       Visit.countDocuments({ ...baseFilter, timestamp: { $gte: startOfToday } }),
       Visit.countDocuments({ ...baseFilter, timestamp: { $gte: startOfWeek } }),
       Visit.countDocuments({ ...baseFilter, timestamp: { $gte: startOfMonth } }),
       Visit.find(baseFilter).sort({ timestamp: -1 }).limit(5).lean(),
+      Project.countDocuments({ archived: { $ne: true } }),
+      Project.countDocuments({ published: true, archived: { $ne: true } }),
     ])
 
-    res.json({ success: true, totalCount, uniqueVisitors, todayCount, weekCount, monthCount, recentVisits })
+    res.json({ success: true, totalCount, uniqueVisitors, todayCount, weekCount, monthCount, recentVisits, projectCount, publishedCount })
   } catch (error) {
     console.error('[analytics] getDashboardStats error:', error)
     res.status(500).json({ success: false, message: 'Failed to fetch dashboard stats' })
