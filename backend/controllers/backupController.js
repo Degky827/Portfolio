@@ -7,6 +7,11 @@ const ContactContent = require('../models/ContactContent')
 const FooterContent = require('../models/FooterContent')
 const Settings = require('../models/Settings')
 const { createNotification } = require('./notificationController')
+const mongoose = require('mongoose')
+const fs = require('fs')
+const path = require('path')
+
+const BACKUPS_DIR = path.resolve(__dirname, '..', 'backups')
 
 const COLLECTIONS = [
   { model: Project, key: 'projects' },
@@ -59,29 +64,73 @@ async function listBackups(req, res) {
       .lean()
     res.json({ success: true, backups })
   } catch (error) {
-    console.error('[backup] list error:', error)
-    res.status(500).json({ success: false, message: 'Failed to list backups' })
+    console.error('Backup Error:', error)
+    res.status(500).json({ success: false, error: error.message || 'Failed to list backups' })
   }
 }
 
 async function createBackup(req, res) {
   try {
+    // Verify MongoDB connection
+    if (!mongoose.connection || mongoose.connection.readyState !== 1) {
+      const msg = 'MongoDB connection failed'
+      console.error('Backup Error:', msg)
+      return res.status(500).json({ success: false, error: msg })
+    }
+
     const { data, summary } = await gatherAllData()
     const name = req.body.name || `Manual Backup - ${new Date().toLocaleString()}`
+
+    // Ensure backups directory exists
+    try {
+      await fs.promises.mkdir(BACKUPS_DIR, { recursive: true })
+    } catch (err) {
+      console.error('Backup Error: failed to create backups directory', err)
+      return res.status(500).json({ success: false, error: 'Permission denied while creating backups directory' })
+    }
+
+    // Build timestamped filename
+    const d = new Date()
+    const pad = (n) => String(n).padStart(2, '0')
+    const ts = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}-${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`
+    const filename = `backup-${ts}.json`
+    const filepath = path.join(BACKUPS_DIR, filename)
+
+    const fileData = JSON.stringify(data, null, 2)
+
+    // Write backup file
+    try {
+      await fs.promises.writeFile(filepath, fileData, 'utf8')
+    } catch (err) {
+      console.error('Backup Error: failed to write backup file', err)
+      return res.status(500).json({ success: false, error: 'Permission denied while writing backup file' })
+    }
+
+    const fileSize = Buffer.byteLength(fileData, 'utf8')
+
     const backup = await Backup.create({
       name,
       type: 'manual',
-      fileSize: Buffer.byteLength(JSON.stringify(data), 'utf8'),
+      fileSize,
       summary,
       data,
     })
+
     const obj = backup.toObject()
     delete obj.data
+
     createNotification({ type: 'backup_completed', title: 'Backup Completed', message: `Manual backup "${name}" created successfully.`, link: '/admin/backup' })
-    res.status(201).json({ success: true, backup: obj })
+
+    res.status(201).json({
+      success: true,
+      message: 'Backup created successfully',
+      filename,
+      fileSize,
+      backup: obj,
+    })
   } catch (error) {
-    console.error('[backup] create error:', error)
-    res.status(500).json({ success: false, message: 'Failed to create backup' })
+    console.error('Backup Error:', error)
+    res.status(500).json({ success: false, error: error.message || 'Failed to create backup' })
   }
 }
 
@@ -93,8 +142,8 @@ async function getBackup(req, res) {
     }
     res.json({ success: true, backup })
   } catch (error) {
-    console.error('[backup] get error:', error)
-    res.status(500).json({ success: false, message: 'Failed to fetch backup' })
+    console.error('Backup Error:', error)
+    res.status(500).json({ success: false, error: error.message || 'Failed to fetch backup' })
   }
 }
 
@@ -109,8 +158,8 @@ async function downloadBackup(req, res) {
     res.setHeader('Content-Disposition', `attachment; filename="${safeName}.json"`)
     res.json(backup.data)
   } catch (error) {
-    console.error('[backup] download error:', error)
-    res.status(500).json({ success: false, message: 'Failed to download backup' })
+    console.error('Backup Error:', error)
+    res.status(500).json({ success: false, error: error.message || 'Failed to download backup' })
   }
 }
 
@@ -122,8 +171,8 @@ async function deleteBackup(req, res) {
     }
     res.json({ success: true, message: 'Backup deleted successfully' })
   } catch (error) {
-    console.error('[backup] delete error:', error)
-    res.status(500).json({ success: false, message: 'Failed to delete backup' })
+    console.error('Backup Error:', error)
+    res.status(500).json({ success: false, error: error.message || 'Failed to delete backup' })
   }
 }
 
@@ -164,8 +213,8 @@ async function uploadBackup(req, res) {
 
     res.status(201).json({ success: true, backup })
   } catch (error) {
-    console.error('[backup] upload error:', error)
-    res.status(500).json({ success: false, message: 'Failed to process uploaded backup' })
+    console.error('Backup Error:', error)
+    res.status(500).json({ success: false, error: error.message || 'Failed to process uploaded backup' })
   }
 }
 
@@ -193,8 +242,8 @@ async function restoreBackup(req, res) {
       restorePointId: autoRP._id,
     })
   } catch (error) {
-    console.error('[backup] restore error:', error)
-    res.status(500).json({ success: false, message: 'Failed to restore backup' })
+    console.error('Backup Error:', error)
+    res.status(500).json({ success: false, error: error.message || 'Failed to restore backup' })
   }
 }
 
