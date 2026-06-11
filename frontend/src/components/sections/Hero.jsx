@@ -125,23 +125,55 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
             className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] p-6 sm:p-8 md:p-14 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] flex flex-col lg:flex-row items-center gap-8 md:gap-12 lg:gap-16 max-w-5xl lg:max-w-6xl xl:max-w-7xl relative overflow-hidden w-full shadow-sm"
           >
             {/* Image Wrapper */}
-            <motion.div 
+              <motion.div 
               whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
               className="relative flex-shrink-0"
             >
               <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 lg:w-72 lg:h-72 relative">
+                {/* Decorative animated progress rings (SVG) */}
+                <svg viewBox="0 0 200 200" className="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)] z-0 pointer-events-none" aria-hidden="true">
+                  <defs>
+                    <linearGradient id="g1" x1="0%" x2="100%">
+                      <stop offset="0%" stopColor="#34d399" />
+                      <stop offset="50%" stopColor="#06b6d4" />
+                      <stop offset="100%" stopColor="#6366f1" />
+                    </linearGradient>
+                    <linearGradient id="g2" x1="0%" x2="100%">
+                      <stop offset="0%" stopColor="#f97316" />
+                      <stop offset="100%" stopColor="#f43f5e" />
+                    </linearGradient>
+                  </defs>
+                  <g transform="translate(100,100)">
+                    <circle r="92" fill="none" stroke="url(#g1)" strokeWidth="6" strokeLinecap="round" strokeDasharray="40 260" opacity="0.95">
+                      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite" />
+                    </circle>
+                    <circle r="74" fill="none" stroke="url(#g2)" strokeWidth="4" strokeLinecap="round" strokeDasharray="20 180" opacity="0.9">
+                      <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="6s" repeatCount="indefinite" />
+                    </circle>
+                    {/* subtle glow */}
+                    <circle r="96" fill="none" stroke="#06b6d480" strokeWidth="8" />
+                  </g>
+                </svg>
+
                 {/* Simple ring border */}
-                <div className="absolute inset-0 rounded-full border-2 border-primary/20" />
+                <div className="absolute inset-0 rounded-full border-2 border-primary/20 z-10" />
                 
-                {/* Portrait */}
-                <div className="absolute inset-[6px] rounded-full overflow-hidden z-10 bg-[#dce5f0] shadow-sm pt-[14px]">
-                  <img 
+                {/* Portrait (animated) */}
+                <motion.div
+                  className="absolute inset-[6px] rounded-full overflow-hidden z-20 bg-[#dce5f0] shadow-sm pt-[14px]"
+                  animate={{ y: [0, -8, 0] }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                >
+                  <motion.img
                     src={profilePhotoUrl}
                     alt={profilePhotoAlt}
                     className="w-full h-full object-cover object-[center_18%]"
+                    initial={{ scale: 1 }}
+                    whileHover={{ scale: 1.06 }}
+                    transition={{ duration: 0.45 }}
                   />
-                </div>
+                </motion.div>
               </div>
             </motion.div>
 

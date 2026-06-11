@@ -68,11 +68,19 @@ export default function Backup() {
   const handleCreate = async () => {
     setCreating(true)
     try {
-      await createBackup()
-      setToast({ message: 'Backup created successfully', type: 'success' })
-      fetch()
-    } catch {
-      setToast({ message: 'Failed to create backup', type: 'error' })
+      const res = await createBackup()
+      if (res && res.success) {
+        const name = res.filename || res.backup?.name
+        const size = res.fileSize || res.backup?.fileSize
+        const created = res.backup?.createdAt && new Date(res.backup.createdAt).toLocaleString()
+        setToast({ message: `Backup created: ${name} (${fmtBytes(size)})`, type: 'success' })
+        fetch()
+      } else {
+        throw new Error(res?.error || res?.message || 'Failed to create backup')
+      }
+    } catch (err) {
+      const errMsg = err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Failed to create backup'
+      setToast({ message: errMsg, type: 'error' })
     } finally {
       setCreating(false)
     }
@@ -90,7 +98,7 @@ export default function Backup() {
       setRestoreAck(false)
     } catch (err) {
       setToast({
-        message: err.response?.data?.message || 'Failed to upload backup',
+        message: err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to upload backup',
         type: 'error',
       })
     } finally {
@@ -157,11 +165,16 @@ export default function Backup() {
               className="flex items-center gap-2 px-4 py-2.5 bg-primary hover:bg-primary/90 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
             >
               {creating ? (
-                <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                  Creating backup...
+                </>
               ) : (
-                <Plus size={18} />
+                <>
+                  <Plus size={18} />
+                  Create Backup
+                </>
               )}
-              Create Backup
             </button>
             <button
               onClick={() => fileRef.current?.click()}

@@ -117,7 +117,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-[#0B1120] transition-colors duration-500 relative overflow-hidden" aria-label="Contact section">
+    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 relative overflow-hidden" aria-label="Contact section">
 
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
@@ -153,11 +153,11 @@ export default function Contact() {
             {/* Contact Info Sidebar */}
             <motion.div
               variants={itemVariants}
-              className="lg:col-span-2 bg-primary p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16 text-white relative overflow-hidden"
+              className="lg:col-span-2 bg-transparent dark:bg-transparent p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16 text-gray-900 dark:text-white relative overflow-hidden"
             >
               <div className="relative z-10">
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6 sm:mb-8 md:mb-10 leading-tight font-display tracking-tight">Connect With Me</h3>
-                <p className="text-base sm:text-lg md:text-xl text-white/80 mb-8 sm:mb-10 md:mb-14 leading-relaxed">
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6 sm:mb-8 md:mb-10 leading-tight font-display tracking-tight text-gray-900 dark:text-white">Connect With Me</h3>
+                <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/80 mb-8 sm:mb-10 md:mb-14 leading-relaxed">
                   I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.
                 </p>
 
@@ -171,7 +171,7 @@ export default function Contact() {
                         className="flex items-center gap-4 sm:gap-5 md:gap-6 group"
                       >
                         <div
-                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white/10 flex items-center justify-center text-white transition-all duration-300 flex-shrink-0"
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white/5 dark:bg-white/5 flex items-center justify-center text-gray-900 dark:text-white transition-all duration-300 flex-shrink-0"
                           style={{ '--hover-bg': hoverBg }}
                           onMouseEnter={e => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.borderColor = 'transparent' }}
                           onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.borderColor = '' }}
@@ -180,16 +180,16 @@ export default function Contact() {
                           {info.icon}
                         </div>
                         <div className="min-w-0">
-                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/50 mb-1">{info.label}</span>
+                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-500 dark:text-white/50 mb-1">{info.label}</span>
                           {info.href ? (
                             <a
                               href={info.href}
-                              className="text-sm sm:text-base md:text-lg lg:text-xl font-bold transition-colors font-display tracking-tight break-all"
+                              className="text-sm sm:text-base md:text-lg lg:text-xl font-bold transition-colors font-display tracking-tight break-all text-gray-900 dark:text-white"
                               onMouseEnter={e => { e.currentTarget.style.color = hoverBg }}
                               onMouseLeave={e => { e.currentTarget.style.color = '' }}
                             >{info.value}</a>
                           ) : (
-                            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold font-display tracking-tight">{info.value}</span>
+                            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold font-display tracking-tight text-gray-900 dark:text-white">{info.value}</span>
                           )}
                         </div>
                       </motion.div>
