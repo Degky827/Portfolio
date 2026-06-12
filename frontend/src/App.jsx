@@ -1,15 +1,15 @@
 import { useEffect, useCallback } from 'react'
 import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
-import { useDarkMode, usePageTracking } from './hooks'
-import api from './services/api'
-import ErrorBoundary from './components/common/ErrorBoundary'
-import ScrollProgressBar from './components/common/ScrollProgressBar'
-import ThemeToggle from './components/common/ThemeToggle'
-import Navbar from './components/layout/Navbar'
-import Footer from './components/layout/Footer'
-import Home from './pages/Home'
-import Login from './pages/Login'
-import AdminRoutes from './admin/routes/AdminRoutes'
+import { useDarkMode, usePageTracking } from './shared/hooks'
+import api from './shared/services/api'
+import ErrorBoundary from './shared/components/ErrorBoundary'
+import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
+import ThemeToggle from './public-portfolio/shared/ThemeToggle'
+import Navbar from './public-portfolio/layout/Navbar'
+import Footer from './public-portfolio/layout/Footer'
+import HomePage from './public-portfolio/pages/HomePage'
+import LoginPage from './admin-manager/authentication/LoginPage'
+import AdminRoutes from './admin-manager/routes/AdminRoutes'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -54,9 +54,9 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route element={<PublicLayout />}>
-          <Route path="/" element={<Home />} />
+          <Route path="/" element={<HomePage />} />
         </Route>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="/admin/*" element={<AdminRoutes />} />
       </Routes>
     </ErrorBoundary>

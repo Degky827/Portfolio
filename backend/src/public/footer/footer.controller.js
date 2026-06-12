@@ -23,11 +23,11 @@ async function updateFooterContent(req, res) {
     }
 
     const textFields = [
-      'brandName', 'footerDescription', 'copyrightText', 'status',
-      'locationLine1', 'locationLine2',
-      'email', 'emailProtocol',
-      'phone', 'phoneProtocol', 'phoneCustomUrl',
-      'visualSeparator', 'techAttribution',
+      'brandName', 'brandDescription', 'copyrightText', 'status',
+      'locationHeadline', 'subLocation', 'locationMapUrl',
+      'emailAddress', 'emailProtocol',
+      'phoneNumber', 'phoneProtocol', 'phoneCustomUrl',
+      'visualSeparator', 'attributionText',
     ]
     textFields.forEach((field) => {
       if (req.body[field] !== undefined) {
@@ -35,12 +35,12 @@ async function updateFooterContent(req, res) {
       }
     })
 
-    if (req.body.quickLinks) {
-      let quickLinks = req.body.quickLinks
-      if (typeof quickLinks === 'string') {
-        try { quickLinks = JSON.parse(quickLinks) } catch { /* ignore */ }
+    if (req.body.navigation) {
+      let navigation = req.body.navigation
+      if (typeof navigation === 'string') {
+        try { navigation = JSON.parse(navigation) } catch { /* ignore */ }
       }
-      content.quickLinks = Array.isArray(quickLinks) ? quickLinks : []
+      content.navigation = Array.isArray(navigation) ? navigation : []
     }
 
     if (req.body.socialLinks) {
