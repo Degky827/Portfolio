@@ -64,16 +64,29 @@ async function googleLogin(req, res) {
       })
     }
 
-    const { sub: googleId, email, name, picture } = payload
+    const rawEmail = payload.email || ''
+    const incomingGoogleEmail = rawEmail.trim().toLowerCase()
+    const googleId = payload.sub || ''
+    const name = payload.name || ''
+    const picture = payload.picture || ''
 
-    if (!email) {
+    if (!incomingGoogleEmail) {
       return res.status(400).json({
         success: false,
         message: 'Google account has no email address.',
       })
     }
 
-    let user = await User.findOne({ email })
+    if (config.adminEmail && incomingGoogleEmail !== config.adminEmail) {
+      return res.status(403).json({
+        success: false,
+        message: 'This Google account is not authorized to access the admin panel.',
+      })
+    }
+
+    let user = await User.findOne({
+      email: { $regex: new RegExp(`^${incomingGoogleEmail.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}$`, 'i') },
+    })
 
     if (!user) {
       return res.status(403).json({
@@ -96,10 +109,11 @@ async function googleLogin(req, res) {
       })
     }
 
-    user.googleId = googleId || ''
+    user.googleId = googleId
     user.provider = 'google'
+    user.email = incomingGoogleEmail
     user.avatar = picture || user.avatar
-    user.displayName = user.displayName || name || ''
+    user.displayName = user.displayName || name
     user.lastLogin = new Date()
     user.failedLoginAttempts = 0
     user.lockedUntil = null
@@ -140,7 +154,7 @@ async function googleLogin(req, res) {
     await createAuditLog({
       user,
       action: 'GOOGLE_LOGIN',
-      details: { provider: 'google', email },
+      details: { provider: 'google', email: incomingGoogleEmail },
       req,
       success: true,
     })
