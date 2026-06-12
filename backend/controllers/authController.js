@@ -12,7 +12,7 @@ function generateAccessToken(user) {
   return jwt.sign(
     { id: user._id, email: user.email, role: user.role },
     config.jwtSecret,
-    { expiresIn: '1h' },
+    { expiresIn: '24h' },
   )
 }
 
@@ -308,7 +308,7 @@ async function verify2FA(req, res) {
       httpOnly: true,
       secure: isProduction,
       sameSite: isProduction ? 'none' : 'lax',
-      maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 60 * 60 * 1000,
+      maxAge: rememberMe ? 7 * 24 * 60 * 60 * 1000 : 24 * 60 * 60 * 1000,
     })
 
     return res.status(200).json({
