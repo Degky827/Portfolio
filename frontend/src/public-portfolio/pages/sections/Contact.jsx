@@ -49,17 +49,27 @@ export default function Contact() {
 
     const emailTo = content?.email || 'desalegnky827@gmail.com'
 
+    let saved = false
     try {
       await createMessage({ name, email, phone, message })
-    } catch { /* API store best-effort */ }
+      // Show success confirmation to the visitor after storing the message
+      setResult('Message sent successfully! I will get back to you soon.')
+      setResultType('success')
+      saved = true
+    } catch (err) {
+      saved = false
+    }
 
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
+      // If we saved the message to the DB, don't open the user's email client — show success instead.
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       logPortfolioVisit(name)
-      window.location.href = mailtoLink
-      setResult('Opening your email client...')
-      setResultType('success')
+      if (!saved) {
+        const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
+        window.location.href = mailtoLink
+        setResult('Opening your email client...')
+        setResultType('success')
+      }
       setIsSubmitting(false)
       return
     }
