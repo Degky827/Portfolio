@@ -13,9 +13,25 @@ function isBotAgent(ua) {
   return BOT_KEYWORDS.some((kw) => lower.includes(kw))
 }
 
+const ADMIN_PATH_PATTERNS = [/^\/admin/, /^\/login/, /^\/api/]
+
+function isAdminRoute(req) {
+  return ADMIN_PATH_PATTERNS.some((pattern) => pattern.test(req.originalUrl || req.url))
+}
+
+function hasAdminToken(req) {
+  return !!(req.cookies?.token || req.headers.authorization?.startsWith('Bearer'))
+}
+
+function shouldSkipTracking(req) {
+  if (isAdminRoute(req)) return true
+  if (hasAdminToken(req)) return true
+  return false
+}
+
 function isAdminTraffic(page) {
   if (!page) return false
-  return page.startsWith('/admin') || page.startsWith('/login') || page.startsWith('/api')
+  return ADMIN_PATH_PATTERNS.some((pattern) => pattern.test(page))
 }
 
 function publicOnlyFilter() {
@@ -55,7 +71,11 @@ function parseDiscoveryChannel(referrer, queryParams) {
 
 async function logVisit(req, res) {
   try {
-    const visitorName = req.body.visitorName || 'Anonymous'
+    if (shouldSkipTracking(req)) {
+      return res.status(200).json({ success: true, skipped: true })
+    }
+
+    const visitorName = req.body.visitorName || req.body.viewerName || 'Anonymous'
     const ipAddress = extractIP(req)
     const userAgent = req.headers['user-agent']
     const page = req.body.page || '/'
@@ -105,6 +125,10 @@ async function logVisit(req, res) {
 
 async function logEngagement(req, res) {
   try {
+    if (shouldSkipTracking(req)) {
+      return res.status(200).json({ success: true, skipped: true })
+    }
+
     const { action, page, visitorId, referrer } = req.body
     if (!action) {
       return res.status(400).json({ success: false, message: 'Action is required' })

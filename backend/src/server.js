@@ -25,6 +25,8 @@ const notificationRoutes = require('./admin/notifications/notifications.routes')
 
 const app = express()
 
+app.set('trust proxy', true)
+
 app.use(cookieParser())
 
 const allowedOrigins = [
