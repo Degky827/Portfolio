@@ -65,7 +65,10 @@ async function googleLogin(req, res) {
     }
 
     const rawEmail = payload.email || ''
-    const incomingGoogleEmail = rawEmail.trim().toLowerCase()
+    const incomingGoogleEmail = (rawEmail || '').trim().toLowerCase()
+
+    const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase()
+    console.log(`[Local Debug Check] Comparing: "${incomingGoogleEmail}" against "${configuredAdminEmail}"`)
     const googleId = payload.sub || ''
     const name = payload.name || ''
     const picture = payload.picture || ''
@@ -77,10 +80,10 @@ async function googleLogin(req, res) {
       })
     }
 
-    if (config.adminEmail && incomingGoogleEmail !== config.adminEmail) {
+    if (configuredAdminEmail && incomingGoogleEmail !== configuredAdminEmail) {
       return res.status(403).json({
         success: false,
-        message: 'This Google account is not authorized to access the admin panel.',
+        message: 'No account found with this email. Contact an administrator to create your account.',
       })
     }
 
