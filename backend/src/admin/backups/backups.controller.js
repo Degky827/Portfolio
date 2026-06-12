@@ -78,7 +78,8 @@ async function createBackup(req, res) {
     }
 
     const { data, summary } = await gatherAllData()
-    const name = req.body.name || `Manual Backup - ${new Date().toLocaleString()}`
+    const body = req && req.body ? req.body : {}
+    const name = (typeof body.name === 'string' && body.name.trim()) ? body.name.trim() : `Manual Backup - ${new Date().toLocaleString()}`
 
     try {
       await fs.promises.mkdir(BACKUPS_DIR, { recursive: true })
@@ -104,26 +105,37 @@ async function createBackup(req, res) {
 
     const fileSize = Buffer.byteLength(fileData, 'utf8')
 
-    const backup = await Backup.create({
-      name,
-      type: 'manual',
-      fileSize,
-      summary,
-      data,
-    })
+    let backup
+    try {
+      backup = await Backup.create({
+        name,
+        type: 'manual',
+        fileSize,
+        summary,
+        data,
+      })
+    } catch (createErr) {
+      console.error('Backup Error: Backup.create failed:', createErr && createErr.stack ? createErr.stack : createErr)
+      return res.status(500).json({ success: false, error: 'Failed to persist backup to database' })
+    }
 
-    const obj = backup.toObject()
-    delete obj.data
+    try {
+      const obj = backup.toObject()
+      delete obj.data
 
-    createNotification({ type: 'backup_completed', title: 'Backup Completed', message: `Manual backup "${name}" created successfully.`, link: '/admin/backup' })
+      createNotification({ type: 'backup_completed', title: 'Backup Completed', message: `Manual backup "${name}" created successfully.`, link: '/admin/backup' })
 
-    res.status(201).json({
-      success: true,
-      message: 'Backup created successfully',
-      filename,
-      fileSize,
-      backup: obj,
-    })
+      return res.status(201).json({
+        success: true,
+        message: 'Backup created successfully',
+        filename,
+        fileSize,
+        backup: obj,
+      })
+    } catch (respErr) {
+      console.error('Backup Error: Preparing response failed:', respErr && respErr.stack ? respErr.stack : respErr)
+      return res.status(500).json({ success: false, error: 'Failed to prepare backup response' })
+    }
   } catch (error) {
     console.error('Backup Error:', error)
     res.status(500).json({ success: false, error: error.message || 'Failed to create backup' })

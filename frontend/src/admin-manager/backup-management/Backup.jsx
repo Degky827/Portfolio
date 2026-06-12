@@ -104,11 +104,16 @@ export default function Backup() {
     setCreating(true)
     try {
       const res = await createBackup()
+      console.debug('createBackup response:', res)
       if (res && res.success) {
-        const name = res.filename || res.backup?.name || 'Unknown'
-        const size = res.fileSize || res.backup?.fileSize
+        let name = 'Unknown'
+        let size = null
+        if (typeof res.filename === 'string' && res.filename.trim()) name = res.filename
+        else if (res.backup && typeof res.backup.name === 'string') name = res.backup.name
+        if (typeof res.fileSize === 'number') size = res.fileSize
+        else if (res.backup && typeof res.backup.fileSize === 'number') size = res.backup.fileSize
         setToast({ message: `Backup created: ${name} (${fmtBytes(size)})`, type: 'success' })
-        loadBackups()
+        await loadBackups()
       } else {
         throw new Error(res?.error || res?.message || 'Failed to create backup')
       }

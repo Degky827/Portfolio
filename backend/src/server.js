@@ -55,6 +55,26 @@ const corsOptions = {
 
 app.use(cors(corsOptions))
 
+// Production origin diagnostic middleware
+app.use((req, res, next) => {
+  try {
+    if (config.nodeEnv === 'production') {
+      const origin = req.get('Origin') || '<none>'
+      console.log('==================================================')
+      console.log('[PRODUCTION ORIGIN DIAGNOSTIC]')
+      console.log('Request:', req.method, req.originalUrl)
+      console.log('Origin header:', origin)
+      console.log('Host header:', req.get('Host') || '<none>')
+      console.log('Forwarded for (x-forwarded-for):', req.get('X-Forwarded-For') || '<none>')
+      console.log('User-Agent:', req.get('User-Agent') || '<none>')
+      console.log('==================================================')
+    }
+  } catch (err) {
+    console.error('[PRODUCTION ORIGIN DIAGNOSTIC] logging failed:', err && err.stack ? err.stack : err)
+  }
+  return next()
+})
+
 app.use(express.json({ strict: true, limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
