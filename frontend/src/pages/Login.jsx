@@ -207,9 +207,9 @@ export default function Login() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ delay: 0.3 }}
                 >
-                  <h1 className="text-2xl font-black text-gray-900 dark:text-white">Admin Sign In</h1>
+                  <h1 className="text-2xl font-black text-gray-900 dark:text-white">Welcome Back, Desalegn</h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Enter your credentials to access the dashboard
+                    Verify your identity to manage your professional workspace.
                   </p>
                 </motion.div>
               ) : (
@@ -223,9 +223,9 @@ export default function Login() {
                   <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-3">
                     <Smartphone size={24} className="text-purple-600 dark:text-purple-400" />
                   </div>
-                  <h1 className="text-2xl font-black text-gray-900 dark:text-white">Two-Factor Auth</h1>
+                  <h1 className="text-2xl font-black text-gray-900 dark:text-white">Two-Factor Authentication</h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                    Enter the 6-digit code from your authenticator app
+                    A secure verification code is required to proceed.
                   </p>
                 </motion.div>
               )}
@@ -261,7 +261,7 @@ export default function Login() {
                     type="email"
                     value={email}
                     onChange={(e) => { setEmail(e.target.value); if (errors.email) setErrors((prev) => ({ ...prev, email: '' })) }}
-                    placeholder="your@email.com"
+                    placeholder="Enter your administrator email"
                     className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.email ? 'border-red-500 dark:border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
                   />
                   {errors.email && <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-red-500 text-xs mt-1 font-medium">{errors.email}</motion.p>}
@@ -326,7 +326,7 @@ export default function Login() {
                 noValidate
               >
                 <p className="text-xs text-gray-500 dark:text-gray-400 mb-4 text-center">
-                  Open your authenticator app and enter the code shown for your account.
+                  Please open your hardware or software authenticator app to retrieve your temporary 6-digit access token.
                 </p>
 
                 <div className="mb-6">
@@ -396,7 +396,7 @@ export default function Login() {
             transition={{ delay: 0.6 }}
             className="mt-6 text-center text-xs text-gray-400 dark:text-gray-500"
           >
-            Authorized administrators only.
+            {step === 'credentials' ? 'Secure Gateway — Unauthorized Access Prohibited' : 'Protected Session — Step 2 of 2'}
           </motion.p>
         </motion.div>
       </motion.div>
