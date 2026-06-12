@@ -133,55 +133,67 @@ export default function Navbar() {
 
   return (
     <>
-      <header className="sticky top-0 z-20 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-gray-200 dark:border-slate-800">
+      <header className="glass-nav sticky top-0 z-20">
         <div className="flex items-center justify-between h-16 px-4 lg:px-6">
           <div className="flex items-center gap-3 min-w-0">
             <motion.button
-              whileHover={{ scale: 1.05 }}
+              whileHover={{ scale: 1.05, rotate: -3 }}
               whileTap={{ scale: 0.95 }}
               onClick={toggleMobile}
-              className="lg:hidden p-2 -ml-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+              className="lg:hidden p-2 -ml-2 rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-colors"
               aria-label="Toggle menu"
             >
               <Menu size={22} />
             </motion.button>
 
             <nav aria-label="Breadcrumb" className="hidden sm:flex items-center gap-1.5 text-sm min-w-0">
-              <Link
-                to="/admin/dashboard"
-                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors shrink-0 font-medium"
+              <motion.div
+                initial={{ opacity: 0, x: -8 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.2 }}
               >
-                Dashboard
-              </Link>
+                <Link
+                  to="/admin/dashboard"
+                  className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 transition-colors shrink-0 font-medium"
+                >
+                  Dashboard
+                </Link>
+              </motion.div>
               {breadcrumbs.map((b, i) => (
-                <span key={i} className="flex items-center gap-1.5 min-w-0">
+                <motion.span
+                  key={i}
+                  initial={{ opacity: 0, x: -4 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1, duration: 0.2 }}
+                  className="flex items-center gap-1.5 min-w-0"
+                >
                   <ChevronRight size={14} className="text-gray-300 dark:text-gray-600 shrink-0" />
                   {b.path ? (
                     <Link
                       to={b.path}
-                      className="text-gray-900 dark:text-white font-medium truncate hover:text-primary transition-colors"
+                      className="text-gray-900 dark:text-white font-medium truncate hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"
                     >
                       {b.label}
                     </Link>
                   ) : (
                     <span className="text-gray-500 dark:text-gray-400 truncate">{b.label}</span>
                   )}
-                </span>
+                </motion.span>
               ))}
             </nav>
           </div>
 
           <div className="flex items-center gap-1">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setSearchOpen(true)}
-              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm text-gray-400 dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors border border-gray-200 dark:border-slate-700"
+              className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm text-gray-400 dark:text-gray-500 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-colors border border-gray-200/60 dark:border-slate-700/60"
               aria-label="Search"
             >
               <Search size={16} />
               <span className="hidden md:inline">Search...</span>
-              <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-slate-800 rounded border border-gray-200 dark:border-slate-700 ml-4">
+              <kbd className="flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100/50 dark:bg-slate-800/50 rounded border border-gray-200/60 dark:border-slate-700/60 ml-4">
                 <Command size={10} />
                 <span>K</span>
               </kbd>
@@ -191,7 +203,7 @@ export default function Navbar() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setSearchOpen(true)}
-              className="sm:hidden p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+              className="sm:hidden p-2 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-colors"
               aria-label="Search"
             >
               <Search size={20} />
@@ -205,13 +217,16 @@ export default function Navbar() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => setDropdownOpen((prev) => !prev)}
-                className="p-1.5 rounded-xl hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-xl hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-colors"
                 aria-label="Account menu"
                 aria-expanded={dropdownOpen}
               >
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-700 to-purple-900 text-white text-[10px] font-black flex items-center justify-center shadow-sm">
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-[10px] font-black flex items-center justify-center shadow-md shadow-indigo-500/20"
+                >
                   {user?.displayName?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase() || 'D'}
-                </div>
+                </motion.div>
               </motion.button>
 
               <AnimatePresence>
@@ -229,62 +244,58 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: -8, scale: 0.96 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-1 w-64 z-20 bg-white dark:bg-slate-900 rounded-xl shadow-lg border border-gray-200 dark:border-slate-800 overflow-hidden"
+                      className="absolute right-0 top-full mt-1 w-64 z-20 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-xl shadow-premium-lg dark:shadow-premium-lg-dark border border-gray-200/60 dark:border-slate-700/60 overflow-hidden"
                     >
-                      <div className="px-4 py-4 border-b border-gray-100 dark:border-slate-800">
+                      <div className="px-4 py-4 border-b border-gray-100/60 dark:border-slate-800/60">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-700 to-purple-900 text-white text-sm font-black flex items-center justify-center shadow-sm">
+                          <motion.div
+                            whileHover={{ scale: 1.05 }}
+                            className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-sm font-black flex items-center justify-center shadow-md shadow-indigo-500/20"
+                          >
                             {user?.displayName?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase() || 'D'}
-                          </div>
+                          </motion.div>
                           <div className="min-w-0">
                             <p className="text-sm font-bold text-gray-900 dark:text-white truncate">
                               {user?.name || user?.email?.split('@')[0] || 'Admin'}
                             </p>
                             <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
-                            <span className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-primary/10 text-primary capitalize">
+                            <motion.span
+                              initial={{ scale: 0.9 }}
+                              animate={{ scale: 1 }}
+                              className="inline-block mt-0.5 px-1.5 py-0.5 rounded text-[10px] font-medium bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400 capitalize"
+                            >
                               {user?.role?.replace('_', ' ') || 'Admin'}
-                            </span>
+                            </motion.span>
                           </div>
                         </div>
                       </div>
                       <div className="py-1">
-                        <button
-                          onClick={() => { setDropdownOpen(false); navigate('/admin/profile') }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                        >
-                          <User size={16} className="text-gray-400" />
-                          My Profile
-                        </button>
-                        <button
-                          onClick={() => { setDropdownOpen(false); navigate('/admin/settings') }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                        >
-                          <Settings size={16} className="text-gray-400" />
-                          Account Settings
-                        </button>
-                        <button
-                          onClick={() => { setDropdownOpen(false); navigate('/admin/theme') }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                        >
-                          <Palette size={16} className="text-gray-400" />
-                          Theme Settings
-                        </button>
-                        <button
-                          onClick={() => { setDropdownOpen(false); navigate('/admin/notifications') }}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                        >
-                          <Bell size={16} className="text-gray-400" />
-                          Notifications
-                        </button>
+                        {[
+                          { label: 'My Profile', icon: User, onClick: () => { setDropdownOpen(false); navigate('/admin/profile') } },
+                          { label: 'Account Settings', icon: Settings, onClick: () => { setDropdownOpen(false); navigate('/admin/settings') } },
+                          { label: 'Theme Settings', icon: Palette, onClick: () => { setDropdownOpen(false); navigate('/admin/theme') } },
+                          { label: 'Notifications', icon: Bell, onClick: () => { setDropdownOpen(false); navigate('/admin/notifications') } },
+                        ].map((item) => (
+                          <motion.button
+                            key={item.label}
+                            whileHover={{ x: 4 }}
+                            onClick={item.onClick}
+                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-colors"
+                          >
+                            <item.icon size={16} className="text-gray-400" />
+                            {item.label}
+                          </motion.button>
+                        ))}
                       </div>
-                      <div className="border-t border-gray-100 dark:border-slate-800 py-1">
-                        <button
+                      <div className="border-t border-gray-100/60 dark:border-slate-800/60 py-1">
+                        <motion.button
+                          whileHover={{ x: 4 }}
                           onClick={handleLogout}
-                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                          className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 transition-colors"
                         >
                           <LogOut size={16} />
                           Sign Out
-                        </button>
+                        </motion.button>
                       </div>
                     </motion.div>
                   </>
@@ -312,8 +323,8 @@ export default function Navbar() {
               transition={{ duration: 0.15, ease: 'easeOut' }}
               className="fixed inset-x-0 top-0 z-50 mx-auto mt-16 w-full max-w-xl"
             >
-              <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl border border-gray-200 dark:border-slate-700 overflow-hidden">
-                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200 dark:border-slate-800">
+              <div className="bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-2xl shadow-premium-lg dark:shadow-premium-lg-dark border border-gray-200/60 dark:border-slate-700/60 overflow-hidden">
+                <div className="flex items-center gap-3 px-4 py-3 border-b border-gray-200/60 dark:border-slate-800/60">
                   <Search size={18} className="text-gray-400 shrink-0" />
                   <input
                     ref={searchInputRef}
@@ -325,38 +336,41 @@ export default function Navbar() {
                     className="flex-1 bg-transparent text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none"
                     aria-label="Search"
                   />
-                  <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100 dark:bg-slate-800 rounded border border-gray-200 dark:border-slate-700">
+                  <kbd className="hidden sm:inline-flex items-center px-1.5 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100/50 dark:bg-slate-800/50 rounded border border-gray-200/60 dark:border-slate-700/60">
                     ESC
                   </kbd>
                 </div>
                 {searchQuery.trim() && filteredResults.length === 0 ? (
                   <div className="px-4 py-8 text-center text-sm text-gray-400">
-                    No results found for &ldquo;{searchQuery}&rdquo;
+                    No results found
                   </div>
                 ) : (
                   <div className="max-h-72 overflow-y-auto py-2">
                     {filteredResults.map((r, i) => (
-                      <button
+                      <motion.button
                         key={r.path}
+                        initial={{ opacity: 0, x: -8 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: i * 0.03 }}
                         onClick={() => handleSearchNavigate(r.path)}
                         onMouseEnter={() => { selectedIndexRef.current = i }}
                         className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm text-left transition-colors ${
                           i === selectedIndexRef.current
-                            ? 'bg-primary/10 text-primary dark:bg-primary/20'
-                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-slate-800'
+                            ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
+                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50/50 dark:hover:bg-slate-800/50'
                         }`}
                       >
                         <Search size={14} className="shrink-0 text-gray-400" />
                         <span className="font-medium">{r.label}</span>
                         <span className="ml-auto text-xs text-gray-400">{r.path.replace('/admin/', '')}</span>
-                      </button>
+                      </motion.button>
                     ))}
                   </div>
                 )}
                 {!searchQuery.trim() && (
-                  <div className="px-4 py-2 border-t border-gray-100 dark:border-slate-800 flex items-center gap-4 text-[11px] text-gray-400">
+                  <div className="px-4 py-2 border-t border-gray-100/60 dark:border-slate-800/60 flex items-center gap-4 text-[11px] text-gray-400">
                     <span>Type to search</span>
-                    <span className="ml-auto">↑↓ Navigate &middot; Enter Select &middot; Esc Close</span>
+                    <span className="ml-auto">↑↓ Navigate · Enter Select · Esc Close</span>
                   </div>
                 )}
               </div>
@@ -367,5 +381,3 @@ export default function Navbar() {
     </>
   )
 }
-
-
