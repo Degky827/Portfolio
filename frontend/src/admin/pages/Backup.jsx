@@ -70,9 +70,8 @@ export default function Backup() {
     try {
       const res = await createBackup()
       if (res && res.success) {
-        const name = res.filename || res.backup?.name
+        const name = res.filename || res.backup?.name || 'Unknown'
         const size = res.fileSize || res.backup?.fileSize
-        const created = res.backup?.createdAt && new Date(res.backup.createdAt).toLocaleString()
         setToast({ message: `Backup created: ${name} (${fmtBytes(size)})`, type: 'success' })
         fetch()
       } else {
@@ -108,12 +107,13 @@ export default function Backup() {
   }
 
   const handleDownload = async (backup) => {
+    if (!backup) return
     try {
       const blob = await downloadBackup(backup._id)
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${backup.name.replace(/[^a-zA-Z0-9]/g, '_')}.json`
+      a.download = `${(backup.name || 'backup').replace(/[^a-zA-Z0-9]/g, '_')}.json`
       a.click()
       URL.revokeObjectURL(url)
     } catch {
@@ -226,25 +226,25 @@ export default function Backup() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                {backups.map((b) => (
-                  <tr key={b._id} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
+                  {backups.map((b) => (
+                  <tr key={b?._id || Math.random()} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="px-5 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap max-w-[200px] truncate">
-                      {b.name}
+                      {b?.name || 'Unnamed Backup'}
                     </td>
                     <td className="px-4 py-4">
-                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${typeStyles[b.type] || typeStyles.manual}`}>
-                        {b.type === 'manual' ? 'Manual' : b.type === 'uploaded' ? 'Uploaded' : 'Auto RP'}
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border ${typeStyles[b?.type] || typeStyles.manual}`}>
+                        {b?.type === 'manual' ? 'Manual' : b?.type === 'uploaded' ? 'Uploaded' : 'Auto RP'}
                       </span>
                     </td>
                     <td className="px-4 py-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                      {new Date(b.createdAt).toLocaleString()}
+                      {b?.createdAt ? new Date(b.createdAt).toLocaleString() : '—'}
                     </td>
                     <td className="px-4 py-4 text-gray-500 dark:text-gray-400 whitespace-nowrap">
-                      {fmtBytes(b.fileSize)}
+                      {fmtBytes(b?.fileSize)}
                     </td>
                     <td className="px-4 py-4">
                       <div className="flex flex-wrap gap-1">
-                        {Object.entries(b.summary || {}).map(([key, count]) =>
+                        {Object.entries(b?.summary || {}).map(([key, count]) =>
                           count > 0 ? (
                             <span key={key} className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400 text-xs">
                               {summaryLabels[key] || key}
@@ -265,7 +265,7 @@ export default function Backup() {
                         </button>
                         <button
                           onClick={() => { setRestoreTarget(b); setRestoreAck(false) }}
-                          disabled={b.type === 'auto'}
+                          disabled={b?.type === 'auto'}
                           className="p-2 rounded-lg text-gray-400 hover:text-amber-600 hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                           title="Restore"
                         >
@@ -273,7 +273,7 @@ export default function Backup() {
                         </button>
                         <button
                           onClick={() => setDeleteTarget(b)}
-                          disabled={b.type === 'auto'}
+                          disabled={b?.type === 'auto'}
                           className="p-2 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
                           title="Delete"
                         >
@@ -313,7 +313,7 @@ export default function Backup() {
                     </div>
                     <div>
                       <h3 className="text-lg font-bold text-gray-900 dark:text-white">Restore Backup</h3>
-                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{restoreTarget.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">{restoreTarget?.name || 'Unknown backup'}</p>
                     </div>
                   </div>
                   <button
