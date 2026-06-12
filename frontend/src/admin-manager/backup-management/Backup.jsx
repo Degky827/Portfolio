@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Upload, Download, RotateCcw, Trash2,
   HardDrive, Database, AlertTriangle, X, RefreshCw,
-  Clock, Cloud,
+  Clock, Cloud, Save,
 } from 'lucide-react'
 import PageHeader from '../shared/PageHeader'
 import ConfirmModal from '../shared/ConfirmModal'
