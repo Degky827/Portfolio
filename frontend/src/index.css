@@ -11,9 +11,11 @@
   --color-primary-foreground: #ffffff;
 
   --color-dark-bg: #000000;
-  --color-surface: #111827;
-  --color-card: #1E293B;
-  --color-border: #334155;
+  --color-surface: #1a1a1a;
+  --color-card: #1a1a1a;
+  --color-slate-900: #1a1a1a;
+  --color-slate-800: #222222;
+  --color-border: #2a2a2a;
   --color-text: #F8FAFC;
   --color-text-secondary: #94A3B8;
 
@@ -124,8 +126,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dark .glass-panel {
-  background: #111827;
-  border-color: #334155;
+  background: #1a1a1a;
+  border-color: #2a2a2a;
   box-shadow: var(--shadow-glass-dark);
 }
 
@@ -138,8 +140,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .dark .glass-card {
-  background: #1E293B;
-  border-color: #334155;
+  background: #1a1a1a;
+  border-color: #2a2a2a;
   box-shadow: 0 4px 16px rgba(0,0,0,0.3);
 }
 
