@@ -22,10 +22,10 @@ function LayoutInner() {
   const ml = isDesktop ? sidebarWidth : 0
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black">
+    <div className="min-h-screen bg-gray-50/50 dark:bg-dark-bg">
       <Sidebar />
       <div
-        className="flex flex-col min-h-screen transition-[margin] duration-300 ease-in-out"
+        className="flex flex-col min-h-screen transition-[margin] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)]"
         style={{ marginLeft: ml }}
       >
         <Navbar />
@@ -33,10 +33,10 @@ function LayoutInner() {
           <AnimatePresence mode="wait">
             <motion.div
               key={location.pathname}
-              initial={{ opacity: 0, y: 12 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -12 }}
-              transition={{ duration: 0.2, ease: 'easeInOut' }}
+              initial={{ opacity: 0, y: 12, scale: 0.99 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, y: -12, scale: 0.99 }}
+              transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             >
               <Outlet />
             </motion.div>
