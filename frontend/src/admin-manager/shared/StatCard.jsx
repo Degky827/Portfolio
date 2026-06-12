@@ -27,15 +27,15 @@ function AnimatedCounter({ value, duration = 1.5 }) {
 
 const accentConfig = {
   primary: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
-  green: { gradient: 'from-emerald-500 to-emerald-600', light: 'bg-emerald-50', text: 'text-emerald-600', darkText: 'dark:text-emerald-400', shadow: 'shadow-emerald-500/20' },
-  blue: { gradient: 'from-blue-500 to-blue-600', light: 'bg-blue-50', text: 'text-blue-600', darkText: 'dark:text-blue-400', shadow: 'shadow-blue-500/20' },
-  purple: { gradient: 'from-purple-500 to-purple-600', light: 'bg-purple-50', text: 'text-purple-600', darkText: 'dark:text-purple-400', shadow: 'shadow-purple-500/20' },
-  amber: { gradient: 'from-amber-500 to-amber-600', light: 'bg-amber-50', text: 'text-amber-600', darkText: 'dark:text-amber-400', shadow: 'shadow-amber-500/20' },
-  cyan: { gradient: 'from-cyan-500 to-cyan-600', light: 'bg-cyan-50', text: 'text-cyan-600', darkText: 'dark:text-cyan-400', shadow: 'shadow-cyan-500/20' },
+  green: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
+  blue: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
+  purple: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
+  amber: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
+  cyan: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
 }
 
 export default function StatCard({ title, value, icon: Icon, trend, loading, delay = 0, accent = 'primary', subtitle }) {
-  const config = accentConfig[accent] || accentConfig.primary
+  const config = accentConfig.primary
 
   if (loading) {
     return (
