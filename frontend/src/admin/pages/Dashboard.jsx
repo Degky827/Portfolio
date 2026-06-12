@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 import api from '../../services/api'
+import { listBackups } from '../../services/backupService'
 import StatCard from '../components/StatCard'
 
 const containerVariants = {
@@ -84,6 +85,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [lastLogin, setLastLogin] = useState('')
+  const [backups, setBackups] = useState([])
+  const [backupsLoading, setBackupsLoading] = useState(true)
 
   useEffect(() => {
     const stored = localStorage.getItem('adminLastLogin')
@@ -121,6 +124,13 @@ export default function Dashboard() {
   }, [])
 
   useEffect(() => { fetchStats() }, [fetchStats])
+
+  useEffect(() => {
+    listBackups()
+      .then((res) => setBackups(res.backups || []))
+      .catch(() => {})
+      .finally(() => setBackupsLoading(false))
+  }, [])
 
   const todayVisits = stats?.todayCount || 0
   const monthVisits = stats?.monthCount || 0
@@ -578,6 +588,92 @@ export default function Dashboard() {
                   </div>
                 </div>
               </motion.div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Backup Status */}
+        <motion.div variants={itemVariants}>
+          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/60 dark:border-slate-800/60 shadow-premium dark:shadow-premium-dark overflow-hidden h-full">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100/60 dark:border-slate-800/60">
+              <div className="flex items-center gap-2.5">
+                <HardDrive size={18} className="text-emerald-500" />
+                <h2 className="text-base font-bold text-gray-900 dark:text-white">Backup Status</h2>
+              </div>
+              <motion.button
+                whileHover={{ x: 4 }}
+                onClick={() => navigate('/admin/backup')}
+                className="text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 transition-colors flex items-center gap-1"
+              >
+                Manage <ArrowRight size={12} />
+              </motion.button>
+            </div>
+            <div className="p-6">
+              {backupsLoading ? (
+                <div className="space-y-3">
+                  {[...Array(3)].map((_, i) => (
+                    <div key={i} className="h-12 bg-gray-100 dark:bg-slate-800 rounded-xl shimmer-bg" />
+                  ))}
+                </div>
+              ) : (
+                <div className="space-y-4">
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="p-3 rounded-xl bg-gray-50/50 dark:bg-slate-800/30 border border-gray-100/60 dark:border-slate-700/60 text-center">
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">{backups.length}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Total Backups</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-gray-50/50 dark:bg-slate-800/30 border border-gray-100/60 dark:border-slate-700/60 text-center">
+                      <p className="text-xl font-bold text-gray-900 dark:text-white">
+                        {backups.filter((b) => b.type === 'auto').length}
+                      </p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Auto Backups</p>
+                    </div>
+                  </div>
+
+                  {backups.length > 0 && (
+                    <div className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-800/60">
+                      <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">Latest Backup</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        {new Date(backups[0].createdAt).toLocaleDateString('en-US', {
+                          month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
+                        })}
+                      </p>
+                      {backups[0].fileSize && (
+                        <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
+                          {(backups[0].fileSize / 1024).toFixed(1)} KB
+                        </p>
+                      )}
+                    </div>
+                  )}
+
+                  {backups.length === 0 && (
+                    <div className="flex items-center justify-center py-6 text-center">
+                      <div>
+                        <HardDrive size={28} className="text-gray-300 dark:text-slate-700 mx-auto mb-2" />
+                        <p className="text-xs text-gray-500 dark:text-gray-400">No backups yet</p>
+                        <motion.button
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          onClick={() => navigate('/admin/backup')}
+                          className="mt-2 text-xs font-medium text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300"
+                        >
+                          Create your first backup
+                        </motion.button>
+                      </div>
+                    </div>
+                  )}
+
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={() => navigate('/admin/backup')}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors"
+                  >
+                    <Shield size={16} />
+                    Manage Backups
+                  </motion.button>
+                </div>
+              )}
             </div>
           </div>
         </motion.div>

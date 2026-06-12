@@ -4,7 +4,7 @@ require('dotenv').config({ path: path.join(__dirname, '..', '.env') })
 
 async function main() {
   await mongoose.connect(process.env.MONGO_URI)
-  const User = require('../models/User')
+  const User = require('../src/shared/models/User')
 
   const result = await User.updateMany(
     { role: { $in: ['super_admin', 'admin'] } },

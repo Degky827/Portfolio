@@ -1,6 +1,7 @@
-import { useEffect } from 'react'
+import { useEffect, useCallback } from 'react'
 import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './hooks'
+import api from './services/api'
 import ErrorBoundary from './components/common/ErrorBoundary'
 import ScrollProgressBar from './components/common/ScrollProgressBar'
 import ThemeToggle from './components/common/ThemeToggle'
@@ -23,10 +24,19 @@ function ScrollToTop() {
 function PublicLayout() {
   const [darkMode, setDarkMode] = useDarkMode()
 
+  const handleToggle = useCallback(() => {
+    setDarkMode((prev) => {
+      const next = !prev
+      const mode = next ? 'dark' : 'light'
+      api.patch('/settings/appearance', { mode }).catch(() => {})
+      return next
+    })
+  }, [setDarkMode])
+
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       <ScrollProgressBar />
-      <ThemeToggle darkMode={darkMode} onToggle={() => setDarkMode((prev) => !prev)} />
+      <ThemeToggle darkMode={darkMode} onToggle={handleToggle} />
       <Navbar />
       <main>
         <Outlet />

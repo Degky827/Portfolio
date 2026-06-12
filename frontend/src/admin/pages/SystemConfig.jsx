@@ -13,6 +13,8 @@ const sectionConfig = [
   { id: 'uploads', label: 'Upload Limits', icon: HardDrive },
   { id: 'session', label: 'Session & Cache', icon: Clock },
   { id: 'maintenance', label: 'Maintenance', icon: Shield },
+  { id: 'backup-schedule', label: 'Backup Schedule', icon: Database },
+  { id: 'health-monitor', label: 'Health Monitor', icon: Shield },
 ]
 
 export default function SystemConfig() {
@@ -25,6 +27,27 @@ export default function SystemConfig() {
     cacheDurationSeconds: 300,
     maintenanceMode: false,
     maintenanceMessage: '',
+    backupSchedule: {
+      frequency: 'disabled',
+      retention: 7,
+      cloudUpload: {
+        enabled: false,
+        provider: 's3',
+        bucket: '',
+        region: '',
+        accessKeyId: '',
+        secretAccessKey: '',
+        endpoint: '',
+      },
+    },
+    healthMonitor: {
+      enabled: false,
+      pingIntervalSeconds: 60,
+      latencyThresholdMs: 500,
+      webhookUrl: '',
+      webhookType: 'discord',
+      notifyOnRecovery: true,
+    },
   })
   const [environment, setEnvironment] = useState(null)
   const [activeSection, setActiveSection] = useState('environment')
@@ -37,7 +60,12 @@ export default function SystemConfig() {
       try {
         const res = await getSystemConfig()
         if (res.success) {
-          setConfig(res.config)
+          setConfig((prev) => ({
+            ...prev,
+            ...res.config,
+            backupSchedule: { ...prev.backupSchedule, ...(res.config.backupSchedule || {}) },
+            healthMonitor: { ...prev.healthMonitor, ...(res.config.healthMonitor || {}) },
+          }))
           setEnvironment(res.environment)
         }
       } catch {
@@ -70,13 +98,78 @@ export default function SystemConfig() {
     }))
   }
 
+  const handleScheduleChange = (field) => (e) => {
+    const val = e.target.value
+    setConfig((prev) => ({
+      ...prev,
+      backupSchedule: { ...prev.backupSchedule, [field]: val },
+    }))
+  }
+
+  const handleScheduleNumber = (field) => (e) => {
+    const val = parseInt(e.target.value, 10)
+    setConfig((prev) => ({
+      ...prev,
+      backupSchedule: { ...prev.backupSchedule, [field]: isNaN(val) ? '' : val },
+    }))
+  }
+
+  const handleCloudChange = (field) => (e) => {
+    const val = e.target.value
+    setConfig((prev) => ({
+      ...prev,
+      backupSchedule: {
+        ...prev.backupSchedule,
+        cloudUpload: { ...prev.backupSchedule.cloudUpload, [field]: val },
+      },
+    }))
+  }
+
+  const handleCloudBool = (field) => (e) => {
+    setConfig((prev) => ({
+      ...prev,
+      backupSchedule: {
+        ...prev.backupSchedule,
+        cloudUpload: { ...prev.backupSchedule.cloudUpload, [field]: e.target.checked },
+      },
+    }))
+  }
+
+  const handleHealthChange = (field) => (e) => {
+    const val = e.target.value
+    setConfig((prev) => ({
+      ...prev,
+      healthMonitor: { ...prev.healthMonitor, [field]: val },
+    }))
+  }
+
+  const handleHealthNumber = (field) => (e) => {
+    const val = parseInt(e.target.value, 10)
+    setConfig((prev) => ({
+      ...prev,
+      healthMonitor: { ...prev.healthMonitor, [field]: isNaN(val) ? '' : val },
+    }))
+  }
+
+  const handleHealthBool = (field) => (e) => {
+    setConfig((prev) => ({
+      ...prev,
+      healthMonitor: { ...prev.healthMonitor, [field]: e.target.checked },
+    }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setSaving(true)
     try {
       const res = await updateSystemConfig(config)
       if (res.success) {
-        setConfig(res.config)
+        setConfig((prev) => ({
+          ...prev,
+          ...res.config,
+          backupSchedule: { ...prev.backupSchedule, ...(res.config.backupSchedule || {}) },
+          healthMonitor: { ...prev.healthMonitor, ...(res.config.healthMonitor || {}) },
+        }))
         setEnvironment(res.environment)
         setToast({ message: 'Configuration saved successfully', type: 'success' })
       }
@@ -296,6 +389,254 @@ export default function SystemConfig() {
                   className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
                 />
               </div>
+            )}
+          </motion.div>
+        )}
+
+        {activeSection === 'backup-schedule' && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5 max-w-2xl"
+          >
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Backup Schedule</h2>
+
+            <div>
+              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                Frequency
+              </label>
+              <select
+                value={config.backupSchedule.frequency}
+                onChange={handleScheduleChange('frequency')}
+                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              >
+                <option value="disabled">Disabled</option>
+                <option value="every-12-hours">Every 12 Hours</option>
+                <option value="daily-midnight">Daily at Midnight</option>
+                <option value="weekly-sunday">Weekly on Sunday</option>
+              </select>
+              <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
+                Automatic backups will be created on this schedule. Manual backups are always available.
+              </p>
+            </div>
+
+            {config.backupSchedule.frequency !== 'disabled' && (
+              <>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Retention (backups to keep)
+                  </label>
+                  <input
+                    type="number"
+                    value={config.backupSchedule.retention}
+                    onChange={handleScheduleNumber('retention')}
+                    min={1}
+                    max={90}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
+                    Older auto-backups beyond this count will be deleted.
+                  </p>
+                </div>
+
+                <div className="pt-4 border-t border-gray-100 dark:border-slate-800">
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={config.backupSchedule.cloudUpload?.enabled}
+                      onChange={handleCloudBool('enabled')}
+                      className="w-5 h-5 rounded border-gray-300 dark:border-slate-600 text-primary focus:ring-primary/50"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Cloud Upload</span>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Push backups to S3/GCS-compatible storage</p>
+                    </div>
+                  </label>
+                </div>
+
+                {config.backupSchedule.cloudUpload?.enabled && (
+                  <div className="space-y-4 pl-7">
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                        Provider
+                      </label>
+                      <select
+                        value={config.backupSchedule.cloudUpload.provider}
+                        onChange={handleCloudChange('provider')}
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      >
+                        <option value="s3">AWS S3</option>
+                        <option value="gcs">Google Cloud Storage</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                        Bucket
+                      </label>
+                      <input
+                        type="text"
+                        value={config.backupSchedule.cloudUpload.bucket}
+                        onChange={handleCloudChange('bucket')}
+                        placeholder="my-portfolio-backups"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                        Region
+                      </label>
+                      <input
+                        type="text"
+                        value={config.backupSchedule.cloudUpload.region}
+                        onChange={handleCloudChange('region')}
+                        placeholder="us-east-1"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                        Access Key ID
+                      </label>
+                      <input
+                        type="text"
+                        value={config.backupSchedule.cloudUpload.accessKeyId}
+                        onChange={handleCloudChange('accessKeyId')}
+                        placeholder="AKIA..."
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                        Secret Access Key
+                      </label>
+                      <input
+                        type="password"
+                        value={config.backupSchedule.cloudUpload.secretAccessKey}
+                        onChange={handleCloudChange('secretAccessKey')}
+                        placeholder="••••••••••••"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                        Endpoint (optional, for S3-compatible providers)
+                      </label>
+                      <input
+                        type="text"
+                        value={config.backupSchedule.cloudUpload.endpoint}
+                        onChange={handleCloudChange('endpoint')}
+                        placeholder="https://s3.custom-endpoint.com"
+                        className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                      />
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </motion.div>
+        )}
+
+        {activeSection === 'health-monitor' && (
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5 max-w-2xl"
+          >
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Health Monitor</h2>
+
+            <div className="p-4 rounded-xl bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800">
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={config.healthMonitor.enabled}
+                  onChange={handleHealthBool('enabled')}
+                  className="w-5 h-5 rounded border-gray-300 dark:border-slate-600 text-primary focus:ring-primary/50"
+                />
+                <div>
+                  <span className="text-sm font-medium text-blue-800 dark:text-blue-300">Enable Health Monitor</span>
+                  <p className="text-xs text-blue-600 dark:text-blue-400">
+                    Pings MongoDB at a configurable interval and sends alerts on failure.
+                  </p>
+                </div>
+              </label>
+            </div>
+
+            {config.healthMonitor.enabled && (
+              <>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Ping Interval (seconds)
+                  </label>
+                  <input
+                    type="number"
+                    value={config.healthMonitor.pingIntervalSeconds}
+                    onChange={handleHealthNumber('pingIntervalSeconds')}
+                    min={10}
+                    max={3600}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Latency Threshold (ms)
+                  </label>
+                  <input
+                    type="number"
+                    value={config.healthMonitor.latencyThresholdMs}
+                    onChange={handleHealthNumber('latencyThresholdMs')}
+                    min={50}
+                    max={10000}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-1.5">
+                    Webhook alert fires when latency exceeds this value.
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Webhook Type
+                  </label>
+                  <select
+                    value={config.healthMonitor.webhookType}
+                    onChange={handleHealthChange('webhookType')}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  >
+                    <option value="discord">Discord</option>
+                    <option value="slack">Slack</option>
+                    <option value="custom">Custom HTTP</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Webhook URL
+                  </label>
+                  <input
+                    type="url"
+                    value={config.healthMonitor.webhookUrl}
+                    onChange={handleHealthChange('webhookUrl')}
+                    placeholder="https://hooks.discord.com/api/webhooks/..."
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+
+                <div className="pt-2 border-t border-gray-100 dark:border-slate-800">
+                  <label className="flex items-center gap-3 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={config.healthMonitor.notifyOnRecovery}
+                      onChange={handleHealthBool('notifyOnRecovery')}
+                      className="w-5 h-5 rounded border-gray-300 dark:border-slate-600 text-primary focus:ring-primary/50"
+                    />
+                    <div>
+                      <span className="text-sm font-medium text-gray-900 dark:text-white">Notify on Recovery</span>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Send an alert when the database recovers after a failure.</p>
+                    </div>
+                  </label>
+                </div>
+              </>
             )}
           </motion.div>
         )}

@@ -5,7 +5,7 @@ import {
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import Toast from '../components/Toast'
-import { exportData, previewImport, executeImport } from '../../services/importExportService'
+import { exportData, previewImport, executeImport, importUPSSnapshot } from '../../services/importExportService'
 
 const EXPORT_TYPES = [
   { value: 'projects', label: 'Projects' },
@@ -20,6 +20,7 @@ const IMPORT_TYPES = [
 
 export default function ImportExport() {
   const fileRef = useRef(null)
+  const upsFileRef = useRef(null)
   const [exportType, setExportType] = useState('all')
   const [exportFormat, setExportFormat] = useState('json')
   const [exporting, setExporting] = useState(false)
@@ -313,6 +314,86 @@ export default function ImportExport() {
           )}
         </motion.div>
       </div>
+
+      {/* ─── UPS Snapshot Section ───────────────────── */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5"
+      >
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/20 flex items-center justify-center">
+            <Database size={20} className="text-purple-600 dark:text-purple-400" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white">UPS Snapshot</h2>
+            <p className="text-xs text-gray-500 dark:text-gray-400">
+              Unified Portfolio State — export or import your full portfolio state as a single .ups file
+            </p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {/* Export UPS */}
+          <button
+            onClick={async () => {
+              setExporting(true)
+              try {
+                const blob = await exportData({ type: 'ups', format: 'ups' })
+                const url = URL.createObjectURL(blob)
+                const a = document.createElement('a')
+                a.href = url
+                a.download = `portfolio-snapshot.ups`
+                a.click()
+                URL.revokeObjectURL(url)
+                setToast({ message: 'UPS snapshot exported successfully', type: 'success' })
+              } catch {
+                setToast({ message: 'Failed to export UPS snapshot', type: 'error' })
+              } finally {
+                setExporting(false)
+              }
+            }}
+            disabled={exporting}
+            className="flex items-center justify-center gap-2 px-4 py-3 bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+          >
+            {exporting ? <RefreshCw size={18} className="animate-spin" /> : <Download size={18} />}
+            {exporting ? 'Exporting...' : 'Export UPS Snapshot'}
+          </button>
+
+          {/* Import UPS */}
+          <div className="flex gap-2">
+            <input
+              ref={upsFileRef}
+              type="file"
+              accept=".ups"
+              className="hidden"
+              onChange={async (e) => {
+                const file = e.target.files?.[0]
+                if (!file) return
+                setUploading(true)
+                try {
+                  const res = await importUPSSnapshot(file)
+                  setToast({ message: res.message || 'UPS snapshot imported successfully', type: 'success' })
+                } catch (err) {
+                  setToast({ message: err.response?.data?.message || 'Failed to import UPS snapshot', type: 'error' })
+                } finally {
+                  setUploading(false)
+                  if (upsFileRef.current) upsFileRef.current.value = ''
+                }
+              }}
+            />
+            <button
+              onClick={() => upsFileRef.current?.click()}
+              disabled={uploading}
+              className="flex-1 flex items-center justify-center gap-2 px-4 py-3 border-2 border-dashed border-purple-300 dark:border-purple-700 text-purple-600 dark:text-purple-400 hover:border-purple-500 hover:text-purple-700 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+            >
+              {uploading ? <RefreshCw size={18} className="animate-spin" /> : <Upload size={18} />}
+              {uploading ? 'Importing...' : 'Import UPS Snapshot'}
+            </button>
+          </div>
+        </div>
+      </motion.div>
 
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />

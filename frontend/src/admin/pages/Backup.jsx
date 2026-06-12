@@ -2,15 +2,17 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Plus, Upload, Download, RotateCcw, Trash2,
-  HardDrive, Database, AlertTriangle, X,
+  HardDrive, Database, AlertTriangle, X, RefreshCw,
+  Clock, Cloud,
 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import ConfirmModal from '../components/ConfirmModal'
 import Toast from '../components/Toast'
 import {
-  listBackups, createBackup,
+  listBackups, createBackup, triggerBackup,
   deleteBackup, uploadBackup, restoreBackup, downloadBackup,
 } from '../../services/backupService'
+import { getSystemConfig, updateSystemConfig } from '../../services/systemConfigService'
 
 const typeStyles = {
   manual: 'bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-400 border-blue-200 dark:border-blue-800',
@@ -28,6 +30,13 @@ const summaryLabels = {
   footerContent: 'Footer',
   settings: 'Settings',
 }
+
+const FREQUENCY_OPTIONS = [
+  { value: 'disabled', label: 'Disabled' },
+  { value: 'every-12-hours', label: 'Every 12 Hours' },
+  { value: 'daily-midnight', label: 'Daily at Midnight' },
+  { value: 'weekly-sunday', label: 'Weekly on Sunday' },
+]
 
 function fmtBytes(bytes) {
   if (!bytes) return '0 B'
@@ -51,20 +60,45 @@ export default function Backup() {
   const [restoreAck, setRestoreAck] = useState(false)
   const [restoring, setRestoring] = useState(false)
 
+  const [schedule, setSchedule] = useState({
+    frequency: 'disabled',
+    retention: 7,
+    cloudUpload: { enabled: false, provider: 's3', bucket: '', region: '', accessKeyId: '', secretAccessKey: '', endpoint: '' },
+  })
+  const [scheduleLoading, setScheduleLoading] = useState(true)
+  const [savingSchedule, setSavingSchedule] = useState(false)
+  const [triggeringNow, setTriggeringNow] = useState(false)
+
   const loadBackups = async () => {
     setLoading(true)
     try {
       const { backups: list } = await listBackups()
       setBackups(Array.isArray(list) ? list : [])
     } catch (err) {
-      console.error('Failed to load backups:', err)
       setToast({ message: 'Failed to load backups', type: 'error' })
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => { loadBackups() }, [])
+  const loadSchedule = async () => {
+    setScheduleLoading(true)
+    try {
+      const res = await getSystemConfig()
+      if (res.success && res.config?.backupSchedule) {
+        setSchedule((prev) => ({ ...prev, ...res.config.backupSchedule }))
+      }
+    } catch {
+      // non-critical
+    } finally {
+      setScheduleLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    loadBackups()
+    loadSchedule()
+  }, [])
 
   const handleCreate = async () => {
     setCreating(true)
@@ -79,7 +113,6 @@ export default function Backup() {
         throw new Error(res?.error || res?.message || 'Failed to create backup')
       }
     } catch (err) {
-      console.error('Create backup error:', err)
       const errMsg = err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Failed to create backup'
       setToast({ message: errMsg, type: 'error' })
     } finally {
@@ -98,7 +131,6 @@ export default function Backup() {
       setRestoreTarget(backup)
       setRestoreAck(false)
     } catch (err) {
-      console.error('Upload backup error:', err)
       setToast({
         message: err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to upload backup',
         type: 'error',
@@ -120,7 +152,6 @@ export default function Backup() {
       a.click()
       URL.revokeObjectURL(url)
     } catch (err) {
-      console.error('Download backup error:', err)
       setToast({ message: 'Failed to download backup', type: 'error' })
     }
   }
@@ -134,7 +165,6 @@ export default function Backup() {
       setDeleteTarget(null)
       loadBackups()
     } catch (err) {
-      console.error('Delete backup error:', err)
       setToast({ message: 'Failed to delete backup', type: 'error' })
     } finally {
       setDeleting(false)
@@ -151,12 +181,40 @@ export default function Backup() {
       setRestoreAck(false)
       loadBackups()
     } catch (err) {
-      console.error('Restore backup error:', err)
       setToast({ message: 'Failed to restore backup', type: 'error' })
     } finally {
       setRestoring(false)
     }
   }
+
+  const handleSaveSchedule = async () => {
+    setSavingSchedule(true)
+    try {
+      const res = await updateSystemConfig({ backupSchedule: schedule })
+      if (res.success) {
+        setToast({ message: 'Backup schedule saved successfully', type: 'success' })
+      }
+    } catch (err) {
+      setToast({ message: 'Failed to save backup schedule', type: 'error' })
+    } finally {
+      setSavingSchedule(false)
+    }
+  }
+
+  const handleTriggerNow = async () => {
+    setTriggeringNow(true)
+    try {
+      await triggerBackup()
+      setToast({ message: 'Manual backup triggered (scheduled type)', type: 'success' })
+      loadBackups()
+    } catch (err) {
+      setToast({ message: 'Failed to trigger backup', type: 'error' })
+    } finally {
+      setTriggeringNow(false)
+    }
+  }
+
+  const scheduleActive = schedule.frequency !== 'disabled'
 
   return (
     <div>
@@ -205,6 +263,238 @@ export default function Backup() {
         }
       />
 
+      {/* Schedule Card */}
+      <motion.div
+        initial={{ opacity: 0, y: 12 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 mb-6"
+      >
+        <div className="flex items-start justify-between mb-5">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+              <Clock size={20} className="text-blue-600 dark:text-blue-400" />
+            </div>
+            <div>
+              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Backup Schedule</h2>
+              <p className="text-xs text-gray-500 dark:text-gray-400">
+                {scheduleActive
+                  ? 'Automatic backups are active'
+                  : 'No automatic schedule configured'}
+              </p>
+            </div>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={handleTriggerNow}
+              disabled={triggeringNow}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 text-sm font-medium transition-colors disabled:opacity-50"
+            >
+              {triggeringNow ? (
+                <div className="w-4 h-4 border-2 border-gray-400/30 border-t-gray-400 rounded-full animate-spin" />
+              ) : (
+                <RefreshCw size={16} />
+              )}
+              Trigger Now
+            </button>
+            <div className={`px-3 py-2 rounded-xl text-xs font-medium flex items-center gap-1.5 ${
+              scheduleActive
+                ? 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800'
+                : 'bg-gray-100 dark:bg-slate-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-slate-700'
+            }`}>
+              <span className={`w-2 h-2 rounded-full ${scheduleActive ? 'bg-emerald-500' : 'bg-gray-400'}`} />
+              {scheduleActive ? 'Active' : 'Paused'}
+            </div>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+              Frequency
+            </label>
+            <select
+              value={schedule.frequency}
+              onChange={(e) => setSchedule((prev) => ({ ...prev, frequency: e.target.value }))}
+              className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+            >
+              {FREQUENCY_OPTIONS.map((o) => (
+                <option key={o.value} value={o.value}>{o.label}</option>
+              ))}
+            </select>
+          </div>
+          {scheduleActive && (
+            <>
+              <div>
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                  Retention (backups)
+                </label>
+                <input
+                  type="number"
+                  value={schedule.retention}
+                  onChange={(e) => setSchedule((prev) => ({ ...prev, retention: parseInt(e.target.value, 10) || 7 }))}
+                  min={1}
+                  max={90}
+                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                />
+              </div>
+              <div className="flex items-end">
+                <button
+                  onClick={handleSaveSchedule}
+                  disabled={savingSchedule}
+                  className="w-full px-4 py-3 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {savingSchedule ? (
+                    <RefreshCw size={16} className="animate-spin" />
+                  ) : (
+                    <Save size={16} />
+                  )}
+                  Save Schedule
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+
+        {scheduleActive && (
+          <>
+            <div className="mt-5 pt-4 border-t border-gray-100 dark:border-slate-800">
+              <label className="flex items-center gap-3 cursor-pointer select-none">
+                <input
+                  type="checkbox"
+                  checked={schedule.cloudUpload.enabled}
+                  onChange={(e) => setSchedule((prev) => ({
+                    ...prev,
+                    cloudUpload: { ...prev.cloudUpload, enabled: e.target.checked },
+                  }))}
+                  className="w-5 h-5 rounded border-gray-300 dark:border-slate-600 text-primary focus:ring-primary/50"
+                />
+                <div>
+                  <span className="text-sm font-medium text-gray-900 dark:text-white flex items-center gap-2">
+                    <Cloud size={16} />
+                    Cloud Upload
+                  </span>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Push backups to cloud storage</p>
+                </div>
+              </label>
+            </div>
+
+            {schedule.cloudUpload.enabled && (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pl-7">
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Provider
+                  </label>
+                  <select
+                    value={schedule.cloudUpload.provider}
+                    onChange={(e) => setSchedule((prev) => ({
+                      ...prev,
+                      cloudUpload: { ...prev.cloudUpload, provider: e.target.value },
+                    }))}
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  >
+                    <option value="s3">AWS S3</option>
+                    <option value="gcs">Google Cloud Storage</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Bucket
+                  </label>
+                  <input
+                    type="text"
+                    value={schedule.cloudUpload.bucket}
+                    onChange={(e) => setSchedule((prev) => ({
+                      ...prev,
+                      cloudUpload: { ...prev.cloudUpload, bucket: e.target.value },
+                    }))}
+                    placeholder="my-backups"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Region
+                  </label>
+                  <input
+                    type="text"
+                    value={schedule.cloudUpload.region}
+                    onChange={(e) => setSchedule((prev) => ({
+                      ...prev,
+                      cloudUpload: { ...prev.cloudUpload, region: e.target.value },
+                    }))}
+                    placeholder="us-east-1"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Access Key ID
+                  </label>
+                  <input
+                    type="text"
+                    value={schedule.cloudUpload.accessKeyId}
+                    onChange={(e) => setSchedule((prev) => ({
+                      ...prev,
+                      cloudUpload: { ...prev.cloudUpload, accessKeyId: e.target.value },
+                    }))}
+                    placeholder="AKIA..."
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Secret Access Key
+                  </label>
+                  <input
+                    type="password"
+                    value={schedule.cloudUpload.secretAccessKey}
+                    onChange={(e) => setSchedule((prev) => ({
+                      ...prev,
+                      cloudUpload: { ...prev.cloudUpload, secretAccessKey: e.target.value },
+                    }))}
+                    placeholder="••••••••"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Endpoint (optional)
+                  </label>
+                  <input
+                    type="text"
+                    value={schedule.cloudUpload.endpoint}
+                    onChange={(e) => setSchedule((prev) => ({
+                      ...prev,
+                      cloudUpload: { ...prev.cloudUpload, endpoint: e.target.value },
+                    }))}
+                    placeholder="https://s3.custom.com"
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+              </div>
+            )}
+
+            {scheduleActive && (
+              <div className="mt-4 flex justify-end">
+                <button
+                  onClick={handleSaveSchedule}
+                  disabled={savingSchedule}
+                  className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+                >
+                  {savingSchedule ? (
+                    <RefreshCw size={16} className="animate-spin" />
+                  ) : (
+                    <Save size={16} />
+                  )}
+                  Save Schedule
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </motion.div>
+
+      {/* Backup List */}
       <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden">
         {loading ? (
           <div className="flex items-center justify-center py-20">
@@ -232,7 +522,7 @@ export default function Backup() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100 dark:divide-slate-800">
-                  {backups.map((b) => (
+                {backups.map((b) => (
                   <tr key={b?._id || Math.random()} className="hover:bg-gray-50 dark:hover:bg-slate-800/50 transition-colors">
                     <td className="px-5 py-4 font-medium text-gray-900 dark:text-white whitespace-nowrap max-w-[200px] truncate">
                       {b?.name || 'Unnamed Backup'}

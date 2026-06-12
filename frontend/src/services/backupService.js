@@ -40,3 +40,8 @@ export async function restoreBackup(id) {
   const { data } = await api.post(`/backups/${id}/restore`)
   return data
 }
+
+export async function triggerBackup() {
+  const { data } = await api.post('/system-config/trigger-backup')
+  return data
+}
