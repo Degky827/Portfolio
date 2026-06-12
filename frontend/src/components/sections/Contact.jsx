@@ -2,7 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
-import { logPortfolioVisit } from '../../services/api'
+import { logPortfolioVisit, logPortfolioEngagement } from '../../services/api'
 import { getContactContent } from '../../services/contactService'
 
 const GithubIcon = ({ size = 24, className = '' }) => (
@@ -59,6 +59,7 @@ export default function Contact() {
       const email = formData.get('reply_to') || ''
       const message = formData.get('message') || ''
       const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       logPortfolioVisit(name)
       window.location.href = mailtoLink
       setResult('Opening your email client...')
@@ -69,7 +70,7 @@ export default function Contact() {
 
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
-      logPortfolioVisit(name)
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       setResult('Message sent successfully! I will get back to you soon.')
       setResultType('success')
       e.target.reset()
@@ -78,7 +79,7 @@ export default function Contact() {
       const email = formData.get('reply_to') || ''
       const message = formData.get('message') || ''
       const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
-      logPortfolioVisit(name)
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       window.location.href = mailtoLink
       setResult('EmailJS failed. Opening your email client instead...')
       setResultType('error')

@@ -45,6 +45,18 @@ const visitSchema = new mongoose.Schema(
       os: { type: String, trim: true },
       deviceType: { type: String, trim: true },
     },
+    isBot: {
+      type: Boolean,
+      default: false,
+    },
+    interaction: {
+      type: String,
+      default: '',
+    },
+    discoveryChannel: {
+      type: String,
+      default: '',
+    },
   },
   {
     timestamps: true,
@@ -53,5 +65,6 @@ const visitSchema = new mongoose.Schema(
 
 visitSchema.index({ timestamp: -1 })
 visitSchema.index({ 'location.country': 1 })
+visitSchema.index({ isBot: 1 })
 
 module.exports = mongoose.model('Visit', visitSchema)
