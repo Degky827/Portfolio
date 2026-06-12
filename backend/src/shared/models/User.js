@@ -18,8 +18,16 @@ const userSchema = new mongoose.Schema(
     },
     password: {
       type: String,
-      required: [true, 'Password is required'],
       minlength: [8, 'Password must be at least 8 characters'],
+    },
+    googleId: {
+      type: String,
+      default: '',
+    },
+    provider: {
+      type: String,
+      enum: ['local', 'google'],
+      default: 'local',
     },
     role: {
       type: String,
@@ -94,7 +102,7 @@ const userSchema = new mongoose.Schema(
 )
 
 userSchema.pre('save', async function () {
-  if (!this.isModified('password')) return
+  if (!this.isModified('password') || !this.password) return
   const salt = await bcrypt.genSalt(12)
   this.password = await bcrypt.hash(this.password, salt)
 })
@@ -111,6 +119,7 @@ userSchema.methods.toJSON = function () {
   delete obj.lockedUntil
   delete obj.twoFactorSecret
   delete obj.twoFactorEnabled
+  delete obj.googleId
   return obj
 }
 

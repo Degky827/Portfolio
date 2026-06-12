@@ -6,6 +6,7 @@ const userController = require('../users/users.controller')
 const {
   loginStep1, verify2FA, logout, refresh, getMe, setup2FA, verify2FASetup, disable2FA,
 } = require('./auth.controller')
+const { googleLogin } = require('./google-auth.controller')
 
 const loginLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -23,8 +24,17 @@ const totpLimiter = rateLimit({
   legacyHeaders: false,
 })
 
+const googleLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 5,
+  message: { success: false, message: 'Too many Google sign-in attempts. Try again in 15 minutes.' },
+  standardHeaders: true,
+  legacyHeaders: false,
+})
+
 router.post('/login', loginLimiter, loginStep1)
 router.post('/verify-2fa', totpLimiter, verify2FA)
+router.post('/google', googleLimiter, googleLogin)
 router.post('/logout', authenticateToken, logout)
 router.post('/refresh', refresh)
 router.get('/me', authenticateToken, getMe)

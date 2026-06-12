@@ -3,7 +3,9 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Eye, EyeOff, LogIn, AlertCircle, Shield, ArrowLeft, Smartphone } from 'lucide-react'
 import { useAuth } from './AuthContext'
-import { login as loginApi, verify2FA as verify2FAApi } from '../../shared/services/authService'
+import { login as loginApi, verify2FA as verify2FAApi, googleAuth } from '../../shared/services/authService'
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 
 const TOTP_LENGTH = 6
 
@@ -19,8 +21,11 @@ export default function Login() {
   const [step, setStep] = useState('credentials')
   const [verifiedEmail, setVerifiedEmail] = useState('')
   const [totpCode, setTotpCode] = useState(Array.from({ length: TOTP_LENGTH }, () => ''))
+  const [googleLoading, setGoogleLoading] = useState(false)
   const inputRefs = useRef([])
   const navigatingRef = useRef(false)
+  const googleButtonRef = useRef(null)
+  const googleInitialized = useRef(false)
 
   const { setAuth, isAuthenticated } = useAuth()
   const navigate = useNavigate()
@@ -39,6 +44,64 @@ export default function Login() {
       inputRefs.current[0].focus()
     }
   }, [step])
+
+  useEffect(() => {
+    if (!GOOGLE_CLIENT_ID) return
+    const script = document.createElement('script')
+    script.src = 'https://accounts.google.com/gsi/client'
+    script.async = true
+    script.defer = true
+    script.onload = () => {
+      if (googleButtonRef.current && !googleInitialized.current) {
+        googleInitialized.current = true
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredentialResponse,
+        })
+        window.google.accounts.id.renderButton(googleButtonRef.current, {
+          theme: 'outline',
+          size: 'large',
+          width: googleButtonRef.current.offsetWidth || 320,
+          shape: 'rectangular',
+          text: 'signin_with',
+          logo_alignment: 'left',
+        })
+      }
+    }
+    document.head.appendChild(script)
+    return () => {
+      const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]')
+      if (existing) existing.remove()
+    }
+  }, [])
+
+  const handleGoogleCredentialResponse = async (response) => {
+    if (!response?.credential) {
+      setError('Google sign-in failed. No credential received.')
+      return
+    }
+    setError('')
+    setGoogleLoading(true)
+    try {
+      const data = await googleAuth(response.credential)
+      if (data?.success) {
+        navigatingRef.current = true
+        setAuth('cookie', data.user, true)
+        await new Promise((r) => setTimeout(r, 150))
+        navigate(from, { replace: true })
+      } else {
+        setError(data?.message || 'Google authentication failed.')
+      }
+    } catch (err) {
+      if (err.response?.data?.message) {
+        setError(err.response.data.message)
+      } else {
+        setError('Google sign-in failed. Please try again.')
+      }
+    } finally {
+      setGoogleLoading(false)
+    }
+  }
 
   function validateCredentials() {
     const errs = {}
@@ -314,6 +377,27 @@ export default function Login() {
                     <><LogIn size={18} />Sign In</>
                   )}
                 </motion.button>
+
+                {GOOGLE_CLIENT_ID && (
+                  <>
+                    <div className="flex items-center gap-3 my-5">
+                      <div className="flex-1 h-px bg-gray-300 dark:bg-slate-700" />
+                      <span className="text-xs font-medium text-gray-400 dark:text-gray-500 uppercase tracking-wider">or continue with</span>
+                      <div className="flex-1 h-px bg-gray-300 dark:bg-slate-700" />
+                    </div>
+
+                    <div className="flex justify-center">
+                      {googleLoading ? (
+                        <div className="w-full py-3 flex items-center justify-center gap-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800">
+                          <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 border-t-purple-700 rounded-full animate-spin" />
+                          <span className="text-sm text-gray-500 dark:text-gray-400">Connecting to Google...</span>
+                        </div>
+                      ) : (
+                        <div ref={googleButtonRef} className="w-full min-h-[40px]" />
+                      )}
+                    </div>
+                  </>
+                )}
               </motion.form>
             ) : (
               <motion.form
