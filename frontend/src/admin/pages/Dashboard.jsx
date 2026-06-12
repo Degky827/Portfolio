@@ -160,13 +160,17 @@ export default function Dashboard() {
           <div className="relative p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
               <div className="flex items-start gap-4">
-                <motion.div
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                  className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-xl font-black flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0"
-                >
-                  {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'A'}
-                </motion.div>
+                {user?.avatar ? (
+                  <img src={user.avatar} alt="" className="w-14 h-14 rounded-2xl object-cover shadow-lg shadow-indigo-500/20 shrink-0" />
+                ) : (
+                  <motion.div
+                    whileHover={{ scale: 1.05 }}
+                    transition={{ type: 'spring', stiffness: 400, damping: 10 }}
+                    className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-xl font-black flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0"
+                  >
+                    {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'A'}
+                  </motion.div>
+                )}
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
                     {greeting.emoji} {greeting.text}, {firstName}

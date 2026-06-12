@@ -1,4 +1,6 @@
 const User = require('../models/User')
+const HomeContent = require('../models/HomeContent')
+const AboutContent = require('../models/AboutContent')
 const { createAuditLog, generate2FASecret, generateQRCodeDataURL } = require('./authController')
 
 async function getUsers(req, res) {
@@ -350,6 +352,35 @@ async function updateMe(req, res) {
     }
 
     await user.save()
+
+    // Sync relevant user fields to public portfolio data
+    try {
+      const syncHome = {}
+      if (changes.includes('name')) syncHome['hero.fullName'] = user.name
+      if (changes.includes('avatar')) syncHome['hero.profilePhoto.url'] = user.avatar
+      if (changes.includes('location')) syncHome['about.location'] = user.location
+      if (changes.includes('socialLinks')) {
+        if (user.socialLinks?.linkedin !== undefined) syncHome['socialLinks.linkedin'] = user.socialLinks.linkedin
+        if (user.socialLinks?.github !== undefined) syncHome['socialLinks.github'] = user.socialLinks.github
+      }
+      if (Object.keys(syncHome).length > 0) {
+        await HomeContent.findOneAndUpdate({}, { $set: syncHome }, { upsert: true })
+      }
+    } catch (syncErr) {
+      console.error('[profile] Failed to sync HomeContent:', syncErr)
+    }
+
+    try {
+      const syncAbout = {}
+      if (changes.includes('bio')) syncAbout.description = user.bio
+      if (changes.includes('avatar')) syncAbout.profileImage = user.avatar
+      if (changes.includes('location')) syncAbout.location = user.location
+      if (Object.keys(syncAbout).length > 0) {
+        await AboutContent.findOneAndUpdate({}, { $set: syncAbout }, { upsert: true })
+      }
+    } catch (syncErr) {
+      console.error('[profile] Failed to sync AboutContent:', syncErr)
+    }
 
     await createAuditLog({
       user: req.user._id,

@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, RefreshCw, Plus, Trash2, Edit2 } from 'lucide-react'
+import { Save, RefreshCw, Plus, Trash2 } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
-import ImageUpload from '../components/ImageUpload'
 import Toast from '../components/Toast'
 import { getAboutContent, updateAboutContent } from '../../services/aboutService'
 
@@ -14,18 +13,13 @@ export default function AboutContent() {
   const [form, setForm] = useState({
     title: '',
     subtitle: '',
-    description: '',
     yearsOfExperience: 0,
-    location: '',
     cvUrl: '',
     status: 'active',
     education: [],
     experience: [],
     achievements: [],
   })
-  const [profileImageFile, setProfileImageFile] = useState(null)
-  const [profileImageUrl, setProfileImageUrl] = useState('')
-  const [existingImage, setExistingImage] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [toast, setToast] = useState(null)
@@ -42,16 +36,13 @@ export default function AboutContent() {
           setForm({
             title: content.title || '',
             subtitle: content.subtitle || '',
-            description: content.description || '',
             yearsOfExperience: content.yearsOfExperience || 0,
-            location: content.location || '',
             cvUrl: content.cvUrl || '',
             status: content.status || 'active',
             education: content.education || [],
             experience: content.experience || [],
             achievements: content.achievements || [],
           })
-          setExistingImage(content.profileImage || '')
         }
       } catch {
         setToast({ message: 'Failed to load about content', type: 'error' })
@@ -91,16 +82,12 @@ export default function AboutContent() {
     const fd = new FormData()
     fd.append('title', form.title)
     fd.append('subtitle', form.subtitle)
-    fd.append('description', form.description)
     fd.append('yearsOfExperience', form.yearsOfExperience)
-    fd.append('location', form.location)
     fd.append('cvUrl', form.cvUrl)
     fd.append('status', form.status)
     fd.append('education', JSON.stringify(form.education))
     fd.append('experience', JSON.stringify(form.experience))
     fd.append('achievements', JSON.stringify(form.achievements))
-    if (profileImageFile) fd.append('profileImage', profileImageFile)
-    else if (profileImageUrl) fd.append('profileImageUrl', profileImageUrl)
     try {
       await updateAboutContent(fd)
       setToast({ message: 'About content updated successfully', type: 'success' })
@@ -140,18 +127,13 @@ export default function AboutContent() {
                 <input type="text" value={form.subtitle} onChange={set('subtitle')} placeholder="e.g. A passionate developer..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
               </div>
               <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
-                <textarea value={form.description} onChange={set('description')} rows={4} placeholder="About description..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none" />
+                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Years of Experience</label>
+                <input type="number" value={form.yearsOfExperience} onChange={set('yearsOfExperience')} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
               </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Years of Experience</label>
-                  <input type="number" value={form.yearsOfExperience} onChange={set('yearsOfExperience')} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Location</label>
-                  <input type="text" value={form.location} onChange={set('location')} placeholder="e.g. Bahirdar, Ethiopia" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-                </div>
+              <div className="p-3 rounded-xl bg-indigo-50 dark:bg-indigo-500/5 border border-indigo-200 dark:border-indigo-500/20">
+                <p className="text-xs text-indigo-600 dark:text-indigo-400 leading-relaxed">
+                  <strong>Bio, Location &amp; Profile Photo</strong> are synced from <strong>Admin Profile</strong> — update them there.
+                </p>
               </div>
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">CV URL</label>
@@ -245,17 +227,6 @@ export default function AboutContent() {
           </div>
 
           <div className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6"
-            >
-              <ImageUpload value={existingImage} onChange={(val) => {
-                if (typeof val === 'string') { setProfileImageUrl(val); setProfileImageFile(null) }
-                else { setProfileImageFile(val); setProfileImageUrl('') }
-              }} />
-            </motion.div>
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
