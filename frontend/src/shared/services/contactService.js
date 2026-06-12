@@ -32,6 +32,11 @@ export async function markMessageRead(id) {
   return data
 }
 
+export async function markMessageUnread(id) {
+  const { data } = await api.patch(`/contact-messages/${id}/unread`)
+  return data
+}
+
 export async function deleteMessage(id) {
   const { data } = await api.delete(`/contact-messages/${id}`)
   return data

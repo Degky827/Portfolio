@@ -11,6 +11,7 @@ import {
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
 import { canAccess } from '../authentication/RoleGuard'
+import useUnreadMessages from '../../shared/hooks/useUnreadMessages'
 
 function UserAvatar({ user, size = 'md', className = '' }) {
   const sizeMap = { sm: 'w-7 h-7 text-[8px]', md: 'w-10 h-10 text-sm', lg: 'w-16 h-16 text-xl' }
@@ -137,6 +138,7 @@ export default function Sidebar() {
   const location = useLocation()
   const [openMenus, setOpenMenus] = useState({ cms: true, communication: false, system: false })
   const [searchQuery, setSearchQuery] = useState('')
+  const { count: unreadMessages } = useUnreadMessages()
 
   useEffect(() => {
     if (mobileOpen) {
@@ -214,6 +216,7 @@ export default function Sidebar() {
             isOpen={isSearching || openMenus[group.id]}
             onToggle={() => toggleMenu(group.id)}
             onItemClick={closeMobile}
+            unreadMessages={unreadMessages}
           />
         ))}
       </nav>
@@ -285,6 +288,7 @@ export default function Sidebar() {
                     isOpen={isSearching || openMenus[group.id]}
                     onToggle={() => toggleMenu(group.id)}
                     onItemClick={closeMobile}
+                    unreadMessages={unreadMessages}
                   />
                 ))}
               </nav>
@@ -351,7 +355,7 @@ const SearchBar = forwardRef(function SearchBar({ value, onChange }, ref) {
   )
 })
 
-function NavGroup({ group, collapsed, isOpen, onToggle, onItemClick }) {
+function NavGroup({ group, collapsed, isOpen, onToggle, onItemClick, unreadMessages = 0 }) {
   const location = useLocation()
 
   const hasActiveChild = useMemo(
@@ -361,6 +365,11 @@ function NavGroup({ group, collapsed, isOpen, onToggle, onItemClick }) {
     }),
     [location.pathname, group.items],
   )
+
+  function getBadge(item) {
+    if (item.path === '/admin/inbox' && unreadMessages > 0) return unreadMessages
+    return null
+  }
 
   if (collapsed) {
     return (
@@ -373,7 +382,7 @@ function NavGroup({ group, collapsed, isOpen, onToggle, onItemClick }) {
             initial="hidden"
             animate="visible"
           >
-            <NavItem item={item} collapsed onItemClick={onItemClick} />
+            <NavItem item={item} collapsed onItemClick={onItemClick} badge={getBadge(item)} />
           </motion.div>
         ))}
       </div>
@@ -393,7 +402,7 @@ function NavGroup({ group, collapsed, isOpen, onToggle, onItemClick }) {
               initial="hidden"
               animate="visible"
             >
-              <NavItem item={item} collapsed={false} onItemClick={onItemClick} />
+              <NavItem item={item} collapsed={false} onItemClick={onItemClick} badge={getBadge(item)} />
             </motion.div>
           ))}
         </div>
@@ -451,7 +460,7 @@ function NavGroup({ group, collapsed, isOpen, onToggle, onItemClick }) {
                   initial="hidden"
                   animate="visible"
                 >
-                  <NavItem item={item} collapsed={false} onItemClick={onItemClick} />
+                  <NavItem item={item} collapsed={false} onItemClick={onItemClick} badge={getBadge(item)} />
                 </motion.div>
               ))}
             </div>
@@ -477,7 +486,7 @@ function SectionLabel({ label }) {
   )
 }
 
-function NavItem({ item, collapsed, onItemClick }) {
+function NavItem({ item, collapsed, onItemClick, badge }) {
   const location = useLocation()
 
   const isActive = useMemo(() => {
@@ -515,6 +524,13 @@ function NavItem({ item, collapsed, onItemClick }) {
             />
           )}
           <item.icon size={20} />
+          {badge != null && (
+            <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center rounded-full bg-red-500 text-white text-[8px] font-bold shadow-sm"
+              style={{ minWidth: 16, height: 16 }}
+            >
+              {badge > 9 ? '9+' : badge}
+            </span>
+          )}
         </motion.div>
       </NavLink>
     )
@@ -546,6 +562,13 @@ function NavItem({ item, collapsed, onItemClick }) {
           <item.icon size={18} />
         </motion.span>
         <span className="truncate">{item.label}</span>
+        {badge != null && (
+          <span className="ml-auto flex items-center justify-center rounded-full bg-red-500 text-white text-[10px] font-bold px-1.5 shadow-sm"
+            style={{ minWidth: 20, height: 18 }}
+          >
+            {badge > 99 ? '99+' : badge}
+          </span>
+        )}
       </motion.div>
     </NavLink>
   )

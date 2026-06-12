@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Mail, MessageSquare, Inbox, Trash2, RefreshCw,
@@ -8,8 +8,9 @@ import PageHeader from '../shared/PageHeader'
 import ConfirmModal from '../shared/ConfirmModal'
 import Toast from '../shared/Toast'
 import {
-  listMessages, markMessageRead, deleteMessage,
+  listMessages, markMessageRead, markMessageUnread, deleteMessage,
 } from '../../shared/services/contactService'
+import { useSocket } from '../../shared/context/SocketContext'
 
 export default function ContactInbox() {
   const [messages, setMessages] = useState([])
@@ -23,6 +24,8 @@ export default function ContactInbox() {
   const [toast, setToast] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
+  const { on } = useSocket()
+  const fetchRef = useRef(null)
 
   const fetch = useCallback(async () => {
     setLoading(true)
@@ -40,13 +43,31 @@ export default function ContactInbox() {
     }
   }, [page, limit, readFilter])
 
+  useEffect(() => { fetchRef.current = fetch })
   useEffect(() => { fetch() }, [fetch])
+
+  useEffect(() => {
+    const cleanup = on('new_contact_message', () => {
+      if (page === 1 && !readFilter) {
+        fetchRef.current?.()
+      }
+    })
+    return cleanup
+  }, [on, page, readFilter])
 
   const handleMarkRead = async (id) => {
     try {
       await markMessageRead(id)
       setMessages((prev) => prev.map((m) => m._id === id ? { ...m, read: true } : m))
       if (selected?._id === id) setSelected((prev) => ({ ...prev, read: true }))
+    } catch { /* noop */ }
+  }
+
+  const handleMarkUnread = async (id) => {
+    try {
+      await markMessageUnread(id)
+      setMessages((prev) => prev.map((m) => m._id === id ? { ...m, read: false } : m))
+      if (selected?._id === id) setSelected((prev) => ({ ...prev, read: false }))
     } catch { /* noop */ }
   }
 
@@ -123,43 +144,56 @@ export default function ContactInbox() {
             className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6"
           >
             <div className="flex items-start justify-between mb-6">
-              <div>
-                <h3 className="text-xl font-bold text-gray-900 dark:text-white">{selected.name}</h3>
-                <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
-                  <a href={`mailto:${selected.email}`} className="hover:text-primary transition-colors">{selected.email}</a>
-                  {selected.phone && <span>· {selected.phone}</span>}
+                <div>
+                  <h3 className="text-xl font-bold text-gray-900 dark:text-white">{selected.name}</h3>
+                  <div className="flex items-center gap-3 mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    <a href={`mailto:${selected.email}`} className="hover:text-primary transition-colors">{selected.email}</a>
+                    {selected.phone && <span>· {selected.phone}</span>}
+                  </div>
+                  {selected.subject && (
+                    <p className="mt-2 text-sm font-medium text-gray-700 dark:text-gray-300">
+                      <span className="text-gray-400">Subject:</span> {selected.subject}
+                    </p>
+                  )}
+                </div>
+                <div className="flex gap-2">
+                  {!selected.read ? (
+                    <button
+                      onClick={() => handleMarkRead(selected._id)}
+                      className="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                      title="Mark as read"
+                    >
+                      <CheckCheck size={18} />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={() => handleMarkUnread(selected._id)}
+                      className="p-2 rounded-lg text-gray-400 hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-900/10 transition-colors"
+                      title="Mark as unread"
+                    >
+                      <Eye size={18} />
+                    </button>
+                  )}
+                  <button
+                    onClick={() => setDeleteTarget(selected)}
+                    className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
+                    title="Delete"
+                  >
+                    <Trash2 size={18} />
+                  </button>
                 </div>
               </div>
-              <div className="flex gap-2">
+              <div className="mb-4">
+                <span className="text-[11px] text-gray-400">{new Date(selected.createdAt).toLocaleString()}</span>
                 {!selected.read && (
-                  <button
-                    onClick={() => handleMarkRead(selected._id)}
-                    className="p-2 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
-                    title="Mark as read"
-                  >
-                    <CheckCheck size={18} />
-                  </button>
+                  <span className="ml-3 inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400">
+                    New
+                  </span>
                 )}
-                <button
-                  onClick={() => setDeleteTarget(selected)}
-                  className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/10 transition-colors"
-                  title="Delete"
-                >
-                  <Trash2 size={18} />
-                </button>
               </div>
-            </div>
-            <div className="mb-4">
-              <span className="text-[11px] text-gray-400">{new Date(selected.createdAt).toLocaleString()}</span>
-              {!selected.read && (
-                <span className="ml-3 inline-block px-2 py-0.5 rounded-full text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400">
-                  New
-                </span>
-              )}
-            </div>
-            <div className="p-4 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700">
-              <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{selected.message}</p>
-            </div>
+              <div className="p-4 rounded-xl bg-gray-50 dark:bg-slate-800/50 border border-gray-100 dark:border-slate-700">
+                <p className="text-sm text-gray-700 dark:text-gray-300 whitespace-pre-wrap leading-relaxed">{selected.message}</p>
+              </div>
           </motion.div>
         ) : (
           <motion.div
@@ -210,7 +244,8 @@ export default function ContactInbox() {
                             {new Date(msg.createdAt).toLocaleDateString()}
                           </span>
                         </div>
-                        <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{msg.message}</p>
+                          {msg.subject && <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{msg.subject}</p>}
+                          <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{msg.message}</p>
                         <div className="flex items-center gap-2 mt-1">
                           <span className="text-[11px] text-gray-400">{msg.email}</span>
                           {msg.phone && <span className="text-[11px] text-gray-400">· {msg.phone}</span>}
