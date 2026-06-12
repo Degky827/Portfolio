@@ -6,9 +6,11 @@ import {
 } from 'lucide-react'
 import { useAuth } from '../authentication/AuthContext'
 import { useAdmin } from '../context/AdminContext'
+import { useSocket } from '../../shared/context/SocketContext'
 import { logout as logoutApi } from '../../shared/services/authService'
 import ThemeToggle from './ThemeToggle'
 import NotificationBell from '../shared/NotificationBell'
+import Toast from '../shared/Toast'
 
 const breadcrumbMap = {
   '/admin/dashboard': { parent: null, label: 'Overview' },
@@ -60,6 +62,7 @@ const searchableRoutes = [
 export default function Navbar() {
   const { user, logout } = useAuth()
   const { toggleMobile } = useAdmin()
+  const { on } = useSocket()
   const navigate = useNavigate()
   const location = useLocation()
   const [dropdownOpen, setDropdownOpen] = useState(false)
@@ -68,6 +71,7 @@ export default function Navbar() {
   const searchRef = useRef(null)
   const searchInputRef = useRef(null)
   const selectedIndexRef = useRef(-1)
+  const [toast, setToast] = useState(null)
 
   useEffect(() => {
     function handleKeyDown(e) {
@@ -89,6 +93,13 @@ export default function Navbar() {
       searchInputRef.current.focus()
     }
   }, [searchOpen])
+
+  useEffect(() => {
+    const cleanup = on('new_contact_message', (data) => {
+      setToast({ message: `New Message Received from ${data.name}`, type: 'info' })
+    })
+    return cleanup
+  }, [on])
 
   const handleLogout = useCallback(async () => {
     try { await logoutApi() } catch { /* noop */ }
@@ -388,6 +399,10 @@ export default function Navbar() {
           </>
         )}
       </AnimatePresence>
+
+      {toast && (
+        <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+      )}
     </>
   )
 }

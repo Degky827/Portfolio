@@ -1,0 +1,66 @@
+const { Server } = require('socket.io')
+const jwt = require('jsonwebtoken')
+const config = require('../config')
+
+let io = null
+
+function initSocket(server) {
+  const allowedOrigins = [
+    'https://modernize-portifo.vercel.app',
+    'http://localhost:5173',
+    'http://localhost:3000',
+    ...config.corsOrigins.filter((o) => !o.startsWith('http://localhost')),
+  ]
+
+  io = new Server(server, {
+    cors: {
+      origin(origin, callback) {
+        if (!origin || allowedOrigins.includes(origin)) {
+          callback(null, true)
+        } else {
+          callback(null, false)
+        }
+      },
+      credentials: true,
+    },
+  })
+
+  io.use((socket, next) => {
+    const token = socket.handshake.auth?.token || socket.handshake.query?.token
+    if (!token) {
+      return next(new Error('Authentication required'))
+    }
+    try {
+      const decoded = jwt.verify(token, config.jwtSecret)
+      socket.adminUser = { id: decoded.id, email: decoded.email, role: decoded.role }
+      next()
+    } catch {
+      next(new Error('Invalid or expired token'))
+    }
+  })
+
+  io.on('connection', (socket) => {
+    console.log(`[socket] Admin connected: ${socket.adminUser.email}`)
+    socket.join('admin')
+
+    socket.on('disconnect', () => {
+      console.log(`[socket] Admin disconnected: ${socket.adminUser.email}`)
+    })
+  })
+
+  return io
+}
+
+function getIO() {
+  if (!io) {
+    throw new Error('Socket.io not initialized')
+  }
+  return io
+}
+
+function emitToAdmin(event, data) {
+  if (!io) return
+  io.to('admin').emit(event, data)
+}
+
+module.exports = { initSocket, getIO, emitToAdmin }

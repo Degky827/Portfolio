@@ -1,8 +1,10 @@
+const http = require('http')
 const express = require('express')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const config = require('./infrastructure/config')
 const connectDB = require('./infrastructure/database/db')
+const { initSocket } = require('./infrastructure/socket')
 const analyticsRoutes = require('./admin/analytics/analytics.routes')
 const authRoutes = require('./admin/auth/auth.routes')
 const userRoutes = require('./admin/users/users.routes')
@@ -13,6 +15,7 @@ const homeContentRoutes = require('./public/homepage/homepage.routes')
 const aboutRoutes = require('./public/about/about.routes')
 const contactRoutes = require('./public/contact/contact.routes')
 const contactMessageRoutes = require('./public/contact/contact-messages.routes')
+const messagesRoutes = require('./public/contact/messages.routes')
 const footerRoutes = require('./public/footer/footer.routes')
 const mediaRoutes = require('./admin/media/media.routes')
 const settingsRoutes = require('./public/settings/settings.routes')
@@ -72,6 +75,7 @@ app.use('/api/home-content', homeContentRoutes)
 app.use('/api/about', aboutRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/api/contact-messages', contactMessageRoutes)
+app.use('/api/messages', messagesRoutes)
 app.use('/api/footer', footerRoutes)
 app.use('/api/media', mediaRoutes)
 app.use('/api/settings', settingsRoutes)
@@ -113,7 +117,10 @@ async function start() {
   await backupScheduler.initializeScheduler()
   await healthMonitor.initializeMonitor()
 
-  const server = app.listen(config.port, () => {
+  const server = http.createServer(app)
+  initSocket(server)
+
+  server.listen(config.port, () => {
     console.log(
       `Server running on port ${config.port} [${config.nodeEnv}]`,
     )

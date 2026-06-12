@@ -3,6 +3,7 @@ import { Outlet, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { AdminProvider, useAdmin } from '../context/AdminContext'
 import { ThemeProvider } from '../context/ThemeContext'
+import { SocketProvider } from '../../shared/context/SocketContext'
 import Sidebar from './Sidebar'
 import Navbar from './Navbar'
 
@@ -51,7 +52,9 @@ export default function AdminLayout() {
   return (
     <ThemeProvider>
       <AdminProvider>
-        <LayoutInner />
+        <SocketProvider>
+          <LayoutInner />
+        </SocketProvider>
       </AdminProvider>
     </ThemeProvider>
   )
