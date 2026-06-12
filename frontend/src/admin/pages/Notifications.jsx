@@ -109,8 +109,8 @@ export default function Notifications() {
             className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           >
             <option value="">All Types</option>
-            {Object.entries(typeConfig).map(([key, cfg]) => (
-              <option key={key} value={key}>{cfg.label}</option>
+            {[...new Map(Object.entries(typeConfig).map(([key, cfg]) => [cfg.label, key])).entries()].map(([label, key]) => (
+              <option key={key} value={key}>{label}</option>
             ))}
           </select>
         </div>
