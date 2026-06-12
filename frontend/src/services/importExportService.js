@@ -22,3 +22,12 @@ export async function executeImport(type, items) {
   const { data } = await api.post('/import-export/import', { type, items })
   return data
 }
+
+export async function importUPSSnapshot(file) {
+  const fd = new FormData()
+  fd.append('file', file)
+  const { data } = await api.post('/import-export/import-ups', fd, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  })
+  return data
+}

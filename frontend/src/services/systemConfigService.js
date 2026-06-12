@@ -9,3 +9,13 @@ export async function updateSystemConfig(body) {
   const { data } = await api.put('/system-config', body)
   return data
 }
+
+export async function triggerBackup() {
+  const { data } = await api.post('/system-config/trigger-backup')
+  return data
+}
+
+export async function triggerHealthCheck() {
+  const { data } = await api.post('/system-config/trigger-health-check')
+  return data
+}

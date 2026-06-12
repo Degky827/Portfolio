@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import {
   Save, RefreshCw, Globe, Palette, Mail, Share2,
@@ -7,6 +7,7 @@ import PageHeader from '../components/PageHeader'
 import ImageUpload from '../components/ImageUpload'
 import Toast from '../components/Toast'
 import { getSettings, updateSettings } from '../../services/settingsService'
+import { useBrandingValidation } from '../../hooks/useBrandingValidation'
 
 const socialFields = [
   { key: 'github', label: 'GitHub', placeholder: 'https://github.com/username' },
@@ -38,12 +39,8 @@ export default function Settings() {
     publicPhone: '',
     publicAddress: '',
     socialLinks: {
-      github: '',
-      linkedin: '',
-      telegram: '',
-      twitter: '',
-      facebook: '',
-      instagram: '',
+      github: '', linkedin: '', telegram: '',
+      twitter: '', facebook: '', instagram: '',
     },
   })
   const [logoFile, setLogoFile] = useState(null)
@@ -57,6 +54,15 @@ export default function Settings() {
   const [fetching, setFetching] = useState(true)
   const [toast, setToast] = useState(null)
   const [errors, setErrors] = useState({})
+
+  const {
+    validateFavicon, validateLogoSvg, validateDescription,
+    faviconErrors, logoSvgErrors,
+    RECOMMENDED_DESC_MIN, RECOMMENDED_DESC_MAX,
+  } = useBrandingValidation()
+
+  const [descValidation, setDescValidation] = useState({ length: 0, warnings: [], inOptimalRange: false })
+  const faviconInputRef = useRef(null)
 
   useEffect(() => {
     ;(async () => {
@@ -86,6 +92,7 @@ export default function Settings() {
           })
           setExistingLogo(settings.logo || '')
           setExistingFavicon(settings.favicon || '')
+          setDescValidation(validateDescription(settings.description || ''))
         }
       } catch {
         setToast({ message: 'Failed to load settings', type: 'error' })
@@ -93,7 +100,7 @@ export default function Settings() {
         setFetching(false)
       }
     })()
-  }, [])
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
 
   function validate() {
     const errs = {}
@@ -112,6 +119,9 @@ export default function Settings() {
     const val = e.target.value
     setForm((prev) => ({ ...prev, [field]: val }))
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
+    if (field === 'description') {
+      setDescValidation(validateDescription(val))
+    }
   }
 
   const handleNumberChange = (field) => (e) => {
@@ -129,6 +139,29 @@ export default function Settings() {
       ...prev,
       socialLinks: { ...prev.socialLinks, [key]: e.target.value },
     }))
+  }
+
+  const handleFaviconChange = (val) => {
+    if (typeof val === 'string') {
+      setFaviconUrl(val)
+      setFaviconFile(null)
+    } else if (val instanceof File) {
+      validateFavicon(val)
+      setFaviconFile(val)
+      setFaviconUrl('')
+    }
+  }
+
+  const handleLogoChange = (val) => {
+    if (typeof val === 'string') {
+      setLogoUrl(val)
+      setLogoFile(null)
+      validateLogoSvg(val)
+    } else if (val instanceof File) {
+      validateLogoSvg(val)
+      setLogoFile(val)
+      setLogoUrl('')
+    }
   }
 
   const handleSubmit = async (e) => {
@@ -235,6 +268,9 @@ export default function Settings() {
                 <div>
                   <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
                     Portfolio Description
+                    <span className={`ml-2 font-normal ${descValidation.inOptimalRange ? 'text-green-500' : descValidation.length > 0 ? 'text-amber-500' : 'text-gray-400'}`}>
+                      ({descValidation.length} chars)
+                    </span>
                   </label>
                   <textarea
                     value={form.description}
@@ -243,6 +279,19 @@ export default function Settings() {
                     placeholder="A short description of your portfolio..."
                     className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
                   />
+                  {descValidation.warnings.map((w, i) => (
+                    <p key={i} className="text-xs text-amber-500 mt-1 flex items-center gap-1">
+                      <span>⚠</span> {w}
+                    </p>
+                  ))}
+                  {descValidation.inOptimalRange && (
+                    <p className="text-xs text-green-500 mt-1 flex items-center gap-1">
+                      <span>✓</span> SEO-optimized meta-description length
+                    </p>
+                  )}
+                  <p className="text-xs text-gray-400 mt-1">
+                    Recommended: {RECOMMENDED_DESC_MIN}–{RECOMMENDED_DESC_MAX} characters for SEO
+                  </p>
                 </div>
               </div>
             </div>
@@ -252,21 +301,26 @@ export default function Settings() {
                 <ImageUpload
                   value={existingLogo}
                   label="Portfolio Logo"
-                  onChange={(val) => {
-                    if (typeof val === 'string') { setLogoUrl(val); setLogoFile(null) }
-                    else { setLogoFile(val); setLogoUrl('') }
-                  }}
+                  onChange={handleLogoChange}
                 />
+                {logoSvgErrors.length > 0 && logoSvgErrors.map((e, i) => (
+                  <p key={i} className="text-xs text-amber-500 mt-1 flex items-center gap-1">
+                    <span>⚠</span> {e}
+                  </p>
+                ))}
               </div>
               <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
                 <ImageUpload
                   value={existingFavicon}
                   label="Portfolio Favicon"
-                  onChange={(val) => {
-                    if (typeof val === 'string') { setFaviconUrl(val); setFaviconFile(null) }
-                    else { setFaviconFile(val); setFaviconUrl('') }
-                  }}
+                  onChange={handleFaviconChange}
                 />
+                <p className="text-xs text-gray-400 mt-2">Recommended: 1:1 ratio, .ico/.webp, under 50KB</p>
+                {faviconErrors.length > 0 && faviconErrors.map((e, i) => (
+                  <p key={i} className="text-xs text-red-500 mt-1 flex items-center gap-1">
+                    <span>✕</span> {e}
+                  </p>
+                ))}
               </div>
             </div>
           </motion.div>
@@ -302,8 +356,7 @@ export default function Settings() {
                   type="number"
                   value={form.projectsPerPage}
                   onChange={handleNumberChange('projectsPerPage')}
-                  min={1}
-                  max={50}
+                  min={1} max={50}
                   className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.projectsPerPage ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
                 />
                 {errors.projectsPerPage && <p className="text-xs text-red-500 mt-1">{errors.projectsPerPage}</p>}
@@ -316,8 +369,7 @@ export default function Settings() {
                   type="number"
                   value={form.certificatesPerPage}
                   onChange={handleNumberChange('certificatesPerPage')}
-                  min={1}
-                  max={50}
+                  min={1} max={50}
                   className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.certificatesPerPage ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
                 />
                 {errors.certificatesPerPage && <p className="text-xs text-red-500 mt-1">{errors.certificatesPerPage}</p>}
@@ -430,7 +482,6 @@ export default function Settings() {
           </motion.div>
         )}
 
-        {/* Save button (always visible) */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -442,15 +493,9 @@ export default function Settings() {
             className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
           >
             {loading ? (
-              <>
-                <RefreshCw size={18} className="animate-spin" />
-                Saving...
-              </>
+              <><RefreshCw size={18} className="animate-spin" /> Saving...</>
             ) : (
-              <>
-                <Save size={18} />
-                Save Changes
-              </>
+              <><Save size={18} /> Save Changes</>
             )}
           </button>
         </motion.div>
