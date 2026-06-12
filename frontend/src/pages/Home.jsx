@@ -30,7 +30,7 @@ export default function Home() {
         contactButtonText={content?.contactButtonText}
         contactButtonLink={content?.contactButtonLink}
       />
-      <About content={content?.about} />
+      <About content={content?.about} hero={content?.hero} />
       <Skills />
       <Suspense fallback={spinner}>
         <Projects />

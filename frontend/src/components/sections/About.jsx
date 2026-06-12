@@ -15,7 +15,7 @@ const hardcodedAchievements = [
   { title: 'Hackathon Computation in 24h' },
 ]
 
-export default function About({ content }) {
+export default function About({ content, hero }) {
   const title = content?.title || 'Get to Know Me'
   const subtitle = content?.subtitle || 'A passionate developer and network designer dedicated to building secure and scalable digital experiences.'
   const locationText = content?.location || 'Bahirdar'
@@ -24,6 +24,8 @@ export default function About({ content }) {
   const statClients = content?.statClients || '50+ Clients'
   const statNetwork = content?.statNetwork || 'Network Designer'
   const aboutSections = content?.sections?.length > 0 ? content.sections : hardcodedSections
+  const fullName = hero?.fullName || 'Desalegn'
+  const roleTitle = hero?.professionalBadge || 'Full-Stack Dev'
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -126,8 +128,8 @@ export default function About({ content }) {
                   <pre className="text-slate-300">
                     <code>
                       <span className="text-purple-400">const</span> <span className="text-blue-400">developer</span> = {'{'}<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">name:</span> <span className="text-green-400">"Desalegn"</span>,<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">role:</span> <span className="text-green-400">"Full-Stack Dev"</span>,<br/>
+                      &nbsp;&nbsp;                      <span className="text-slate-400">name:</span> <span className="text-green-400">"{fullName}"</span>,<br/>
+                      &nbsp;&nbsp;<span className="text-slate-400">role:</span> <span className="text-green-400">"{roleTitle}"</span>,<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">location:</span> <span className="text-green-400">"{locationText}"</span>,<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">skills:</span> [<span className="text-green-400">"React"</span>, <span className="text-green-400">"Node"</span>],<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">available:</span> <span className="text-orange-400">true</span><br/>

@@ -12,6 +12,28 @@ import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../../context/AuthContext'
 import { canAccess } from './RoleGuard'
 
+function UserAvatar({ user, size = 'md', className = '' }) {
+  const sizeMap = { sm: 'w-7 h-7 text-[8px]', md: 'w-10 h-10 text-sm', lg: 'w-16 h-16 text-xl' }
+  const dim = sizeMap[size] || sizeMap.md
+  const initials = (user?.displayName || user?.name || 'D').charAt(0).toUpperCase()
+
+  if (user?.avatar) {
+    return (
+      <img
+        src={user.avatar}
+        alt=""
+        className={`${dim} rounded-lg object-cover shrink-0 shadow-md ${className}`}
+      />
+    )
+  }
+
+  return (
+    <div className={`${dim} rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 text-white font-black flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20 ${className}`}>
+      {initials}
+    </div>
+  )
+}
+
 function getUserInitials(user) {
   if (user?.displayName) return user.displayName.charAt(0).toUpperCase()
   if (user?.name) return user.name.charAt(0).toUpperCase()
@@ -223,10 +245,8 @@ export default function Sidebar() {
               aria-label="Mobile navigation"
             >
               <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200/60 dark:border-slate-700/60 shrink-0">
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-[9px] font-black flex items-center justify-center shadow-lg shadow-indigo-500/20">
-                    ደካ
-                  </div>
+                  <div className="flex items-center gap-3">
+                  <UserAvatar user={user} size="sm" className="rounded-lg" />
                   <motion.span
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -538,19 +558,12 @@ function DesktopHeader({ collapsed, onToggle, user }) {
     >
       {collapsed ? (
         <div className="flex items-center justify-center w-full">
-          <motion.div
-            layout
-            className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-[9px] font-black flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/20"
-          >
-            ደካ
-          </motion.div>
+          <UserAvatar user={user} size="sm" className="rounded-lg" />
         </div>
       ) : (
         <div className="flex items-center justify-between w-full">
           <motion.div layout className="flex items-center gap-3 overflow-hidden">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-[9px] font-black flex items-center justify-center shrink-0 shadow-lg shadow-indigo-500/20">
-              ደካ
-            </div>
+            <UserAvatar user={user} size="sm" className="rounded-lg" />
             <motion.span
               layout
               className="font-bold text-gray-900 dark:text-white whitespace-nowrap text-base"
@@ -616,7 +629,7 @@ function ProfileFooter({ collapsed, user, userRole, onLogout }) {
             aria-label="Account menu"
             aria-expanded={open}
           >
-            <User size={20} />
+            <UserAvatar user={user} size="sm" />
           </motion.button>
           <AnimatePresence>
             {open && (
@@ -661,12 +674,7 @@ function ProfileFooter({ collapsed, user, userRole, onLogout }) {
           aria-label="Account menu"
           aria-expanded={open}
         >
-          <motion.div
-            whileHover={{ scale: 1.05 }}
-            className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-[8px] font-black flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20"
-          >
-            {getUserInitials(user)}
-          </motion.div>
+          <UserAvatar user={user} size="sm" />
           <div className="flex-1 text-left min-w-0">
             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
               {user?.displayName || user?.name || 'Account'}

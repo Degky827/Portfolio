@@ -94,7 +94,7 @@ export default function Profile() {
       }
       const { user } = await updateMe(body)
       setProfile(user)
-      setUserData({ ...authUser, name: user.name, avatar: user.avatar, displayName: user.displayName })
+      setUserData({ ...authUser, ...user })
       setToast({ message: 'Profile updated successfully.', type: 'success' })
     } catch (err) {
       setServerError(err.response?.data?.message || 'Failed to update profile.')
