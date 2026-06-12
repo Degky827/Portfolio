@@ -15,25 +15,46 @@ const hardcodedAchievements = [
   { title: 'Hackathon Computation in 24h' },
 ]
 
-export default function About({ content, hero }) {
+const iconMap = { Award, Users, TrendingUp }
+
+export default function About({ content, hero, aboutContent }) {
   const title = content?.title || 'Get to Know Me'
   const subtitle = content?.subtitle || 'A passionate developer and network designer dedicated to building secure and scalable digital experiences.'
-  const locationText = content?.location || 'Bahirdar'
-  const yearsExp = content?.yearsOfExperience || 5
-  const achievementsList = content?.achievements?.length > 0 ? content.achievements : hardcodedAchievements
-  const statClients = content?.statClients || '50+ Clients'
-  const statNetwork = content?.statNetwork || 'Network Designer'
-  const aboutSections = content?.sections?.length > 0 ? content.sections : hardcodedSections
   const fullName = hero?.fullName || 'Desalegn'
   const roleTitle = hero?.professionalBadge || 'Full-Stack Dev'
+
+  const storyPillars = aboutContent?.storyPillars?.length
+    ? aboutContent.storyPillars.filter((p) => p.content && p.content !== '<p><br></p>')
+    : []
+
+  const aboutSections = storyPillars.length > 0
+    ? storyPillars.map((p) => ({ title: p.title, content: p.content }))
+    : hardcodedSections
+
+  const ide = aboutContent?.idePresentation || {}
+  const skills = ide.skills?.length ? ide.skills : ['React', 'Node']
+  const available = ide.available !== undefined ? ide.available : true
+  const locationText = ide.location || content?.location || hero?.location || 'Bahirdar'
+
+  const highlightMetrics = aboutContent?.highlightMetrics?.length
+    ? aboutContent.highlightMetrics
+    : [
+        { icon: 'Award', title: 'Network Designer', value: '' },
+        { icon: 'Users', title: 'Happy Clients', value: '50+' },
+        { icon: 'TrendingUp', title: 'Years Experience', value: '5+' },
+      ]
+
+  const certifications = aboutContent?.certifications?.length
+    ? [...aboutContent.certifications].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
+    : []
+
+  const achievementsList = certifications.length > 0 ? certifications : hardcodedAchievements
 
   const containerVariants = {
     hidden: { opacity: 0 },
     visible: {
       opacity: 1,
-      transition: {
-        staggerChildren: 0.1,
-      },
+      transition: { staggerChildren: 0.1 },
     },
   }
 
@@ -42,25 +63,26 @@ export default function About({ content, hero }) {
     visible: {
       y: 0,
       opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 15,
-      },
+      transition: { type: 'spring', stiffness: 100, damping: 15 },
     },
+  }
+
+  function MetricIcon({ name, ...props }) {
+    const Icon = iconMap[name] || Award
+    return <Icon {...props} />
   }
 
   return (
     <section id="about" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-[#0B1120] transition-colors duration-500 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
+          viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8 }}
           className="text-center mb-12 sm:mb-16 md:mb-20"
         >
-          <motion.span 
+          <motion.span
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
             className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full"
@@ -76,18 +98,17 @@ export default function About({ content, hero }) {
         </motion.div>
 
         <div className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] p-6 sm:p-8 md:p-12 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-sm">
-
           <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start relative z-10">
-            {/* Left: Info Cards */}
-            <motion.div 
+            {/* Left: Story Pillar Cards */}
+            <motion.div
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: true, margin: '-50px' }}
               className="space-y-4 sm:space-y-6"
             >
               {aboutSections.map((section, index) => (
-                <motion.div 
+                <motion.div
                   key={index}
                   variants={itemVariants}
                   whileHover={{ scale: 1.02, x: 10 }}
@@ -97,19 +118,26 @@ export default function About({ content, hero }) {
                     <h3 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 opacity-50 font-normal group-hover:opacity-100 group-hover:font-black group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all duration-300 font-display">
                       {section.title}
                     </h3>
-                    <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                      {section.content}
-                    </p>
+                    {section.content.startsWith('<') ? (
+                      <div
+                        className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
+                        dangerouslySetInnerHTML={{ __html: section.content }}
+                      />
+                    ) : (
+                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
+                        {section.content}
+                      </p>
+                    )}
                   </div>
                 </motion.div>
               ))}
             </motion.div>
 
             {/* Right: Visual Code Block */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: "-50px" }}
+              viewport={{ once: true, margin: '-50px' }}
               transition={{ duration: 0.8, delay: 0.2 }}
               className="sticky top-24"
             >
@@ -131,49 +159,64 @@ export default function About({ content, hero }) {
                       &nbsp;&nbsp;                      <span className="text-slate-400">name:</span> <span className="text-green-400">"{fullName}"</span>,<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">role:</span> <span className="text-green-400">"{roleTitle}"</span>,<br/>
                       &nbsp;&nbsp;<span className="text-slate-400">location:</span> <span className="text-green-400">"{locationText}"</span>,<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">skills:</span> [<span className="text-green-400">"React"</span>, <span className="text-green-400">"Node"</span>],<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">available:</span> <span className="text-orange-400">true</span><br/>
+                      &nbsp;&nbsp;<span className="text-slate-400">skills:</span> [<span className="text-green-400">"{skills.join('", "')}"</span>],<br/>
+                      &nbsp;&nbsp;<span className="text-slate-400">available:</span> <span className="text-orange-400">{available ? 'true' : 'false'}</span><br/>
                       {'}'};
                     </code>
                   </pre>
                 </div>
 
-                {/* Quick Stats Below Code */}
+                {/* Highlight Metrics Below Code */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6 border-t border-slate-700/50 bg-slate-800/30">
-                  <div className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
-                    <Award className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-yellow-400" />
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">{statNetwork}</span>
-                  </div>
-                  <div className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
-                    <Users className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-blue-400" />
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">{statClients}</span>
-                  </div>
-                  <div className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
-                    <TrendingUp className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1 text-green-400" />
-                    <span className="text-[10px] sm:text-xs font-bold text-slate-400">{yearsExp}+ Years</span>
-                  </div>
+                  {highlightMetrics.map((metric, idx) => {
+                    const val = metric.value || (idx === 0 ? '' : idx === 1 ? '50+' : '5+')
+                    const lbl = metric.title || (idx === 0 ? 'Network Designer' : idx === 1 ? 'Happy Clients' : 'Years Experience')
+                    return (
+                      <div key={idx} className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
+                        <MetricIcon name={metric.icon} className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1"
+                          style={{ color: idx === 0 ? '#f59e0b' : idx === 1 ? '#60a5fa' : '#34d399' }}
+                        />
+                        <span className="text-[10px] sm:text-xs font-bold text-slate-400">{val}</span>
+                        <span className="block text-[8px] sm:text-[10px] text-slate-500 mt-0.5">{lbl}</span>
+                      </div>
+                    )
+                  })}
                 </div>
               </div>
             </motion.div>
           </div>
 
-          {/* Certificates / Achievements List */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-50px" }}
-            className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200 dark:border-slate-700"
-          >
-            <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-              I hold certificates in{' '}
-              {achievementsList.map((a, i) => (
-                <span key={i}>
-                  {i > 0 && <span>, </span>}
-                  <span className="font-bold text-gray-900 dark:text-white">{a.title}</span>
-                </span>
-              ))}.
-            </p>
-          </motion.div>
+          {/* Certifications / Achievements Footer */}
+          {(achievementsList.length > 0) && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: '-50px' }}
+              className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200 dark:border-slate-700"
+            >
+              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
+                I hold certificates in{' '}
+                {achievementsList.map((a, i) => (
+                  <span key={i}>
+                    {i > 0 && <span>, </span>}
+                    {a.verificationUrl ? (
+                      <a
+                        href={a.verificationUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-bold text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors underline underline-offset-2"
+                      >
+                        {a.title}
+                      </a>
+                    ) : (
+                      <span className="font-bold text-gray-900 dark:text-white">{a.title}</span>
+                    )}
+                  </span>
+                ))}
+                .
+              </p>
+            </motion.div>
+          )}
         </div>
       </div>
     </section>

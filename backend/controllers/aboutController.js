@@ -15,6 +15,14 @@ async function getAboutContent(_req, res) {
   }
 }
 
+function parseArrayField(value) {
+  if (value === undefined) return undefined
+  if (typeof value === 'string') {
+    try { return JSON.parse(value) } catch { return undefined }
+  }
+  return Array.isArray(value) ? value : undefined
+}
+
 async function updateAboutContent(req, res) {
   try {
     let content = await AboutContent.findOne()
@@ -22,9 +30,7 @@ async function updateAboutContent(req, res) {
       content = new AboutContent()
     }
 
-    const textFields = [
-      'title', 'subtitle', 'description', 'location', 'cvUrl', 'status',
-    ]
+    const textFields = ['title', 'subtitle', 'location', 'cvUrl', 'status']
     textFields.forEach((field) => {
       if (req.body[field] !== undefined) {
         content[field] = req.body[field]
@@ -36,27 +42,40 @@ async function updateAboutContent(req, res) {
     }
 
     if (req.body.education) {
-      let education = req.body.education
-      if (typeof education === 'string') {
-        try { education = JSON.parse(education) } catch { /* ignore */ }
-      }
-      content.education = Array.isArray(education) ? education : []
+      const parsed = parseArrayField(req.body.education)
+      if (parsed) content.education = parsed
     }
 
     if (req.body.experience) {
-      let experience = req.body.experience
-      if (typeof experience === 'string') {
-        try { experience = JSON.parse(experience) } catch { /* ignore */ }
-      }
-      content.experience = Array.isArray(experience) ? experience : []
+      const parsed = parseArrayField(req.body.experience)
+      if (parsed) content.experience = parsed
     }
 
-    if (req.body.achievements) {
-      let achievements = req.body.achievements
-      if (typeof achievements === 'string') {
-        try { achievements = JSON.parse(achievements) } catch { /* ignore */ }
+    if (req.body.certifications) {
+      const parsed = parseArrayField(req.body.certifications)
+      if (parsed) content.certifications = parsed
+    }
+
+    if (req.body.storyPillars) {
+      const parsed = parseArrayField(req.body.storyPillars)
+      if (parsed) content.storyPillars = parsed
+    }
+
+    if (req.body.idePresentation) {
+      let ide = req.body.idePresentation
+      if (typeof ide === 'string') {
+        try { ide = JSON.parse(ide) } catch { ide = null }
       }
-      content.achievements = Array.isArray(achievements) ? achievements : []
+      if (ide && typeof ide === 'object') {
+        if (Array.isArray(ide.skills)) content.idePresentation.skills = ide.skills
+        if (ide.available !== undefined) content.idePresentation.available = Boolean(ide.available)
+        if (ide.location !== undefined) content.idePresentation.location = String(ide.location)
+      }
+    }
+
+    if (req.body.highlightMetrics) {
+      const parsed = parseArrayField(req.body.highlightMetrics)
+      if (parsed) content.highlightMetrics = parsed
     }
 
     if (req.file) {
