@@ -4,6 +4,7 @@ import Hero from '../components/sections/Hero'
 import About from '../components/sections/About'
 import Skills from '../components/sections/Skills'
 import { getHomeContent } from '../services/homeContentService'
+import { getAboutContent } from '../services/aboutService'
 
 const Projects = lazy(() => import('../components/sections/Projects'))
 const Contact = lazy(() => import('../components/sections/Contact'))
@@ -16,10 +17,14 @@ const spinner = (
 
 export default function Home() {
   const [content, setContent] = useState(null)
+  const [aboutContent, setAboutContent] = useState(null)
 
   useEffect(() => {
     getHomeContent()
       .then((res) => setContent(res.content))
+      .catch(() => {})
+    getAboutContent()
+      .then((res) => setAboutContent(res.content))
       .catch(() => {})
   }, [])
 
@@ -30,7 +35,7 @@ export default function Home() {
         contactButtonText={content?.contactButtonText}
         contactButtonLink={content?.contactButtonLink}
       />
-      <About content={content?.about} hero={content?.hero} />
+      <About content={content?.about} hero={content?.hero} aboutContent={aboutContent} />
       <Skills />
       <Suspense fallback={spinner}>
         <Projects />
