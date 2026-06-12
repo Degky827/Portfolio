@@ -1,8 +1,9 @@
 import { useEffect, useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  RefreshCw, Eye, Users, UserCheck, CalendarDays, TrendingUp,
-  Monitor, Globe, Link, Filter, X, ChevronDown,
+  RefreshCw, Eye, Users, UserCheck, TrendingUp,
+  Monitor, Globe, Link, Filter, X, ChevronDown, Download,
+  MessageSquare, Bot,
 } from 'lucide-react'
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
@@ -100,7 +101,7 @@ export default function Analytics() {
     return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
-  function CustomTooltip({ active, payload, label }) {
+  function HumanTooltip({ active, payload, label }) {
     if (!active || !payload?.length) return null
     return (
       <div className="bg-white dark:bg-slate-900 border border-gray-200 dark:border-slate-700 rounded-xl px-4 py-3 shadow-lg text-sm">
@@ -115,11 +116,11 @@ export default function Analytics() {
   }
 
   const statCards = [
-    { title: 'Total Views', value: stats?.totalViews, icon: Eye, accent: 'primary', delay: 0, loading },
-    { title: 'Unique Visitors', value: stats?.uniqueVisitors, icon: Users, accent: 'blue', delay: 0.05, loading },
-    { title: "Today's Visitors", value: stats?.todayCount, icon: UserCheck, accent: 'green', delay: 0.1, loading },
-    { title: 'This Week', value: stats?.weekCount, icon: TrendingUp, accent: 'cyan', delay: 0.15, loading },
-    { title: 'This Month', value: stats?.monthCount, icon: CalendarDays, accent: 'orange', delay: 0.2, loading },
+    { title: 'Total Page Reads', value: stats?.totalViews, icon: Eye, accent: 'primary', delay: 0, loading, subtitle: 'Human page views (bots excluded)' },
+    { title: 'Potential Talents Reached', value: stats?.uniqueVisitors, icon: Users, accent: 'blue', delay: 0.05, loading, subtitle: 'Distinct human visitors' },
+    { title: "Today's Visitors", value: stats?.todayCount, icon: UserCheck, accent: 'green', delay: 0.1, loading, subtitle: 'Active human interactions today' },
+    { title: 'CV Downloads', value: stats?.cvDownloads, icon: Download, accent: 'purple', delay: 0.15, loading, subtitle: 'Unique download clicks on resume' },
+    { title: 'Contact Inquiries', value: stats?.contactInquiries, icon: MessageSquare, accent: 'amber', delay: 0.2, loading, subtitle: 'Form submissions & mailto clicks' },
   ]
 
   const tableColumns = [
@@ -153,28 +154,45 @@ export default function Analytics() {
       ),
     },
     {
-      header: 'Country',
-      accessor: 'country',
-      render: (row) => (
-        <span className="text-gray-700 dark:text-gray-300">
-          {row.location?.country || 'Unknown'}
-        </span>
-      ),
+      header: 'Interaction',
+      accessor: 'interaction',
+      render: (row) => {
+        const interaction = row.interaction || ''
+        if (!interaction) {
+          return <span className="text-gray-400 dark:text-gray-500 text-xs">Page view</span>
+        }
+        const colorMap = {
+          'Downloaded CV': 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400',
+          'Submitted Contact Form': 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+        }
+        return (
+          <span className={`px-2 py-0.5 rounded text-[11px] font-medium ${colorMap[interaction] || 'bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-gray-400'}`}>
+            {interaction}
+          </span>
+        )
+      },
     },
     {
-      header: 'City',
-      accessor: 'city',
-      render: (row) => (
-        <span className="text-gray-500 dark:text-gray-400">
-          {row.location?.city || '-'}
-        </span>
-      ),
+      header: 'Location',
+      accessor: 'country',
+      render: (row) => {
+        const city = row.location?.city
+        const country = row.location?.country
+        if (!city && !country) {
+          return <span className="text-gray-400 dark:text-gray-500 italic text-xs">Location Masked (Respecting Privacy)</span>
+        }
+        return (
+          <span className="text-gray-700 dark:text-gray-300">
+            {[city, country].filter(Boolean).join(', ')}
+          </span>
+        )
+      },
     },
     {
       header: 'Device',
       accessor: 'deviceType',
       render: (row) => {
-        const dt = row.deviceInfo?.deviceType || 'Unknown'
+        const dt = row.deviceInfo?.deviceType || 'Desktop'
         return (
           <span className="inline-flex items-center gap-1.5 text-sm text-gray-700 dark:text-gray-300">
             <Monitor size={14} className="text-gray-400" />
@@ -200,16 +218,16 @@ export default function Analytics() {
       ),
     },
     {
-      header: 'Referrer',
+      header: 'Discovery Channel',
       accessor: 'referrer',
       className: 'hidden xl:table-cell',
       render: (row) => (
         <span className={`px-2 py-0.5 rounded text-[11px] font-medium ${
-          row.referrer === 'Direct'
+          row.referrer === 'Direct Link / Bookmarks'
             ? 'bg-gray-100 text-gray-600 dark:bg-slate-800 dark:text-gray-400'
             : 'bg-primary/10 text-primary dark:bg-primary/20'
         }`}>
-          {row.referrer || 'Direct'}
+          {row.referrer || 'Direct Link / Bookmarks'}
         </span>
       ),
     },
@@ -220,9 +238,19 @@ export default function Analytics() {
       <motion.div variants={itemVariants}>
         <PageHeader
           title="Analytics"
-          description="Real public portfolio visitor analytics"
+          description="Professional Engagement & Opportunity Tracker"
           actions={
             <div className="flex items-center gap-2">
+              {stats?.botCount > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                >
+                  <Bot size={12} />
+                  {stats.botCount.toLocaleString()} Automated Pings Filtered
+                </motion.div>
+              )}
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
@@ -357,13 +385,12 @@ export default function Analytics() {
                     className="w-full px-3 py-2 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
                   >
                     <option value="">All Sources</option>
-                    <option value="Direct">Direct</option>
-                    <option value="Google">Google</option>
-                    <option value="LinkedIn">LinkedIn</option>
-                    <option value="GitHub">GitHub</option>
-                    <option value="Facebook">Facebook</option>
-                    <option value="Twitter">Twitter</option>
-                    <option value="Other">Other</option>
+                    <option value="Direct Link / Bookmarks">Direct Link / Bookmarks</option>
+                    <option value="LinkedIn Referral">LinkedIn Referral</option>
+                    <option value="GitHub Profile">GitHub Profile</option>
+                    <option value="Google Search">Google Search</option>
+                    <option value="Resume QR Code">Resume QR Code</option>
+                    <option value="Other Referral">Other Referral</option>
                   </select>
                 </div>
               </div>
@@ -395,9 +422,9 @@ export default function Analytics() {
             <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
               <Eye size={28} className="text-gray-400" />
             </div>
-            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No visitor analytics available yet</h3>
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">No engagement data available yet</h3>
             <p className="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto mb-6">
-              Visitor data will appear here once public users start browsing your portfolio. Admin page visits are not tracked.
+              Human visitor data will appear here once public users start browsing your portfolio. Admin page visits and automated traffic are not tracked.
             </p>
             <button
               onClick={() => { fetchDashboard(); fetchVisits() }}
@@ -413,7 +440,7 @@ export default function Analytics() {
       {(loading || !data || stats?.totalViews > 0) && (
       <>
       <motion.div variants={itemVariants} className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <ChartCard title="Visitor Trend (7 Days)" icon={TrendingUp} loading={loading}>
+        <ChartCard title="Active Human Interactions (7 Days)" icon={TrendingUp} loading={loading}>
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={trends7}>
               <defs>
@@ -425,13 +452,13 @@ export default function Analytics() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.4} />
               <XAxis dataKey="date" tickFormatter={formatDateLabel} stroke="#9ca3af" fontSize={11} tickMargin={8} />
               <YAxis stroke="#9ca3af" fontSize={11} tickMargin={8} />
-              <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="count" stroke="#7c3aed" strokeWidth={2} fill="url(#gradient7)" name="Visits" />
+              <Tooltip content={<HumanTooltip />} />
+              <Area type="monotone" dataKey="count" stroke="#7c3aed" strokeWidth={2} fill="url(#gradient7)" name="Active Human Interactions" />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Visitor Trend (30 Days)" icon={TrendingUp} loading={loading}>
+        <ChartCard title="Active Human Interactions (30 Days)" icon={TrendingUp} loading={loading}>
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={trends30}>
               <defs>
@@ -443,8 +470,8 @@ export default function Analytics() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.4} />
               <XAxis dataKey="date" tickFormatter={formatDateLabel} stroke="#9ca3af" fontSize={11} tickMargin={8} interval="preserveStartEnd" />
               <YAxis stroke="#9ca3af" fontSize={11} tickMargin={8} />
-              <Tooltip content={<CustomTooltip />} />
-              <Area type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={2} fill="url(#gradient30)" name="Visits" />
+              <Tooltip content={<HumanTooltip />} />
+              <Area type="monotone" dataKey="count" stroke="#3b82f6" strokeWidth={2} fill="url(#gradient30)" name="Active Human Interactions" />
             </AreaChart>
           </ResponsiveContainer>
         </ChartCard>
@@ -457,8 +484,8 @@ export default function Analytics() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.4} horizontal={false} />
               <XAxis type="number" stroke="#9ca3af" fontSize={11} tickMargin={8} />
               <YAxis type="category" dataKey="name" stroke="#9ca3af" fontSize={11} tickMargin={8} width={70} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="value" name="Visits" radius={[0, 6, 6, 0]}>
+              <Tooltip content={<HumanTooltip />} />
+              <Bar dataKey="value" name="Interactions" radius={[0, 6, 6, 0]}>
                 {browserDist.map((entry, i) => (
                   <Cell key={i} fill={BROWSER_COLORS[i % BROWSER_COLORS.length]} />
                 ))}
@@ -486,7 +513,7 @@ export default function Analytics() {
                     <Cell key={i} fill={DEVICE_COLORS[entry.name] || PIE_COLORS[i % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<HumanTooltip />} />
               </PieChart>
             </ResponsiveContainer>
           </div>
@@ -500,13 +527,13 @@ export default function Analytics() {
               <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" strokeOpacity={0.4} horizontal={false} />
               <XAxis type="number" stroke="#9ca3af" fontSize={11} tickMargin={8} />
               <YAxis type="category" dataKey="country" stroke="#9ca3af" fontSize={11} tickMargin={8} width={100} />
-              <Tooltip content={<CustomTooltip />} />
-              <Bar dataKey="count" name="Visits" radius={[0, 6, 6, 0]} fill="#7c3aed" />
+              <Tooltip content={<HumanTooltip />} />
+              <Bar dataKey="count" name="Interactions" radius={[0, 6, 6, 0]} fill="#7c3aed" />
             </BarChart>
           </ResponsiveContainer>
         </ChartCard>
 
-        <ChartCard title="Traffic Sources" icon={Link} loading={loading}>
+        <ChartCard title="Discovery Channels" icon={Link} loading={loading}>
           <div className="flex items-center justify-center h-[240px]">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -525,7 +552,7 @@ export default function Analytics() {
                     <Cell key={i} fill={PIE_COLORS[i % PIE_COLORS.length]} />
                   ))}
                 </Pie>
-                <Tooltip content={<CustomTooltip />} />
+                <Tooltip content={<HumanTooltip />} />
               </PieChart>
             </ResponsiveContainer>
           </div>

@@ -24,11 +24,13 @@ export function usePageTracking(viewerName) {
     tracked.current = true
     const visitorId = getVisitorId()
 
+    const params = new URLSearchParams(window.location.search)
     logPortfolioVisit({
       viewerName: viewerName || 'Anonymous',
       page: location.pathname,
       referrer: document.referrer || 'Direct',
       visitorId,
+      src: params.get('src') || undefined,
     })
   }, [viewerName, location.pathname])
 }

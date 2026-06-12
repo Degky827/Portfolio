@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download } from 'lucide-react'
 import { getHomeContent } from '../../services/homeContentService'
+import { logPortfolioEngagement } from '../../services/api'
 
 const navLinks = [
   { id: 'home', label: 'Home' },
@@ -123,6 +124,10 @@ export default function Navbar() {
             download
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => logPortfolioEngagement({
+              action: 'cv_download',
+              page: window.location.pathname,
+            })}
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.8 }}
@@ -206,7 +211,7 @@ export default function Navbar() {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
-                    onClick={() => setIsOpen(false)}
+                    onClick={() => { setIsOpen(false); logPortfolioEngagement({ action: 'cv_download', page: window.location.pathname }) }}
                     className="flex items-center justify-center gap-3 w-full py-4 bg-primary text-white font-bold uppercase tracking-wider rounded-2xl hover:bg-secondary transition-colors shadow-lg shadow-primary/30"
                   >
                     <Download size={20} />

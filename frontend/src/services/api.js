@@ -14,10 +14,18 @@ axios.defaults.withCredentials = true
 
 export default api
 
-export async function logPortfolioVisit({ viewerName = 'Anonymous', page = '/', referrer = '', visitorId = '' } = {}) {
+export async function logPortfolioVisit({ viewerName = 'Anonymous', page = '/', referrer = '', visitorId = '', src } = {}) {
   try {
-    await api.post('/analytics/log-visit', { viewerName, page, referrer, visitorId })
+    await api.post('/analytics/log-visit', { viewerName, page, referrer, visitorId, src })
   } catch (error) {
     console.warn('[tracking] Failed to log visit:', error.message)
+  }
+}
+
+export async function logPortfolioEngagement({ action, page, visitorId, referrer, src } = {}) {
+  try {
+    await api.post('/analytics/log-engagement', { action, page, visitorId, referrer, src })
+  } catch (error) {
+    console.warn('[tracking] Failed to log engagement:', error.message)
   }
 }
