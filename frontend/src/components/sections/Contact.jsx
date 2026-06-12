@@ -3,25 +3,16 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 import { logPortfolioVisit, logPortfolioEngagement } from '../../services/api'
-import { getContactContent } from '../../services/contactService'
+import { getContactContent, createMessage } from '../../services/contactService'
 
-const GithubIcon = ({ size = 24, className = '' }) => (
-  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
-  </svg>
-)
-
-const LinkedinIcon = ({ size = 24, className = '' }) => (
-  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/>
-  </svg>
-)
-
-const TelegramIcon = ({ size = 24, className = '' }) => (
-  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-    <path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/>
-  </svg>
-)
+function SocialIcon({ iconVector, size = 18, className = '' }) {
+  if (!iconVector) return null
+  return (
+    <span className={className} style={{ width: size, height: size }} aria-hidden="true"
+      dangerouslySetInnerHTML={{ __html: iconVector.replace(/width="[^"]*"/, `width="${size}"`).replace(/height="[^"]*"/, `height="${size}"`) }}
+    />
+  )
+}
 
 export default function Contact() {
   const form = useRef()
@@ -52,13 +43,18 @@ export default function Contact() {
 
     const formData = new FormData(form.current)
     const name = formData.get('from_name') || ''
+    const email = formData.get('reply_to') || ''
+    const phone = formData.get('phone') || ''
+    const message = formData.get('message') || ''
 
     const emailTo = content?.email || 'desalegnky827@gmail.com'
 
+    try {
+      await createMessage({ name, email, phone, message })
+    } catch { /* API store best-effort */ }
+
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      const email = formData.get('reply_to') || ''
-      const message = formData.get('message') || ''
-      const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       logPortfolioVisit(name)
       window.location.href = mailtoLink
@@ -76,9 +72,7 @@ export default function Contact() {
       e.target.reset()
     } catch (error) {
       console.error('EmailJS error:', error)
-      const email = formData.get('reply_to') || ''
-      const message = formData.get('message') || ''
-      const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\n\n${message}`)}`
+      const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       window.location.href = mailtoLink
       setResult('EmailJS failed. Opening your email client instead...')
@@ -94,11 +88,9 @@ export default function Contact() {
     { icon: <MapPin size={20} aria-hidden="true" />, label: 'Location', value: content?.address || 'Bahirdar, Ethiopia', href: content?.mapLink || null, color: '#f59e0b' }
   ]
 
-  const socialItems = [
-    { title: 'LinkedIn', icon: <LinkedinIcon size={18} />, href: content?.linkedin || "https://linkedin.com/in/dk-cs-3rd", brand: '#0A66C2' },
-    { title: 'GitHub', icon: <GithubIcon size={18} />, href: content?.github || "https://github.com/desalegnkasayemuluyekasaye-tech", brand: '#f0f6fc' },
-    { title: 'Telegram', icon: <TelegramIcon size={18} />, href: content?.telegram || "https://t.me/Ds35kg", brand: '#0088cc' }
-  ]
+  const socialChannels = (content?.socialChannels || []).slice().sort((a, b) => a.displayWeight - b.displayWeight)
+
+  const formEnabled = content?.contactFormEnabled !== false
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -150,11 +142,11 @@ export default function Contact() {
           viewport={{ once: true, margin: "-50px" }}
           className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
         >
-          <div className="grid lg:grid-cols-5 relative z-10">
+          <div className={`grid relative z-10 ${formEnabled ? 'lg:grid-cols-5' : 'lg:grid-cols-1'}`}>
             {/* Contact Info Sidebar */}
             <motion.div
               variants={itemVariants}
-              className="lg:col-span-2 bg-transparent dark:bg-transparent p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16 text-gray-900 dark:text-white relative overflow-hidden"
+              className={`${formEnabled ? 'lg:col-span-2' : 'lg:col-span-1'} bg-transparent dark:bg-transparent p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16 text-gray-900 dark:text-white relative overflow-hidden`}
             >
               <div className="relative z-10">
                 <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6 sm:mb-8 md:mb-10 leading-tight font-display tracking-tight text-gray-900 dark:text-white">Connect With Me</h3>
@@ -198,26 +190,30 @@ export default function Contact() {
                   })}
                 </div>
 
-                <div className="flex gap-3 sm:gap-4 md:gap-5" role="list" aria-label="Social media links">
-                  {socialItems.map((social, idx) => (
-                    <motion.a
-                      key={idx}
-                      role="listitem"
-                      whileHover={{ scale: 1.1, y: -3 }}
-                      whileTap={{ scale: 0.9 }}
-                      href={social.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center text-white transition-all duration-300"
-                      onMouseEnter={e => { e.currentTarget.style.background = social.brand; e.currentTarget.style.color = '#fff'; e.currentTarget.style.borderColor = 'transparent' }}
-                      onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.color = ''; e.currentTarget.style.borderColor = '' }}
-                      title={social.title}
-                      aria-label={social.title}
-                    >
-                      {social.icon}
-                    </motion.a>
-                  ))}
-                </div>
+                {socialChannels.length > 0 && (
+                  <div className="flex gap-3 sm:gap-4 md:gap-5 flex-wrap" role="list" aria-label="Social media links">
+                    {socialChannels.map((ch) => (
+                      <motion.a
+                        key={ch._id || ch.channelName}
+                        role="listitem"
+                        whileHover={{ scale: 1.1, y: -3 }}
+                        whileTap={{ scale: 0.9 }}
+                        href={ch.linkUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center text-white transition-all duration-300"
+                        title={ch.channelName}
+                        aria-label={ch.channelName}
+                      >
+                        {ch.iconVector ? (
+                          <SocialIcon iconVector={ch.iconVector} size={20} className="text-current" />
+                        ) : (
+                          <span className="text-xs font-bold uppercase">{ch.channelName?.charAt(0)}</span>
+                        )}
+                      </motion.a>
+                    ))}
+                  </div>
+                )}
               </div>
 
               {/* Decorative background element */}
@@ -225,100 +221,118 @@ export default function Contact() {
             </motion.div>
 
             {/* Contact Form */}
-            <motion.div variants={itemVariants} className="lg:col-span-3 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
-              <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} aria-label="Contact form">
-                <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+            {formEnabled && (
+              <motion.div variants={itemVariants} className="lg:col-span-3 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
+                <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} aria-label="Contact form">
+                  <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
+                    <div className="space-y-2 sm:space-y-3">
+                      <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Your Name</label>
+                      <div className="relative group">
+                        <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
+                          <User size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </span>
+                        <input
+                          id="from_name"
+                          name="from_name"
+                          type="text"
+                          required
+                          placeholder="e.g. Desalegn Kasaye"
+                          className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
+                          aria-describedby={result ? "form-message" : undefined}
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-2 sm:space-y-3">
+                      <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Email Address</label>
+                      <div className="relative group">
+                        <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
+                          <Mail size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
+                        </span>
+                        <input
+                          id="reply_to"
+                          name="reply_to"
+                          type="email"
+                          required
+                          placeholder="e.g. desiye@example.com"
+                          className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Your Name</label>
+                    <label htmlFor="phone" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Phone (optional)</label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                        <User size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
+                        <Phone size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
                       </span>
                       <input
-                        id="from_name"
-                        name="from_name"
-                        type="text"
-                        required
-                        placeholder="e.g. Desalegn Kasaye"
+                        id="phone"
+                        name="phone"
+                        type="tel"
+                        placeholder="e.g. +251 900 000 000"
                         className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
-                        aria-describedby={result ? "form-message" : undefined}
                       />
                     </div>
                   </div>
+
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Email Address</label>
+                    <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Your Message</label>
                     <div className="relative group">
-                      <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                        <Mail size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
+                      <span className="absolute left-4 sm:left-5 top-5 sm:top-6 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
+                        <MessageSquare size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
                       </span>
-                      <input
-                        id="reply_to"
-                        name="reply_to"
-                        type="email"
+                      <textarea
+                        id="message"
+                        name="message"
                         required
-                        placeholder="e.g. desiye@example.com"
-                        className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
+                        placeholder="Tell me about your project idea or vision..."
+                        rows="5"
+                        className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base resize-none shadow-sm"
                       />
                     </div>
                   </div>
-                </div>
 
-                <div className="space-y-2 sm:space-y-3">
-                  <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Your Message</label>
-                  <div className="relative group">
-                    <span className="absolute left-4 sm:left-5 top-5 sm:top-6 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                      <MessageSquare size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </span>
-                    <textarea
-                      id="message"
-                      name="message"
-                      required
-                      placeholder="Tell me about your project idea or vision..."
-                      rows="5"
-                      className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base resize-none shadow-sm"
-                    />
-                  </div>
-                </div>
-
-                <AnimatePresence>
-                  {result && (
-                    <motion.div
-                      id="form-message"
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      exit={{ opacity: 0, height: 0 }}
-                      className={`p-4 sm:p-5 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold text-center ${resultType === 'success' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'}`}
-                      role="alert"
-                      aria-live="polite"
-                    >
-                      {result}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                <motion.button
-                  type="submit"
-                  disabled={isSubmitting}
-                  whileHover={{ scale: 1.02, translateY: -2 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full py-4 sm:py-5 bg-primary hover:bg-[#4F46E5] text-white font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 disabled:cursor-not-allowed group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  aria-label={isSubmitting ? 'Sending message...' : 'Send message'}
-                >
-                  <span className="relative z-10 flex items-center gap-2 sm:gap-3">
-                    {isSubmitting ? (
-                      <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 sm:border-4 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></div>
-                    ) : (
-                      <>
-                        Send Message
-                        <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }} aria-hidden="true">
-                          <Send size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
-                        </motion.span>
-                      </>
+                  <AnimatePresence>
+                    {result && (
+                      <motion.div
+                        id="form-message"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className={`p-4 sm:p-5 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold text-center ${resultType === 'success' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'}`}
+                        role="alert"
+                        aria-live="polite"
+                      >
+                        {result}
+                      </motion.div>
                     )}
-                  </span>
-                </motion.button>
-              </form>
-            </motion.div>
+                  </AnimatePresence>
+
+                  <motion.button
+                    type="submit"
+                    disabled={isSubmitting}
+                    whileHover={{ scale: 1.02, translateY: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full py-4 sm:py-5 bg-primary hover:bg-[#4F46E5] text-white font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 disabled:cursor-not-allowed group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    aria-label={isSubmitting ? 'Sending message...' : 'Send message'}
+                  >
+                    <span className="relative z-10 flex items-center gap-2 sm:gap-3">
+                      {isSubmitting ? (
+                        <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 sm:border-4 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></div>
+                      ) : (
+                        <>
+                          Send Message
+                          <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }} aria-hidden="true">
+                            <Send size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
+                          </motion.span>
+                        </>
+                      )}
+                    </span>
+                  </motion.button>
+                </form>
+              </motion.div>
+            )}
           </div>
         </motion.div>
       </div>

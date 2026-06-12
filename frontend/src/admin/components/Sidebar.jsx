@@ -74,7 +74,8 @@ const navGroups = [
     section: true,
     collapsible: true,
     items: [
-      { path: '/admin/contact', label: 'Contact Messages', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
+      { path: '/admin/contact', label: 'Contact Settings', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
+      { path: '/admin/inbox', label: 'Inbox', icon: MessageSquare, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/notifications', label: 'Notifications', icon: Bell, roles: ['super_admin', 'admin'] },
       { path: '/admin/activity-logs', label: 'Activity Logs', icon: Activity, roles: ['super_admin', 'admin'] },
     ],

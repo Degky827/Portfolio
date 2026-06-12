@@ -22,8 +22,6 @@ async function updateContactContent(req, res) {
 
     const fields = [
       'email', 'phone', 'address', 'mapLink',
-      'whatsapp', 'telegram', 'linkedin', 'github',
-      'twitter', 'facebook', 'instagram',
     ]
 
     fields.forEach((field) => {
@@ -34,6 +32,14 @@ async function updateContactContent(req, res) {
 
     if (req.body.contactFormEnabled !== undefined) {
       content.contactFormEnabled = req.body.contactFormEnabled === true || req.body.contactFormEnabled === 'true'
+    }
+
+    if (req.body.socialChannels) {
+      let channels = req.body.socialChannels
+      if (typeof channels === 'string') {
+        try { channels = JSON.parse(channels) } catch { /* ignore */ }
+      }
+      content.socialChannels = Array.isArray(channels) ? channels : []
     }
 
     await content.save()
