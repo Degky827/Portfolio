@@ -1,0 +1,409 @@
+{
+  "projects": [
+    {
+      "_id": "6a2a0f585887181a65fc2739",
+      "title": "Automated Test Project 1781141336760",
+      "slug": "automated-test-project-1781141336760",
+      "shortDescription": "Auto test project",
+      "fullDescription": "",
+      "technologies": [],
+      "githubUrl": "",
+      "liveDemoUrl": "",
+      "thumbnail": "",
+      "images": [],
+      "category": "Web App",
+      "featured": false,
+      "displayOrder": 0,
+      "status": "completed",
+      "published": true,
+      "archived": false,
+      "metaTitle": "",
+      "metaDescription": "",
+      "keywords": "",
+      "createdAt": "2026-06-11T01:28:56.825Z",
+      "updatedAt": "2026-06-11T01:28:56.825Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a2a199c5da5e09ffbfc2725",
+      "title": "wertyu",
+      "slug": "wertyu",
+      "shortDescription": "wertyuiop",
+      "fullDescription": "<h3><b>ertyuio</b>cvbnm</h3>",
+      "technologies": [
+        "qe.kkkz",
+        "ghhjj"
+      ],
+      "githubUrl": "https://lttms-98vb.vercel.app/",
+      "liveDemoUrl": "https://lttms-98vb.vercel.app/",
+      "thumbnail": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781143957/portfolio_assets/bbvghu4gs8hofibltoc0.png",
+      "images": [],
+      "category": "Web App",
+      "featured": true,
+      "displayOrder": 1,
+      "status": "in_progress",
+      "published": true,
+      "archived": false,
+      "metaTitle": "wertyuio",
+      "metaDescription": "zxcvbnm,",
+      "keywords": "qwe,sdfg,fghj,hhh",
+      "createdAt": "2026-06-11T02:12:44.507Z",
+      "updatedAt": "2026-06-11T02:12:44.507Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a2a2654dde138c5903ac1dd",
+      "title": "werty",
+      "slug": "werty",
+      "shortDescription": "zxcvbnm",
+      "fullDescription": "wertyu<b>dfgh<i>sdfg<u>sdfg</u></i></b>",
+      "technologies": [
+        "wer",
+        "asdfg"
+      ],
+      "githubUrl": "https://lttms-98vb.vercel.app/",
+      "liveDemoUrl": "https://lttms-98vb.vercel.app/",
+      "thumbnail": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781084613/portfolio_assets/wp4jootzzysl3ik5tq2t.jpg",
+      "images": [],
+      "category": "Web App",
+      "featured": true,
+      "displayOrder": 3,
+      "status": "in_progress",
+      "published": true,
+      "archived": false,
+      "metaTitle": "werty",
+      "metaDescription": "qwerty",
+      "keywords": "as,df,rt",
+      "createdAt": "2026-06-11T03:07:00.376Z",
+      "updatedAt": "2026-06-11T03:07:00.376Z",
+      "__v": 0
+    }
+  ],
+  "skills": [
+    {
+      "_id": "6a2a69af52bc69c986dbf2a0",
+      "name": "cisco",
+      "category": "Certificates",
+      "icon": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781164427/portfolio_assets/mqhpav3au0mzzylb5og1.png",
+      "proficiency": null,
+      "description": "qwertyui",
+      "displayOrder": 0,
+      "featured": true,
+      "status": "active",
+      "issuer": "cisco acadamy",
+      "issueDate": "2025",
+      "certificateUrl": "https://drive.google.com/file/d/1olMBAb_G0WxLIL9NsZS9IvNfPMhr_pvS/view?usp=sharing",
+      "createdAt": "2026-06-11T07:54:23.944Z",
+      "updatedAt": "2026-06-12T01:56:40.636Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a2a6a1b52bc69c986dbf2da",
+      "name": "React.js",
+      "category": "Frontend Development",
+      "icon": "",
+      "proficiency": 75,
+      "description": "",
+      "displayOrder": 1,
+      "featured": true,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T07:56:11.281Z",
+      "updatedAt": "2026-06-11T07:56:11.281Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a2a6a6a52bc69c986dbf314",
+      "name": "Python",
+      "category": "Frontend Development",
+      "icon": "",
+      "proficiency": 100,
+      "description": "",
+      "displayOrder": 2,
+      "featured": true,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T07:57:30.024Z",
+      "updatedAt": "2026-06-11T07:57:30.024Z",
+      "__v": 0
+    }
+  ],
+  "homeContent": [
+    {
+      "_id": "6a26841d713af2665107742a",
+      "heroTitle": "",
+      "heroSubtitle": "",
+      "heroDescription": "",
+      "profileImage": "",
+      "resumeUrl": "",
+      "primaryButtonText": "Get Started",
+      "primaryButtonLink": "#projects",
+      "secondaryButtonText": "Contact Me",
+      "secondaryButtonLink": "#contact",
+      "socialLinks": {
+        "github": "",
+        "linkedin": "",
+        "telegram": "",
+        "twitter": "",
+        "facebook": "",
+        "instagram": "",
+        "email": "",
+        "youtube": ""
+      },
+      "createdAt": "2026-06-08T08:58:05.905Z",
+      "updatedAt": "2026-06-12T01:46:15.181Z",
+      "__v": 3,
+      "about": {
+        "achievements": [],
+        "location": "addis",
+        "sections": [],
+        "statClients": "20+ Clients",
+        "statNetwork": "Network Designer",
+        "subtitle": "",
+        "title": "Get to Know Me",
+        "yearsOfExperience": 0
+      },
+      "cta": {
+        "backgroundImage": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781084650/portfolio_assets/mg6lanqbznbeu7lj8xkl.png",
+        "buttonLink": "#contact",
+        "buttonText": "Get In Touch",
+        "subtitle": "",
+        "title": "Let's work together"
+      },
+      "hero": {
+        "ctaButtons": [],
+        "fullName": "Desalegn",
+        "greeting": "Hi, I'm",
+        "nameAmharic": "ደካ",
+        "professionalBadge": "Fullstack Developer",
+        "profilePhoto": {
+          "url": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781084650/portfolio_assets/mg6lanqbznbeu7lj8xkl.png",
+          "alt": ""
+        },
+        "shortIntroduction": "",
+        "statistics": [],
+        "typingWords": [
+          "Full Stack Developer"
+        ]
+      },
+      "logoImage": "",
+      "published": false,
+      "resume": {
+        "fileName": "Resume.pdf",
+        "url": ""
+      },
+      "seo": {
+        "metaDescription": "",
+        "metaKeywords": [],
+        "metaTitle": "",
+        "ogImage": ""
+      },
+      "theme": {
+        "accentColor": "#f59e0b",
+        "primaryColor": "#6366f1",
+        "secondaryColor": "#10b981"
+      },
+      "contactButtonLink": "#contact",
+      "contactButtonText": "Get In Touch",
+      "logoText": "",
+      "resumeButtonText": "Download CV"
+    }
+  ],
+  "aboutContent": [
+    {
+      "_id": "6a26883f206ea7d78049b7f3",
+      "title": "",
+      "subtitle": "A passionate Developer",
+      "description": "I am a secure man",
+      "profileImage": "",
+      "yearsOfExperience": 0,
+      "location": "addis",
+      "cvUrl": "",
+      "status": "active",
+      "education": [],
+      "experience": [],
+      "achievements": [],
+      "createdAt": "2026-06-08T09:15:43.873Z",
+      "updatedAt": "2026-06-12T02:20:09.001Z",
+      "__v": 1,
+      "certifications": [
+        {
+          "title": "cisco",
+          "verificationUrl": "https://drive.google.com/file/d/1TjMqtIj1yNJR9FY5GNo6jqGYzvyDHmIJ/view?usp=sharing",
+          "displayOrder": 1,
+          "_id": "6a2b6cd84f3bd2a45052bf74"
+        }
+      ],
+      "highlightMetrics": [
+        {
+          "icon": "Award",
+          "title": "Network Designer",
+          "value": "",
+          "_id": "6a2b6cd84f3bd2a45052bf79"
+        },
+        {
+          "icon": "Users",
+          "title": "Happy Clients",
+          "value": "50+",
+          "_id": "6a2b6cd84f3bd2a45052bf7a"
+        },
+        {
+          "icon": "TrendingUp",
+          "title": "Years Experience",
+          "value": "5+",
+          "_id": "6a2b6cd84f3bd2a45052bf7b"
+        }
+      ],
+      "idePresentation": {
+        "skills": [
+          "React",
+          "Node",
+          "Typescript"
+        ],
+        "available": true,
+        "location": "",
+        "_id": "6a2b6cd84f3bd2a45052bf6c"
+      },
+      "storyPillars": [
+        {
+          "title": "Education & Background",
+          "content": "",
+          "_id": "6a2b6cd84f3bd2a45052bf75"
+        },
+        {
+          "title": "Professional Focus",
+          "content": "",
+          "_id": "6a2b6cd84f3bd2a45052bf76"
+        },
+        {
+          "title": "Expertise Areas",
+          "content": "",
+          "_id": "6a2b6cd84f3bd2a45052bf77"
+        },
+        {
+          "title": "Mission & Approach",
+          "content": "",
+          "_id": "6a2b6cd84f3bd2a45052bf78"
+        }
+      ]
+    }
+  ],
+  "contactContent": [
+    {
+      "_id": "6a268843206ea7d78049b7f5",
+      "email": "desalegn@gmail.com",
+      "phone": "0987654321",
+      "address": "bahirdar",
+      "mapLink": "",
+      "whatsapp": "",
+      "telegram": "",
+      "linkedin": "",
+      "github": "",
+      "twitter": "",
+      "facebook": "",
+      "instagram": "",
+      "contactFormEnabled": true,
+      "createdAt": "2026-06-08T09:15:47.219Z",
+      "updatedAt": "2026-06-12T02:49:01.073Z",
+      "__v": 1,
+      "socialChannels": []
+    }
+  ],
+  "footerContent": [
+    {
+      "_id": "6a268845206ea7d78049b7f6",
+      "footerDescription": "",
+      "copyrightText": "© 2026 DESALEGN.ALL RIGHT ARE RESERVED",
+      "footerLogo": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781168212/portfolio_assets/lqa8ebgxrqecnhcxxx7a.png",
+      "status": "active",
+      "quickLinks": [
+        {
+          "label": "home",
+          "url": "#home",
+          "displayOrder": 0,
+          "_id": "6a2a7fd352bc69c986dbfc60"
+        },
+        {
+          "label": "about",
+          "url": "#about",
+          "displayOrder": 0,
+          "_id": "6a2a7fd352bc69c986dbfc61"
+        },
+        {
+          "label": "projects",
+          "url": "#projects",
+          "displayOrder": 0,
+          "_id": "6a2a7fd352bc69c986dbfc62"
+        }
+      ],
+      "socialLinks": [
+        {
+          "platform": "github",
+          "url": "https://github.com/desalegnkasayemuluyekasaye-tech@gmail.com",
+          "displayOrder": 0,
+          "active": true,
+          "_id": "6a2a7fd352bc69c986dbfc63"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linked.com/fff",
+          "displayOrder": 1,
+          "active": true,
+          "_id": "6a2b702d414f7757d93bd4f0"
+        }
+      ],
+      "createdAt": "2026-06-08T09:15:49.107Z",
+      "updatedAt": "2026-06-12T02:34:21.885Z",
+      "__v": 7,
+      "brandName": "",
+      "builtWithText": "BUILT WITH PASSION",
+      "country": "",
+      "email": "",
+      "iconKeyword": "coffee",
+      "location": "",
+      "madeWithText": "React and Tailwind CSS",
+      "phone": "",
+      "region": "",
+      "emailProtocol": "mailto",
+      "locationLine1": "",
+      "locationLine2": "",
+      "phoneCustomUrl": "",
+      "phoneProtocol": "tel",
+      "techAttribution": "Build With React and Tailwind CSS",
+      "visualSeparator": "💎🌍"
+    }
+  ],
+  "settings": [
+    {
+      "_id": "6a27cae4ed18a4b5d69c98fa",
+      "ownerName": "Desalegn",
+      "title": "FullStack Developer",
+      "description": "qwertyuio",
+      "logo": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781168212/portfolio_assets/lqa8ebgxrqecnhcxxx7a.png",
+      "favicon": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781084650/portfolio_assets/mg6lanqbznbeu7lj8xkl.png",
+      "defaultTheme": "light",
+      "projectsPerPage": 6,
+      "certificatesPerPage": 6,
+      "enableAnalytics": true,
+      "enableContactForm": true,
+      "publicEmail": "desalegnkas@gmail.com",
+      "publicPhone": "0900000000",
+      "publicAddress": "aaaaa",
+      "socialLinks": {
+        "github": "https://www.com",
+        "linkedin": "",
+        "telegram": "",
+        "twitter": "",
+        "facebook": "",
+        "instagram": ""
+      },
+      "createdAt": "2026-06-09T08:12:20.553Z",
+      "updatedAt": "2026-06-11T09:11:05.919Z",
+      "__v": 0
+    }
+  ]
+}

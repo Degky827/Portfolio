@@ -69,6 +69,22 @@ async function googleLogin(req, res) {
 
     const configuredAdminEmail = (process.env.ADMIN_EMAIL || '').trim().toLowerCase()
     console.log(`[Local Debug Check] Comparing: "${incomingGoogleEmail}" against "${configuredAdminEmail}"`)
+
+    // Production diagnostic block — prints environment vs incoming token values
+    try {
+      if (process.env.NODE_ENV === 'production') {
+        console.log('==================================================');
+        console.log('[PRODUCTION AUTH DIAGNOSTIC]');
+        console.log('Raw Environment Target:', process.env.ADMIN_EMAIL);
+        console.log('Sanitized Environment Target:', (process.env.ADMIN_EMAIL || '').trim().toLowerCase());
+        console.log('Incoming Google Token Email:', payload.email);
+        console.log('Sanitized Google Token Email:', (payload.email || '').trim().toLowerCase());
+        console.log('Client ID in Server Env:', process.env.GOOGLE_CLIENT_ID ? 'PRESENT (Starts with: ' + process.env.GOOGLE_CLIENT_ID.substring(0, 10) + ')' : 'MISSING');
+        console.log('==================================================');
+      }
+    } catch (diagErr) {
+      console.error('[PRODUCTION AUTH DIAGNOSTIC] logging failed:', diagErr && diagErr.stack ? diagErr.stack : diagErr)
+    }
     const googleId = payload.sub || ''
     const name = payload.name || ''
     const picture = payload.picture || ''
