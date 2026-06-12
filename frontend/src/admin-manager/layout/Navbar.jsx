@@ -197,6 +197,16 @@ export default function Navbar() {
           </div>
 
           <div className="flex items-center gap-1">
+            <a
+              href="/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden sm:inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-sm text-slate-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-colors border border-transparent hover:border-slate-300 dark:hover:border-slate-700"
+              title="View My Portfolio"
+            >
+              View My Portfolio
+            </a>
+
             <motion.button
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}

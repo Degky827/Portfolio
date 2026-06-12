@@ -73,7 +73,7 @@ export default function About({ content, hero, aboutContent }) {
   }
 
   return (
-    <section id="about" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-[#0B1120] transition-colors duration-500 overflow-hidden">
+    <section id="about" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -97,7 +97,7 @@ export default function About({ content, hero, aboutContent }) {
           </p>
         </motion.div>
 
-        <div className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] p-6 sm:p-8 md:p-12 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-sm">
+        <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 sm:p-8 md:p-12 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-sm">
           <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start relative z-10">
             {/* Left: Story Pillar Cards */}
             <motion.div

@@ -128,7 +128,7 @@ export default function Projects() {
   }, [searchTerm])
 
   return (
-    <section id="projects" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-[#0B1120] transition-colors duration-500 overflow-hidden" aria-label="Projects section">
+    <section id="projects" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden" aria-label="Projects section">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -154,13 +154,13 @@ export default function Projects() {
 
         {/* Tab Navigation */}
         <div className="flex justify-center mb-8 sm:mb-10">
-          <div className="inline-flex bg-gray-100 dark:bg-[#1E293B] rounded-2xl p-1.5 shadow-inner">
+          <div className="inline-flex bg-gray-100 dark:bg-neutral-900 rounded-2xl p-1.5 shadow-inner">
             <button
               onClick={() => setActiveTab('web')}
-              className={`px-6 sm:px-8 py-2.5 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 ${
+                className={`px-6 sm:px-8 py-2.5 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 ${
                 activeTab === 'web'
-                  ? 'bg-white dark:bg-[#111827] text-primary shadow-lg'
-                  : 'text-gray-500 dark:text-[#94A3B8] hover:text-gray-700 dark:hover:text-gray-200'
+                  ? 'bg-white dark:bg-neutral-900 text-primary shadow-lg'
+                  : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
               <Code size={16} className="inline mr-2 -mt-0.5" />
@@ -168,10 +168,10 @@ export default function Projects() {
             </button>
             <button
               onClick={() => setActiveTab('mobile')}
-              className={`px-6 sm:px-8 py-2.5 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 ${
+                className={`px-6 sm:px-8 py-2.5 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 ${
                 activeTab === 'mobile'
-                  ? 'bg-white dark:bg-[#111827] text-primary shadow-lg'
-                  : 'text-gray-500 dark:text-[#94A3B8] hover:text-gray-700 dark:hover:text-gray-200'
+                  ? 'bg-white dark:bg-neutral-900 text-primary shadow-lg'
+                  : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-gray-200'
               }`}
             >
               <Smartphone size={16} className="inline mr-2 -mt-0.5" />
@@ -205,10 +205,10 @@ export default function Projects() {
                 key={project._id || index}
                 variants={itemVariants}
                 whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                className="group bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-[#334155] overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20"
+                className="group bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20"
               >
                 {/* Thumbnail Image */}
-                <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-[#111827]">
+                <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-neutral-900">
                   <img
                     src={thumbUrl ? (thumbUrl.startsWith('http') ? thumbUrl : `http://localhost:5000${thumbUrl}`) : DEFAULT_THUMBNAIL}
                     alt={title}
@@ -222,7 +222,7 @@ export default function Projects() {
                         href={repoUrl}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="p-2 bg-white dark:bg-[#1E293B] rounded-lg text-gray-700 dark:text-[#94A3B8] hover:text-primary dark:hover:text-primary transition-colors shadow-lg"
+                        className="p-2 bg-white dark:bg-neutral-900 rounded-lg text-gray-700 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors shadow-lg"
                         title={`View ${title} source code`}
                         aria-label={`View ${title} source code on GitHub`}
                         onClick={e => e.stopPropagation()}
@@ -232,10 +232,10 @@ export default function Projects() {
                     )}
                     {liveUrl !== '#' && (
                       <a
-                        href={liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="p-2 bg-white dark:bg-[#1E293B] rounded-lg text-gray-700 dark:text-[#94A3B8] hover:text-primary dark:hover:text-primary transition-colors shadow-lg"
+                          href={liveUrl}
+                          target="_blank"
+                          rel="noopener noreferrer nofollow"
+                          className="p-2 bg-white dark:bg-neutral-900 rounded-lg text-gray-700 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors shadow-lg"
                         title={`View ${title} live site`}
                         aria-label={`View ${title} live demo`}
                         onClick={e => e.stopPropagation()}
@@ -314,7 +314,7 @@ export default function Projects() {
             })
           ) : (
             <div className="col-span-full text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-[#1E293B] rounded-full flex items-center justify-center">
+              <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-neutral-900 rounded-full flex items-center justify-center">
                 <Search className="w-10 h-10 text-gray-400" />
               </div>
               <p className="text-xl font-bold text-gray-900 dark:text-[#F8FAFC] mb-2">No projects found</p>
@@ -332,14 +332,14 @@ export default function Projects() {
         /* Mobile Apps Section */
         <div className="max-w-5xl lg:max-w-7xl mx-auto">
           {/* Mobile Apps Search */}
-          <div className="relative max-w-md mx-auto mb-8">
+            <div className="relative max-w-md mx-auto mb-8">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
             <input
               type="text"
               placeholder="Search mobile apps..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-10 py-3 bg-gray-50 dark:bg-[#1E293B] border border-gray-200 dark:border-[#334155] rounded-full text-gray-900 dark:text-[#F8FAFC] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full pl-12 pr-10 py-3 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-full text-gray-900 dark:text-[#F8FAFC] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
               aria-label="Search mobile apps"
             />
             {searchTerm && (
@@ -370,7 +370,7 @@ export default function Projects() {
                   key={index}
                   variants={itemVariants}
                   whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                  className="group bg-white dark:bg-[#1E293B] rounded-2xl border border-gray-200 dark:border-[#334155] overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20 flex flex-col cursor-pointer"
+                  className="group bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20 flex flex-col cursor-pointer"
                   role="button"
                   tabIndex={0}
                   aria-label={`Open ${app.title} app`}
@@ -412,14 +412,14 @@ export default function Projects() {
                         <span
                           key={i}
                           role="listitem"
-                          className="px-2.5 py-1 text-[10px] font-medium rounded-md bg-gray-100 dark:bg-[#111827] text-gray-500 dark:text-[#94A3B8]"
+                          className="px-2.5 py-1 text-[10px] font-medium rounded-md bg-gray-100 dark:bg-neutral-900 text-gray-500 dark:text-slate-400"
                         >
                           {feature}
                         </span>
                       ))}
                     </div>
 
-                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100 dark:border-[#334155]">
+                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100 dark:border-neutral-800">
                       <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 dark:text-gray-500">
                         {app.platform === 'iOS' ? (
                           <><Apple size={14} /> iOS</>
@@ -446,7 +446,7 @@ export default function Projects() {
               ))
             ) : (
               <div className="col-span-full text-center py-16">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-[#1E293B] rounded-full flex items-center justify-center">
+                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-neutral-900 rounded-full flex items-center justify-center">
                   <Smartphone className="w-10 h-10 text-gray-400" />
                 </div>
                 <p className="text-xl font-bold text-gray-900 dark:text-[#F8FAFC] mb-2">No apps found</p>

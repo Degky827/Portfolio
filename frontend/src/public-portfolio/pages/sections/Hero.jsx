@@ -101,7 +101,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
   }
 
   return (
-    <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-[#0B1120] transition-colors duration-500">
+    <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-black transition-colors duration-500">
       {/* Subtle Background Gradient */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-transparent dark:bg-gradient-to-b dark:from-[#0B1120] dark:to-[#111827]" />
@@ -122,7 +122,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
         >
           <motion.div 
             variants={itemVariants}
-            className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] p-6 sm:p-8 md:p-14 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] flex flex-col lg:flex-row items-center gap-8 md:gap-12 lg:gap-16 max-w-5xl lg:max-w-6xl xl:max-w-7xl relative overflow-hidden w-full shadow-sm"
+            className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 sm:p-8 md:p-14 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] flex flex-col lg:flex-row items-center gap-8 md:gap-12 lg:gap-16 max-w-5xl lg:max-w-6xl xl:max-w-7xl relative overflow-hidden w-full shadow-sm"
           >
             {/* Image Wrapper */}
               <motion.div 
@@ -237,7 +237,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
               </motion.div>
 
               {/* Stats */}
-              <motion.div variants={itemVariants} className="flex gap-6 sm:gap-10 lg:gap-12 justify-center lg:justify-start pt-6 sm:pt-10 border-t border-gray-100 dark:border-[#334155]">
+              <motion.div variants={itemVariants} className="flex gap-6 sm:gap-10 lg:gap-12 justify-center lg:justify-start pt-6 sm:pt-10 border-t border-gray-100 dark:border-neutral-800">
                 {stats.map((stat, i) => {
                   const StatIcon = getIcon(stat.icon)
                   return (
@@ -273,7 +273,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
         <motion.div 
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-gray-300 dark:border-[#334155] rounded-full flex justify-center p-1.5 group-hover:border-primary transition-colors"
+          className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-gray-300 dark:border-neutral-800 rounded-full flex justify-center p-1.5 group-hover:border-primary transition-colors"
         >
           <motion.div 
             animate={{ 
