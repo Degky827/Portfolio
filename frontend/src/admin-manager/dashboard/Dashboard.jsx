@@ -103,7 +103,7 @@ export default function Dashboard() {
 
   const greeting = getGreeting()
   const currentDate = formatCurrentDate()
-  const firstName = user?.name?.split(' ')[0] || user?.email?.split('@')[0] || 'Admin'
+  const firstName = (user?.displayName && user.displayName.split(' ')[0]) || (user?.name && user.name.split(' ')[0]) || (user?.email && user.email.split('@')[0].split(/[._-]/)[0]) || 'Admin'
   const roleDisplay = user?.role?.replace('_', ' ') || 'Admin'
 
   const fetchStats = useCallback(async () => {
