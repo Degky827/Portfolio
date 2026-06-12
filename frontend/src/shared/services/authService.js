@@ -39,3 +39,8 @@ export async function disable2FA() {
   const { data } = await api.post('/auth/disable-2fa')
   return data
 }
+
+export async function googleAuth(idToken) {
+  const { data } = await api.post('/auth/google', { idToken })
+  return data
+}

@@ -19,6 +19,7 @@ const config = {
       process.env.CORS_ORIGIN ||
       'http://localhost:5173',
   ),
+  googleClientId: process.env.GOOGLE_CLIENT_ID,
 }
 
 const missing = REQUIRED_VARS.filter((name) => !process.env[name])

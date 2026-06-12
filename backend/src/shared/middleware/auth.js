@@ -26,12 +26,6 @@ async function authenticateToken(req, res, next) {
     if (user.lockedUntil && user.lockedUntil > new Date()) {
       return res.status(423).json({ success: false, message: 'Account is temporarily locked. Try again later.' })
     }
-  if (req.user.role !== 'super_admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Only super administrators can access this system.',
-      })
-    }
     req.user = user
     next()
   } catch (err) {
@@ -46,7 +40,7 @@ function authorizeSuperAdmin(req, res, next) {
   if (!req.user) {
     return res.status(401).json({ success: false, message: 'Authentication required.' })
   }
-  if (user.role !== 'super_admin') {
+  if (req.user.role !== 'super_admin') {
     return res.status(403).json({
       success: false,
       message: 'Access denied. Only super administrators can perform this action.',
