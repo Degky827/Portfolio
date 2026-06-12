@@ -1,40 +1,60 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { Save, RefreshCw, Plus, Trash2, GripVertical } from 'lucide-react'
+import { Save, RefreshCw, Plus, Trash2, GripVertical, Globe, Mail, Phone, Hash, Link } from 'lucide-react'
 import PageHeader from '../components/PageHeader'
 import ImageUpload from '../components/ImageUpload'
 import Toast from '../components/Toast'
 import { getFooterContent, updateFooterContent } from '../../services/footerService'
 
-const emptyQuickLink = { label: '', url: '', displayOrder: 0 }
 const emptySocialLink = { platform: '', url: '', displayOrder: 0, active: true }
+const emptyQuickLink = { label: '', url: '', displayOrder: 0 }
 
-const iconKeywordOptions = [
-  { value: 'heart', label: 'Heart' },
-  { value: 'star', label: 'Star' },
-  { value: 'rocket', label: 'Rocket' },
-  { value: 'coffee', label: 'Coffee' },
-  { value: 'code', label: 'Code' },
-  { value: 'fire', label: 'Fire' },
-  { value: 'lightning', label: 'Lightning' },
-  { value: 'diamond', label: 'Diamond' },
+const EMOJI_PICKER = ['❤️', '🔥', '⭐', '✨', '🚀', '💻', '🎯', '🌟', '💡', '🎨', '🌍', '💪', '⚡', '💎', '🏆', '🎉']
+
+const PHONE_PROTOCOLS = [
+  { value: 'tel', label: 'Standard Call (tel:)' },
+  { value: 'whatsapp', label: 'WhatsApp (wa.me)' },
+  { value: 'telegram', label: 'Telegram (t.me)' },
+  { value: 'custom', label: 'Custom URL' },
 ]
+
+function Card({ children, className = '' }) {
+  return (
+    <div className={`bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5 ${className}`}>
+      {children}
+    </div>
+  )
+}
+
+function SectionHeader({ title, subtitle }) {
+  return (
+    <div>
+      <h2 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h2>
+      {subtitle && <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">{subtitle}</p>}
+    </div>
+  )
+}
+
+function EmptyState({ message }) {
+  return <p className="text-sm text-gray-400 italic">{message}</p>
+}
 
 export default function FooterContent() {
   const [form, setForm] = useState({
     brandName: '',
     footerDescription: '',
-    copyrightText: '',
-    builtWithText: '',
-    madeWithText: '',
-    iconKeyword: 'heart',
-    location: '',
-    region: '',
-    country: '',
-    email: '',
-    phone: '',
-    quickLinks: [],
     socialLinks: [],
+    quickLinks: [],
+    locationLine1: '',
+    locationLine2: '',
+    email: '',
+    emailProtocol: 'mailto',
+    phone: '',
+    phoneProtocol: 'tel',
+    phoneCustomUrl: '',
+    copyrightText: '',
+    visualSeparator: '',
+    techAttribution: '',
     status: 'active',
   })
   const [logoFile, setLogoFile] = useState(null)
@@ -52,17 +72,18 @@ export default function FooterContent() {
           setForm({
             brandName: content.brandName || '',
             footerDescription: content.footerDescription || '',
-            copyrightText: content.copyrightText || '',
-            builtWithText: content.builtWithText || '',
-            madeWithText: content.madeWithText || '',
-            iconKeyword: content.iconKeyword || 'heart',
-            location: content.location || '',
-            region: content.region || '',
-            country: content.country || '',
-            email: content.email || '',
-            phone: content.phone || '',
-            quickLinks: content.quickLinks || [],
             socialLinks: content.socialLinks || [],
+            quickLinks: content.quickLinks || [],
+            locationLine1: content.locationLine1 || '',
+            locationLine2: content.locationLine2 || '',
+            email: content.email || '',
+            emailProtocol: content.emailProtocol || 'mailto',
+            phone: content.phone || '',
+            phoneProtocol: content.phoneProtocol || 'tel',
+            phoneCustomUrl: content.phoneCustomUrl || '',
+            copyrightText: content.copyrightText || '',
+            visualSeparator: content.visualSeparator || '',
+            techAttribution: content.techAttribution || '',
             status: content.status || 'active',
           })
           setExistingLogo(content.footerLogo || '')
@@ -111,6 +132,10 @@ export default function FooterContent() {
     })
   }
 
+  const insertEmoji = (emoji) => {
+    setForm((prev) => ({ ...prev, visualSeparator: prev.visualSeparator + emoji }))
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     setLoading(true)
@@ -144,198 +169,215 @@ export default function FooterContent() {
 
   return (
     <div>
-      <PageHeader title="Footer Content" subtitle="Manage your footer section. All fields are fully dynamic." />
+      <PageHeader title="Footer Management" subtitle="Manage your footer section — branding, navigation, contact, and bottom bar." />
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 space-y-6">
-            {/* Branding */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5"
-            >
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Branding</h2>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Brand Name</label>
-                <input type="text" value={form.brandName} onChange={set('brandName')} placeholder="DESALEGN" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
-                <textarea value={form.footerDescription} onChange={set('footerDescription')} rows={3} placeholder="Footer description..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none" />
-              </div>
-            </motion.div>
 
-            {/* Contact Information */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5"
-            >
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Contact Information</h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Location</label>
-                  <input type="text" value={form.location} onChange={set('location')} placeholder="Bahirdar" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Region</label>
-                  <input type="text" value={form.region} onChange={set('region')} placeholder="Amhara Region" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Country</label>
-                  <input type="text" value={form.country} onChange={set('country')} placeholder="Ethiopia" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-                </div>
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Email</label>
-                  <input type="email" value={form.email} onChange={set('email')} placeholder="email@example.com" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Phone</label>
-                  <input type="text" value={form.phone} onChange={set('phone')} placeholder="+251 908 720 092" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-                </div>
-              </div>
-            </motion.div>
-
-            {/* Quick Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5"
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Quick Links</h2>
-                <button type="button" onClick={() => addItem('quickLinks', emptyQuickLink)} className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                  <Plus size={16} /> Add Link
-                </button>
-              </div>
-              {form.quickLinks.length === 0 && <p className="text-sm text-gray-400">No quick links yet.</p>}
-              {form.quickLinks.map((link, idx) => (
-                <div key={idx} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <GripVertical size={16} className="text-gray-400 cursor-grab" />
-                      <span className="text-sm font-bold text-gray-600 dark:text-gray-400">{link.label || `Link ${idx + 1}`}</span>
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <button type="button" onClick={() => moveItem('quickLinks', idx, -1)} disabled={idx === 0} className="p-1 rounded text-gray-400 hover:text-gray-600 disabled:opacity-30">▲</button>
-                      <button type="button" onClick={() => moveItem('quickLinks', idx, 1)} disabled={idx === form.quickLinks.length - 1} className="p-1 rounded text-gray-400 hover:text-gray-600 disabled:opacity-30">▼</button>
-                      <button type="button" onClick={() => removeItem('quickLinks', idx)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"><Trash2 size={14} /></button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <input type="text" value={link.label} onChange={updateItem('quickLinks', idx, 'label')} placeholder="Label" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                    <input type="text" value={link.url} onChange={updateItem('quickLinks', idx, 'url')} placeholder="#section" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-
-            {/* Social Links */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5"
-            >
-              <div className="flex items-center justify-between">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Social Links</h2>
-                <button type="button" onClick={() => addItem('socialLinks', emptySocialLink)} className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                  <Plus size={16} /> Add Social Link
-                </button>
-              </div>
-              {form.socialLinks.length === 0 && <p className="text-sm text-gray-400">No social links yet.</p>}
-              {form.socialLinks.map((link, idx) => (
-                <div key={idx} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <GripVertical size={16} className="text-gray-400 cursor-grab" />
-                      <span className="text-sm font-bold text-gray-600 dark:text-gray-400">{link.platform || `Link ${idx + 1}`}</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <label className="flex items-center gap-1.5 text-xs text-gray-500">
-                        <input type="checkbox" checked={link.active !== false} onChange={updateItem('socialLinks', idx, 'active')} className="rounded" />
-                        Active
-                      </label>
-                      <button type="button" onClick={() => moveItem('socialLinks', idx, -1)} disabled={idx === 0} className="p-1 rounded text-gray-400 hover:text-gray-600 disabled:opacity-30">▲</button>
-                      <button type="button" onClick={() => moveItem('socialLinks', idx, 1)} disabled={idx === form.socialLinks.length - 1} className="p-1 rounded text-gray-400 hover:text-gray-600 disabled:opacity-30">▼</button>
-                      <button type="button" onClick={() => removeItem('socialLinks', idx)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"><Trash2 size={14} /></button>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <input type="text" value={link.platform} onChange={updateItem('socialLinks', idx, 'platform')} placeholder="Platform (e.g. GitHub, LinkedIn)" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                    <input type="url" value={link.url} onChange={updateItem('socialLinks', idx, 'url')} placeholder="URL" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </div>
-
+          {/* ═══════════════════ COLUMN 1: BRANDING & CHANNELS ═══════════════════ */}
           <div className="space-y-6">
-            {/* Logo */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6"
-            >
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Footer Logo</h2>
-              <ImageUpload value={existingLogo} onChange={(val) => {
-                if (typeof val === 'string') { setLogoUrl(val); setLogoFile(null) }
-                else { setLogoFile(val); setLogoUrl('') }
-              }} />
-            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Card>
+                <SectionHeader title="Branding & Channels" subtitle="Brand identity, description, logo, and social profile links." />
 
-            {/* Copyright Section */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5"
-            >
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Bottom Bar</h2>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Copyright Text</label>
-                <input type="text" value={form.copyrightText} onChange={set('copyrightText')} placeholder="© 2026 DESALEGN" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Built With Text</label>
-                <input type="text" value={form.builtWithText} onChange={set('builtWithText')} placeholder="BUILT WITH PASSION AND PRECISION" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Made With Text</label>
-                <input type="text" value={form.madeWithText} onChange={set('madeWithText')} placeholder="React & Tailwind" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Icon Keyword</label>
-                <select value={form.iconKeyword} onChange={set('iconKeyword')} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
-                  {iconKeywordOptions.map((opt) => (
-                    <option key={opt.value} value={opt.value}>{opt.label}</option>
-                  ))}
-                </select>
-                <p className="text-xs text-gray-400 mt-1">Icon displayed before "Made With" text in the footer.</p>
-              </div>
-            </motion.div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Brand Name</label>
+                  <input type="text" value={form.brandName} onChange={set('brandName')} placeholder="DESALEGN" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
 
-            {/* Settings */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-4"
-            >
-              <h2 className="text-lg font-bold text-gray-900 dark:text-white">Settings</h2>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
-                <select value={form.status} onChange={set('status')} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </select>
-              </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Description</label>
+                  <textarea value={form.footerDescription} onChange={set('footerDescription')} rows={3} placeholder="Building robust digital experiences..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none" />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Footer Logo</label>
+                  <ImageUpload value={existingLogo} onChange={(val) => {
+                    if (typeof val === 'string') { setLogoUrl(val); setLogoFile(null) }
+                    else { setLogoFile(val); setLogoUrl('') }
+                  }} />
+                </div>
+
+                <div className="border-t border-gray-200 dark:border-slate-700 pt-5">
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-sm font-bold text-gray-700 dark:text-gray-300">Social Profile Links</span>
+                    <button type="button" onClick={() => addItem('socialLinks', emptySocialLink)} className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                      <Plus size={16} /> Add
+                    </button>
+                  </div>
+                  {form.socialLinks.length === 0 && <EmptyState message="No social links added yet." />}
+                  <div className="space-y-2">
+                    {form.socialLinks.map((link, idx) => (
+                      <div key={idx} className="flex items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-slate-700">
+                        <GripVertical size={14} className="text-gray-400 shrink-0 cursor-grab" />
+                        <input type="text" value={link.platform} onChange={updateItem('socialLinks', idx, 'platform')} placeholder="GitHub" className="w-24 sm:w-28 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                        <input type="url" value={link.url} onChange={updateItem('socialLinks', idx, 'url')} placeholder="https://github.com/..." className="flex-1 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                        <label className="flex items-center gap-1 text-[10px] text-gray-500 shrink-0">
+                          <input type="checkbox" checked={link.active !== false} onChange={updateItem('socialLinks', idx, 'active')} className="rounded" />
+                          On
+                        </label>
+                        <div className="flex items-center gap-0.5 shrink-0">
+                          <button type="button" onClick={() => moveItem('socialLinks', idx, -1)} disabled={idx === 0} className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▲</button>
+                          <button type="button" onClick={() => moveItem('socialLinks', idx, 1)} disabled={idx === form.socialLinks.length - 1} className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▼</button>
+                        </div>
+                        <button type="button" onClick={() => removeItem('socialLinks', idx)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors shrink-0"><Trash2 size={13} /></button>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Card>
             </motion.div>
           </div>
+
+          {/* ═══════════════════ COLUMN 2: QUICK LINKS ═══════════════════ */}
+          <div className="space-y-6">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+              <Card>
+                <div className="flex items-center justify-between">
+                  <SectionHeader title="Quick Links Navigation" subtitle="Reorderable anchor tags for your local page sections." />
+                  <button type="button" onClick={() => addItem('quickLinks', emptyQuickLink)} className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
+                    <Plus size={16} /> Add Link
+                  </button>
+                </div>
+                {form.quickLinks.length === 0 && <EmptyState message="No quick links yet." />}
+                <div className="space-y-2">
+                  {form.quickLinks.map((link, idx) => (
+                    <div key={idx} className="flex items-center gap-2 p-3 rounded-xl border border-gray-200 dark:border-slate-700">
+                      <GripVertical size={14} className="text-gray-400 shrink-0 cursor-grab" />
+                      <input type="text" value={link.label} onChange={updateItem('quickLinks', idx, 'label')} placeholder="Home" className="w-24 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                      <input type="text" value={link.url} onChange={updateItem('quickLinks', idx, 'url')} placeholder="#home" className="flex-1 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                      <div className="flex items-center gap-0.5 shrink-0">
+                        <button type="button" onClick={() => moveItem('quickLinks', idx, -1)} disabled={idx === 0} className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▲</button>
+                        <button type="button" onClick={() => moveItem('quickLinks', idx, 1)} disabled={idx === form.quickLinks.length - 1} className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▼</button>
+                      </div>
+                      <button type="button" onClick={() => removeItem('quickLinks', idx)} className="p-1.5 rounded-lg text-red-400 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors shrink-0"><Trash2 size={13} /></button>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+          </div>
+
+          {/* ═══════════════════ COLUMN 3: CONTACT HUB + BOTTOM BAR ═══════════════════ */}
+          <div className="space-y-6">
+            {/* ── Contact Hub ── */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+              <Card>
+                <SectionHeader title="Humanized Contact Hub" subtitle="Location narrative, email with auto mailto, and phone with protocol selection." />
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                    <Globe size={12} /> Location — Line 1 <span className="text-gray-400 font-normal normal-case tracking-normal">(Primary header)</span>
+                  </label>
+                  <input type="text" value={form.locationLine1} onChange={set('locationLine1')} placeholder="Bahirdar, Ethiopia" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  <p className="text-[11px] text-gray-400 mt-1">Displayed as the main location line on the public footer.</p>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                    <Globe size={12} /> Location — Line 2 <span className="text-gray-400 font-normal normal-case tracking-normal">(Sub-regional context / availability)</span>
+                  </label>
+                  <input type="text" value={form.locationLine2} onChange={set('locationLine2')} placeholder="Amhara Region" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  <p className="text-[11px] text-gray-400 mt-1">Shown as secondary text. Use "Open to Remote Worldwide" for availability.</p>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                      <Mail size={12} /> Email
+                    </label>
+                    <div className="relative">
+                      <input type="email" value={form.email} onChange={set('email')} placeholder="email@example.com" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                      <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-medium text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20 px-2 py-0.5 rounded-full">
+                        mailto:
+                      </span>
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                      <Phone size={12} /> Phone
+                    </label>
+                    <input type="text" value={form.phone} onChange={set('phone')} placeholder="+251 908 720 092" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Phone Click Protocol</label>
+                  <select value={form.phoneProtocol} onChange={set('phoneProtocol')} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                    {PHONE_PROTOCOLS.map((opt) => (
+                      <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    ))}
+                  </select>
+                  {form.phoneProtocol === 'custom' && (
+                    <div className="mt-3">
+                      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                        <Link size={12} /> Custom Phone URL
+                      </label>
+                      <input type="url" value={form.phoneCustomUrl} onChange={set('phoneCustomUrl')} placeholder="https://..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                    </div>
+                  )}
+                  <p className="text-[11px] text-gray-400 mt-1">
+                    {form.phoneProtocol === 'tel' && 'Generates a standard tel: link.'}
+                    {form.phoneProtocol === 'whatsapp' && 'Generates a wa.me link — use full phone number with country code.'}
+                    {form.phoneProtocol === 'telegram' && 'Generates a t.me link — enter the username (with or without @).'}
+                    {form.phoneProtocol === 'custom' && 'Provide a fully custom URL for the phone link.'}
+                  </p>
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* ── Bottom Bar Utilities ── */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+              <Card>
+                <SectionHeader title="Bottom Bar Utilities" subtitle="Three horizontally aligned fields that map to the lower footer wrapper." />
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                    <Hash size={12} /> Copyright String
+                  </label>
+                  <input type="text" value={form.copyrightText} onChange={set('copyrightText')} placeholder="© 2026 DESALEGN. ALL RIGHTS RESERVED." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                    Visual Middle Separator
+                  </label>
+                  <input type="text" value={form.visualSeparator} onChange={set('visualSeparator')} placeholder="MADE WITH ❤️ USING" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                    <span className="text-[10px] text-gray-400 font-medium uppercase tracking-wider mr-1">Emoji Insert:</span>
+                    {EMOJI_PICKER.map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        onClick={() => insertEmoji(emoji)}
+                        className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-slate-800 text-sm transition-colors"
+                        title={`Insert ${emoji}`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5 flex items-center gap-1.5">
+                    Technology Attribution Tag
+                  </label>
+                  <input type="text" value={form.techAttribution} onChange={set('techAttribution')} placeholder="REACT & TAILWIND" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all" />
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* ── Settings ── */}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+              <Card>
+                <SectionHeader title="Settings" />
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
+                  <select value={form.status} onChange={set('status')} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all">
+                    <option value="active">Active</option>
+                    <option value="inactive">Inactive</option>
+                  </select>
+                </div>
+              </Card>
+            </motion.div>
+          </div>
+
         </div>
 
         <motion.div

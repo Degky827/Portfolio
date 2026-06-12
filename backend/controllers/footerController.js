@@ -23,9 +23,11 @@ async function updateFooterContent(req, res) {
     }
 
     const textFields = [
-      'footerDescription', 'copyrightText', 'status',
-      'brandName', 'builtWithText', 'madeWithText', 'iconKeyword',
-      'location', 'region', 'country', 'email', 'phone',
+      'brandName', 'footerDescription', 'copyrightText', 'status',
+      'locationLine1', 'locationLine2',
+      'email', 'emailProtocol',
+      'phone', 'phoneProtocol', 'phoneCustomUrl',
+      'visualSeparator', 'techAttribution',
     ]
     textFields.forEach((field) => {
       if (req.body[field] !== undefined) {
