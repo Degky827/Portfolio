@@ -300,7 +300,7 @@ export default function Skills() {
   return (
     <section
       id="skills"
-      className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-[#0B1120] transition-colors duration-500"
+      className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-black transition-colors duration-500"
       aria-label="Skills section"
     >
       <div className="container mx-auto px-4 sm:px-6">
@@ -337,7 +337,7 @@ export default function Skills() {
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true, margin: '-50px' }}
-            className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] p-6 sm:p-8 md:p-10 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-sm"
+            className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 sm:p-8 md:p-10 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-sm"
           >
             {topRow.length > 0 && (
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mb-6 lg:mb-8 relative z-10">
@@ -370,7 +370,7 @@ export default function Skills() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.5, duration: shouldReduceMotion ? 0.1 : 0.8 }}
-              className="mt-10 sm:mt-14 md:mt-18 pt-8 sm:pt-10 md:pt-14 border-t border-gray-200 dark:border-[#334155] grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-16 relative z-10"
+              className="mt-10 sm:mt-14 md:mt-18 pt-8 sm:pt-10 md:pt-14 border-t border-gray-200 dark:border-neutral-800 grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-16 relative z-10"
             >
               {[
                 { label: 'Technologies', value: `${skills.filter((s) => s.category?.toLowerCase() !== 'certificates').length}+` },

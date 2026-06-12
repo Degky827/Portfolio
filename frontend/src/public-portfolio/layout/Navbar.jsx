@@ -219,7 +219,7 @@ export default function Navbar() {
                   </motion.a>
 
                   {/* Contact Info Card */}
-                  <div className="p-5 sm:p-6 md:p-8 bg-gray-50 dark:bg-[#1E293B] rounded-2xl sm:rounded-[1.5rem] border border-gray-200 dark:border-[#334155]">
+                  <div className="p-5 sm:p-6 md:p-8 bg-gray-50 dark:bg-neutral-900 rounded-2xl sm:rounded-[1.5rem] border border-gray-200 dark:border-neutral-800">
                     <div className="space-y-4 sm:space-y-5">
                       <div className="flex items-center gap-3">
                         <MapPin size={18} className="text-primary" />
@@ -248,7 +248,7 @@ export default function Navbar() {
                         target="_blank"
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.1 }}
-                        className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 dark:bg-[#1E293B] rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"
+                        className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-100 dark:bg-neutral-900 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"
                       >
                         {social.icon}
                       </motion.a>

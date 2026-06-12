@@ -150,7 +150,7 @@ export default function Contact() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="bg-white dark:bg-[#111827] border border-gray-200 dark:border-[#334155] rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
+          className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
         >
           <div className={`grid relative z-10 ${formEnabled ? 'lg:grid-cols-5' : 'lg:grid-cols-1'}`}>
             {/* Contact Info Sidebar */}
