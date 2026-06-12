@@ -53,28 +53,28 @@ const quickActionsConfig = [
     label: 'Upload Media',
     icon: Image,
     onClick: (navigate) => navigate('/admin/media'),
-    gradient: 'from-blue-500 to-blue-600',
-    shadow: 'shadow-blue-500/20',
-    bg: 'bg-blue-50 dark:bg-blue-500/10',
-    textColor: 'text-blue-600 dark:text-blue-400',
+    gradient: 'from-indigo-500 to-indigo-600',
+    shadow: 'shadow-indigo-500/20',
+    bg: 'bg-indigo-50 dark:bg-indigo-500/10',
+    textColor: 'text-indigo-600 dark:text-indigo-400',
   },
   {
     label: 'Add Certificate',
     icon: Award,
     onClick: (navigate) => navigate('/admin/skills/new'),
-    gradient: 'from-amber-500 to-amber-600',
-    shadow: 'shadow-amber-500/20',
-    bg: 'bg-amber-50 dark:bg-amber-500/10',
-    textColor: 'text-amber-600 dark:text-amber-400',
+    gradient: 'from-indigo-500 to-indigo-600',
+    shadow: 'shadow-indigo-500/20',
+    bg: 'bg-indigo-50 dark:bg-indigo-500/10',
+    textColor: 'text-indigo-600 dark:text-indigo-400',
   },
   {
     label: 'Create Backup',
     icon: Shield,
     onClick: (navigate) => navigate('/admin/backup'),
-    gradient: 'from-emerald-500 to-emerald-600',
-    shadow: 'shadow-emerald-500/20',
-    bg: 'bg-emerald-50 dark:bg-emerald-500/10',
-    textColor: 'text-emerald-600 dark:text-emerald-400',
+    gradient: 'from-indigo-500 to-indigo-600',
+    shadow: 'shadow-indigo-500/20',
+    bg: 'bg-indigo-50 dark:bg-indigo-500/10',
+    textColor: 'text-indigo-600 dark:text-indigo-400',
   },
 ]
 
@@ -145,9 +145,9 @@ export default function Dashboard() {
 
   const statCards = [
     { title: 'Total Views', value: totalVisits, icon: Eye, trend: stats?.trend?.total ?? null, accent: 'primary', subtitle: 'All time portfolio visits' },
-    { title: 'Unique Visitors', value: uniqueV, icon: Users, trend: stats?.trend?.unique ?? null, accent: 'blue', subtitle: 'Distinct visitors' },
-    { title: "Today's Visitors", value: todayVisits, icon: UserCheck, trend: stats?.trend?.today ?? null, accent: 'green', subtitle: 'vs. yesterday' },
-    { title: 'Total Projects', value: projectCount, icon: FolderKanban, trend: null, accent: 'purple', subtitle: `${publishedCount} published` },
+    { title: 'Unique Visitors', value: uniqueV, icon: Users, trend: stats?.trend?.unique ?? null, accent: 'primary', subtitle: 'Distinct visitors' },
+    { title: "Today's Visitors", value: todayVisits, icon: UserCheck, trend: stats?.trend?.today ?? null, accent: 'primary', subtitle: 'vs. yesterday' },
+    { title: 'Total Projects', value: projectCount, icon: FolderKanban, trend: null, accent: 'primary', subtitle: `${publishedCount} published` },
   ]
 
   const quickActions = quickActionsConfig
@@ -319,9 +319,9 @@ export default function Dashboard() {
               ) : (
                 <>
                   {[
-                    { label: 'Today', value: todayVisits, max: Math.max(todayVisits, monthVisits, 1), color: 'from-emerald-500 to-emerald-400' },
-                    { label: 'This Month', value: monthVisits, max: Math.max(todayVisits, monthVisits, 1), color: 'from-indigo-500 to-purple-500' },
-                    { label: 'Total', value: totalVisits, max: totalVisits || 1, color: 'from-blue-500 to-blue-400' },
+                    { label: 'Today', value: todayVisits, max: Math.max(todayVisits, monthVisits, 1), barClass: 'bg-indigo-500' },
+                    { label: 'This Month', value: monthVisits, max: Math.max(todayVisits, monthVisits, 1), barClass: 'bg-indigo-500/60' },
+                    { label: 'Total', value: totalVisits, max: totalVisits || 1, barClass: 'bg-indigo-500/30' },
                   ].map((item) => {
                     const pct = item.max > 0 ? (item.value / item.max) * 100 : 0
                     return (
@@ -335,7 +335,7 @@ export default function Dashboard() {
                             initial={{ width: 0 }}
                             animate={{ width: `${Math.min(pct, 100)}%` }}
                             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
-                            className={`h-full rounded-full bg-gradient-to-r ${item.color}`}
+                            className={`h-full rounded-full ${item.barClass}`}
                           />
                         </div>
                       </div>
@@ -398,7 +398,7 @@ export default function Dashboard() {
                         whileHover={{ x: 4 }}
                         className="group flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50/50 dark:hover:bg-slate-800/50 transition-colors cursor-pointer"
                       >
-                        <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/10 dark:from-indigo-500/20 dark:to-purple-500/20 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm shrink-0">
+                        <div className="w-10 h-10 rounded-xl bg-indigo-50 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400 font-bold text-sm shrink-0">
                           {project.title?.charAt(0) || 'P'}
                         </div>
                         <div className="flex-1 min-w-0">
@@ -494,7 +494,7 @@ export default function Dashboard() {
                           initial={{ scale: 0 }}
                           animate={{ scale: 1 }}
                           transition={{ delay: i * 0.06 + 0.1, type: 'spring', stiffness: 300 }}
-                          className="relative z-10 w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-md shadow-indigo-500/20"
+                          className="relative z-10 w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm"
                         >
                           {(visit.visitorName || 'A')[0].toUpperCase()}
                         </motion.div>
@@ -576,7 +576,7 @@ export default function Dashboard() {
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.4 }}
-                className="mt-4 p-4 rounded-xl bg-gradient-to-br from-indigo-500/[0.03] to-purple-500/[0.03] dark:from-indigo-500/[0.05] dark:to-purple-500/[0.05] border border-indigo-200/30 dark:border-indigo-500/10"
+                className="mt-4 p-4 rounded-xl bg-indigo-50/50 dark:bg-indigo-500/5 border border-indigo-200/30 dark:border-indigo-500/10"
               >
                 <div className="flex items-center gap-3">
                   <div className="w-8 h-8 rounded-lg bg-indigo-100 dark:bg-indigo-500/10 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
@@ -597,7 +597,7 @@ export default function Dashboard() {
           <div className="rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/60 dark:border-slate-800/60 shadow-premium dark:shadow-premium-dark overflow-hidden h-full">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100/60 dark:border-slate-800/60">
               <div className="flex items-center gap-2.5">
-                <HardDrive size={18} className="text-emerald-500" />
+                <HardDrive size={18} className="text-indigo-500" />
                 <h2 className="text-base font-bold text-gray-900 dark:text-white">Backup Status</h2>
               </div>
               <motion.button
@@ -631,8 +631,8 @@ export default function Dashboard() {
                   </div>
 
                   {backups.length > 0 && (
-                    <div className="p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/20 border border-emerald-200/60 dark:border-emerald-800/60">
-                      <p className="text-xs font-medium text-emerald-700 dark:text-emerald-400">Latest Backup</p>
+                    <div className="p-3 rounded-xl bg-indigo-50/50 dark:bg-indigo-500/10 border border-indigo-200/60 dark:border-indigo-800/60">
+                      <p className="text-xs font-medium text-indigo-600 dark:text-indigo-400">Latest Backup</p>
                       <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
                         {new Date(backups[0].createdAt).toLocaleDateString('en-US', {
                           month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit',
@@ -667,7 +667,7 @@ export default function Dashboard() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => navigate('/admin/backup')}
-                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-medium transition-colors"
+                    className="w-full flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors"
                   >
                     <Shield size={16} />
                     Manage Backups

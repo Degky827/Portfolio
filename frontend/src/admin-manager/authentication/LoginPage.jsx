@@ -257,7 +257,7 @@ export default function Login() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 15 }}
-              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-purple-900 to-purple-700 text-white text-xl font-black flex items-center justify-center mx-auto mb-4 shadow-lg"
+              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-700 to-indigo-500 text-white text-xl font-black flex items-center justify-center mx-auto mb-4 shadow-lg"
             >
               ደካ
             </motion.div>
@@ -283,8 +283,8 @@ export default function Login() {
                   exit={{ opacity: 0, y: -10 }}
                   transition={{ delay: 0.1 }}
                 >
-                  <div className="w-12 h-12 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-3">
-                    <Smartphone size={24} className="text-purple-600 dark:text-purple-400" />
+                  <div className="w-12 h-12 rounded-xl bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center mx-auto mb-3">
+                    <Smartphone size={24} className="text-indigo-600 dark:text-indigo-400" />
                   </div>
                   <h1 className="text-2xl font-black text-gray-900 dark:text-white">Two-Factor Authentication</h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -369,7 +369,7 @@ export default function Login() {
                   disabled={loading}
                   whileHover={{ scale: loading ? 1 : 1.02 }}
                   whileTap={{ scale: loading ? 1 : 0.98 }}
-                  className="w-full py-3.5 bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-900/30 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-indigo-500/25 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Signing in...</>
@@ -389,7 +389,7 @@ export default function Login() {
                     <div className="flex justify-center">
                       {googleLoading ? (
                         <div className="w-full py-3 flex items-center justify-center gap-2 border border-gray-300 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800">
-                          <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 border-t-purple-700 rounded-full animate-spin" />
+                          <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 border-t-indigo-600 rounded-full animate-spin" />
                           <span className="text-sm text-gray-500 dark:text-gray-400">Connecting to Google...</span>
                         </div>
                       ) : (
@@ -453,7 +453,7 @@ export default function Login() {
                   disabled={loading || totpCode.join('').length !== TOTP_LENGTH}
                   whileHover={{ scale: loading || totpCode.join('').length !== TOTP_LENGTH ? 1 : 1.02 }}
                   whileTap={{ scale: loading || totpCode.join('').length !== TOTP_LENGTH ? 1 : 0.98 }}
-                  className="w-full py-3.5 bg-gradient-to-r from-purple-700 to-purple-900 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-purple-900/30 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
+                  className="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl hover:shadow-lg hover:shadow-indigo-500/25 transition-all disabled:opacity-60 flex items-center justify-center gap-2"
                 >
                   {loading ? (
                     <><div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />Verifying...</>
