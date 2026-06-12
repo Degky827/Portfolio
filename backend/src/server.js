@@ -28,7 +28,7 @@ const notificationRoutes = require('./admin/notifications/notifications.routes')
 
 const app = express()
 
-app.set('trust proxy', true)
+app.set('trust proxy', 'loopback')
 
 app.use(cookieParser())
 
@@ -117,14 +117,32 @@ async function start() {
   await backupScheduler.initializeScheduler()
   await healthMonitor.initializeMonitor()
 
-  const server = http.createServer(app)
-  initSocket(server)
+  async function attemptStart(port, retries = 3) {
+    const server = http.createServer(app)
+    initSocket(server)
 
-  server.listen(config.port, () => {
-    console.log(
-      `Server running on port ${config.port} [${config.nodeEnv}]`,
-    )
-  })
+    server.on('error', (err) => {
+      if (err && err.code === 'EADDRINUSE') {
+        if (retries > 0) {
+          const next = port + 1
+          console.warn(`[server] Port ${port} in use — retrying on port ${next} (${retries} attempts left)`)
+          setTimeout(() => attemptStart(next, retries - 1), 500)
+          return
+        }
+        console.error(`[server] Port ${port} already in use. No retries left.`)
+        process.exit(1)
+      }
+      console.error('[server] Server error:', err)
+      process.exit(1)
+    })
+
+    server.listen(port, () => {
+      console.log(`Server running on port ${port} [${config.nodeEnv}]`)
+    })
+  }
+
+  // Start server with configured port, allow a few automatic fallbacks
+  await attemptStart(config.port, 3)
 
   const shutdown = async (signal) => {
     console.log(`\n${signal} received. Shutting down gracefully...`)
