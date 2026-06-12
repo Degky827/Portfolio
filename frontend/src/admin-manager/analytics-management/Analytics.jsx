@@ -178,13 +178,28 @@ export default function Analytics() {
       render: (row) => {
         const city = row.location?.city
         const country = row.location?.country
-        if (!city && !country) {
-          return <span className="text-gray-400 dark:text-gray-500 italic text-xs">Location Masked (Respecting Privacy)</span>
+        const ip = row.ipAddress
+        if (!city && !country && !ip) {
+          return <span className="text-gray-400 dark:text-gray-500 italic text-xs">Unknown</span>
         }
         return (
-          <span className="text-gray-700 dark:text-gray-300">
-            {[city, country].filter(Boolean).join(', ')}
-          </span>
+          <div className="flex flex-col">
+            {city || country ? (
+              <span className="text-gray-700 dark:text-gray-300 text-sm leading-tight">
+                {[city, country].filter(Boolean).join(', ')}
+              </span>
+            ) : null}
+            {ip && (
+              <span className="text-[10px] text-gray-400 dark:text-gray-500 font-mono leading-tight mt-0.5">
+                {ip}
+              </span>
+            )}
+            {!city && !country && ip && (
+              <span className="text-gray-700 dark:text-gray-300 text-sm leading-tight">
+                Location unavailable
+              </span>
+            )}
+          </div>
         )
       },
     },
