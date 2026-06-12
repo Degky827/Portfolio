@@ -7,35 +7,36 @@ const socialLinkSchema = new mongoose.Schema({
   active: { type: Boolean, default: true },
 }, { _id: true })
 
-const quickLinkSchema = new mongoose.Schema({
+const navigationItemSchema = new mongoose.Schema({
   label: { type: String, default: '' },
   url: { type: String, default: '' },
-  displayOrder: { type: Number, default: 0 },
+  order: { type: Number, default: 0 },
 }, { _id: true })
 
 const footerContentSchema = new mongoose.Schema({
-  // ── Column 1: Branding & Channels ──
+  // ── Column 1: Brand & Identity ──
   brandName: { type: String, default: '' },
-  footerDescription: { type: String, default: '' },
+  brandDescription: { type: String, default: '' },
   footerLogo: { type: String, default: '' },
   socialLinks: { type: [socialLinkSchema], default: [] },
 
-  // ── Column 2: Quick Links Navigation ──
-  quickLinks: { type: [quickLinkSchema], default: [] },
+  // ── Column 2: Navigation Links ──
+  navigation: { type: [navigationItemSchema], default: [] },
 
-  // ── Column 3: Humanized Contact Hub ──
-  locationLine1: { type: String, default: '' },
-  locationLine2: { type: String, default: '' },
-  email: { type: String, default: '' },
+  // ── Column 3: Contact & Location ──
+  locationHeadline: { type: String, default: '' },
+  subLocation: { type: String, default: '' },
+  locationMapUrl: { type: String, default: '' },
+  emailAddress: { type: String, default: '' },
   emailProtocol: { type: String, default: 'mailto' },
-  phone: { type: String, default: '' },
+  phoneNumber: { type: String, default: '' },
   phoneProtocol: { type: String, enum: ['tel', 'whatsapp', 'telegram', 'custom'], default: 'tel' },
   phoneCustomUrl: { type: String, default: '' },
 
-  // ── Bottom Bar Utilities ──
+  // ── Footer Bottom Bar ──
   copyrightText: { type: String, default: '' },
   visualSeparator: { type: String, default: '' },
-  techAttribution: { type: String, default: '' },
+  attributionText: { type: String, default: '' },
 
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
 }, { timestamps: true })
