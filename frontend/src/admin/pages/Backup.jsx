@@ -51,19 +51,20 @@ export default function Backup() {
   const [restoreAck, setRestoreAck] = useState(false)
   const [restoring, setRestoring] = useState(false)
 
-  const fetch = async () => {
+  const loadBackups = async () => {
     setLoading(true)
     try {
       const { backups: list } = await listBackups()
-      setBackups(list || [])
-    } catch {
+      setBackups(Array.isArray(list) ? list : [])
+    } catch (err) {
+      console.error('Failed to load backups:', err)
       setToast({ message: 'Failed to load backups', type: 'error' })
     } finally {
       setLoading(false)
     }
   }
 
-  useEffect(() => { fetch() }, [])
+  useEffect(() => { loadBackups() }, [])
 
   const handleCreate = async () => {
     setCreating(true)
@@ -73,11 +74,12 @@ export default function Backup() {
         const name = res.filename || res.backup?.name || 'Unknown'
         const size = res.fileSize || res.backup?.fileSize
         setToast({ message: `Backup created: ${name} (${fmtBytes(size)})`, type: 'success' })
-        fetch()
+        loadBackups()
       } else {
         throw new Error(res?.error || res?.message || 'Failed to create backup')
       }
     } catch (err) {
+      console.error('Create backup error:', err)
       const errMsg = err?.response?.data?.error || err?.response?.data?.message || err?.message || 'Failed to create backup'
       setToast({ message: errMsg, type: 'error' })
     } finally {
@@ -92,10 +94,11 @@ export default function Backup() {
     try {
       const { backup } = await uploadBackup(file)
       setToast({ message: 'Backup uploaded successfully', type: 'success' })
-      fetch()
+      loadBackups()
       setRestoreTarget(backup)
       setRestoreAck(false)
     } catch (err) {
+      console.error('Upload backup error:', err)
       setToast({
         message: err.response?.data?.error || err.response?.data?.message || err.message || 'Failed to upload backup',
         type: 'error',
@@ -113,10 +116,11 @@ export default function Backup() {
       const url = URL.createObjectURL(blob)
       const a = document.createElement('a')
       a.href = url
-      a.download = `${(backup.name || 'backup').replace(/[^a-zA-Z0-9]/g, '_')}.json`
+      a.download = `${(backup?.name || 'backup').replace(/[^a-zA-Z0-9]/g, '_')}.json`
       a.click()
       URL.revokeObjectURL(url)
-    } catch {
+    } catch (err) {
+      console.error('Download backup error:', err)
       setToast({ message: 'Failed to download backup', type: 'error' })
     }
   }
@@ -128,8 +132,9 @@ export default function Backup() {
       await deleteBackup(deleteTarget._id)
       setToast({ message: 'Backup deleted', type: 'success' })
       setDeleteTarget(null)
-      fetch()
-    } catch {
+      loadBackups()
+    } catch (err) {
+      console.error('Delete backup error:', err)
       setToast({ message: 'Failed to delete backup', type: 'error' })
     } finally {
       setDeleting(false)
@@ -144,8 +149,9 @@ export default function Backup() {
       setToast({ message: 'Backup restored successfully', type: 'success' })
       setRestoreTarget(null)
       setRestoreAck(false)
-      fetch()
-    } catch {
+      loadBackups()
+    } catch (err) {
+      console.error('Restore backup error:', err)
       setToast({ message: 'Failed to restore backup', type: 'error' })
     } finally {
       setRestoring(false)
@@ -328,7 +334,7 @@ export default function Backup() {
                   <div>
                     <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-3">Backup Contents</h4>
                     <div className="grid grid-cols-2 gap-2">
-                      {Object.entries(restoreTarget.summary || {}).map(([key, count]) => (
+                      {Object.entries(restoreTarget?.summary || {}).map(([key, count]) => (
                         <div
                           key={key}
                           className="flex items-center justify-between px-3 py-2 rounded-lg bg-gray-50 dark:bg-slate-800"
