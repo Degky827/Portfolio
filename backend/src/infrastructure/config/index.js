@@ -20,6 +20,7 @@ const config = {
       'http://localhost:5173',
   ),
   googleClientId: process.env.GOOGLE_CLIENT_ID,
+  adminEmail: (process.env.ADMIN_EMAIL || '').trim().toLowerCase(),
 }
 
 const missing = REQUIRED_VARS.filter((name) => !process.env[name])
