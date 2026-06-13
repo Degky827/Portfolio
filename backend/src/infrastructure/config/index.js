@@ -5,6 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
 }
 
 const REQUIRED_VARS = ['JWT_SECRET']
+const GOOGLE_REQUIRED_VARS = ['GOOGLE_CLIENT_ID', 'ADMIN_EMAIL']
 
 const config = {
   port: parseInt(process.env.PORT, 10) || 5000,
@@ -20,6 +21,7 @@ const config = {
       'http://localhost:5173',
   ),
   googleClientId: process.env.GOOGLE_CLIENT_ID,
+  googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
   adminEmail: (process.env.ADMIN_EMAIL || '').trim().toLowerCase(),
 }
 
@@ -33,6 +35,14 @@ if (missing.length > 0) {
   if (process.env.NODE_ENV === 'production') {
     process.exit(1)
   }
+}
+
+const googleMissing = GOOGLE_REQUIRED_VARS.filter((name) => !process.env[name])
+if (googleMissing.length > 0) {
+  console.warn(
+    `[config] Google OAuth will be DISABLED. Missing: ${googleMissing.join(', ')}` +
+      '\n  Set them in backend/.env or in your deployment environment to enable Google sign-in.',
+  )
 }
 
 function parseCorsOrigins(raw) {

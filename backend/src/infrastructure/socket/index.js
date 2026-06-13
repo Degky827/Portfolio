@@ -5,12 +5,17 @@ const config = require('../config')
 let io = null
 
 function initSocket(server) {
-  const allowedOrigins = [
+  const hardcodedOrigins = [
     'https://modernize-portifo.vercel.app',
     'http://localhost:5173',
     'http://localhost:3000',
-    ...config.corsOrigins.filter((o) => !o.startsWith('http://localhost')),
   ]
+
+  const allowedOrigins = [
+    ...hardcodedOrigins,
+    ...config.corsOrigins.filter((o) => !hardcodedOrigins.includes(o)),
+    config.frontendUrl,
+  ].filter(Boolean)
 
   io = new Server(server, {
     cors: {
@@ -18,6 +23,7 @@ function initSocket(server) {
         if (!origin || allowedOrigins.includes(origin)) {
           callback(null, true)
         } else {
+          console.warn(`[socket:cors] Blocked origin: ${origin}`)
           callback(null, false)
         }
       },
