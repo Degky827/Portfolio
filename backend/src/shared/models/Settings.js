@@ -38,6 +38,7 @@ const settingsSchema = new mongoose.Schema(
     publicEmail: { type: String, default: '', trim: true },
     publicPhone: { type: String, default: '', trim: true },
     publicAddress: { type: String, default: '', trim: true },
+    responseMessageTemplate: { type: String, default: '' },
 
     socialLinks: {
       github: { type: String, default: '' },
@@ -46,6 +47,7 @@ const settingsSchema = new mongoose.Schema(
       twitter: { type: String, default: '' },
       facebook: { type: String, default: '' },
       instagram: { type: String, default: '' },
+      youtube: { type: String, default: '' },
     },
 
     branding: { type: brandingSchema, default: () => ({}) },

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import {
   Save, RefreshCw, Globe, Palette, Mail, Share2,
@@ -7,23 +7,29 @@ import PageHeader from '../shared/PageHeader'
 import ImageUpload from '../shared/ImageUpload'
 import Toast from '../shared/Toast'
 import { getSettings, updateSettings } from '../../shared/services/settingsService'
-import { useBrandingValidation } from '../../shared/hooks/useBrandingValidation'
-
-const socialFields = [
-  { key: 'github', label: 'GitHub', placeholder: 'https://github.com/username' },
-  { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/in/username' },
-  { key: 'telegram', label: 'Telegram', placeholder: 'https://t.me/username' },
-  { key: 'twitter', label: 'Twitter / X', placeholder: 'https://twitter.com/username' },
-  { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/username' },
-  { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/username' },
-]
 
 const sectionConfig = [
-  { id: 'general', label: 'General Settings', icon: Globe },
-  { id: 'portfolio', label: 'Portfolio Settings', icon: Palette },
-  { id: 'contact', label: 'Contact Settings', icon: Mail },
-  { id: 'social', label: 'Social Media Settings', icon: Share2 },
+  { id: 'general', label: 'General', icon: Globe },
+  { id: 'portfolio', label: 'Portfolio', icon: Palette },
+  { id: 'contact', label: 'Contact', icon: Mail },
+  { id: 'social', label: 'Social Media', icon: Share2 },
 ]
+
+const socialFields = [
+  { key: 'github', label: 'GitHub URL', placeholder: 'https://github.com/username', icon: 'github' },
+  { key: 'linkedin', label: 'LinkedIn URL', placeholder: 'https://linkedin.com/in/username', icon: 'linkedin' },
+  { key: 'twitter', label: 'Twitter / X URL', placeholder: 'https://twitter.com/username', icon: 'twitter' },
+  { key: 'youtube', label: 'YouTube URL', placeholder: 'https://youtube.com/@username', icon: 'youtube' },
+  { key: 'facebook', label: 'Facebook URL', placeholder: 'https://facebook.com/username', icon: 'facebook' },
+  { key: 'instagram', label: 'Instagram URL', placeholder: 'https://instagram.com/username', icon: 'instagram' },
+]
+
+const inputClass = (hasError) =>
+  `w-full px-4 py-2.5 rounded-xl border bg-white dark:bg-slate-800/80 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all text-sm ${
+    hasError ? 'border-red-500' : 'border-gray-200 dark:border-slate-700/60'
+  }`
+
+const labelClass = 'block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-slate-400 mb-1.5'
 
 export default function Settings() {
   const [form, setForm] = useState({
@@ -38,9 +44,10 @@ export default function Settings() {
     publicEmail: '',
     publicPhone: '',
     publicAddress: '',
+    responseMessageTemplate: '',
     socialLinks: {
-      github: '', linkedin: '', telegram: '',
-      twitter: '', facebook: '', instagram: '',
+      github: '', linkedin: '', twitter: '',
+      youtube: '', facebook: '', instagram: '',
     },
   })
   const [logoFile, setLogoFile] = useState(null)
@@ -49,20 +56,11 @@ export default function Settings() {
   const [faviconFile, setFaviconFile] = useState(null)
   const [faviconUrl, setFaviconUrl] = useState('')
   const [existingFavicon, setExistingFavicon] = useState('')
-  const [activeSection, setActiveSection] = useState('general')
-  const [loading, setLoading] = useState(false)
+  const [activeTab, setActiveTab] = useState('general')
+  const [saving, setSaving] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [toast, setToast] = useState(null)
   const [errors, setErrors] = useState({})
-
-  const {
-    validateFavicon, validateLogoSvg, validateDescription,
-    faviconErrors, logoSvgErrors,
-    RECOMMENDED_DESC_MIN, RECOMMENDED_DESC_MAX,
-  } = useBrandingValidation()
-
-  const [descValidation, setDescValidation] = useState({ length: 0, warnings: [], inOptimalRange: false })
-  const faviconInputRef = useRef(null)
 
   useEffect(() => {
     ;(async () => {
@@ -81,18 +79,18 @@ export default function Settings() {
             publicEmail: settings.publicEmail || '',
             publicPhone: settings.publicPhone || '',
             publicAddress: settings.publicAddress || '',
+            responseMessageTemplate: settings.responseMessageTemplate || '',
             socialLinks: {
               github: settings.socialLinks?.github || '',
               linkedin: settings.socialLinks?.linkedin || '',
-              telegram: settings.socialLinks?.telegram || '',
               twitter: settings.socialLinks?.twitter || '',
+              youtube: settings.socialLinks?.youtube || '',
               facebook: settings.socialLinks?.facebook || '',
               instagram: settings.socialLinks?.instagram || '',
             },
           })
           setExistingLogo(settings.logo || '')
           setExistingFavicon(settings.favicon || '')
-          setDescValidation(validateDescription(settings.description || ''))
         }
       } catch {
         setToast({ message: 'Failed to load settings', type: 'error' })
@@ -100,7 +98,7 @@ export default function Settings() {
         setFetching(false)
       }
     })()
-  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+  }, [])
 
   function validate() {
     const errs = {}
@@ -109,32 +107,29 @@ export default function Settings() {
     if (form.publicEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.publicEmail)) {
       errs.publicEmail = 'Invalid email format'
     }
-    if (form.projectsPerPage < 1 || form.projectsPerPage > 50) errs.projectsPerPage = 'Must be 1-50'
-    if (form.certificatesPerPage < 1 || form.certificatesPerPage > 50) errs.certificatesPerPage = 'Must be 1-50'
+    if (form.projectsPerPage < 1 || form.projectsPerPage > 50) errs.projectsPerPage = 'Must be 1–50'
+    if (form.certificatesPerPage < 1 || form.certificatesPerPage > 50) errs.certificatesPerPage = 'Must be 1–50'
     setErrors(errs)
     return Object.keys(errs).length === 0
   }
 
-  const handleChange = (field) => (e) => {
+  const setField = (field) => (e) => {
     const val = e.target.value
     setForm((prev) => ({ ...prev, [field]: val }))
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
-    if (field === 'description') {
-      setDescValidation(validateDescription(val))
-    }
   }
 
-  const handleNumberChange = (field) => (e) => {
+  const setNumber = (field) => (e) => {
     const val = parseInt(e.target.value, 10)
     setForm((prev) => ({ ...prev, [field]: isNaN(val) ? '' : val }))
     if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
   }
 
-  const handleBoolChange = (field) => (e) => {
+  const setBool = (field) => (e) => {
     setForm((prev) => ({ ...prev, [field]: e.target.checked }))
   }
 
-  const handleSocialChange = (key) => (e) => {
+  const setSocial = (key) => (e) => {
     setForm((prev) => ({
       ...prev,
       socialLinks: { ...prev.socialLinks, [key]: e.target.value },
@@ -142,32 +137,19 @@ export default function Settings() {
   }
 
   const handleFaviconChange = (val) => {
-    if (typeof val === 'string') {
-      setFaviconUrl(val)
-      setFaviconFile(null)
-    } else if (val instanceof File) {
-      validateFavicon(val)
-      setFaviconFile(val)
-      setFaviconUrl('')
-    }
+    if (typeof val === 'string') { setFaviconUrl(val); setFaviconFile(null) }
+    else if (val instanceof File) { setFaviconFile(val); setFaviconUrl('') }
   }
 
   const handleLogoChange = (val) => {
-    if (typeof val === 'string') {
-      setLogoUrl(val)
-      setLogoFile(null)
-      validateLogoSvg(val)
-    } else if (val instanceof File) {
-      validateLogoSvg(val)
-      setLogoFile(val)
-      setLogoUrl('')
-    }
+    if (typeof val === 'string') { setLogoUrl(val); setLogoFile(null) }
+    else if (val instanceof File) { setLogoFile(val); setLogoUrl('') }
   }
 
   const handleSubmit = async (e) => {
     e.preventDefault()
     if (!validate()) return
-    setLoading(true)
+    setSaving(true)
 
     const fd = new FormData()
     Object.entries(form).forEach(([key, val]) => {
@@ -184,322 +166,258 @@ export default function Settings() {
 
     try {
       await updateSettings(fd)
-      setToast({ message: 'Settings updated successfully', type: 'success' })
+      setToast({ message: 'Settings saved successfully', type: 'success' })
     } catch (err) {
-      setToast({ message: err.response?.data?.message || 'Failed to update settings', type: 'error' })
+      setToast({ message: err.response?.data?.message || 'Failed to save settings', type: 'error' })
     } finally {
-      setLoading(false)
+      setSaving(false)
     }
   }
 
   if (fetching) {
     return (
-      <div className="flex items-center justify-center py-20">
+      <div className="flex items-center justify-center min-h-[60vh]">
         <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
       </div>
     )
   }
 
   return (
-    <div>
+    <div className="relative min-h-[calc(100vh-8rem)]">
       <PageHeader
         title="Settings"
         subtitle="Manage your portfolio configuration, contact details, and social links."
       />
 
       <form onSubmit={handleSubmit}>
-        {/* Section tabs */}
-        <div className="flex gap-2 mb-6 overflow-x-auto pb-2">
+        {/* Tab Pills */}
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-2 scrollbar-none">
           {sectionConfig.map(({ id, label, icon: Icon }) => (
             <button
               key={id}
               type="button"
-              onClick={() => setActiveSection(id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium whitespace-nowrap transition-colors ${
-                activeSection === id
-                  ? 'bg-primary text-white shadow-lg shadow-primary/25'
-                  : 'bg-white dark:bg-slate-900 text-gray-600 dark:text-gray-400 border border-gray-200 dark:border-slate-800 hover:bg-gray-100 dark:hover:bg-slate-800'
+              onClick={() => setActiveTab(id)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-semibold whitespace-nowrap transition-all duration-200 ${
+                activeTab === id
+                  ? 'bg-primary text-white shadow-lg shadow-primary/30'
+                  : 'bg-white dark:bg-slate-800/60 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700/50 hover:bg-slate-50 dark:hover:bg-slate-700/80'
               }`}
             >
-              <Icon size={18} />
+              <Icon size={17} />
               {label}
             </button>
           ))}
         </div>
 
-        {activeSection === 'general' && (
+        {/* ── General ── */}
+        {activeTab === 'general' && (
           <motion.div
-            initial={{ opacity: 0, y: 12 }}
+            key="general"
+            initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
             className="grid grid-cols-1 lg:grid-cols-3 gap-6"
           >
             <div className="lg:col-span-2 space-y-6">
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5">
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">General Settings</h2>
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 space-y-5 shadow-sm">
+                <h2 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Globe size={18} className="text-primary" />
+                  General Settings
+                </h2>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                    Portfolio Owner Name
-                  </label>
-                  <input
-                    type="text"
-                    value={form.ownerName}
-                    onChange={handleChange('ownerName')}
+                  <label className={labelClass}>Portfolio Owner Name</label>
+                  <input type="text" value={form.ownerName} onChange={setField('ownerName')}
                     placeholder="e.g. John Doe"
-                    className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.ownerName ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
-                  />
+                    className={inputClass(errors.ownerName)} />
                   {errors.ownerName && <p className="text-xs text-red-500 mt-1">{errors.ownerName}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                    Portfolio Title
-                  </label>
-                  <input
-                    type="text"
-                    value={form.title}
-                    onChange={handleChange('title')}
+                  <label className={labelClass}>Portfolio Title</label>
+                  <input type="text" value={form.title} onChange={setField('title')}
                     placeholder="e.g. Full-Stack Developer Portfolio"
-                    className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.title ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
-                  />
+                    className={inputClass(errors.title)} />
                   {errors.title && <p className="text-xs text-red-500 mt-1">{errors.title}</p>}
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                    Portfolio Description
-                    <span className={`ml-2 font-normal ${descValidation.inOptimalRange ? 'text-green-500' : descValidation.length > 0 ? 'text-amber-500' : 'text-gray-400'}`}>
-                      ({descValidation.length} chars)
-                    </span>
-                  </label>
-                  <textarea
-                    value={form.description}
-                    onChange={handleChange('description')}
-                    rows={3}
-                    placeholder="A short description of your portfolio..."
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all resize-none"
-                  />
-                  {descValidation.warnings.map((w, i) => (
-                    <p key={i} className="text-xs text-amber-500 mt-1 flex items-center gap-1">
-                      <span>⚠</span> {w}
-                    </p>
-                  ))}
-                  {descValidation.inOptimalRange && (
-                    <p className="text-xs text-green-500 mt-1 flex items-center gap-1">
-                      <span>✓</span> SEO-optimized meta-description length
-                    </p>
-                  )}
-                  <p className="text-xs text-gray-400 mt-1">
-                    Recommended: {RECOMMENDED_DESC_MIN}–{RECOMMENDED_DESC_MAX} characters for SEO
-                  </p>
+                  <label className={labelClass}>Portfolio Description</label>
+                  <textarea value={form.description} onChange={setField('description')}
+                    rows={3} placeholder="A short description of your portfolio..."
+                    className={`${inputClass()} resize-none`} />
                 </div>
               </div>
             </div>
 
             <div className="space-y-6">
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
-                <ImageUpload
-                  value={existingLogo}
-                  label="Portfolio Logo"
-                  onChange={handleLogoChange}
-                />
-                {logoSvgErrors.length > 0 && logoSvgErrors.map((e, i) => (
-                  <p key={i} className="text-xs text-amber-500 mt-1 flex items-center gap-1">
-                    <span>⚠</span> {e}
-                  </p>
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                <ImageUpload value={existingLogo} label="Portfolio Logo" onChange={handleLogoChange} />
+              </div>
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm">
+                <ImageUpload value={existingFavicon} label="Portfolio Favicon" onChange={handleFaviconChange} />
+                <p className="text-xs text-slate-400 mt-2">Recommended: 1:1 ratio, .ico/.webp, under 50KB</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── Portfolio ── */}
+        {activeTab === 'portfolio' && (
+          <motion.div
+            key="portfolio"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
+              <h2 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <Palette size={18} className="text-primary" />
+                Portfolio Settings
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div>
+                  <label className={labelClass}>Default Theme</label>
+                  <select value={form.defaultTheme} onChange={setField('defaultTheme')}
+                    className={inputClass()}>
+                    <option value="dark">Dark</option>
+                    <option value="light">Light</option>
+                  </select>
+                </div>
+                <div>
+                  <label className={labelClass}>Projects Per Page</label>
+                  <input type="number" value={form.projectsPerPage} onChange={setNumber('projectsPerPage')}
+                    min={1} max={50} className={inputClass(errors.projectsPerPage)} />
+                  {errors.projectsPerPage && <p className="text-xs text-red-500 mt-1">{errors.projectsPerPage}</p>}
+                </div>
+                <div>
+                  <label className={labelClass}>Certificates Per Page</label>
+                  <input type="number" value={form.certificatesPerPage} onChange={setNumber('certificatesPerPage')}
+                    min={1} max={50} className={inputClass(errors.certificatesPerPage)} />
+                  {errors.certificatesPerPage && <p className="text-xs text-red-500 mt-1">{errors.certificatesPerPage}</p>}
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-2 border-t border-slate-100 dark:border-slate-800">
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input type="checkbox" checked={form.enableAnalytics} onChange={setBool('enableAnalytics')}
+                    className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/50" />
+                  <div>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">Enable Portfolio Analytics</span>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Track page views and visitor statistics</p>
+                  </div>
+                </label>
+                <label className="flex items-center gap-3 cursor-pointer select-none">
+                  <input type="checkbox" checked={form.enableContactForm} onChange={setBool('enableContactForm')}
+                    className="w-4 h-4 rounded border-slate-300 dark:border-slate-600 text-primary focus:ring-primary/50" />
+                  <div>
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">Enable Contact Form</span>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">Allow visitors to send you messages</p>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── Contact ── */}
+        {activeTab === 'contact' && (
+          <motion.div
+            key="contact"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
+              <h2 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <Mail size={18} className="text-primary" />
+                Contact Settings
+              </h2>
+
+              <div>
+                <label className={labelClass}>Admin Email</label>
+                <input type="email" value={form.publicEmail} onChange={setField('publicEmail')}
+                  placeholder="admin@example.com"
+                  className={inputClass(errors.publicEmail)} />
+                {errors.publicEmail && <p className="text-xs text-red-500 mt-1">{errors.publicEmail}</p>}
+              </div>
+
+              <div>
+                <label className={labelClass}>Contact Phone Number</label>
+                <input type="tel" value={form.publicPhone} onChange={setField('publicPhone')}
+                  placeholder="+1 (555) 123-4567" className={inputClass()} />
+              </div>
+
+              <div>
+                <label className={labelClass}>Office Address</label>
+                <input type="text" value={form.publicAddress} onChange={setField('publicAddress')}
+                  placeholder="Addis Ababa, Ethiopia" className={inputClass()} />
+              </div>
+
+              <div>
+                <label className={labelClass}>Auto-reply Message Template</label>
+                <textarea value={form.responseMessageTemplate} onChange={setField('responseMessageTemplate')}
+                  rows={4}
+                  placeholder="Thank you for reaching out! I'll get back to you within 24 hours."
+                  className={`${inputClass()} resize-none`} />
+                <p className="text-xs text-slate-400 mt-1">This message is sent automatically when a visitor submits the contact form.</p>
+              </div>
+            </div>
+          </motion.div>
+        )}
+
+        {/* ── Social Media ── */}
+        {activeTab === 'social' && (
+          <motion.div
+            key="social"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.2 }}
+          >
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
+              <h2 className="text-base font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                <Share2 size={18} className="text-primary" />
+                Social Media Settings
+              </h2>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {socialFields.map(({ key, label, placeholder }) => (
+                  <div key={key}>
+                    <label className={labelClass}>{label}</label>
+                    <input type="url" value={form.socialLinks[key]} onChange={setSocial(key)}
+                      placeholder={placeholder} className={inputClass()} />
+                  </div>
                 ))}
               </div>
-              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
-                <ImageUpload
-                  value={existingFavicon}
-                  label="Portfolio Favicon"
-                  onChange={handleFaviconChange}
-                />
-                <p className="text-xs text-gray-400 mt-2">Recommended: 1:1 ratio, .ico/.webp, under 50KB</p>
-                {faviconErrors.length > 0 && faviconErrors.map((e, i) => (
-                  <p key={i} className="text-xs text-red-500 mt-1 flex items-center gap-1">
-                    <span>✕</span> {e}
-                  </p>
-                ))}
-              </div>
             </div>
           </motion.div>
         )}
-
-        {activeSection === 'portfolio' && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5 max-w-2xl"
-          >
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Portfolio Settings</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                  Default Theme
-                </label>
-                <select
-                  value={form.defaultTheme}
-                  onChange={handleChange('defaultTheme')}
-                  className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                >
-                  <option value="dark">Dark</option>
-                  <option value="light">Light</option>
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                  Projects Per Page
-                </label>
-                <input
-                  type="number"
-                  value={form.projectsPerPage}
-                  onChange={handleNumberChange('projectsPerPage')}
-                  min={1} max={50}
-                  className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.projectsPerPage ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
-                />
-                {errors.projectsPerPage && <p className="text-xs text-red-500 mt-1">{errors.projectsPerPage}</p>}
-              </div>
-              <div>
-                <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                  Certificates Per Page
-                </label>
-                <input
-                  type="number"
-                  value={form.certificatesPerPage}
-                  onChange={handleNumberChange('certificatesPerPage')}
-                  min={1} max={50}
-                  className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.certificatesPerPage ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
-                />
-                {errors.certificatesPerPage && <p className="text-xs text-red-500 mt-1">{errors.certificatesPerPage}</p>}
-              </div>
-            </div>
-
-            <div className="space-y-4 pt-2">
-              <label className="flex items-center gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={form.enableAnalytics}
-                  onChange={handleBoolChange('enableAnalytics')}
-                  className="w-5 h-5 rounded border-gray-300 dark:border-slate-600 text-primary focus:ring-primary/50"
-                />
-                <div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">Enable Portfolio Analytics</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Track page views and visitor statistics</p>
-                </div>
-              </label>
-              <label className="flex items-center gap-3 cursor-pointer select-none">
-                <input
-                  type="checkbox"
-                  checked={form.enableContactForm}
-                  onChange={handleBoolChange('enableContactForm')}
-                  className="w-5 h-5 rounded border-gray-300 dark:border-slate-600 text-primary focus:ring-primary/50"
-                />
-                <div>
-                  <span className="text-sm font-medium text-gray-900 dark:text-white">Enable Contact Form</span>
-                  <p className="text-xs text-gray-500 dark:text-gray-400">Allow visitors to send you messages</p>
-                </div>
-              </label>
-            </div>
-          </motion.div>
-        )}
-
-        {activeSection === 'contact' && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5 max-w-2xl"
-          >
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Contact Settings</h2>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                Public Email
-              </label>
-              <input
-                type="email"
-                value={form.publicEmail}
-                onChange={handleChange('publicEmail')}
-                placeholder="hello@example.com"
-                className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.publicEmail ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
-              />
-              {errors.publicEmail && <p className="text-xs text-red-500 mt-1">{errors.publicEmail}</p>}
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                Public Phone
-              </label>
-              <input
-                type="tel"
-                value={form.publicPhone}
-                onChange={handleChange('publicPhone')}
-                placeholder="+1 (555) 123-4567"
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                Public Address
-              </label>
-              <input
-                type="text"
-                value={form.publicAddress}
-                onChange={handleChange('publicAddress')}
-                placeholder="Addis Ababa, Ethiopia"
-                className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-              />
-            </div>
-          </motion.div>
-        )}
-
-        {activeSection === 'social' && (
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5 max-w-2xl"
-          >
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white">Social Media Settings</h2>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {socialFields.map(({ key, label, placeholder }) => (
-                <div key={key}>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                    {label}
-                  </label>
-                  <input
-                    type="url"
-                    value={form.socialLinks[key]}
-                    onChange={handleSocialChange(key)}
-                    placeholder={placeholder}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  />
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mt-6 flex justify-end"
-        >
-          <button
-            type="submit"
-            disabled={loading}
-            className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
-          >
-            {loading ? (
-              <><RefreshCw size={18} className="animate-spin" /> Saving...</>
-            ) : (
-              <><Save size={18} /> Save Changes</>
-            )}
-          </button>
-        </motion.div>
       </form>
+
+      {/* Floating Save Button */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.9 }}
+        animate={{ opacity: 1, scale: 1 }}
+        className="fixed bottom-6 right-6 z-50"
+      >
+        <button
+          type="button"
+          onClick={handleSubmit}
+          disabled={saving}
+          className="flex items-center gap-2.5 px-6 py-3.5 rounded-2xl text-sm font-bold text-white bg-primary hover:bg-primary/90 shadow-xl shadow-primary/30 transition-all duration-200 disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {saving ? (
+            <><RefreshCw size={18} className="animate-spin" /> Saving...</>
+          ) : (
+            <><Save size={18} /> Save Changes</>
+          )}
+        </button>
+      </motion.div>
 
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
