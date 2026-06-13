@@ -12,6 +12,21 @@ const api = axios.create({
 
 axios.defaults.withCredentials = true
 
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response) {
+      const { status, config, data } = error.response
+      if (status === 0 || status >= 500) {
+        console.error(`[api] Server error (${status}): ${config?.url}`, data?.message || '')
+      }
+    } else if (error.code === 'ERR_NETWORK') {
+      console.error('[api] Network error: Cannot reach server at', api.defaults.baseURL)
+    }
+    return Promise.reject(error)
+  },
+)
+
 export default api
 
 export async function logPortfolioVisit({ viewerName = 'Anonymous', page = '/', referrer = '', visitorId = '', src } = {}) {

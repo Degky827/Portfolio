@@ -28,16 +28,21 @@ const notificationRoutes = require('./admin/notifications/notifications.routes')
 
 const app = express()
 
-app.set('trust proxy', 'loopback')
+app.set('trust proxy', config.nodeEnv === 'production' ? 1 : 'loopback')
 
 app.use(cookieParser())
 
-const allowedOrigins = [
+const hardcodedOrigins = [
   'https://modernize-portifo.vercel.app',
   'http://localhost:5173',
   'http://localhost:3000',
-  ...config.corsOrigins.filter((o) => !o.startsWith('http://localhost')),
 ]
+
+const allowedOrigins = [
+  ...hardcodedOrigins,
+  ...config.corsOrigins.filter((o) => !hardcodedOrigins.includes(o)),
+  config.frontendUrl,
+].filter(Boolean)
 
 const corsOptions = {
   origin(origin, callback) {
@@ -45,6 +50,7 @@ const corsOptions = {
       callback(null, true)
     } else {
       console.warn(`[cors] Blocked origin: ${origin}`)
+      console.warn(`[cors] Allowed origins: ${JSON.stringify(allowedOrigins)}`)
       callback(null, false)
     }
   },

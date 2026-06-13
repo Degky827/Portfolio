@@ -1,5 +1,7 @@
 import api from './api'
 
+let requestId = 0
+
 export async function login(email, password) {
   const { data } = await api.post('/auth/login', { email, password })
   return data
@@ -41,6 +43,17 @@ export async function disable2FA() {
 }
 
 export async function googleAuth(idToken) {
-  const { data } = await api.post('/auth/google', { idToken })
-  return data
+  const rid = ++requestId
+  console.log(`[authService:${rid}] Sending Google auth request (token length: ${idToken.length})`)
+  try {
+    const { data } = await api.post('/auth/google', { idToken })
+    console.log(`[authService:${rid}] Response:`, JSON.stringify({ success: data?.success, message: data?.message }))
+    return data
+  } catch (error) {
+    console.error(`[authService:${rid}] Request failed:`, {
+      status: error.response?.status,
+      message: error.response?.data?.message || error.message,
+    })
+    throw error
+  }
 }

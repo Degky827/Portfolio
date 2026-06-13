@@ -1,12 +1,11 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Eye, EyeOff, LogIn, AlertCircle, Shield, ArrowLeft, Smartphone } from 'lucide-react'
+import { Eye, EyeOff, LogIn, AlertCircle, Shield, ArrowLeft, Smartphone, Bug, ExternalLink } from 'lucide-react'
 import { useAuth } from './AuthContext'
 import { login as loginApi, verify2FA as verify2FAApi, googleAuth } from '../../shared/services/authService'
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
-
 const TOTP_LENGTH = 6
 
 export default function Login() {
@@ -22,6 +21,8 @@ export default function Login() {
   const [verifiedEmail, setVerifiedEmail] = useState('')
   const [totpCode, setTotpCode] = useState(Array.from({ length: TOTP_LENGTH }, () => ''))
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [gsiError, setGsiError] = useState('')
+  const [showDiagnostics, setShowDiagnostics] = useState(false)
   const inputRefs = useRef([])
   const navigatingRef = useRef(false)
   const googleButtonRef = useRef(null)
@@ -46,43 +47,76 @@ export default function Login() {
   }, [step])
 
   useEffect(() => {
-    if (!GOOGLE_CLIENT_ID) return
-    const script = document.createElement('script')
-    script.src = 'https://accounts.google.com/gsi/client'
-    script.async = true
-    script.defer = true
-    script.onload = () => {
-      if (googleButtonRef.current && !googleInitialized.current) {
-        googleInitialized.current = true
-        window.google.accounts.id.initialize({
-          client_id: GOOGLE_CLIENT_ID,
-          callback: handleGoogleCredentialResponse,
-        })
-        window.google.accounts.id.renderButton(googleButtonRef.current, {
-          theme: 'outline',
-          size: 'large',
-          width: googleButtonRef.current.offsetWidth || 320,
-          shape: 'rectangular',
-          text: 'signin_with',
-          logo_alignment: 'left',
-        })
-      }
+    if (!GOOGLE_CLIENT_ID) {
+      setGsiError('Google sign-in not configured (VITE_GOOGLE_CLIENT_ID is missing).')
+      return
     }
-    document.head.appendChild(script)
+
+    let cancelled = false
+    let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]')
+    if (!script) {
+      script = document.createElement('script')
+      script.src = 'https://accounts.google.com/gsi/client'
+      script.async = true
+      script.defer = true
+
+      script.onerror = () => {
+        if (!cancelled) {
+          setGsiError(
+            'Failed to load Google sign-in library. Check your network connection or disable ad-blocker for this site.',
+          )
+        }
+      }
+
+      script.onload = () => {
+        if (cancelled) return
+        try {
+          if (googleButtonRef.current && !googleInitialized.current) {
+            googleInitialized.current = true
+            window.google.accounts.id.initialize({
+              client_id: GOOGLE_CLIENT_ID,
+              callback: handleGoogleCredentialResponse,
+            })
+            window.google.accounts.id.renderButton(googleButtonRef.current, {
+              theme: 'outline',
+              size: 'large',
+              width: googleButtonRef.current.offsetWidth || 320,
+              shape: 'rectangular',
+              text: 'signin_with',
+              logo_alignment: 'left',
+            })
+          }
+        } catch (initErr) {
+          if (!cancelled) {
+            const isOriginError = initErr.message?.includes('origin') || initErr.message?.includes('a hr')
+            setGsiError(
+              isOriginError
+                ? 'Google sign-in blocked for this domain. The production URL must be added to Authorized JavaScript Origins in Google Cloud Console.'
+                : `Google sign-in initialization failed: ${initErr.message}`,
+            )
+          }
+        }
+      }
+
+      document.head.appendChild(script)
+    }
+
     return () => {
-      const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]')
-      if (existing) existing.remove()
+      cancelled = true
     }
   }, [])
 
   const handleGoogleCredentialResponse = async (response) => {
     if (!response?.credential) {
-      setError('Google sign-in failed. No credential received.')
+      setError('Google sign-in failed. No credential received. Check browser console for details.')
+      console.error('[Google Auth] No credential in response:', response)
       return
     }
     setError('')
+    setGsiError('')
     setGoogleLoading(true)
     try {
+      console.log('[Google Auth] Sending credential to backend (length: ' + response.credential.length + ')')
       const data = await googleAuth(response.credential)
       if (data?.success) {
         navigatingRef.current = true
@@ -93,11 +127,22 @@ export default function Login() {
         setError(data?.message || 'Google authentication failed.')
       }
     } catch (err) {
-      if (err.response?.data?.message) {
-        setError(err.response.data.message)
+      const serverMsg = err.response?.data?.message
+      const status = err.response?.status
+      if (serverMsg) {
+        setError(serverMsg)
+      } else if (status === 429) {
+        setError('Too many Google sign-in attempts. Try again in 15 minutes.')
+      } else if (status === 0 || err.code === 'ERR_NETWORK') {
+        setError('Cannot reach authentication server. Check your connection or the server may be down.')
       } else {
         setError('Google sign-in failed. Please try again.')
       }
+      console.error('[Google Auth] API Error:', {
+        status,
+        message: serverMsg || err.message,
+        config: err.config?.url,
+      })
     } finally {
       setGoogleLoading(false)
     }
@@ -295,12 +340,24 @@ export default function Login() {
             </AnimatePresence>
           </div>
 
+          {gsiError && (
+            <motion.div
+              initial={{ opacity: 0, y: -10, height: 0 }}
+              animate={{ opacity: 1, y: 0, height: 'auto' }}
+              exit={{ opacity: 0 }}
+              className="mb-4 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 flex items-start gap-3"
+            >
+              <AlertCircle size={18} className="text-amber-500 shrink-0 mt-0.5" />
+              <span className="text-amber-700 dark:text-amber-400 text-sm font-medium">{gsiError}</span>
+            </motion.div>
+          )}
+
           {error && (
             <motion.div
               initial={{ opacity: 0, y: -10, height: 0 }}
               animate={{ opacity: 1, y: 0, height: 'auto' }}
               exit={{ opacity: 0 }}
-              className="mb-6 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3"
+              className="mb-4 p-3 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 flex items-start gap-3"
             >
               <AlertCircle size={18} className="text-red-500 shrink-0 mt-0.5" />
               <span className="text-red-700 dark:text-red-400 text-sm font-medium">{error}</span>
@@ -392,10 +449,51 @@ export default function Login() {
                           <div className="w-5 h-5 border-2 border-gray-300 dark:border-gray-600 border-t-indigo-600 rounded-full animate-spin" />
                           <span className="text-sm text-gray-500 dark:text-gray-400">Connecting to Google...</span>
                         </div>
+                      ) : gsiError ? (
+                        <button
+                          onClick={() => {
+                            setGsiError('')
+                            googleInitialized.current = false
+                            const existing = document.querySelector('script[src="https://accounts.google.com/gsi/client"]')
+                            if (existing) existing.remove()
+                            setTimeout(() => window.location.reload(), 100)
+                          }}
+                          className="w-full py-3 px-4 border border-amber-300 dark:border-amber-700 rounded-xl bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 text-sm font-medium hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors"
+                        >
+                          Retry Google Sign-In
+                        </button>
                       ) : (
                         <div ref={googleButtonRef} className="w-full min-h-[40px]" />
                       )}
                     </div>
+
+                    <button
+                      type="button"
+                      onClick={() => setShowDiagnostics((prev) => !prev)}
+                      className="mt-2 w-full flex items-center justify-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors"
+                    >
+                      <Bug size={12} />
+                      {showDiagnostics ? 'Hide' : 'Show'} auth diagnostics
+                    </button>
+
+                    {showDiagnostics && (
+                      <motion.div
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        className="mt-3 p-3 rounded-lg bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 text-xs font-mono text-gray-600 dark:text-gray-400 space-y-1"
+                      >
+                        <div>Origin: <span className="text-gray-900 dark:text-gray-200">{window.location.origin}</span></div>
+                        <div>Client ID: <span className="text-gray-900 dark:text-gray-200">{GOOGLE_CLIENT_ID.substring(0, 16)}...</span></div>
+                        <div>API URL: <span className="text-gray-900 dark:text-gray-200">{import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}</span></div>
+                        <div>Production: <span className="text-gray-900 dark:text-gray-200">{String(import.meta.env.PROD)}</span></div>
+                        <div>
+                          GSI loaded:{' '}
+                          <span className={window.google?.accounts?.id ? 'text-green-600' : 'text-red-600'}>
+                            {window.google?.accounts?.id ? 'Yes' : 'No'}
+                          </span>
+                        </div>
+                      </motion.div>
+                    )}
                   </>
                 )}
               </motion.form>
