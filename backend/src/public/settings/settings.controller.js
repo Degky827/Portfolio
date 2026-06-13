@@ -62,7 +62,7 @@ async function updateSettings(req, res) {
       'ownerName', 'title', 'description',
       'defaultTheme', 'projectsPerPage', 'certificatesPerPage',
       'enableAnalytics', 'enableContactForm',
-      'publicEmail', 'publicPhone', 'publicAddress',
+      'publicEmail', 'publicPhone', 'publicAddress', 'responseMessageTemplate',
     ]
 
     textFields.forEach((field) => {
@@ -76,6 +76,12 @@ async function updateSettings(req, res) {
         }
       }
     })
+
+    if (req.body.defaultTheme !== undefined && ['light', 'dark'].includes(req.body.defaultTheme)) {
+      if (!settings.globalAppearance) settings.globalAppearance = {}
+      settings.globalAppearance.mode = req.body.defaultTheme
+      settings.globalAppearance.syncedAt = new Date()
+    }
 
     if (req.body.branding) {
       let branding = req.body.branding
@@ -108,7 +114,7 @@ async function updateSettings(req, res) {
         try { socialLinks = JSON.parse(socialLinks) } catch { /* ignore */ }
       }
       if (!settings.socialLinks) settings.socialLinks = {}
-      ;['github', 'linkedin', 'telegram', 'twitter', 'facebook', 'instagram'].forEach((key) => {
+      ;['github', 'linkedin', 'telegram', 'twitter', 'facebook', 'instagram', 'youtube'].forEach((key) => {
         if (socialLinks[key] !== undefined) {
           settings.socialLinks[key] = socialLinks[key]
         }
