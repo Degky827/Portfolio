@@ -310,7 +310,7 @@ export default function Login() {
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.2, type: 'spring', stiffness: 200, damping: 15 }}
-              className="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-700 to-indigo-500 text-white text-xl font-black flex items-center justify-center mx-auto mb-4 shadow-lg"
+              className="w-16 h-16 rounded-2xl bg-indigo-600 text-white text-xl font-black flex items-center justify-center mx-auto mb-4 shadow-lg"
             >
               ደካ
             </motion.div>

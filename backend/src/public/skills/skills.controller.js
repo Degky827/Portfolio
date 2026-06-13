@@ -1,5 +1,6 @@
 const Skill = require('../../shared/models/Skill')
 const Category = require('../../shared/models/Category')
+const { createNotification } = require('../../admin/notifications/notifications.controller')
 
 const VALID_CATEGORIES = [
   'Frontend Development',
@@ -88,6 +89,14 @@ async function createSkill(req, res) {
       issuer: issuer || '',
       issueDate: issueDate || '',
       certificateUrl: certificateUrl || '',
+    })
+
+    await createNotification({
+      type: 'skill_created',
+      title: isCert ? 'Certificate Added' : 'Skill Added',
+      message: `"${name}" has been created${isCert && issuer ? ` by ${issuer}` : ''}`,
+      link: '/admin/skills',
+      metadata: { skillId: skill._id, category, isCert },
     })
 
     res.status(201).json({ success: true, skill })
@@ -204,6 +213,14 @@ async function updateSkill(req, res) {
 
     await skill.save()
 
+    await createNotification({
+      type: 'skill_updated',
+      title: isCert ? 'Certificate Updated' : 'Skill Updated',
+      message: `"${skill.name}" has been updated.`,
+      link: '/admin/skills',
+      metadata: { skillId: skill._id, category: skill.category, isCert },
+    })
+
     res.json({ success: true, skill })
   } catch (error) {
     console.error('[skills] updateSkill error:', error)
@@ -222,7 +239,17 @@ async function deleteSkill(req, res) {
       return res.status(404).json({ success: false, message: 'Skill not found' })
     }
 
+    const isCert = skill.category?.toLowerCase() === 'certificates'
+
     await Skill.findByIdAndDelete(req.params.id)
+
+    await createNotification({
+      type: 'skill_deleted',
+      title: isCert ? 'Certificate Deleted' : 'Skill Deleted',
+      message: `"${skill.name}" has been deleted.`,
+      link: '/admin/skills',
+      metadata: { category: skill.category, isCert },
+    })
 
     res.json({ success: true, message: 'Skill deleted successfully' })
   } catch (error) {

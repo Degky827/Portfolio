@@ -14,14 +14,14 @@ function getVisitorId() {
 }
 
 export function usePageTracking(viewerName) {
-  const tracked = useRef(false)
+  const lastPage = useRef('')
   const location = useLocation()
 
   useEffect(() => {
-    if (tracked.current) return
     if (location.pathname.startsWith('/admin') || location.pathname === '/login') return
+    if (lastPage.current === location.pathname) return
 
-    tracked.current = true
+    lastPage.current = location.pathname
     const visitorId = getVisitorId()
 
     const params = new URLSearchParams(window.location.search)

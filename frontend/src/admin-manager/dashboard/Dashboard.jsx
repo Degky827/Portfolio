@@ -166,8 +166,7 @@ export default function Dashboard() {
       {/* ── Welcome Section ─────────────────────────── */}
       <motion.div variants={itemVariants}>
         <div className="relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/60 dark:border-slate-800/60 shadow-premium dark:shadow-premium-dark">
-          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/[0.03] to-transparent dark:from-indigo-500/[0.05]" />
-          <div className="relative p-6 sm:p-8">
+          <div className="p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
               <div className="flex items-start gap-4">
                 {user?.avatar ? (
@@ -176,7 +175,7 @@ export default function Dashboard() {
                   <motion.div
                     whileHover={{ scale: 1.05 }}
                     transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                    className="w-14 h-14 rounded-2xl bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-xl font-black flex items-center justify-center shadow-lg shadow-indigo-500/20 shrink-0"
+                    className="w-14 h-14 rounded-2xl bg-indigo-600 text-white text-xl font-black flex items-center justify-center shrink-0"
                   >
                     {user?.name?.charAt(0).toUpperCase() || user?.email?.charAt(0).toUpperCase() || 'A'}
                   </motion.div>

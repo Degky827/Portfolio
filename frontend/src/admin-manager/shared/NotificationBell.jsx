@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Bell, CheckCheck, Trash2, ExternalLink, Mail, Shield, Download,
-  RefreshCw, AlertTriangle, Info,
+  RefreshCw, AlertTriangle, Info, PlusCircle,
 } from 'lucide-react'
 import { getUnreadCount, listNotifications, markRead, markAllRead, deleteNotification } from '../../shared/services/notificationService'
 
@@ -14,6 +14,9 @@ const typeConfig = {
   restore_completed: { icon: RefreshCw, color: 'text-green-500', bg: 'bg-green-100 dark:bg-green-900/30' },
   content_updated: { icon: RefreshCw, color: 'text-blue-500', bg: 'bg-blue-100 dark:bg-blue-900/30' },
   system_warning: { icon: AlertTriangle, color: 'text-orange-500', bg: 'bg-orange-100 dark:bg-orange-900/30' },
+  skill_created: { icon: PlusCircle, color: 'text-purple-500', bg: 'bg-purple-100 dark:bg-purple-900/30' },
+  skill_updated: { icon: RefreshCw, color: 'text-cyan-500', bg: 'bg-cyan-100 dark:bg-cyan-900/30' },
+  skill_deleted: { icon: Trash2, color: 'text-red-500', bg: 'bg-red-100 dark:bg-red-900/30' },
 }
 
 export default function NotificationBell() {

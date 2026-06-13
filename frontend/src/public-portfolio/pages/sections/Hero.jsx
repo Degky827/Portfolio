@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, GraduationCap, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, Heart, Briefcase, Coffee, Smile, Star, Download, MapPin } from 'lucide-react'
+import { ArrowRight, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, GraduationCap, Heart, Briefcase, Coffee, Smile, Download, MapPin } from 'lucide-react'
 
 const iconMap = {
   Award, BookOpen, Cpu, Users, Trophy, Shield,
@@ -182,17 +182,6 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
               variants={itemVariants}
               className="flex-1 text-center lg:text-left space-y-4 sm:space-y-6 md:space-y-8"
             >
-              <motion.div 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5 }}
-                className="inline-flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-primary/5 rounded-full border border-primary/10"
-              >
-                <GraduationCap className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-primary" />
-                <span className="text-xs sm:text-sm font-bold text-primary uppercase tracking-[0.2em]">{badge}</span>
-                <Star className="w-3 h-3 text-yellow-500 fill-yellow-500" />
-              </motion.div>
-
               <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-[#F8FAFC] leading-tight">
                 {greeting}{' '}
                 <span className="text-primary">

@@ -254,7 +254,7 @@ export default function UserManagement() {
                   <tr key={u._id} className="hover:bg-gray-50 dark:hover:bg-slate-800/30 transition-colors">
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
-                        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-700 to-purple-900 text-white text-xs font-bold flex items-center justify-center shrink-0">
+                        <div className="w-9 h-9 rounded-full bg-purple-700 text-white text-xs font-bold flex items-center justify-center shrink-0">
                           {u.name.charAt(0).toUpperCase()}
                         </div>
                         <div>

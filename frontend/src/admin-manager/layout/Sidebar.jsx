@@ -29,7 +29,7 @@ function UserAvatar({ user, size = 'md', className = '' }) {
   }
 
   return (
-    <div className={`${dim} rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 text-white font-black flex items-center justify-center shrink-0 shadow-md shadow-indigo-500/20 ${className}`}>
+    <div className={`${dim} rounded-lg bg-indigo-600 text-white font-black flex items-center justify-center shrink-0 ${className}`}>
       {initials}
     </div>
   )

@@ -145,7 +145,7 @@ export default function ImageUpload({
                 initial={{ width: 0 }}
                 animate={{ width: `${progress}%` }}
                 transition={{ ease: 'easeOut', duration: 0.3 }}
-                className="h-full bg-gradient-to-r from-primary to-secondary rounded-full"
+                className="h-full bg-indigo-600 rounded-full"
               />
             </div>
             {fileInfo && (

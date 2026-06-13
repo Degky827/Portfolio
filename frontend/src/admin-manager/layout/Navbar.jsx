@@ -249,7 +249,7 @@ export default function Navbar() {
                 ) : (
                   <motion.div
                     whileHover={{ scale: 1.05 }}
-                    className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-[10px] font-black flex items-center justify-center shadow-md shadow-indigo-500/20"
+                    className="w-7 h-7 rounded-lg bg-indigo-600 text-white text-[10px] font-black flex items-center justify-center"
                   >
                     {user?.displayName?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase() || 'D'}
                   </motion.div>
@@ -280,7 +280,7 @@ export default function Navbar() {
                           ) : (
                             <motion.div
                               whileHover={{ scale: 1.05 }}
-                              className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-600 to-indigo-800 text-white text-sm font-black flex items-center justify-center shadow-md shadow-indigo-500/20"
+                              className="w-10 h-10 rounded-xl bg-indigo-600 text-white text-sm font-black flex items-center justify-center"
                             >
                               {user?.displayName?.charAt(0).toUpperCase() || user?.name?.charAt(0).toUpperCase() || 'D'}
                             </motion.div>

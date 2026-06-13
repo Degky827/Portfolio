@@ -67,6 +67,11 @@
     0% { background-position: -200% 0; }
     100% { background-position: 200% 0; }
   }
+
+  @keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
 }
 
 body {
@@ -174,6 +179,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .animate-fade-in {
   animation: fade-in 0.5s ease-out forwards;
+}
+
+.cursor-blink {
+  animation: blink 0.7s step-end infinite;
 }
 
 .shimmer-bg {
