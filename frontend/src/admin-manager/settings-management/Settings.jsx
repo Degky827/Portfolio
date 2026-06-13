@@ -7,6 +7,7 @@ import PageHeader from '../shared/PageHeader'
 import ImageUpload from '../shared/ImageUpload'
 import Toast from '../shared/Toast'
 import { getSettings, updateSettings } from '../../shared/services/settingsService'
+import { PLATFORM_CONFIG, detectSocialPlatform } from '../../shared/utils/socialPlatform'
 
 const sectionConfig = [
   { id: 'general', label: 'General', icon: Globe },
@@ -172,6 +173,24 @@ export default function Settings() {
     } finally {
       setSaving(false)
     }
+  }
+
+  function SocialInput({ socialKey, placeholder }) {
+    const url = form.socialLinks[socialKey] || ''
+    const detected = detectSocialPlatform(url)
+    const config = detected ? PLATFORM_CONFIG[detected] : null
+    const Icon = config?.Icon || Globe
+    const iconColor = config?.color || '#94A3B8'
+    return (
+      <div className="relative">
+        <span className="absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none z-10 transition-colors duration-200">
+          <Icon size={16} style={{ color: url ? iconColor : '#475569' }} />
+        </span>
+        <input type="url" value={url} onChange={setSocial(socialKey)}
+          placeholder={placeholder}
+          className={`${inputClass()} pl-10`} />
+      </div>
+    )
   }
 
   if (fetching) {
@@ -389,8 +408,7 @@ export default function Settings() {
                 {socialFields.map(({ key, label, placeholder }) => (
                   <div key={key}>
                     <label className={labelClass}>{label}</label>
-                    <input type="url" value={form.socialLinks[key]} onChange={setSocial(key)}
-                      placeholder={placeholder} className={inputClass()} />
+                    <SocialInput socialKey={key} placeholder={placeholder} />
                   </div>
                 ))}
               </div>
