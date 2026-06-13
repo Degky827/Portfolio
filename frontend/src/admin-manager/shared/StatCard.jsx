@@ -26,12 +26,12 @@ function AnimatedCounter({ value, duration = 1.5 }) {
 }
 
 const accentConfig = {
-  primary: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
-  green: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
-  blue: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
-  purple: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
-  amber: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
-  cyan: { gradient: 'from-indigo-500 to-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400', shadow: 'shadow-indigo-500/20' },
+  primary: { bg: 'bg-indigo-600', light: 'bg-indigo-50', text: 'text-indigo-600', darkText: 'dark:text-indigo-400' },
+  green: { bg: 'bg-emerald-600', light: 'bg-emerald-50', text: 'text-emerald-600', darkText: 'dark:text-emerald-400' },
+  blue: { bg: 'bg-blue-600', light: 'bg-blue-50', text: 'text-blue-600', darkText: 'dark:text-blue-400' },
+  purple: { bg: 'bg-purple-600', light: 'bg-purple-50', text: 'text-purple-600', darkText: 'dark:text-purple-400' },
+  amber: { bg: 'bg-amber-600', light: 'bg-amber-50', text: 'text-amber-600', darkText: 'dark:text-amber-400' },
+  cyan: { bg: 'bg-cyan-600', light: 'bg-cyan-50', text: 'text-cyan-600', darkText: 'dark:text-cyan-400' },
 }
 
 export default function StatCard({ title, value, icon: Icon, trend, loading, delay = 0, accent = 'primary', subtitle }) {
@@ -65,15 +65,12 @@ export default function StatCard({ title, value, icon: Icon, trend, loading, del
       whileHover={{ y: -6, scale: 1.01 }}
       className="group relative overflow-hidden rounded-2xl bg-white dark:bg-slate-900 border border-gray-200/60 dark:border-slate-800/60 shadow-premium dark:shadow-premium-dark hover:shadow-premium-lg dark:hover:shadow-premium-lg-dark transition-shadow duration-300"
     >
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500">
-        <div className={`absolute inset-0 bg-gradient-to-br ${config.gradient} opacity-[0.02] dark:opacity-[0.04]`} />
-      </div>
       <div className="relative z-10 p-6">
         <div className="flex items-center justify-between mb-4">
           <motion.div
             whileHover={{ rotate: 10, scale: 1.1 }}
             transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-            className={`w-12 h-12 rounded-xl bg-gradient-to-br ${config.gradient} flex items-center justify-center text-white shadow-lg ${config.shadow}`}
+            className={`w-12 h-12 rounded-xl ${config.bg} flex items-center justify-center text-white shadow-lg`}
           >
             <Icon size={22} />
           </motion.div>
@@ -113,12 +110,7 @@ export default function StatCard({ title, value, icon: Icon, trend, loading, del
           </motion.p>
         )}
       </div>
-      <motion.div
-        initial={{ scaleX: 0 }}
-        animate={{ scaleX: 1 }}
-        transition={{ delay: delay + 0.4, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        className={`absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r ${config.gradient} origin-left`}
-      />
+      <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gray-200 dark:bg-slate-700" />
     </motion.div>
   )
 }

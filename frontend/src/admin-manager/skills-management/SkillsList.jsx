@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   Plus, Search, X, Edit2, Trash2,
-  Star, StarOff, Code2,
+  Code2,
 } from 'lucide-react'
 import PageHeader from '../shared/PageHeader'
 import ConfirmModal from '../shared/ConfirmModal'
@@ -303,11 +303,7 @@ export default function Skills() {
                           </div>
                         </td>
                         <td className="px-4 py-4 text-center hidden sm:table-cell">
-                          {skill.featured ? (
-                            <Star size={16} className="text-amber-500 fill-amber-500 mx-auto" />
-                          ) : (
-                            <StarOff size={16} className="text-gray-300 dark:text-gray-600 mx-auto" />
-                          )}
+                          <div className={`w-2.5 h-2.5 rounded-full mx-auto ${skill.featured ? 'bg-amber-500' : 'bg-gray-300 dark:bg-gray-600'}`} />
                         </td>
                         <td className="px-4 py-4 text-center">
                           <span className={`inline-flex px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded-full border ${statusStyles[skill.status] || statusStyles.inactive}`}>

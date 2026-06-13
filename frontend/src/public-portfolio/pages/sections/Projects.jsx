@@ -187,7 +187,7 @@ export default function Projects() {
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6 md:gap-8 max-w-5xl lg:max-w-7xl mx-auto"
+          className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 max-w-6xl mx-auto"
           role="tabpanel"
         >
           {filteredProjects.length > 0 ? (
@@ -205,10 +205,10 @@ export default function Projects() {
                 key={project._id || index}
                 variants={itemVariants}
                 whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                className="group bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20"
+                className="group bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
               >
                 {/* Thumbnail Image */}
-                <div className="relative aspect-video overflow-hidden bg-gray-100 dark:bg-neutral-900">
+                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-neutral-900">
                   <img
                     src={thumbUrl ? (thumbUrl.startsWith('http') ? thumbUrl : `http://localhost:5000${thumbUrl}`) : DEFAULT_THUMBNAIL}
                     alt={title}
@@ -247,9 +247,9 @@ export default function Projects() {
                 </div>
 
                 {/* Content */}
-                <div className="p-5 sm:p-6">
-                  <div className="flex items-start justify-between gap-2 mb-2">
-                    <h3 className="text-lg font-bold text-gray-900 dark:text-[#F8FAFC] group-hover:text-primary transition-colors leading-tight font-display">
+                <div className="p-4">
+                  <div className="flex items-start justify-between gap-2 mb-1.5">
+                    <h3 className="text-base font-bold text-gray-900 dark:text-[#F8FAFC] group-hover:text-primary transition-colors leading-tight font-display">
                       {title}
                     </h3>
                     {project.status && (
@@ -260,17 +260,17 @@ export default function Projects() {
                       </span>
                     )}
                   </div>
-                  <p className="text-sm text-gray-500 dark:text-[#94A3B8] mb-3 leading-relaxed line-clamp-2">
+                  <p className="text-xs text-gray-500 dark:text-[#94A3B8] mb-2 leading-relaxed line-clamp-2">
                     {desc}
                   </p>
                   {project.fullDescription && (
                     <div
-                      className="text-sm text-gray-600 dark:text-[#94A3B8] mb-3 leading-relaxed prose prose-sm dark:prose-invert max-w-none line-clamp-3"
+                      className="text-xs text-gray-600 dark:text-[#94A3B8] mb-2 leading-relaxed prose prose-sm dark:prose-invert max-w-none line-clamp-2"
                       dangerouslySetInnerHTML={{ __html: project.fullDescription }}
                     />
                   )}
 
-                  <div className="flex flex-wrap gap-1.5 mb-4" role="list" aria-label="Project technologies">
+                  <div className="flex flex-wrap gap-1 mb-3" role="list" aria-label="Project technologies">
                     {techs.slice(0, 5).map((tag, i) => (
                       <span
                         key={i}
@@ -282,7 +282,7 @@ export default function Projects() {
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-3 pt-3 border-t border-gray-100 dark:border-[#334155]">
+                  <div className="flex items-center gap-3 pt-2 border-t border-gray-100 dark:border-[#334155]">
                     {repoUrl && repoUrl !== '#' && (
                       <a
                         href={repoUrl}

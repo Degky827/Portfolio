@@ -1,3 +1,4 @@
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Code, Award, Users, TrendingUp } from 'lucide-react'
 
@@ -70,6 +71,137 @@ export default function About({ content, hero, aboutContent }) {
   function MetricIcon({ name, ...props }) {
     const Icon = iconMap[name] || Award
     return <Icon {...props} />
+  }
+
+  function TypingCodeBlock({ fullName, roleTitle, locationText, skills, available }) {
+    const lines = useRef([
+      [
+        { text: 'const ', className: 'text-purple-400' },
+        { text: 'developer', className: 'text-blue-400' },
+        { text: ' = {', className: '' },
+      ],
+      [
+        { text: '  name: ', className: 'text-slate-400' },
+        { text: `"${fullName}"`, className: 'text-green-400' },
+        { text: ',', className: '' },
+      ],
+      [
+        { text: '  role: ', className: 'text-slate-400' },
+        { text: `"${roleTitle}"`, className: 'text-green-400' },
+        { text: ',', className: '' },
+      ],
+      [
+        { text: '  location: ', className: 'text-slate-400' },
+        { text: `"${locationText}"`, className: 'text-green-400' },
+        { text: ',', className: '' },
+      ],
+      [
+        { text: '  skills: [', className: 'text-slate-400' },
+        { text: `"${skills.join('", "')}"`, className: 'text-green-400' },
+        { text: '],', className: '' },
+      ],
+      [
+        { text: '  available: ', className: 'text-slate-400' },
+        { text: available ? 'true' : 'false', className: 'text-orange-400' },
+        { text: ',', className: '' },
+      ],
+      [
+        { text: '}', className: '' },
+        { text: ';', className: '' },
+      ],
+    ])
+
+    const flatLines = useRef(
+      lines.current.map((tokens) => tokens.map((t) => t.text).join(''))
+    )
+
+    const [lineIdx, setLineIdx] = useState(0)
+    const [charIdx, setCharIdx] = useState(0)
+    const [paused, setPaused] = useState(false)
+    const timerRef = useRef(null)
+    const pauseTimerRef = useRef(null)
+
+    const totalLines = lines.current.length
+
+    const tick = useCallback(() => {
+      setCharIdx((prev) => {
+        const currentLineLen = flatLines.current[lineIdx].length
+        if (prev < currentLineLen) {
+          return prev + 1
+        }
+        if (lineIdx + 1 < totalLines) {
+          setLineIdx((l) => l + 1)
+          return 0
+        }
+        setPaused(true)
+        return prev
+      })
+    }, [lineIdx, totalLines])
+
+    useEffect(() => {
+      if (paused) {
+        pauseTimerRef.current = setTimeout(() => {
+          setLineIdx(0)
+          setCharIdx(0)
+          setPaused(false)
+        }, 3000)
+        return () => clearTimeout(pauseTimerRef.current)
+      }
+      timerRef.current = setTimeout(tick, 35)
+      return () => clearTimeout(timerRef.current)
+    }, [lineIdx, charIdx, paused, tick])
+
+    return (
+      <div className="p-4 sm:p-6 md:p-8 lg:p-10 font-mono text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed overflow-x-auto">
+        <pre className="text-slate-300">
+          <code>
+            {lines.current.map((tokens, i) => {
+              const isCurrent = i === lineIdx
+              const isPast = i < lineIdx
+              const isFuture = i > lineIdx
+              const lineText = flatLines.current[i]
+
+              let display
+              if (isFuture) {
+                display = <span className="opacity-0">{lineText}</span>
+              } else if (isCurrent) {
+                const shown = lineText.slice(0, charIdx)
+                const segments = []
+                let pos = 0
+                tokens.forEach((tok) => {
+                  if (pos >= shown.length) return
+                  const end = pos + tok.text.length
+                  const slice = shown.slice(Math.max(pos, 0), end)
+                  if (slice) {
+                    segments.push(
+                      <span key={pos} className={tok.className}>{slice}</span>
+                    )
+                  }
+                  pos = end
+                })
+                display = (
+                  <>
+                    {segments}
+                    <span className="inline-block w-[2px] h-[1em] bg-slate-300 align-text-bottom ml-0.5 cursor-blink" />
+                  </>
+                )
+              } else {
+                display = tokens.map((tok, ti) => (
+                  <span key={ti} className={tok.className}>{tok.text}</span>
+                ))
+              }
+
+              return (
+                <span key={i} className="block">
+                  {display}
+                </span>
+              )
+            })}
+            <span id="typing-scroll-anchor" />
+          </code>
+        </pre>
+      </div>
+    )
   }
 
   return (
@@ -152,19 +284,13 @@ export default function About({ content, hero, aboutContent }) {
                     <Code size={12} className="w-3 h-3 sm:w-4 sm:h-4" /> about_me.js
                   </span>
                 </div>
-                <div className="p-4 sm:p-6 md:p-8 lg:p-10 font-mono text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed overflow-x-auto custom-scrollbar">
-                  <pre className="text-slate-300">
-                    <code>
-                      <span className="text-purple-400">const</span> <span className="text-blue-400">developer</span> = {'{'}<br/>
-                      &nbsp;&nbsp;                      <span className="text-slate-400">name:</span> <span className="text-green-400">"{fullName}"</span>,<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">role:</span> <span className="text-green-400">"{roleTitle}"</span>,<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">location:</span> <span className="text-green-400">"{locationText}"</span>,<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">skills:</span> [<span className="text-green-400">"{skills.join('", "')}"</span>],<br/>
-                      &nbsp;&nbsp;<span className="text-slate-400">available:</span> <span className="text-orange-400">{available ? 'true' : 'false'}</span><br/>
-                      {'}'};
-                    </code>
-                  </pre>
-                </div>
+                <TypingCodeBlock
+                  fullName={fullName}
+                  roleTitle={roleTitle}
+                  locationText={locationText}
+                  skills={skills}
+                  available={available}
+                />
 
                 {/* Highlight Metrics Below Code */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6 border-t border-slate-700/50 bg-slate-800/30">

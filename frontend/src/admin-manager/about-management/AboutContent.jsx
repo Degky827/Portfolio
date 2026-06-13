@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
   Save, RefreshCw, Plus, Trash2, ArrowUp, ArrowDown,
-  Award, Users, TrendingUp, AlertTriangle, CheckCircle,
+  Award, Users, TrendingUp, CheckCircle,
   Link, GripVertical, Terminal, ToggleLeft, Hash,
   BookOpen, Cpu, Globe, Shield, Zap, Star, Code2,
   Rocket, Trophy, Wifi, Server, Palette, Video,
@@ -60,16 +60,11 @@ function SyncBadge({ synced }) {
     return (
       <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
         <CheckCircle size={10} />
-        DB-Backed
+        Saved
       </span>
     )
   }
-  return (
-    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 border border-amber-200 dark:border-amber-800">
-      <AlertTriangle size={10} />
-      Hardcoded Fallback
-    </span>
-  )
+  return null
 }
 
 function Card({ children, className = '' }) {

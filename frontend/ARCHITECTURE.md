@@ -272,8 +272,6 @@ frontend/
 ├── postcss.config.js
 ├── vite.config.js
 ├── public/              # static public assets
-│   ├── Desalegn_CV.html
-│   └── cisco.pkt
 ├── index.html
 ├── src/
 │   ├── main.jsx

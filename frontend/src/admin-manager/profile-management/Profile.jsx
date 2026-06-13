@@ -183,7 +183,7 @@ export default function Profile() {
               className="w-16 h-16 rounded-full object-cover shrink-0 shadow-lg"
             />
           ) : (
-            <div className="w-16 h-16 rounded-full bg-gradient-to-br from-purple-700 to-purple-900 text-white text-xl font-black flex items-center justify-center shrink-0 shadow-lg">
+            <div className="w-16 h-16 rounded-full bg-purple-700 text-white text-xl font-black flex items-center justify-center shrink-0 shadow-lg">
               {displayInitial}
             </div>
           )}
