@@ -53,6 +53,39 @@ export default function Login() {
     }
 
     let cancelled = false
+
+    function initGSI() {
+      if (cancelled || !googleButtonRef.current || googleInitialized.current) return
+      try {
+        googleInitialized.current = true
+        window.google.accounts.id.initialize({
+          client_id: GOOGLE_CLIENT_ID,
+          callback: handleGoogleCredentialResponse,
+        })
+        window.google.accounts.id.renderButton(googleButtonRef.current, {
+          theme: 'outline',
+          size: 'large',
+          width: googleButtonRef.current.offsetWidth || 320,
+          shape: 'rectangular',
+          text: 'continue_with',
+          logo_alignment: 'left',
+        })
+      } catch (initErr) {
+        googleInitialized.current = false
+        const isOriginError = initErr.message?.includes('origin') || initErr.message?.includes('a hr')
+        setGsiError(
+          isOriginError
+            ? 'Google sign-in blocked for this domain. The production URL must be added to Authorized JavaScript Origins in Google Cloud Console.'
+            : `Google sign-in initialization failed: ${initErr.message}`,
+        )
+      }
+    }
+
+    if (window.google?.accounts?.id) {
+      initGSI()
+      return
+    }
+
     let script = document.querySelector('script[src="https://accounts.google.com/gsi/client"]')
     if (!script) {
       script = document.createElement('script')
@@ -68,37 +101,12 @@ export default function Login() {
         }
       }
 
-      script.onload = () => {
-        if (cancelled) return
-        try {
-          if (googleButtonRef.current && !googleInitialized.current) {
-            googleInitialized.current = true
-            window.google.accounts.id.initialize({
-              client_id: GOOGLE_CLIENT_ID,
-              callback: handleGoogleCredentialResponse,
-            })
-            window.google.accounts.id.renderButton(googleButtonRef.current, {
-              theme: 'outline',
-              size: 'large',
-              width: googleButtonRef.current.offsetWidth || 320,
-              shape: 'rectangular',
-              text: 'signin_with',
-              logo_alignment: 'left',
-            })
-          }
-        } catch (initErr) {
-          if (!cancelled) {
-            const isOriginError = initErr.message?.includes('origin') || initErr.message?.includes('a hr')
-            setGsiError(
-              isOriginError
-                ? 'Google sign-in blocked for this domain. The production URL must be added to Authorized JavaScript Origins in Google Cloud Console.'
-                : `Google sign-in initialization failed: ${initErr.message}`,
-            )
-          }
-        }
-      }
-
+      script.onload = initGSI
       document.head.appendChild(script)
+    } else if (window.google?.accounts?.id) {
+      initGSI()
+    } else {
+      script.addEventListener('load', initGSI)
     }
 
     return () => {
