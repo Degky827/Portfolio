@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowUp } from 'lucide-react'
+import { ArrowUp, MapPin, Mail, Phone } from 'lucide-react'
 import { getFooterContent } from '../../shared/services/footerService'
 import {
   FaGithub, FaLinkedin, FaTelegram, FaFacebook, FaInstagram, FaWhatsapp, FaYoutube, FaDiscord, FaTwitter,
@@ -191,7 +191,7 @@ export default function Footer() {
              <ul className="space-y-4 sm:space-y-5 md:space-y-6 text-gray-400">
               {locationHeadline && (
                 <li className="flex items-start gap-3 sm:gap-4">
-                  <span className="text-lg sm:text-xl md:text-2xl">📍</span>
+                  <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary mt-1 shrink-0" />
                   <div>
                     <span className="text-sm sm:text-base md:text-lg font-medium leading-tight block">
                       {locationHeadline}
@@ -207,13 +207,13 @@ export default function Footer() {
               )}
               {emailAddress && (
                 <li className="flex items-start gap-3 sm:gap-4">
-                  <span className="text-lg sm:text-xl md:text-2xl">📧</span>
+                  <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-primary mt-1 shrink-0" />
                   <a href={`mailto:${emailAddress}`} className="text-sm sm:text-base md:text-lg font-medium hover:text-white transition-colors break-all">{emailAddress}</a>
                 </li>
               )}
               {phoneNumber && (
                 <li className="flex items-start gap-3 sm:gap-4">
-                  <span className="text-lg sm:text-xl md:text-2xl">📱</span>
+                  <Phone className="w-5 h-5 sm:w-6 sm:h-6 text-primary mt-1 shrink-0" />
                   <a
                     href={getPhoneHref(phoneNumber, phoneProtocol, phoneCustomUrl)}
                     target={phoneProtocol !== 'tel' ? '_blank' : undefined}

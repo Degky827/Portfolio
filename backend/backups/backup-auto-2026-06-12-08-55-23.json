@@ -1,4 +1,4 @@
-{
+﻿{
   "projects": [
     {
       "_id": "6a2a0f585887181a65fc2739",
@@ -374,7 +374,7 @@
       "phoneCustomUrl": "",
       "phoneProtocol": "tel",
       "techAttribution": "Build With React and Tailwind CSS",
-      "visualSeparator": "💎🌍"
+      "visualSeparator": ""
     }
   ],
   "settings": [

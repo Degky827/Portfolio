@@ -10,10 +10,10 @@ const User = require('../src/shared/models/User')
  * MUST double-escape it in this JavaScript source file so that Node.js
  * stores the exact single backslash in the database.
  *
- *   ❌  '/35@%Dk\'      →  interpreted as string  /35@%Dk   (6 chars)
+ *   [X] '/35@%Dk\'      →  interpreted as string  /35@%Dk   (6 chars)
  *       (the `\'` is an escaped single quote — the `\` is consumed)
  *
- *   ✅  '/35@%Dk\\'     →  interpreted as string  /35@%Dk\  (7 chars)
+ *   [OK] '/35@%Dk\\'     →  interpreted as string  /35@%Dk\  (7 chars)
  *       (`\\` produces a literal backslash in JS)
  *
  * For dotenv (.env) files, wrap the value in single or double quotes:

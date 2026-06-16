@@ -22,11 +22,11 @@ function buildDiscordPayload(title, message, level = 'error', fields = []) {
 }
 
 function buildSlackPayload(title, message, level = 'error') {
-  const emoji = level === 'error' ? '🚨' : level === 'warning' ? '⚠️' : 'ℹ️'
+  const prefix = level === 'error' ? '[ERROR]' : level === 'warning' ? '[WARNING]' : '[INFO]'
   return {
-    text: `${emoji} *${title}*`,
+    text: `${prefix} *${title}*`,
     blocks: [
-      { type: 'header', text: { type: 'plain_text', text: `${emoji} ${title}` } },
+      { type: 'header', text: { type: 'plain_text', text: `${prefix} ${title}` } },
       { type: 'section', text: { type: 'mrkdwn', text: message } },
       {
         type: 'context',
