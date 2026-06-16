@@ -28,9 +28,9 @@ const itemVariants = {
 
 const getGreeting = () => {
   const h = new Date().getHours()
-  if (h < 12) return { text: 'Good Morning', emoji: '☀️' }
-  if (h < 17) return { text: 'Good Afternoon', emoji: '🌤️' }
-  return { text: 'Good Evening', emoji: '🌙' }
+  if (h < 12) return { text: 'Good Morning' }
+  if (h < 17) return { text: 'Good Afternoon' }
+  return { text: 'Good Evening' }
 }
 
 const formatCurrentDate = () => {
@@ -182,7 +182,7 @@ export default function Dashboard() {
                 )}
                 <div>
                   <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
-                    {greeting.emoji} {greeting.text}, {firstName}
+                    {greeting.text}, {firstName}
                   </h1>
                   <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">{currentDate}</p>
                   <div className="flex items-center gap-3 mt-3">

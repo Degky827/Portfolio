@@ -9,8 +9,6 @@ import { getFooterContent, updateFooterContent } from '../../shared/services/foo
 const emptySocialLink = { platform: '', url: '', displayOrder: 0, active: true }
 const emptyNavItem = { label: '', url: '', order: 0 }
 
-const EMOJI_PICKER = ['❤️', '🔥', '⭐', '✨', '🚀', '💻', '🎯', '🌟', '💡', '🎨', '🌍', '💪', '⚡', '💎', '🏆', '🎉']
-
 const PHONE_PROTOCOLS = [
   { value: 'tel', label: 'Standard Call (tel:)' },
   { value: 'whatsapp', label: 'WhatsApp (wa.me)' },
@@ -138,10 +136,6 @@ export default function FooterContent() {
       })
       return { ...prev, [key]: items }
     })
-  }
-
-  const insertEmoji = (emoji) => {
-    setForm((prev) => ({ ...prev, visualSeparator: prev.visualSeparator + emoji }))
   }
 
   const handleSubmit = async (e) => {
@@ -367,21 +361,8 @@ export default function FooterContent() {
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Visual Middle Separator</label>
-                  <input type="text" value={form.visualSeparator} onChange={set('visualSeparator')} placeholder="MADE WITH ❤️ USING" className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm" />
-                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
-                    <span className="text-[10px] text-zinc-400 font-medium uppercase tracking-wider mr-1">Emoji Insert:</span>
-                    {EMOJI_PICKER.map((emoji) => (
-                      <button
-                        key={emoji}
-                        type="button"
-                        onClick={() => insertEmoji(emoji)}
-                        className="w-7 h-7 flex items-center justify-center rounded-lg hover:bg-zinc-100 dark:hover:bg-zinc-800 text-sm transition-colors"
-                        title={`Insert ${emoji}`}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
+                  <input type="text" value={form.visualSeparator} onChange={set('visualSeparator')} placeholder="MADE WITH LOVE USING" className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm" />
+
                 </div>
                 <div>
                   <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Technology Attribution Tag</label>

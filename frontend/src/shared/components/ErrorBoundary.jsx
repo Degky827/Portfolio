@@ -26,7 +26,7 @@ export default class ErrorBoundary extends Component {
         <div className="min-h-[400px] flex items-center justify-center p-8">
           <div className="text-center max-w-md">
             <div className="w-20 h-20 mx-auto mb-6 bg-red-100 dark:bg-red-900/20 rounded-full flex items-center justify-center">
-              <span className="text-4xl">⚠️</span>
+              <span className="text-4xl">!</span>
             </div>
             <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-4">
               Something went wrong
