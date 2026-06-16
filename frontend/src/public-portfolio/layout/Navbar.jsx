@@ -1,25 +1,21 @@
 import { useState, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download } from 'lucide-react'
+import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download, Globe, Sun, Moon } from 'lucide-react'
 import { getHomeContent } from '../../shared/services/homeContentService'
 import { logPortfolioEngagement } from '../../shared/services/api'
 
-const navLinks = [
-  { id: 'home', label: 'Home' },
-  { id: 'about', label: 'About' },
-  { id: 'skills', label: 'Skills' },
-  { id: 'projects', label: 'Projects' },
-  { id: 'contact', label: 'Contact' },
-]
+const navLinkIds = ['home', 'about', 'skills', 'projects', 'contact']
 
 const initialContent = {
   logoImage: '',
   logoText: '',
   resumeUrl: '',
-  resumeButtonText: 'Download CV',
+  resumeButtonText: '',
 }
 
-export default function Navbar() {
+export default function Navbar({ darkMode, onToggleDark }) {
+  const { t, i18n } = useTranslation()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [homeContent, setHomeContent] = useState(initialContent)
@@ -32,7 +28,7 @@ export default function Navbar() {
             logoImage: res.content.logoImage || '',
             logoText: res.content.logoText || '',
             resumeUrl: res.content.resume?.url || '',
-            resumeButtonText: res.content.resumeButtonText || 'Download CV',
+            resumeButtonText: res.content.resumeButtonText || '',
           })
         }
       })
@@ -93,130 +89,162 @@ export default function Navbar() {
         <button 
           className="md:hidden w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center cursor-pointer z-[1001] bg-gray-100 dark:bg-slate-800 rounded-lg sm:rounded-xl hover:bg-primary hover:text-white transition-colors" 
           onClick={() => setIsOpen(!isOpen)} 
-          aria-label="Toggle menu"
+          aria-label={t('nav.toggleMenu')}
         >
           {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
 
-        {/* Desktop Links */}
-        <ul className="hidden md:flex items-center gap-6 lg:gap-10">
-          {navLinks.map((link, idx) => (
-            <motion.li 
-              key={link.id}
+        {/* Desktop Links + Right Controls */}
+        <div className="hidden md:flex items-center gap-8 lg:gap-12">
+          <ul className="flex items-center gap-6 lg:gap-10">
+            {navLinkIds.map((id, idx) => (
+              <motion.li 
+                key={id}
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * idx + 0.5 }}
+              >
+                <a 
+                  href={`#${id}`} 
+                  className="text-xs sm:text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors relative group"
+                  onClick={(e) => handleNavClick(e, id)}
+                >
+                  {t(`nav.${id}`)}
+                  <motion.span 
+                    className="absolute -bottom-2 left-0 w-0 h-0.5 sm:h-1 bg-primary rounded-full group-hover:w-full transition-all duration-300"
+                  />
+                </a>
+              </motion.li>
+            ))}
+          </ul>
+          <div className="flex items-center gap-2 lg:gap-3">
+            {/* Language Toggle */}
+            <motion.button
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 * idx + 0.5 }}
+              transition={{ delay: 0.6 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en')}
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors text-gray-600 dark:text-gray-300"
+              aria-label={i18n.language === 'en' ? t('nav.switchLanguage') : t('nav.switchLanguage_am')}
             >
-              <a 
-                href={`#${link.id}`} 
-                className="text-xs sm:text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors relative group"
-                onClick={(e) => handleNavClick(e, link.id)}
-              >
-                {link.label}
-                <motion.span 
-                  className="absolute -bottom-2 left-0 w-0 h-0.5 sm:h-1 bg-primary rounded-full group-hover:w-full transition-all duration-300"
-                />
-              </a>
-            </motion.li>
-          ))}
-          <motion.a
-            href={resumeUrl || '/Desalegn_Kasaye_Resume.pdf'}
-            download
-            target="_blank"
-            rel="noopener noreferrer"
-            onClick={() => logPortfolioEngagement({
-              action: 'cv_download',
-              page: window.location.pathname,
-            })}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.8 }}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-primary hover:bg-[#4F46E5] text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full hover:shadow-lg transition-all shadow-md cursor-pointer"
-          >
-            <Download size={14} className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
-            <span>{resumeButtonText || 'Resume CV'}</span>
-          </motion.a>
-        </ul>
+              <Globe size={16} className="sm:w-[18px] sm:h-[18px]" />
+              <span className="text-[9px] sm:text-[10px] font-bold ml-0.5">{i18n.language === 'en' ? t('nav.en') : t('nav.am')}</span>
+            </motion.button>
+            {/* Dark Mode Toggle */}
+            <motion.button
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.7 }}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={onToggleDark}
+              className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-lg hover:bg-primary hover:text-white transition-colors text-gray-600 dark:text-gray-300"
+              aria-label={darkMode ? t('nav.switchThemeLight') : t('nav.switchThemeDark')}
+            >
+              {darkMode ? <Sun size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Moon size={16} className="sm:w-[18px] sm:h-[18px]" />}
+            </motion.button>
+            {/* CV Download */}
+            <motion.a
+              href={resumeUrl || '/Desalegn_Kasaye_Resume.pdf'}
+              download
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={() => logPortfolioEngagement({
+                action: 'cv_download',
+                page: window.location.pathname,
+              })}
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.8 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="group flex items-center gap-2 px-4 py-2 sm:px-5 sm:py-2.5 bg-primary hover:bg-[#4F46E5] text-white text-xs sm:text-sm font-bold uppercase tracking-wider rounded-full hover:shadow-lg transition-all shadow-md cursor-pointer"
+            >
+              <Download size={14} className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
+              <span>{resumeButtonText || t('nav.downloadCv')}</span>
+            </motion.a>
+          </div>
+        </div>
 
-        {/* Mobile Sidebar */}
-        <AnimatePresence>
-          {isOpen && (
-            <>
-              <motion.div 
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                onClick={() => setIsOpen(false)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1000] md:hidden"
-              />
-              <motion.div 
-                initial={{ x: '100%', opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                exit={{ x: '100%', opacity: 0 }}
-                transition={{ type: 'spring', damping: 30, stiffness: 150 }}
-                className="fixed top-0 right-0 h-full w-full sm:w-96 bg-white/95 dark:bg-black/95 backdrop-blur-2xl z-[1001] shadow-2xl p-6 sm:p-8 md:p-10 flex flex-col"
-              >
-                <div className="flex justify-between items-center mb-10 sm:mb-14 md:mb-16">
-                  <motion.div 
-                    initial={{ scale: 0.5, rotate: -45 }}
-                    animate={{ scale: 1, rotate: 0 }}
-                    className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-sm sm:text-base font-black overflow-hidden"
+      {/* Mobile Sidebar */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            <motion.div 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1000] md:hidden"
+            />
+            <motion.div 
+              initial={{ x: '100%', opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: '100%', opacity: 0 }}
+              transition={{ type: 'spring', damping: 30, stiffness: 150 }}
+              className="fixed top-0 right-0 h-full w-full sm:w-96 bg-white/95 dark:bg-black/95 backdrop-blur-2xl z-[1001] shadow-2xl p-6 sm:p-8 md:p-10 flex flex-col"
+            >
+              <div className="flex justify-between items-center mb-10 sm:mb-14 md:mb-16">
+                <motion.div 
+                  initial={{ scale: 0.5, rotate: -45 }}
+                  animate={{ scale: 1, rotate: 0 }}
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-sm sm:text-base font-black overflow-hidden"
+                >
+                  {logoImage ? (
+                    <img src={logoImage} alt={logoText || 'Logo'} className="w-full h-full object-cover" />
+                  ) : (
+                    'ደካ'
+                  )}
+                </motion.div>
+                <motion.button 
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => setIsOpen(false)} 
+                  className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-xl sm:rounded-2xl text-xl sm:text-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
+                >
+                  <X size={24} />
+                </motion.button>
+              </div>
+              
+              <ul className="flex flex-col gap-6 sm:gap-8 md:gap-10">
+                {navLinkIds.map((id, idx) => (
+                  <motion.li 
+                    key={id}
+                    initial={{ opacity: 0, x: 50 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.1 * idx, type: 'spring' }}
                   >
-                    {logoImage ? (
-                      <img src={logoImage} alt={logoText || 'Logo'} className="w-full h-full object-cover" />
-                    ) : (
-                      'ደካ'
-                    )}
-                  </motion.div>
-                  <motion.button 
-                    whileHover={{ scale: 1.1, rotate: 90 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={() => setIsOpen(false)} 
-                    className="w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center bg-gray-100 dark:bg-slate-800 rounded-xl sm:rounded-2xl text-xl sm:text-2xl hover:bg-primary hover:text-white transition-all shadow-sm"
-                  >
-                    <X size={24} />
-                  </motion.button>
-                </div>
-                
-                <ul className="flex flex-col gap-6 sm:gap-8 md:gap-10">
-                  {navLinks.map((link, idx) => (
-                    <motion.li 
-                      key={link.id}
-                      initial={{ opacity: 0, x: 50 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 * idx, type: 'spring' }}
+                    <a 
+                      href={`#${id}`} 
+                      className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white hover:text-primary transition-all flex items-center justify-between group font-display tracking-tighter"
+                      onClick={(e) => handleNavClick(e, id)}
                     >
-                      <a 
-                        href={`#${link.id}`} 
-                        className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white hover:text-primary transition-all flex items-center justify-between group font-display tracking-tighter"
-                        onClick={(e) => handleNavClick(e, link.id)}
-                      >
-                        <span className="group-hover:translate-x-4 transition-transform duration-500">
-                          {link.label}
-                        </span>
-                        <ChevronRight className="opacity-0 group-hover:opacity-100 -translate-x-8 group-hover:translate-x-0 transition-all text-primary duration-500 w-8 h-8 sm:w-10 sm:h-10" />
-                      </a>
-                    </motion.li>
-                  ))}
-                </ul>
+                      <span className="group-hover:translate-x-4 transition-transform duration-500">
+                        {t(`nav.${id}`)}
+                      </span>
+                      <ChevronRight className="opacity-0 group-hover:opacity-100 -translate-x-8 group-hover:translate-x-0 transition-all text-primary duration-500 w-8 h-8 sm:w-10 sm:h-10" />
+                    </a>
+                  </motion.li>
+                ))}
+              </ul>
 
-                <div className="mt-auto space-y-6 sm:space-y-8">
-                  {/* Resume CV Button */}
-                  <motion.a
-                    href={resumeUrl || '/Desalegn_Kasaye_Resume.pdf'}
-                    download
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    onClick={() => { setIsOpen(false); logPortfolioEngagement({ action: 'cv_download', page: window.location.pathname }) }}
-                    className="flex items-center justify-center gap-3 w-full py-4 bg-primary text-white font-bold uppercase tracking-wider rounded-2xl hover:bg-secondary transition-colors shadow-lg shadow-primary/30"
-                  >
-                    <Download size={20} />
-                    <span>{resumeButtonText || 'Resume CV'}</span>
-                  </motion.a>
+              <div className="mt-auto space-y-6 sm:space-y-8">
+                {/* Resume CV Button */}
+                <motion.a
+                  href={resumeUrl || '/Desalegn_Kasaye_Resume.pdf'}
+                  download
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => { setIsOpen(false); logPortfolioEngagement({ action: 'cv_download', page: window.location.pathname }) }}
+                  className="flex items-center justify-center gap-3 w-full py-4 bg-primary text-white font-bold uppercase tracking-wider rounded-2xl hover:bg-secondary transition-colors shadow-lg shadow-primary/30"
+                >
+                  <Download size={20} />
+                  <span>{resumeButtonText || t('nav.downloadCv')}</span>
+                </motion.a>
 
                   {/* Contact Info Card */}
                   <div className="p-5 sm:p-6 md:p-8 bg-gray-50 dark:bg-neutral-900 rounded-2xl sm:rounded-[1.5rem] border border-gray-200 dark:border-neutral-800">

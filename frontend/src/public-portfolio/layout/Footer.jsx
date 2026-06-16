@@ -7,6 +7,7 @@ import {
 } from 'react-icons/fa6'
 import { MdEmail } from 'react-icons/md'
 import { FaXTwitter } from 'react-icons/fa6'
+import { useTranslation } from 'react-i18next'
 
 const socialIconMap = {
   github: FaGithub,
@@ -45,6 +46,7 @@ function getPhoneHref(phone, protocol, customUrl) {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
+  const { t } = useTranslation()
   const [content, setContent] = useState(null)
 
   useEffect(() => {
@@ -58,19 +60,19 @@ export default function Footer() {
     })()
   }, [])
 
-  const brandName = content?.brandName || 'DESALEGN'
-  const brandDescription = content?.brandDescription || 'Building robust digital experiences through modern web development and secure network infrastructure.'
+  const brandName = content?.brandName || t('nav.logoText')
+  const brandDescription = content?.brandDescription || t('footer.brandDescription')
   const footerLogo = content?.footerLogo || ''
 
-  const locationHeadline = content?.locationHeadline || 'Bahirdar, Ethiopia'
-  const subLocation = content?.subLocation || 'Amhara Region'
+  const locationHeadline = content?.locationHeadline || t('footer.location')
+  const subLocation = content?.subLocation || t('footer.subLocation')
   const locationMapUrl = content?.locationMapUrl || ''
-  const emailAddress = content?.emailAddress || 'desalegnky827@gmail.com'
-  const phoneNumber = content?.phoneNumber || '+251 908 720 092'
+  const emailAddress = content?.emailAddress || t('footer.email')
+  const phoneNumber = content?.phoneNumber || t('footer.phone')
   const phoneProtocol = content?.phoneProtocol || 'tel'
   const phoneCustomUrl = content?.phoneCustomUrl || ''
 
-  const copyrightText = content?.copyrightText || `© ${currentYear} ${brandName}. Built with passion and precision.`
+  const copyrightText = content?.copyrightText || t('footer.copyright', { year: currentYear, brand: brandName })
   const visualSeparator = content?.visualSeparator || ''
   const attributionText = content?.attributionText || ''
 
@@ -151,8 +153,8 @@ export default function Footer() {
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
             >
-              <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40 mb-6 sm:mb-8 md:mb-10">Explore</h4>
-              <ul className="space-y-3 sm:space-y-4 md:space-y-6">
+<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40 mb-6 sm:mb-8 md:mb-10">{t('footer.explore')}</h4>
+               <ul className="space-y-3 sm:space-y-4 md:space-y-6">
                 {navigationItems.map((item, idx) => (
                   <li key={idx}>
                     <a
@@ -185,8 +187,8 @@ export default function Footer() {
             viewport={{ once: true }}
             transition={{ delay: 0.4 }}
           >
-            <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40 mb-6 sm:mb-8 md:mb-10">Contact</h4>
-            <ul className="space-y-4 sm:space-y-5 md:space-y-6 text-gray-400">
+<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40 mb-6 sm:mb-8 md:mb-10">{t('footer.contact')}</h4>
+             <ul className="space-y-4 sm:space-y-5 md:space-y-6 text-gray-400">
               {locationHeadline && (
                 <li className="flex items-start gap-3 sm:gap-4">
                   <span className="text-lg sm:text-xl md:text-2xl">📍</span>
@@ -197,7 +199,7 @@ export default function Footer() {
                     {subLocation && <span className="text-xs text-white/50">{subLocation}</span>}
                     {locationMapUrl && (
                       <a href={locationMapUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:text-white transition-colors mt-0.5 block">
-                        View on Google Maps ↗
+                        {t('footer.viewOnGoogleMaps')}
                       </a>
                     )}
                   </div>
@@ -242,7 +244,7 @@ export default function Footer() {
             whileTap={{ scale: 0.9 }}
             onClick={scrollToTop}
             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/5 hover:bg-primary flex items-center justify-center transition-colors"
-            title="Back to top"
+            title={t('footer.backToTop')}
           >
             <ArrowUp size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
           </motion.button>
