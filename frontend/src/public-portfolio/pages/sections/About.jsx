@@ -3,7 +3,7 @@ import { motion } from 'framer-motion'
 import { Code, Award, Users, TrendingUp } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
-const hardcodedSections = [
+const hardcodedSections = (t) => [
   { title: t('about.sectionEducation'), content: t('about.sectionEducationContent') },
   { title: t('about.sectionProfessionalFocus'), content: t('about.sectionProfessionalFocusContent') },
   { title: t('about.sectionExpertiseAreas'), content: t('about.sectionExpertiseAreasContent') },
@@ -32,7 +32,7 @@ export default function About({ content, hero, aboutContent }) {
 
   const aboutSections = storyPillars.length > 0
     ? storyPillars.map((p) => ({ title: p.title, content: p.content }))
-    : hardcodedSections
+    : hardcodedSections(t)
 
   const ide = aboutContent?.idePresentation || {}
   const skills = ide.skills?.length ? ide.skills : ['React', 'Node']
