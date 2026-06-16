@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { ArrowRight, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, GraduationCap, Heart, Briefcase, Coffee, Smile, Download, MapPin } from 'lucide-react'
 
@@ -13,25 +14,26 @@ function getIcon(name) {
 }
 
 export default function Hero({ content, contactButtonText, contactButtonLink }) {
+  const { t } = useTranslation()
   const [typedText, setTypedText] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-  const greeting = content?.greeting ?? "Hi, I'm"
-  const fullName = content?.fullName ?? 'Desalegn'
-  const nameAmharic = content?.nameAmharic ?? 'ደካ'
-  const badge = content?.professionalBadge ?? 'Student Developer'
-  const fullText = content?.typingWords?.[0] ?? 'Developer and Network Designer'
-  const introduction = content?.shortIntroduction ?? "Passionate about creating <span class=\"text-primary font-semibold\">secure</span>, <span class=\"text-secondary font-semibold\">scalable</span> digital solutions and designing robust network architectures. Specializing in modern web development and enterprise networking."
+  const greeting = content?.greeting ?? t('hero.greeting')
+  const fullName = content?.fullName ?? t('hero.fullName')
+  const nameAmharic = content?.nameAmharic ?? t('hero.nameAmharic')
+  const badge = content?.professionalBadge ?? t('hero.badge')
+  const fullText = content?.typingWords?.[0] ?? t('hero.typingText')
+  const introduction = content?.shortIntroduction ?? t('hero.introduction')
   const profilePhotoUrl = content?.profilePhoto?.url || '/BDU1601297.png'
-  const profilePhotoAlt = content?.profilePhoto?.alt || 'Desalegn Profile'
+  const profilePhotoAlt = content?.profilePhoto?.alt || t('hero.profileAlt')
   const stats = content?.statistics?.length > 0
     ? content.statistics
     : [
-        { label: 'Top Certifications', value: '3+', icon: 'Award', color: '#6366f1' },
-        { label: 'Class Projects', value: '15+', icon: 'BookOpen', color: '#10b981' },
-        { label: 'Core Skills', value: '30+', icon: 'Cpu', color: '#f59e0b' },
+        { label: t('hero.statTopCertifications'), value: '3+', icon: 'Award', color: '#6366f1' },
+        { label: t('hero.statClassProjects'), value: '15+', icon: 'BookOpen', color: '#10b981' },
+        { label: t('hero.statCoreSkills'), value: '30+', icon: 'Cpu', color: '#f59e0b' },
       ]
-  const contactBtnText = contactButtonText || 'Get In Touch'
+  const contactBtnText = contactButtonText || t('hero.getInTouch')
   const contactBtnLink = contactButtonLink || '#contact'
   const ctaButtons = content?.ctaButtons?.length > 0
     ? content.ctaButtons.map((btn, i) => i === 0 ? { ...btn, text: contactBtnText, link: contactBtnLink } : btn)
@@ -219,7 +221,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
                     onClick={() => handleCtaClick(btn)}
                     className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-[#4F46E5] text-white font-bold rounded-full transition-all shadow-lg"
                   >
-                    {btn.text || 'Get In Touch'}
+                    {btn.text || t('hero.getInTouch')}
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
                 ))}
@@ -258,7 +260,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
         className="absolute bottom-6 sm:bottom-10 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 sm:gap-3 text-gray-400 dark:text-gray-500 cursor-pointer group"
         onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
       >
-        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] group-hover:text-primary transition-colors">Discover More</span>
+        <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] group-hover:text-primary transition-colors">{t('hero.discoverMore')}</span>
         <motion.div 
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}

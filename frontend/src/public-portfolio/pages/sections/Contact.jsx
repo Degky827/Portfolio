@@ -1,4 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
@@ -20,6 +21,7 @@ export default function Contact() {
   const [resultType, setResultType] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [content, setContent] = useState(null)
+  const { t } = useTranslation()
 
   useEffect(() => {
     ;(async () => {
@@ -53,7 +55,7 @@ export default function Contact() {
     try {
       await createMessage({ name, email, phone, message })
       // Show success confirmation to the visitor after storing the message
-      setResult('Message sent successfully! I will get back to you soon.')
+      setResult(t('contact.successMessage'))
       setResultType('success')
       saved = true
     } catch (err) {
@@ -67,7 +69,7 @@ export default function Contact() {
       if (!saved) {
         const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
         window.location.href = mailtoLink
-        setResult('Opening your email client...')
+        setResult(t('contact.mailtoFallback'))
         setResultType('success')
       }
       setIsSubmitting(false)
@@ -77,7 +79,7 @@ export default function Contact() {
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      setResult('Message sent successfully! I will get back to you soon.')
+      setResult(t('contact.successMessage'))
       setResultType('success')
       e.target.reset()
     } catch (error) {
@@ -85,7 +87,7 @@ export default function Contact() {
       const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       window.location.href = mailtoLink
-      setResult('EmailJS failed. Opening your email client instead...')
+      setResult(t('contact.errorEmailjs'))
       setResultType('error')
     }
 
@@ -93,9 +95,9 @@ export default function Contact() {
   }
 
   const contactInfo = [
-    { icon: <Mail size={20} aria-hidden="true" />, label: 'Email', value: content?.email || 'desalegnky827@gmail.com', href: `mailto:${content?.email || 'desalegnky827@gmail.com'}`, color: '#3b82f6' },
-    { icon: <Phone size={20} aria-hidden="true" />, label: 'Phone', value: content?.phone || '+251 908720092', href: `tel:${content?.phone || '+251908720092'}`, color: '#22c55e' },
-    { icon: <MapPin size={20} aria-hidden="true" />, label: 'Location', value: content?.address || 'Bahirdar, Ethiopia', href: content?.mapLink || null, color: '#f59e0b' }
+    { icon: <Mail size={20} aria-hidden="true" />, label: t('contact.labelEmail'), value: content?.email || 'desalegnky827@gmail.com', href: `mailto:${content?.email || 'desalegnky827@gmail.com'}`, color: '#3b82f6' },
+    { icon: <Phone size={20} aria-hidden="true" />, label: t('contact.labelPhone'), value: content?.phone || '+251 908720092', href: `tel:${content?.phone || '+251908720092'}`, color: '#22c55e' },
+    { icon: <MapPin size={20} aria-hidden="true" />, label: t('contact.labelLocation'), value: content?.address || 'Bahirdar, Ethiopia', href: content?.mapLink || null, color: '#f59e0b' }
   ]
 
   const socialChannels = (content?.socialChannels || []).slice().sort((a, b) => a.displayWeight - b.displayWeight)
@@ -120,7 +122,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 relative overflow-hidden" aria-label="Contact section">
+    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 relative overflow-hidden" aria-label={t('contact.ariaLabel')}>
 
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
@@ -135,13 +137,13 @@ export default function Contact() {
             whileInView={{ opacity: 1, scale: 1 }}
             className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full"
           >
-            Contact
+            {t('contact.badge')}
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
-            Let's Collaborate
+            {t('contact.title')}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
-            Ready to bring your vision to life? Reach out and let's start a conversation about your next big project.
+            {t('contact.description')}
           </p>
         </motion.div>
 
@@ -159,9 +161,9 @@ export default function Contact() {
               className={`${formEnabled ? 'lg:col-span-2' : 'lg:col-span-1'} bg-transparent dark:bg-transparent p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16 text-gray-900 dark:text-white relative overflow-hidden`}
             >
               <div className="relative z-10">
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6 sm:mb-8 md:mb-10 leading-tight font-display tracking-tight text-gray-900 dark:text-white">Connect With Me</h3>
+                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6 sm:mb-8 md:mb-10 leading-tight font-display tracking-tight text-gray-900 dark:text-white">{t('contact.connectTitle')}</h3>
                 <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/80 mb-8 sm:mb-10 md:mb-14 leading-relaxed">
-                  I'm always open to discussing new projects, creative ideas or opportunities to be part of your visions.
+                  {t('contact.connectDescription')}
                 </p>
 
                 <div className="space-y-6 sm:space-y-8 md:space-y-10 mb-8 sm:mb-10 md:mb-14">
@@ -201,7 +203,7 @@ export default function Contact() {
                 </div>
 
                 {socialChannels.length > 0 && (
-                  <div className="flex gap-3 sm:gap-4 md:gap-5 flex-wrap" role="list" aria-label="Social media links">
+                  <div className="flex gap-3 sm:gap-4 md:gap-5 flex-wrap" role="list" aria-label={t('contact.socialAriaLabel')}>
                     {socialChannels.map((ch) => (
                       <motion.a
                         key={ch._id || ch.channelName}
@@ -233,10 +235,10 @@ export default function Contact() {
             {/* Contact Form */}
             {formEnabled && (
               <motion.div variants={itemVariants} className="lg:col-span-3 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
-                <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} aria-label="Contact form">
+                <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} aria-label={t('contact.formAriaLabel')}>
                   <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
                     <div className="space-y-2 sm:space-y-3">
-                      <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Your Name</label>
+                      <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">{t('contact.formLabelName')}</label>
                       <div className="relative group">
                         <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                           <User size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -246,14 +248,14 @@ export default function Contact() {
                           name="from_name"
                           type="text"
                           required
-                          placeholder="e.g. Desalegn Kasaye"
+                          placeholder={t('contact.formPlaceholderName')}
                           className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
                           aria-describedby={result ? "form-message" : undefined}
                         />
                       </div>
                     </div>
                     <div className="space-y-2 sm:space-y-3">
-                      <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Email Address</label>
+                      <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">{t('contact.formLabelEmail')}</label>
                       <div className="relative group">
                         <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                           <Mail size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -263,7 +265,7 @@ export default function Contact() {
                           name="reply_to"
                           type="email"
                           required
-                          placeholder="e.g. desiye@example.com"
+                          placeholder={t('contact.formPlaceholderEmail')}
                           className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
                         />
                       </div>
@@ -271,7 +273,7 @@ export default function Contact() {
                   </div>
 
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="phone" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Phone (optional)</label>
+                    <label htmlFor="phone" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">{t('contact.formLabelPhone')}</label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                         <Phone size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -280,14 +282,14 @@ export default function Contact() {
                         id="phone"
                         name="phone"
                         type="tel"
-                        placeholder="e.g. +251 900 000 000"
+                        placeholder={t('contact.formPlaceholderPhone')}
                         className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
                       />
                     </div>
                   </div>
 
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">Your Message</label>
+                    <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">{t('contact.formLabelMessage')}</label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-5 sm:top-6 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                         <MessageSquare size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -296,7 +298,7 @@ export default function Contact() {
                         id="message"
                         name="message"
                         required
-                        placeholder="Tell me about your project idea or vision..."
+                        placeholder={t('contact.formPlaceholderMessage')}
                         rows="5"
                         className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base resize-none shadow-sm"
                       />
@@ -325,14 +327,14 @@ export default function Contact() {
                     whileHover={{ scale: 1.02, translateY: -2 }}
                     whileTap={{ scale: 0.98 }}
                     className="w-full py-4 sm:py-5 bg-primary hover:bg-[#4F46E5] text-white font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 disabled:cursor-not-allowed group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                    aria-label={isSubmitting ? 'Sending message...' : 'Send message'}
+                    aria-label={isSubmitting ? t('contact.submitAriaSubmitting') : t('contact.submitAriaNormal')}
                   >
                     <span className="relative z-10 flex items-center gap-2 sm:gap-3">
                       {isSubmitting ? (
                         <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 sm:border-4 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></div>
                       ) : (
                         <>
-                          Send Message
+                          {t('contact.submitText')}
                           <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }} aria-hidden="true">
                             <Send size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
                           </motion.span>

@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
 import {
   Code2, Award, ExternalLink, Calendar, Building2, X,
@@ -204,6 +205,7 @@ function SkillIcon({ skill, className, style }) {
 
 export default function Skills() {
   const shouldReduceMotion = useReducedMotion()
+  const { t } = useTranslation()
   const [categories, setCategories] = useState([])
   const [skills, setSkills] = useState([])
   const [loading, setLoading] = useState(true)
@@ -301,7 +303,7 @@ export default function Skills() {
     <section
       id="skills"
       className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-black transition-colors duration-500"
-      aria-label="Skills section"
+      aria-label={t('skills.ariaLabel')}
     >
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
@@ -317,19 +319,19 @@ export default function Skills() {
             className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full border border-primary/20"
           >
             <Code2 className="w-3 h-3 sm:w-4 sm:h-4" />
-            My Expertise
+            {t('skills.badge')}
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-[#F8FAFC] mb-4 sm:mb-6 tracking-tight">
-            Technical Skills
+            {t('skills.title')}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-[#94A3B8] max-w-2xl mx-auto leading-relaxed px-4">
-            A comprehensive overview of the technologies and tools I master to build modern digital solutions.
+            {t('skills.description')}
           </p>
         </motion.div>
 
         {allCards.length === 0 ? (
           <div className="text-center py-12">
-            <p className="text-gray-400 dark:text-gray-500">No skills added yet.</p>
+            <p className="text-gray-400 dark:text-gray-500">{t('skills.empty')}</p>
           </div>
         ) : (
           <motion.div
@@ -373,9 +375,9 @@ export default function Skills() {
               className="mt-10 sm:mt-14 md:mt-18 pt-8 sm:pt-10 md:pt-14 border-t border-gray-200 dark:border-neutral-800 grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-16 relative z-10"
             >
               {[
-                { label: 'Technologies', value: `${skills.filter((s) => s.category?.toLowerCase() !== 'certificates').length}+` },
-                { label: 'Certificates', value: `${certificatesCard?.skills.length || 0}+` },
-                { label: 'Categories', value: `${skillCards.length}+` },
+                { label: t('skills.statTechnologies'), value: `${skills.filter((s) => s.category?.toLowerCase() !== 'certificates').length}+` },
+                { label: t('skills.statCertificates'), value: `${certificatesCard?.skills.length || 0}+` },
+                { label: t('skills.statCategories'), value: `${skillCards.length}+` },
               ].map((stat, i) => (
                 <motion.div
                   key={i}
@@ -411,6 +413,7 @@ export default function Skills() {
 }
 
 function SkillCard({ card, itemVariants, onCertClick }) {
+  const { t } = useTranslation()
   const color = card.color
 
   if (card.type === 'certificates') {
@@ -474,7 +477,7 @@ function SkillCard({ card, itemVariants, onCertClick }) {
               style={{ backgroundColor: color }}
             />
             <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-              {card.skills.length} certificate{card.skills.length !== 1 ? 's' : ''}
+              {t('skills.certificateCount', { count: card.skills.length })}
             </span>
           </div>
         </div>
@@ -523,9 +526,9 @@ function SkillCard({ card, itemVariants, onCertClick }) {
             className="w-2 h-2 rounded-full"
             style={{ backgroundColor: color }}
           />
-          <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
-            {card.skills.length} skill{card.skills.length !== 1 ? 's' : ''}
-          </span>
+            <span className="text-[11px] font-medium text-gray-400 uppercase tracking-wider">
+              {t('skills.skillCount', { count: card.skills.length })}
+            </span>
         </div>
       </div>
     </motion.div>
@@ -533,6 +536,7 @@ function SkillCard({ card, itemVariants, onCertClick }) {
 }
 
 function CertModal({ cert, onClose }) {
+  const { t } = useTranslation()
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -567,7 +571,7 @@ function CertModal({ cert, onClose }) {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors z-10"
-          aria-label="Close"
+          aria-label={t('skills.close')}
         >
           <X size={18} />
         </button>
@@ -585,7 +589,7 @@ function CertModal({ cert, onClose }) {
         <div className="p-6">
           <div className="flex items-center gap-2 mb-3">
             <Award size={18} className="text-primary" />
-            <span className="text-xs font-bold uppercase tracking-wider text-primary">Certificate</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-primary">{t('skills.certificateLabel')}</span>
           </div>
           <h3 className="text-xl font-bold text-gray-900 dark:text-white mb-4">
             {cert.name}
@@ -620,7 +624,7 @@ function CertModal({ cert, onClose }) {
               className="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-primary hover:text-primary/80 transition-colors"
             >
               <ExternalLink size={14} />
-              View Certificate
+              {t('skills.viewCertificate')}
             </a>
           )}
         </div>

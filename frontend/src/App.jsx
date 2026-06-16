@@ -1,10 +1,9 @@
-import { useEffect, useCallback } from 'react'
+import { Suspense, useEffect, useCallback } from 'react'
 import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './shared/hooks'
 import api from './shared/services/api'
 import ErrorBoundary from './shared/components/ErrorBoundary'
 import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
-import ThemeToggle from './public-portfolio/shared/ThemeToggle'
 import Navbar from './public-portfolio/layout/Navbar'
 import Footer from './public-portfolio/layout/Footer'
 import HomePage from './public-portfolio/pages/HomePage'
@@ -36,8 +35,7 @@ function PublicLayout() {
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       <ScrollProgressBar />
-      <ThemeToggle darkMode={darkMode} onToggle={handleToggle} />
-      <Navbar />
+      <Navbar darkMode={darkMode} onToggleDark={handleToggle} />
       <main>
         <Outlet />
       </main>
@@ -52,13 +50,15 @@ function App() {
   return (
     <ErrorBoundary>
       <ScrollToTop />
-      <Routes>
-        <Route element={<PublicLayout />}>
-          <Route path="/" element={<HomePage />} />
-        </Route>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/admin/*" element={<AdminRoutes />} />
-      </Routes>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-white dark:bg-black"><div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" /></div>}>
+        <Routes>
+          <Route element={<PublicLayout />}>
+            <Route path="/" element={<HomePage />} />
+          </Route>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin/*" element={<AdminRoutes />} />
+        </Routes>
+      </Suspense>
     </ErrorBoundary>
   )
 }

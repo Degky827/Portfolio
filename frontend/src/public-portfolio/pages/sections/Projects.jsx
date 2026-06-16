@@ -1,6 +1,7 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play, CheckCircle, Clock, AlertCircle } from 'lucide-react'
 import { useState, useMemo, useEffect } from 'react'
+import { useTranslation } from 'react-i18next'
 import projectsData from '../../../shared/data/projects.json'
 import mobileAppsData from '../../../shared/data/mobileApps.json'
 import { getProjects } from '../../../shared/services/projectService'
@@ -50,6 +51,7 @@ const GithubIcon = ({ size = 24, className = '' }) => (
 const DEFAULT_THUMBNAIL = 'https://placehold.co/600x400/1E293B/94A3B8?text=Project'
 
 export default function Projects() {
+  const { t } = useTranslation()
   const shouldReduceMotion = useReducedMotion()
   const [activeTab, setActiveTab] = useState('web')
   const [searchTerm, setSearchTerm] = useState('')
@@ -128,7 +130,7 @@ export default function Projects() {
   }, [searchTerm])
 
   return (
-    <section id="projects" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden" aria-label="Projects section">
+    <section id="projects" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden" aria-label={t('projects.ariaLabel')}>
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -142,13 +144,13 @@ export default function Projects() {
             whileInView={{ opacity: 1, scale: 1 }}
             className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full"
           >
-            Portfolio
+            {t('projects.badge')}
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
-            Featured Projects
+            {t('projects.title')}
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-[#94A3B8] max-w-2xl mx-auto leading-relaxed px-4">
-            A showcase of my recent work across web development and enterprise network architecture.
+            {t('projects.description')}
           </p>
         </motion.div>
 
@@ -164,7 +166,7 @@ export default function Projects() {
               }`}
             >
               <Code size={16} className="inline mr-2 -mt-0.5" />
-              Website Projects
+              {t('projects.tabWeb')}
             </button>
             <button
               onClick={() => setActiveTab('mobile')}
@@ -175,7 +177,7 @@ export default function Projects() {
               }`}
             >
               <Smartphone size={16} className="inline mr-2 -mt-0.5" />
-              Applications
+              {t('projects.tabApps')}
               <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded-full">{mobileAppsData.length}</span>
             </button>
           </div>
@@ -223,8 +225,8 @@ export default function Projects() {
                         target="_blank"
                         rel="noopener noreferrer nofollow"
                         className="p-2 bg-white dark:bg-neutral-900 rounded-lg text-gray-700 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors shadow-lg"
-                        title={`View ${title} source code`}
-                        aria-label={`View ${title} source code on GitHub`}
+                        title={t('projects.viewSourceCode', { title })}
+                        aria-label={t('projects.viewSourceCodeAria', { title })}
                         onClick={e => e.stopPropagation()}
                       >
                         <GithubIcon size={16} />
@@ -236,8 +238,8 @@ export default function Projects() {
                           target="_blank"
                           rel="noopener noreferrer nofollow"
                           className="p-2 bg-white dark:bg-neutral-900 rounded-lg text-gray-700 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors shadow-lg"
-                        title={`View ${title} live site`}
-                        aria-label={`View ${title} live demo`}
+                        title={t('projects.viewLiveSite', { title })}
+                        aria-label={t('projects.viewLiveDemoAria', { title })}
                         onClick={e => e.stopPropagation()}
                       >
                         <ExternalLink size={16} />
@@ -256,7 +258,7 @@ export default function Projects() {
                       <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full whitespace-nowrap shrink-0"
                         style={{ color: statusColors[project.status], backgroundColor: `${statusColors[project.status]}20` }}
                       >
-                        {statusLabels[project.status]}
+                        {t(`projects.status${project.status}`)}
                       </span>
                     )}
                   </div>
@@ -270,7 +272,7 @@ export default function Projects() {
                     />
                   )}
 
-                  <div className="flex flex-wrap gap-1 mb-3" role="list" aria-label="Project technologies">
+                  <div className="flex flex-wrap gap-1 mb-3" role="list" aria-label={t('projects.projectTechnologies')}>
                     {techs.slice(0, 5).map((tag, i) => (
                       <span
                         key={i}
@@ -292,7 +294,7 @@ export default function Projects() {
                         onClick={e => e.stopPropagation()}
                       >
                         <GithubIcon size={14} />
-                        GitHub
+                        {t('projects.github')}
                       </a>
                     )}
                     {liveUrl !== '#' && (
@@ -304,7 +306,7 @@ export default function Projects() {
                         onClick={e => e.stopPropagation()}
                       >
                         <ExternalLink size={14} />
-                        Live Demo
+                        {t('projects.liveDemo')}
                       </a>
                     )}
                   </div>
@@ -317,13 +319,13 @@ export default function Projects() {
               <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-neutral-900 rounded-full flex items-center justify-center">
                 <Search className="w-10 h-10 text-gray-400" />
               </div>
-              <p className="text-xl font-bold text-gray-900 dark:text-[#F8FAFC] mb-2">No projects found</p>
-              <p className="text-gray-500 dark:text-[#94A3B8] mb-6">Try adjusting your search or filter criteria</p>
+              <p className="text-xl font-bold text-gray-900 dark:text-[#F8FAFC] mb-2">{t('projects.noProjectsFound')}</p>
+              <p className="text-gray-500 dark:text-[#94A3B8] mb-6">{t('projects.noProjectsHint')}</p>
               <button
                 onClick={() => { setSearchTerm('') }}
                 className="px-6 py-3 bg-primary text-white font-bold rounded-full hover:bg-[#4F46E5] transition-colors"
               >
-                Clear Filters
+                {t('projects.clearFilters')}
               </button>
             </div>
           )}
@@ -336,17 +338,17 @@ export default function Projects() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
             <input
               type="text"
-              placeholder="Search mobile apps..."
+              placeholder={t('projects.searchMobileApps')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full pl-12 pr-10 py-3 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-full text-gray-900 dark:text-[#F8FAFC] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-              aria-label="Search mobile apps"
+              aria-label={t('projects.searchMobileAppsAria')}
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
                 className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
-                aria-label="Clear search"
+                aria-label={t('projects.clearSearch')}
               >
                 <X size={16} />
               </button>
@@ -354,7 +356,7 @@ export default function Projects() {
           </div>
 
           <p className="text-center text-sm text-gray-500 dark:text-[#94A3B8] mb-6">
-            Showing {filteredMobileApps.length} of {mobileAppsData.length} apps
+            {t('projects.showingApps', { count: filteredMobileApps.length, total: mobileAppsData.length })}
           </p>
 
           <motion.div
@@ -373,7 +375,7 @@ export default function Projects() {
                   className="group bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20 flex flex-col cursor-pointer"
                   role="button"
                   tabIndex={0}
-                  aria-label={`Open ${app.title} app`}
+                  aria-label={t('projects.openAppAria', { title: app.title })}
                   onClick={() => window.open(app.appUrl, '_blank', 'noopener noreferrer')}
                   onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(app.appUrl, '_blank', 'noopener noreferrer') } }}
                 >
@@ -407,7 +409,7 @@ export default function Projects() {
                       <span className="text-xs font-bold text-gray-500 dark:text-[#94A3B8] ml-1">{app.rating}</span>
                     </div>
 
-                    <div className="flex flex-wrap gap-1.5 mb-4" role="list" aria-label="App features">
+                    <div className="flex flex-wrap gap-1.5 mb-4" role="list" aria-label={t('projects.appFeatures')}>
                       {app.features.map((feature, i) => (
                         <span
                           key={i}
@@ -434,11 +436,11 @@ export default function Projects() {
                         target="_blank"
                         rel="noopener noreferrer nofollow"
                         className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-primary text-white hover:bg-[#4F46E5] transition-colors"
-                        aria-label={`Open ${app.title}`}
+                        aria-label={t('projects.openAppAria', { title: app.title })}
                         onClick={e => e.stopPropagation()}
                       >
                         <Download size={14} />
-                        Open
+                        {t('projects.openApp')}
                       </a>
                     </div>
                   </div>
@@ -449,13 +451,13 @@ export default function Projects() {
                 <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-neutral-900 rounded-full flex items-center justify-center">
                   <Smartphone className="w-10 h-10 text-gray-400" />
                 </div>
-                <p className="text-xl font-bold text-gray-900 dark:text-[#F8FAFC] mb-2">No apps found</p>
-                <p className="text-gray-500 dark:text-[#94A3B8] mb-6">Try adjusting your search</p>
+                <p className="text-xl font-bold text-gray-900 dark:text-[#F8FAFC] mb-2">{t('projects.noAppsFound')}</p>
+                <p className="text-gray-500 dark:text-[#94A3B8] mb-6">{t('projects.noAppsHint')}</p>
                 <button
                   onClick={() => setSearchTerm('')}
                   className="px-6 py-3 bg-primary text-white font-bold rounded-full hover:bg-[#4F46E5] transition-colors"
                 >
-                  Clear Search
+                  {t('projects.clearSearchBtn')}
                 </button>
               </div>
             )}

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Code, Award, Users, TrendingUp } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
 
 const hardcodedSections = [
-  { title: 'Education & Background', content: "I hold a Bachelor's degree in Computer Science, providing a deep foundation in both software systems and digital protection." },
-  { title: 'Professional Focus', content: "I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security." },
-  { title: 'Expertise Areas', content: "From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions." },
-  { title: 'Mission & Approach', content: "My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional." },
+  { title: t('about.sectionEducation'), content: t('about.sectionEducationContent') },
+  { title: t('about.sectionProfessionalFocus'), content: t('about.sectionProfessionalFocusContent') },
+  { title: t('about.sectionExpertiseAreas'), content: t('about.sectionExpertiseAreasContent') },
+  { title: t('about.sectionMissionApproach'), content: t('about.sectionMissionApproachContent') },
 ]
 
 const hardcodedAchievements = [
@@ -19,10 +20,11 @@ const hardcodedAchievements = [
 const iconMap = { Award, Users, TrendingUp }
 
 export default function About({ content, hero, aboutContent }) {
-  const title = content?.title || 'Get to Know Me'
-  const subtitle = content?.subtitle || 'A passionate developer and network designer dedicated to building secure and scalable digital experiences.'
-  const fullName = hero?.fullName || 'Desalegn'
-  const roleTitle = hero?.professionalBadge || 'Full-Stack Dev'
+  const { t } = useTranslation()
+  const title = content?.title || t('about.title')
+  const subtitle = content?.subtitle || t('about.subtitle')
+  const fullName = hero?.fullName || t('about.fullName')
+  const roleTitle = hero?.professionalBadge || t('about.role')
 
   const storyPillars = aboutContent?.storyPillars?.length
     ? aboutContent.storyPillars.filter((p) => p.content && p.content !== '<p><br></p>')
@@ -35,14 +37,14 @@ export default function About({ content, hero, aboutContent }) {
   const ide = aboutContent?.idePresentation || {}
   const skills = ide.skills?.length ? ide.skills : ['React', 'Node']
   const available = ide.available !== undefined ? ide.available : true
-  const locationText = ide.location || content?.location || hero?.location || 'Bahirdar'
+  const locationText = ide.location || content?.location || hero?.location || t('about.location')
 
   const highlightMetrics = aboutContent?.highlightMetrics?.length
     ? aboutContent.highlightMetrics
     : [
-        { icon: 'Award', title: 'Network Designer', value: '' },
-        { icon: 'Users', title: 'Happy Clients', value: '50+' },
-        { icon: 'TrendingUp', title: 'Years Experience', value: '5+' },
+        { icon: 'Award', title: t('about.metricNetworkDesigner'), value: '' },
+        { icon: 'Users', title: t('about.metricHappyClients'), value: '50+' },
+        { icon: 'TrendingUp', title: t('about.metricYearsExperience'), value: '5+' },
       ]
 
   const certifications = aboutContent?.certifications?.length
@@ -219,8 +221,8 @@ export default function About({ content, hero, aboutContent }) {
             whileInView={{ opacity: 1, scale: 1 }}
             className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full"
           >
-            About Me
-          </motion.span>
+            {t('about.badge')}
+            </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-[#F8FAFC] mb-4 sm:mb-6 tracking-tight">
             {title}
           </h2>
@@ -281,7 +283,7 @@ export default function About({ content, hero, aboutContent }) {
                     <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#27c93f]"></div>
                   </div>
                   <span className="ml-2 sm:ml-4 text-[10px] sm:text-xs text-slate-400 font-mono tracking-[0.2em] sm:tracking-[0.3em] uppercase flex items-center gap-1 sm:gap-2">
-                    <Code size={12} className="w-3 h-3 sm:w-4 sm:h-4" /> about_me.js
+                    <Code size={12} className="w-3 h-3 sm:w-4 sm:h-4" /> {t('about.codeFilename')}
                   </span>
                 </div>
                 <TypingCodeBlock
@@ -296,7 +298,7 @@ export default function About({ content, hero, aboutContent }) {
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6 border-t border-slate-700/50 bg-slate-800/30">
                   {highlightMetrics.map((metric, idx) => {
                     const val = metric.value || (idx === 0 ? '' : idx === 1 ? '50+' : '5+')
-                    const lbl = metric.title || (idx === 0 ? 'Network Designer' : idx === 1 ? 'Happy Clients' : 'Years Experience')
+                    const lbl = metric.title || (idx === 0 ? t('about.metricNetworkDesigner') : idx === 1 ? t('about.metricHappyClients') : t('about.metricYearsExperience'))
                     return (
                       <div key={idx} className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
                         <MetricIcon name={metric.icon} className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1"
@@ -321,7 +323,7 @@ export default function About({ content, hero, aboutContent }) {
               className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200 dark:border-slate-700"
             >
               <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                I hold certificates in{' '}
+                {t('about.certificationsPrefix')}{' '}
                 {achievementsList.map((a, i) => (
                   <span key={i}>
                     {i > 0 && <span>, </span>}
