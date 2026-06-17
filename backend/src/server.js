@@ -17,6 +17,7 @@ const contactRoutes = require('./public/contact/contact.routes')
 const contactMessageRoutes = require('./public/contact/contact-messages.routes')
 const messagesRoutes = require('./public/contact/messages.routes')
 const footerRoutes = require('./public/footer/footer.routes')
+const siteSettingsRoutes = require('./public/site-settings/siteSettings.routes')
 const mediaRoutes = require('./admin/media/media.routes')
 const settingsRoutes = require('./public/settings/settings.routes')
 const backupRoutes = require('./admin/backups/backups.routes')
@@ -25,6 +26,7 @@ const importExportRoutes = require('./admin/import-export/import-export.routes')
 const systemConfigRoutes = require('./admin/system/system.routes')
 const maintenanceRoutes = require('./admin/maintenance/maintenance.routes')
 const notificationRoutes = require('./admin/notifications/notifications.routes')
+const chatRoutes = require('./ai/routes/chat.routes')
 
 const app = express()
 
@@ -103,6 +105,7 @@ app.use('/api/contact', contactRoutes)
 app.use('/api/contact-messages', contactMessageRoutes)
 app.use('/api/messages', messagesRoutes)
 app.use('/api/footer', footerRoutes)
+app.use('/api/site-settings', siteSettingsRoutes)
 app.use('/api/media', mediaRoutes)
 app.use('/api/settings', settingsRoutes)
 app.use('/api/backups', backupRoutes)
@@ -111,6 +114,7 @@ app.use('/api/import-export', importExportRoutes)
 app.use('/api/system-config', systemConfigRoutes)
 app.use('/api/maintenance', maintenanceRoutes)
 app.use('/api/notifications', notificationRoutes)
+app.use('/api', chatRoutes)
 
 app.use('/uploads', express.static('uploads'))
 
@@ -143,8 +147,10 @@ async function start() {
   await backupScheduler.initializeScheduler()
   await healthMonitor.initializeMonitor()
 
+  let server
+
   async function attemptStart(port, retries = 3) {
-    const server = http.createServer(app)
+    server = http.createServer(app)
     initSocket(server)
 
     server.on('error', (err) => {
@@ -172,6 +178,10 @@ async function start() {
 
   const shutdown = async (signal) => {
     console.log(`\n${signal} received. Shutting down gracefully...`)
+    if (!server) {
+      process.exit(0)
+      return
+    }
     server.close(() => {
       console.log('HTTP server closed.')
       process.exit(0)

@@ -176,7 +176,7 @@ export default function Contact() {
                         className="flex items-center gap-4 sm:gap-5 md:gap-6 group"
                       >
                         <div
-                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-white/5 dark:bg-white/5 flex items-center justify-center text-gray-900 dark:text-white transition-all duration-300 flex-shrink-0"
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-900 dark:text-white transition-all duration-300 flex-shrink-0"
                           style={{ '--hover-bg': hoverBg }}
                           onMouseEnter={e => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.borderColor = 'transparent' }}
                           onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.borderColor = '' }}
@@ -213,7 +213,7 @@ export default function Contact() {
                         href={ch.linkUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center text-white transition-all duration-300"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-600 dark:text-white hover:bg-primary hover:text-white transition-all duration-300"
                         title={ch.channelName}
                         aria-label={ch.channelName}
                       >
@@ -229,7 +229,7 @@ export default function Contact() {
               </div>
 
               {/* Decorative background element */}
-              <div className="absolute top-[-20%] left-[-20%] w-[150%] h-[150%] bg-white/5 rounded-full blur-[100px] -z-0 pointer-events-none" aria-hidden="true" />
+              <div className="absolute top-[-20%] left-[-20%] w-[150%] h-[150%] bg-primary/5 dark:bg-white/5 rounded-full blur-[100px] -z-0 pointer-events-none" aria-hidden="true" />
             </motion.div>
 
             {/* Contact Form */}

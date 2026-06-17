@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   RefreshCw, Eye, Users, UserCheck, TrendingUp,
@@ -10,10 +10,11 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Area, AreaChart,
 } from 'recharts'
-import api from '../../shared/services/api'
 import PageHeader from '../shared/PageHeader'
 import StatCard from '../shared/StatCard'
 import DataTable from '../shared/DataTable'
+import VisitorLogTable from './components/VisitorLogTable'
+import useAnalyticsFilters from './hooks/useAnalyticsFilters'
 
 const DEVICE_COLORS = { Desktop: '#7c3aed', Mobile: '#3b82f6', Tablet: '#f59e0b', Unknown: '#6b7280' }
 const BROWSER_COLORS = ['#7c3aed', '#3b82f6', '#ef4444', '#f59e0b', '#10b981', '#ec4899', '#06b6d4', '#8b5cf6', '#6b7280', '#14b8a6']
@@ -29,64 +30,13 @@ const itemVariants = {
   visible: { opacity: 1, y: 0, transition: { duration: 0.35, ease: 'easeOut' } },
 }
 
-const initialFilters = { dateFrom: '', dateTo: '', country: '', deviceType: '', browser: '', source: '' }
-
 export default function Analytics() {
-  const [data, setData] = useState(null)
-  const [visits, setVisits] = useState([])
-  const [totalCount, setTotalCount] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [visitsLoading, setVisitsLoading] = useState(true)
-  const [error, setError] = useState('')
   const [showFilters, setShowFilters] = useState(false)
-  const [filters, setFilters] = useState(initialFilters)
-
-  const activeFilterCount = Object.values(filters).filter(Boolean).length
-
-  const fetchDashboard = useCallback(async () => {
-    try {
-      setLoading(true)
-      const params = new URLSearchParams()
-      Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v) })
-      const { data: res } = await api.get(`/analytics/analytics-dashboard?${params}`)
-      if (res.success) setData(res)
-      setError('')
-    } catch (err) {
-      if (err.response?.status === 401 || err.response?.status === 403) {
-        setError('Session expired. Please refresh the page.')
-        return
-      }
-      setError('Failed to load analytics data.')
-    } finally {
-      setLoading(false)
-    }
-  }, [filters])
-
-  const fetchVisits = useCallback(async () => {
-    try {
-      setVisitsLoading(true)
-      const params = new URLSearchParams({ limit: '100' })
-      Object.entries(filters).forEach(([k, v]) => { if (v) params.set(k, v) })
-      const { data: res } = await api.get(`/analytics/metrics?${params}`)
-      if (res.success) {
-        setVisits(res.visits || [])
-        setTotalCount(res.totalCount || 0)
-      }
-    } catch { /* noop */ } finally {
-      setVisitsLoading(false)
-    }
-  }, [filters])
-
-  useEffect(() => { fetchDashboard() }, [fetchDashboard])
-  useEffect(() => { fetchVisits() }, [fetchVisits])
-
-  function handleFilterChange(key, value) {
-    setFilters((prev) => ({ ...prev, [key]: value }))
-  }
-
-  function clearFilters() {
-    setFilters(initialFilters)
-  }
+  const {
+    data, visits, totalCount, loading, visitsLoading, error,
+    filters, activeFilterCount,
+    handleFilterChange, clearFilters, refresh,
+  } = useAnalyticsFilters()
 
   const stats = data?.stats
   const trends7 = data?.trends7days || []
@@ -287,7 +237,7 @@ export default function Analytics() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                onClick={() => { fetchDashboard(); fetchVisits() }}
+                onClick={refresh}
                 disabled={loading}
                 className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-primary text-white hover:bg-primary/90 transition-colors disabled:opacity-50"
               >
@@ -312,7 +262,7 @@ export default function Analytics() {
               </div>
             </div>
             <button
-              onClick={() => { fetchDashboard(); fetchVisits() }}
+              onClick={refresh}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-red-100 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50 text-red-700 dark:text-red-300 font-medium text-xs transition-colors shrink-0"
             >
               <RefreshCw size={12} />
@@ -431,7 +381,7 @@ export default function Analytics() {
         ))}
       </motion.div>
 
-      {!loading && !error && data && stats?.totalViews === 0 && (
+      {!loading && !error && data && stats?.totalViews === 0 ? (
         <motion.div variants={itemVariants} className="mb-8">
           <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 shadow-sm p-8 sm:p-12 text-center">
             <div className="w-16 h-16 rounded-2xl bg-gray-100 dark:bg-slate-800 flex items-center justify-center mx-auto mb-4">
@@ -442,13 +392,17 @@ export default function Analytics() {
               Human visitor data will appear here once public users start browsing your portfolio. Admin page visits and automated traffic are not tracked.
             </p>
             <button
-              onClick={() => { fetchDashboard(); fetchVisits() }}
+              onClick={refresh}
               className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors"
             >
               <RefreshCw size={14} />
               Refresh
             </button>
           </div>
+        </motion.div>
+      ) : (
+        <motion.div variants={itemVariants} className="mb-6">
+          <VisitorLogTable visits={visits} loading={visitsLoading} totalCount={totalCount} />
         </motion.div>
       )}
 
@@ -577,7 +531,7 @@ export default function Analytics() {
       <motion.div variants={itemVariants}>
         <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-sm">
           <div className="px-4 sm:px-6 py-4 border-b border-gray-200 dark:border-slate-800 flex items-center justify-between">
-            <h2 className="text-base font-bold text-gray-900 dark:text-white">Visitor Log</h2>
+            <h2 className="text-base font-bold text-gray-900 dark:text-white">Detailed Visitor Log</h2>
             <span className="text-xs text-gray-400">
               {(totalCount || 0).toLocaleString()} total {(totalCount || 0) === 1 ? 'visit' : 'visits'}
             </span>

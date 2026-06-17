@@ -14,7 +14,7 @@ import SkillForm from '../skills-management/SkillForm'
 import HomeContent from '../homepage-management/HomeContent'
 import AboutContent from '../about-management/AboutContent'
 import ContactContent from '../contact-management/ContactContent'
-import ContactInbox from '../contact-management/ContactInbox'
+import MessageCenter from '../contact-management/MessageCenter'
 import FooterContent from '../footer-management/FooterContent'
 import MediaLibrary from '../media-management/MediaLibrary'
 import ImportExport from '../import-export/ImportExport'
@@ -85,7 +85,7 @@ export default function AdminRoutes() {
           <Route path="home" element={<HomeContent />} />
           <Route path="about" element={<AboutContent />} />
           <Route path="contact" element={<ContactContent />} />
-          <Route path="inbox" element={<ContactInbox />} />
+          <Route path="inbox" element={<MessageCenter />} />
           <Route path="footer" element={<FooterContent />} />
           <Route
             path="users"

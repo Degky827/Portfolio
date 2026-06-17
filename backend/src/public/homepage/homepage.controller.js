@@ -1,4 +1,6 @@
 const HomeContent = require('../../shared/models/HomeContent')
+const User = require('../../shared/models/User')
+const FooterContent = require('../../shared/models/FooterContent')
 
 const socialKeys = [
   'github', 'linkedin', 'telegram', 'twitter',
@@ -103,6 +105,24 @@ async function updateHomeContent(req, res) {
     }
 
     await content.save()
+
+    const updatedName = body.hero?.fullName
+    if (updatedName !== undefined) {
+      try {
+        await User.findByIdAndUpdate(req.user._id, { displayName: updatedName })
+      } catch (syncErr) {
+        console.error('[homepage] Failed to sync User.displayName:', syncErr)
+      }
+      try {
+        await FooterContent.findOneAndUpdate(
+          {},
+          { $set: { brandName: updatedName } },
+          { upsert: true },
+        )
+      } catch (syncErr) {
+        console.error('[homepage] Failed to sync FooterContent.brandName:', syncErr)
+      }
+    }
 
     res.json({ success: true, content })
   } catch (error) {
