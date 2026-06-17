@@ -4,14 +4,35 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download, Globe, Sun, Moon } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import Logo from '../../shared/components/Logo'
+import { getNavigation } from '../../shared/services/navigationService'
 
-const navLinkIds = ['home', 'about', 'skills', 'projects', 'contact']
+const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'contact']
 
 export default function Navbar({ darkMode, onToggleDark }) {
   const { t, i18n } = useTranslation()
   const { settings } = useSiteSettings()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [navItems, setNavItems] = useState([])
+  const [navError, setNavError] = useState(false)
+
+  useEffect(() => {
+    loadNavItems()
+  }, [])
+
+  async function loadNavItems() {
+    try {
+      const res = await getNavigation()
+      const items = (res.items || [])
+        .filter((item) => item.visible && item.active)
+        .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+      setNavItems(items)
+    } catch {
+      setNavError(true)
+    }
+  }
+
+  const displayNavItems = navItems.length > 0 ? navItems : (navError ? FALLBACK_NAV_IDS.map((id) => ({ _id: id, title: t(`nav.${id}`), sectionId: id, url: `#${id}`, order: 0, visible: true, active: true, isExternal: false, openNewTab: false })) : [])
 
   const logoImage = settings?.logoImage || ''
   const logoText = settings?.logoText || ''
@@ -31,11 +52,15 @@ export default function Navbar({ darkMode, onToggleDark }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
-  const handleNavClick = (e, targetId) => {
+  const handleNavClick = (e, item) => {
+    if (item.isExternal || item.openNewTab) return
     e.preventDefault()
-    const target = document.getElementById(targetId)
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const targetId = item.sectionId || item.url?.replace('#', '')
+    if (targetId) {
+      const target = document.getElementById(targetId)
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }
     }
     setIsOpen(false)
   }
@@ -52,7 +77,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
-        <Logo settings={settings} linkTo="#home" onNavClick={(e) => handleNavClick(e, 'home')} />
+        <Logo settings={settings} linkTo="#home" onNavClick={(e) => handleNavClick(e, { sectionId: 'home', url: '#home', isExternal: false, openNewTab: false })} />
         
         {/* Mobile Menu Toggle */}
         <button 
@@ -66,19 +91,21 @@ export default function Navbar({ darkMode, onToggleDark }) {
         {/* Desktop Links + Right Controls */}
         <div className="hidden md:flex items-center gap-8 lg:gap-12">
           <ul className="flex items-center gap-6 lg:gap-10">
-            {navLinkIds.map((id, idx) => (
+            {displayNavItems.map((item, idx) => (
               <motion.li 
-                key={id}
+                key={item._id || item.sectionId}
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 * idx + 0.5 }}
               >
                 <a 
-                  href={`#${id}`} 
+                  href={item.url || `#${item.sectionId}`}
+                  target={item.openNewTab ? '_blank' : undefined}
+                  rel={item.openNewTab ? 'noopener noreferrer' : undefined}
                   className="text-xs sm:text-sm font-bold uppercase tracking-widest text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors relative group"
-                  onClick={(e) => handleNavClick(e, id)}
+                  onClick={(e) => handleNavClick(e, item)}
                 >
-                  {t(`nav.${id}`)}
+                  {item.title}
                   <motion.span 
                     className="absolute -bottom-2 left-0 w-0 h-0.5 sm:h-1 bg-primary rounded-full group-hover:w-full transition-all duration-300"
                   />
@@ -170,20 +197,22 @@ export default function Navbar({ darkMode, onToggleDark }) {
               </div>
               
               <ul className="flex flex-col gap-6 sm:gap-8 md:gap-10">
-                {navLinkIds.map((id, idx) => (
+                {displayNavItems.map((item, idx) => (
                   <motion.li 
-                    key={id}
+                    key={item._id || item.sectionId}
                     initial={{ opacity: 0, x: 50 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.1 * idx, type: 'spring' }}
                   >
                     <a 
-                      href={`#${id}`} 
+                      href={item.url || `#${item.sectionId}`}
+                      target={item.openNewTab ? '_blank' : undefined}
+                      rel={item.openNewTab ? 'noopener noreferrer' : undefined}
                       className="text-3xl sm:text-4xl md:text-5xl font-black text-gray-900 dark:text-white hover:text-primary transition-all flex items-center justify-between group font-display tracking-tighter"
-                      onClick={(e) => handleNavClick(e, id)}
+                      onClick={(e) => handleNavClick(e, item)}
                     >
                       <span className="group-hover:translate-x-4 transition-transform duration-500">
-                        {t(`nav.${id}`)}
+                        {item.title}
                       </span>
                       <ChevronRight className="opacity-0 group-hover:opacity-100 -translate-x-8 group-hover:translate-x-0 transition-all text-primary duration-500 w-8 h-8 sm:w-10 sm:h-10" />
                     </a>

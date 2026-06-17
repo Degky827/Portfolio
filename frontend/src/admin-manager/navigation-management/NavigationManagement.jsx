@@ -6,9 +6,11 @@ import {
   Smartphone, Menu, Sun, Moon, Globe, Download, PanelRight,
   PanelLeft, Move, Type, Palette, Square, Layers, ExternalLink,
   Copy, ToggleLeft, ToggleRight, AlignLeft, AlignCenter, AlignRight,
+  Edit2,
 } from 'lucide-react'
 import PageHeader from '../shared/PageHeader'
 import Toast from '../shared/Toast'
+import ConfirmModal from '../shared/ConfirmModal'
 import {
   getNavigation, createNavigation, updateNavigation, deleteNavigation, reorderNavigation,
   getNavbarSettings, updateNavbarSettings,
@@ -193,6 +195,8 @@ export default function NavigationManagement() {
   const [activeTab, setActiveTab] = useState('menu-items')
   const [editingItem, setEditingItem] = useState(null)
   const [showForm, setShowForm] = useState(false)
+  const [deleteTarget, setDeleteTarget] = useState(null)
+  const [deleting, setDeleting] = useState(false)
   const [form, setForm] = useState({ title: '', url: '#', sectionId: '', icon: '', visible: true, active: true, isExternal: false, openNewTab: false })
 
   const tabs = [
@@ -288,15 +292,23 @@ export default function NavigationManagement() {
     }
   }
 
-  async function handleDeleteItem(id) {
-    if (!window.confirm('Delete this menu item?')) return
+  function handleDeleteItem(id) {
+    setDeleteTarget(id)
+  }
+
+  async function handleConfirmDelete() {
+    if (!deleteTarget) return
+    setDeleting(true)
     try {
-      await deleteNavigation(id)
+      await deleteNavigation(deleteTarget)
       setToast({ message: 'Menu item deleted', type: 'success' })
+      setDeleteTarget(null)
       const navRes = await getNavigation()
       setNavItems(navRes.items || [])
     } catch (err) {
       setToast({ message: err.response?.data?.message || 'Failed to delete item', type: 'error' })
+    } finally {
+      setDeleting(false)
     }
   }
 
@@ -415,7 +427,7 @@ export default function NavigationManagement() {
                     </button>
                   </div>
                   <div className="col-span-1 flex gap-1">
-                    <button onClick={() => handleEditItem(item)} className="p-1 text-gray-400 hover:text-primary" title="Edit"><Settings size={14} /></button>
+                    <button onClick={() => handleEditItem(item)} className="p-1 text-gray-400 hover:text-primary" title="Edit"><Edit2 size={14} /></button>
                     <button onClick={() => handleDuplicateItem(item)} className="p-1 text-gray-400 hover:text-primary" title="Duplicate"><Copy size={14} /></button>
                     <button onClick={() => handleDeleteItem(item._id)} className="p-1 text-red-400 hover:text-red-600" title="Delete"><Trash2 size={14} /></button>
                   </div>
@@ -971,6 +983,17 @@ export default function NavigationManagement() {
           )}
         </button>
       </div>
+
+      <ConfirmModal
+        open={!!deleteTarget}
+        title="Delete Menu Item"
+        message={`Are you sure you want to delete "${navItems.find((i) => i._id === deleteTarget)?.title || 'this item'}"? This action cannot be undone.`}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleteTarget(null)}
+        loading={deleting}
+        confirmText="Delete"
+        variant="danger"
+      />
 
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
