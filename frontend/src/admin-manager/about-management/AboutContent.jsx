@@ -118,7 +118,6 @@ export default function AboutContent() {
     title: '',
     subtitle: '',
     yearsOfExperience: 0,
-    cvUrl: '',
     status: 'active',
     education: [],
     experience: [],
@@ -144,7 +143,6 @@ export default function AboutContent() {
             title: content.title || '',
             subtitle: content.subtitle || '',
             yearsOfExperience: content.yearsOfExperience || 0,
-            cvUrl: content.cvUrl || '',
             status: content.status || 'active',
             education: content.education || [],
             experience: content.experience || [],
@@ -267,7 +265,6 @@ export default function AboutContent() {
     fd.append('title', form.title)
     fd.append('subtitle', form.subtitle)
     fd.append('yearsOfExperience', form.yearsOfExperience)
-    fd.append('cvUrl', form.cvUrl)
     fd.append('status', form.status)
     fd.append('education', JSON.stringify(form.education))
     fd.append('experience', JSON.stringify(form.experience))
@@ -630,10 +627,6 @@ export default function AboutContent() {
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Subtitle</label>
                     <input type="text" value={form.subtitle} onChange={set('subtitle')} placeholder="e.g. A passionate developer..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">CV URL</label>
-                    <input type="url" value={form.cvUrl} onChange={set('cvUrl')} placeholder="https://drive.google.com/your-cv" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Status</label>

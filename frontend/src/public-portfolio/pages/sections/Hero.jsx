@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { ArrowRight, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, GraduationCap, Heart, Briefcase, Coffee, Smile, Download, MapPin } from 'lucide-react'
+import { ArrowRight, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, GraduationCap, Heart, Briefcase, Coffee, Smile, Download, MapPin, ExternalLink } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
 
 const iconMap = {
@@ -12,6 +12,41 @@ const iconMap = {
 
 function getIcon(name) {
   return iconMap[name] || Award
+}
+
+const GithubIcon = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
+)
+const LinkedinIcon = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
+)
+const TelegramIcon = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
+)
+const TwitterIcon = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+)
+const FacebookIcon = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+)
+const InstagramIcon = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
+)
+const YoutubeIcon = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
+)
+const EmailIcon = ({ size }) => (
+  <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+)
+const socialIconMap = {
+  github: GithubIcon,
+  linkedin: LinkedinIcon,
+  telegram: TelegramIcon,
+  twitter: TwitterIcon,
+  facebook: FacebookIcon,
+  instagram: InstagramIcon,
+  youtube: YoutubeIcon,
+  email: EmailIcon,
 }
 
 export default function Hero({ content, contactButtonText, contactButtonLink }) {
@@ -38,8 +73,8 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
   const contactBtnText = settings?.contactButtonText || contactButtonText || t('hero.getInTouch')
   const contactBtnLink = settings?.contactButtonLink || contactButtonLink || '#contact'
   const ctaButtons = content?.ctaButtons?.length > 0
-    ? content.ctaButtons.map((btn, i) => i === 0 ? { ...btn, text: contactBtnText, link: contactBtnLink } : btn)
-    : [{ text: contactBtnText, link: contactBtnLink, openNewTab: false, icon: 'ArrowRight' }]
+    ? content.ctaButtons
+    : [{ text: '', link: '', openNewTab: false, icon: 'ArrowRight' }]
 
   useEffect(() => {
     let index = 0
@@ -132,7 +167,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
               <motion.div 
               whileHover={{ scale: 1.05 }}
               transition={{ type: 'spring', stiffness: 300 }}
-              className="relative flex-shrink-0"
+              className="relative flex-shrink-0 flex flex-col items-center"
             >
               <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 lg:w-72 lg:h-72 relative">
                 {/* Decorative animated progress rings (SVG) */}
@@ -155,7 +190,6 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
                     <circle r="74" fill="none" stroke="url(#g2)" strokeWidth="4" strokeLinecap="round" strokeDasharray="20 180" opacity="0.9">
                       <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="6s" repeatCount="indefinite" />
                     </circle>
-                    {/* subtle glow */}
                     <circle r="96" fill="none" stroke="#06b6d480" strokeWidth="8" />
                   </g>
                 </svg>
@@ -179,6 +213,28 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
                   />
                 </motion.div>
               </div>
+              {/* Social Links */}
+              <motion.div variants={itemVariants} className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
+                {Object.entries(settings?.socialLinks || {}).map(([platform, url]) => {
+                  if (!url) return null
+                  const Icon = socialIconMap[platform]
+                  if (!Icon) return null
+                  return (
+                    <motion.a
+                      key={platform}
+                      href={url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      whileHover={{ scale: 1.15, y: -2 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-white hover:bg-primary hover:text-white transition-all shadow-sm"
+                      title={platform}
+                    >
+                      <Icon size={16} />
+                    </motion.a>
+                  )
+                })}
+              </motion.div>
             </motion.div>
 
             {/* Content */}
@@ -215,18 +271,32 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
                 variants={itemVariants}
                 className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
               >
-                {ctaButtons.map((btn, i) => (
-                  <motion.button
-                    key={i}
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    onClick={() => handleCtaClick(btn)}
-                    className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-[#4F46E5] text-white font-bold rounded-full transition-all shadow-lg"
-                  >
-                    {btn.text || t('hero.getInTouch')}
-                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-                  </motion.button>
-                ))}
+                {/* Primary button */}
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => handleCtaClick({ text: contactBtnText, link: contactBtnLink })}
+                  className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-[#4F46E5] text-white font-bold rounded-full transition-all shadow-lg"
+                >
+                  {contactBtnText}
+                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                </motion.button>
+                {/* Secondary buttons */}
+                {ctaButtons.map((btn, i) => {
+                  if (!btn.text && !btn.link) return null
+                  return (
+                    <motion.button
+                      key={i}
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.95 }}
+                      onClick={() => handleCtaClick(btn)}
+                      className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold rounded-full transition-all"
+                    >
+                      {btn.text}
+                      <ExternalLink size={16} className="group-hover:translate-x-1 transition-transform" />
+                    </motion.button>
+                  )
+                })}
               </motion.div>
 
               {/* Stats */}

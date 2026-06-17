@@ -18,6 +18,7 @@ const contactMessageRoutes = require('./public/contact/contact-messages.routes')
 const messagesRoutes = require('./public/contact/messages.routes')
 const footerRoutes = require('./public/footer/footer.routes')
 const siteSettingsRoutes = require('./public/site-settings/siteSettings.routes')
+const chatRoutes = require('./ai/routes/chat.routes')
 const mediaRoutes = require('./admin/media/media.routes')
 const settingsRoutes = require('./public/settings/settings.routes')
 const backupRoutes = require('./admin/backups/backups.routes')
@@ -26,7 +27,7 @@ const importExportRoutes = require('./admin/import-export/import-export.routes')
 const systemConfigRoutes = require('./admin/system/system.routes')
 const maintenanceRoutes = require('./admin/maintenance/maintenance.routes')
 const notificationRoutes = require('./admin/notifications/notifications.routes')
-const chatRoutes = require('./ai/routes/chat.routes')
+const navigationRoutes = require('./public/navigation/navigation.routes')
 
 const app = express()
 
@@ -115,6 +116,7 @@ app.use('/api/system-config', systemConfigRoutes)
 app.use('/api/maintenance', maintenanceRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api', chatRoutes)
+app.use('/api', navigationRoutes)
 
 app.use('/uploads', express.static('uploads'))
 
@@ -178,10 +180,6 @@ async function start() {
 
   const shutdown = async (signal) => {
     console.log(`\n${signal} received. Shutting down gracefully...`)
-    if (!server) {
-      process.exit(0)
-      return
-    }
     server.close(() => {
       console.log('HTTP server closed.')
       process.exit(0)

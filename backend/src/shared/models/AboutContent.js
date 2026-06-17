@@ -39,7 +39,6 @@ const aboutContentSchema = new mongoose.Schema({
   education: { type: [educationSchema], default: [] },
   experience: { type: [experienceSchema], default: [] },
   certifications: { type: [certificationSchema], default: [] },
-  cvUrl: { type: String, default: '' },
   status: { type: String, enum: ['active', 'inactive'], default: 'active' },
 
   // Structured narrative blocks mapped to the 4 public cards

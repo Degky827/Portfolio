@@ -30,7 +30,7 @@ async function updateAboutContent(req, res) {
       content = new AboutContent()
     }
 
-    const textFields = ['title', 'subtitle', 'location', 'cvUrl', 'status']
+    const textFields = ['title', 'subtitle', 'location', 'status']
     textFields.forEach((field) => {
       if (req.body[field] !== undefined) {
         content[field] = req.body[field]

@@ -13,6 +13,7 @@ import Toast from '../shared/Toast'
 import { getHomeContent, updateHomeContent } from '../../shared/services/homeContentService'
 import { updateSiteSettings } from '../../shared/services/siteSettingsService'
 import { useAuth } from '../authentication/AuthContext'
+import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 
 const ICON_OPTIONS = [
   'Award', 'BookOpen', 'Cpu', 'Code2', 'Globe', 'Rocket', 'Star', 'Zap',
@@ -81,10 +82,6 @@ const defaultForm = {
     github: '', linkedin: '', telegram: '', twitter: '',
     facebook: '', instagram: '', youtube: '', email: '',
   },
-  resume: {
-    url: '',
-    fileName: 'Resume.pdf',
-  },
   theme: {
     primaryColor: '#6366f1',
     secondaryColor: '#10b981',
@@ -94,11 +91,11 @@ const defaultForm = {
     metaTitle: '',
     metaDescription: '',
     metaKeywords: [],
-    ogImage: '',
   },
   logoImage: '',
   logoText: '',
-  resumeButtonText: 'Download CV',
+  logoSubtitle: '',
+  logoEnabled: true,
   contactButtonText: 'Get In Touch',
   contactButtonLink: '#contact',
   published: false,
@@ -298,6 +295,7 @@ function LivePreview({ form }) {
 
 export default function HomeContent() {
   const { setUserData, user: authUser } = useAuth()
+  const { settings, refreshSettings } = useSiteSettings()
   const [form, setForm] = useState(defaultForm)
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -351,10 +349,6 @@ export default function HomeContent() {
               youtube: content.socialLinks?.youtube ?? '',
               email: content.socialLinks?.email ?? '',
             },
-            resume: {
-              url: content.resume?.url ?? '',
-              fileName: content.resume?.fileName ?? 'Resume.pdf',
-            },
             theme: {
               primaryColor: content.theme?.primaryColor ?? '#6366f1',
               secondaryColor: content.theme?.secondaryColor ?? '#10b981',
@@ -368,7 +362,8 @@ export default function HomeContent() {
             },
             logoImage: content.logoImage ?? '',
             logoText: content.logoText ?? '',
-            resumeButtonText: content.resumeButtonText ?? 'Download CV',
+            logoSubtitle: content.logoSubtitle ?? '',
+            logoEnabled: content.logoEnabled ?? true,
             contactButtonText: content.contactButtonText ?? 'Get In Touch',
             contactButtonLink: content.contactButtonLink ?? '#contact',
             published: content.published ?? false,
@@ -503,10 +498,6 @@ export default function HomeContent() {
         backgroundImage: form.cta.backgroundImage || '',
       },
       socialLinks: form.socialLinks,
-      resume: {
-        url: form.resume.url,
-        fileName: form.resume.fileName,
-      },
       theme: {
         primaryColor: form.theme.primaryColor,
         secondaryColor: form.theme.secondaryColor,
@@ -516,11 +507,11 @@ export default function HomeContent() {
         metaTitle: form.seo.metaTitle,
         metaDescription: form.seo.metaDescription,
         metaKeywords: form.seo.metaKeywords,
-        ogImage: form.seo.ogImage || '',
       },
       logoImage: form.logoImage || '',
       logoText: form.logoText,
-      resumeButtonText: form.resumeButtonText,
+      logoSubtitle: form.logoSubtitle,
+      logoEnabled: form.logoEnabled,
       contactButtonText: form.contactButtonText,
       contactButtonLink: form.contactButtonLink,
       published: form.published,
@@ -532,7 +523,8 @@ export default function HomeContent() {
         ...prev,
         logoImage: content.logoImage ?? prev.logoImage,
         logoText: content.logoText ?? prev.logoText,
-        resumeButtonText: content.resumeButtonText ?? prev.resumeButtonText,
+        logoSubtitle: content.logoSubtitle ?? prev.logoSubtitle,
+        logoEnabled: content.logoEnabled ?? prev.logoEnabled,
         contactButtonText: content.contactButtonText ?? prev.contactButtonText,
         contactButtonLink: content.contactButtonLink ?? prev.contactButtonLink,
         hero: {
@@ -546,10 +538,7 @@ export default function HomeContent() {
           ...prev.cta,
           backgroundImage: content.cta?.backgroundImage ?? prev.cta.backgroundImage,
         },
-        seo: {
-          ...prev.seo,
-          ogImage: content.seo?.ogImage ?? prev.seo.ogImage,
-        },
+        seo: { ...prev.seo },
       }))
       setToast({ message: 'Home content saved successfully', type: 'success' })
       try {
@@ -565,18 +554,17 @@ export default function HomeContent() {
           typingWords: form.hero.typingWords,
           logoImage: form.logoImage,
           logoText: form.logoText,
+          logoSubtitle: form.logoSubtitle,
+          logoEnabled: form.logoEnabled,
           contactButtonText: form.contactButtonText,
           contactButtonLink: form.contactButtonLink,
-          resume: {
-            url: form.resume.url,
-            buttonText: form.resumeButtonText,
-          },
           socialLinks,
         })
       } catch {}
       if (authUser) {
         setUserData({ ...authUser, displayName: form.hero.fullName })
       }
+      refreshSettings()
     } catch (err) {
       setToast({
         message: err.response?.data?.message || 'Failed to save home content',
@@ -693,8 +681,38 @@ export default function HomeContent() {
               </Card>
             </motion.div>
 
-            {/* ── CARD 4: Primary Action ──────────────── */}
+            {/* ── CARD 4: Social Links ──────────────── */}
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+              <Card>
+                <CardHeader icon={Share2} title="Social Links" subtitle="Links appear under your profile photo with auto-generated platform icons." />
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {[
+                    { key: 'github', label: 'GitHub', placeholder: 'https://github.com/username' },
+                    { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/in/username' },
+                    { key: 'telegram', label: 'Telegram', placeholder: 'https://t.me/username' },
+                    { key: 'twitter', label: 'Twitter / X', placeholder: 'https://twitter.com/username' },
+                    { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/username' },
+                    { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/username' },
+                    { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@channel' },
+                    { key: 'email', label: 'Email', placeholder: 'mailto:hello@example.com' },
+                  ].map(({ key, label, placeholder }) => (
+                    <Field key={key} label={label}>
+                      <Input
+                        value={form.socialLinks[key]}
+                        onChange={(e) => {
+                          const links = { ...form.socialLinks, [key]: e.target.value }
+                          updateForm('socialLinks', links)
+                        }}
+                        placeholder={placeholder}
+                      />
+                    </Field>
+                  ))}
+                </div>
+              </Card>
+            </motion.div>
+
+            {/* ── CARD 5: Primary Action ──────────────── */}
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
               <Card>
                 <CardHeader icon={MousePointerClick} title="Primary Action" subtitle="The main 'Get In Touch' button and any secondary CTA buttons that appear below your introduction." />
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -754,8 +772,8 @@ export default function HomeContent() {
               </Card>
             </motion.div>
 
-            {/* ── CARD 5: Professional Milestones ──────── */}
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+            {/* ── CARD 6: Professional Milestones ──────── */}
+            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
               <Card>
                 <CardHeader icon={Medal} title="Professional Milestones" subtitle="The metrics row at the bottom of your hero — certifications, projects, skills, or any achievement you want to highlight." />
                 <DynamicList
@@ -820,72 +838,8 @@ export default function HomeContent() {
             {/* ── GLOBAL SETTINGS ──────────────────────── */}
             <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
               <CollapsibleSection title="Global Settings" icon={Settings}>
-                {/* Social Links */}
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Share2 size={16} className="text-gray-400" />
-                    Social Links
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {[
-                      { key: 'github', label: 'GitHub', placeholder: 'https://github.com/username' },
-                      { key: 'linkedin', label: 'LinkedIn', placeholder: 'https://linkedin.com/in/username' },
-                      { key: 'telegram', label: 'Telegram', placeholder: 'https://t.me/username' },
-                      { key: 'twitter', label: 'Twitter / X', placeholder: 'https://twitter.com/username' },
-                      { key: 'facebook', label: 'Facebook', placeholder: 'https://facebook.com/username' },
-                      { key: 'instagram', label: 'Instagram', placeholder: 'https://instagram.com/username' },
-                      { key: 'youtube', label: 'YouTube', placeholder: 'https://youtube.com/@channel' },
-                      { key: 'email', label: 'Email', placeholder: 'mailto:hello@example.com' },
-                    ].map(({ key, label, placeholder }) => (
-                      <Field key={key} label={label}>
-                        <Input
-                          value={form.socialLinks[key]}
-                          onChange={(e) => {
-                            const links = { ...form.socialLinks, [key]: e.target.value }
-                            updateForm('socialLinks', links)
-                          }}
-                          placeholder={placeholder}
-                        />
-                      </Field>
-                    ))}
-                  </div>
-                </div>
-
-                <hr className="border-gray-200 dark:border-slate-700" />
-
-                {/* Resume */}
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <FileText size={16} className="text-gray-400" />
-                    Resume / CV
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Field label="Resume File">
-                      <FileUpload
-                        value={form.resume.url}
-                        onChange={(val) => updateForm('resume.url', val || '')}
-                        label="Resume PDF"
-                        folder="resumes"
-                      />
-                    </Field>
-                    <Field label="File Name">
-                      <Input
-                        value={form.resume.fileName}
-                        onChange={(e) => updateForm('resume.fileName', e.target.value)}
-                        placeholder="Resume.pdf"
-                      />
-                    </Field>
-                  </div>
-                  <Field label="Download Button Text">
-                    <Input
-                      value={form.resumeButtonText}
-                      onChange={(e) => updateForm('resumeButtonText', e.target.value)}
-                      placeholder="Download CV"
-                    />
-                  </Field>
-                </div>
-
-                <hr className="border-gray-200 dark:border-slate-700" />
+                {/* ── Hero Logo Management ── */}
+                <HeroLogoManagement settings={settings} refreshSettings={refreshSettings} setToast={setToast} />
 
                 {/* Theme Colors */}
                 <div>
@@ -975,44 +929,34 @@ export default function HomeContent() {
                       )}
                     />
                   </Field>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <Field label="OG Image (Social Share)">
-                      <ImageUpload
-                        value={form.seo.ogImage}
-                        onChange={handleImageChange('seo.ogImage')}
-                        label="OG Image"
-                        folder="og-images"
-                      />
-                    </Field>
-                    <Field label="Publishing">
-                      <div className="flex flex-col gap-3 pt-1">
-                        <label className="flex items-center gap-3 cursor-pointer">
-                          <div
-                            role="checkbox"
-                            tabIndex={0}
-                            aria-checked={form.published}
-                            onClick={() => updateForm('published', !form.published)}
-                            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateForm('published', !form.published) } }}
-                            className={`relative w-12 h-6 rounded-full transition-colors ${
-                              form.published ? 'bg-primary' : 'bg-gray-300 dark:bg-slate-700'
-                            }`}
-                          >
-                            <motion.div
-                              animate={{ x: form.published ? 24 : 2 }}
-                              transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                              className="absolute top-1 w-5 h-5 bg-white rounded-full shadow"
-                            />
-                          </div>
-                          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                            {form.published ? 'Published' : 'Draft'}
-                          </span>
-                        </label>
-                        <p className="text-xs text-gray-400">
-                          When published, the homepage will show this content. When in draft, the previous published version is shown.
-                        </p>
-                      </div>
-                    </Field>
-                  </div>
+                  <Field label="Publishing">
+                    <div className="flex flex-col gap-3 pt-1">
+                      <label className="flex items-center gap-3 cursor-pointer">
+                        <div
+                          role="checkbox"
+                          tabIndex={0}
+                          aria-checked={form.published}
+                          onClick={() => updateForm('published', !form.published)}
+                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateForm('published', !form.published) } }}
+                          className={`relative w-12 h-6 rounded-full transition-colors ${
+                            form.published ? 'bg-primary' : 'bg-gray-300 dark:bg-slate-700'
+                          }`}
+                        >
+                          <motion.div
+                            animate={{ x: form.published ? 24 : 2 }}
+                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                            className="absolute top-1 w-5 h-5 bg-white rounded-full shadow"
+                          />
+                        </div>
+                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                          {form.published ? 'Published' : 'Draft'}
+                        </span>
+                      </label>
+                      <p className="text-xs text-gray-400">
+                        When published, the homepage will show this content. When in draft, the previous published version is shown.
+                      </p>
+                    </div>
+                  </Field>
                 </div>
               </CollapsibleSection>
             </motion.div>
@@ -1082,6 +1026,91 @@ export default function HomeContent() {
           onClose={() => setToast(null)}
         />
       )}
+    </div>
+  )
+}
+
+function HeroLogoManagement({ settings, refreshSettings, setToast }) {
+  const [logoText, setLogoText] = useState(settings?.logoText || '')
+  const [logoSubtitle, setLogoSubtitle] = useState(settings?.logoSubtitle || '')
+  const [logoEnabled, setLogoEnabled] = useState(settings?.logoEnabled !== false)
+  const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    setLogoText(settings?.logoText || '')
+    setLogoSubtitle(settings?.logoSubtitle || '')
+    setLogoEnabled(settings?.logoEnabled !== false)
+  }, [settings])
+
+  const handleSave = async () => {
+    setSaving(true)
+    try {
+      await updateSiteSettings({ logoText, logoSubtitle, logoEnabled })
+      refreshSettings()
+      setToast({ message: 'Hero logo saved successfully', type: 'success' })
+    } catch (err) {
+      setToast({ message: err.response?.data?.message || 'Failed to save logo', type: 'error' })
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  return (
+    <div>
+      <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+        <Image size={16} className="text-gray-400" />
+        Hero Logo Management
+      </h4>
+
+      <div className="space-y-4">
+        <Field label="Logo Title">
+          <Input
+            value={logoText}
+            onChange={(e) => setLogoText(e.target.value)}
+            placeholder="DESALEGN"
+          />
+        </Field>
+
+        <Field label="Subtitle / Description">
+          <Input
+            value={logoSubtitle}
+            onChange={(e) => setLogoSubtitle(e.target.value)}
+            placeholder="Full-Stack Developer & Network Designer"
+          />
+        </Field>
+
+        <Field label="Display">
+          <label className="flex items-center gap-3 cursor-pointer">
+            <div
+              role="checkbox"
+              tabIndex={0}
+              aria-checked={logoEnabled}
+              onClick={() => setLogoEnabled(!logoEnabled)}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLogoEnabled(!logoEnabled) } }}
+              className={`relative w-11 h-6 rounded-full transition-colors ${logoEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-slate-700'}`}
+            >
+              <motion.div
+                animate={{ x: logoEnabled ? 22 : 2 }}
+                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                className="absolute top-1 w-5 h-5 bg-white rounded-full shadow"
+              />
+            </div>
+            <span className="text-sm text-gray-700 dark:text-gray-300">
+              {logoEnabled ? 'Logo is visible on the public site' : 'Logo is hidden'}
+            </span>
+          </label>
+        </Field>
+      </div>
+
+      <div className="flex gap-3 mt-5 pt-4 border-t border-gray-100 dark:border-slate-800">
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+        >
+          {saving ? <><RefreshCw size={16} className="animate-spin" /> Saving...</> : <><Save size={16} /> Save Logo</>}
+        </button>
+      </div>
     </div>
   )
 }

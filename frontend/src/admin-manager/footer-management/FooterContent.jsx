@@ -5,6 +5,8 @@ import PageHeader from '../shared/PageHeader'
 import ImageUpload from '../shared/ImageUpload'
 import Toast from '../shared/Toast'
 import { getFooterContent, updateFooterContent } from '../../shared/services/footerService'
+import { updateSiteSettings } from '../../shared/services/siteSettingsService'
+import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 
 const emptySocialLink = { platform: '', url: '', displayOrder: 0, active: true }
 const emptyNavItem = { label: '', url: '', order: 0 }
@@ -38,6 +40,7 @@ function EmptyState({ message }) {
 }
 
 export default function FooterContent() {
+  const { refreshSettings } = useSiteSettings()
   const [form, setForm] = useState({
     brandName: '',
     brandDescription: '',
@@ -153,6 +156,17 @@ export default function FooterContent() {
     else if (logoUrl) fd.append('footerLogoUrl', logoUrl)
     try {
       await updateFooterContent(fd)
+      try {
+        await updateSiteSettings({
+          brandName: form.brandName,
+          brandDescription: form.brandDescription,
+          logoImage: logoUrl || existingLogo,
+          copyrightText: form.copyrightText,
+          email: form.emailAddress,
+          phone: form.phoneNumber,
+        })
+      } catch {}
+      refreshSettings()
       setToast({ message: 'Footer content updated successfully', type: 'success' })
     } catch (err) {
       setToast({ message: err.response?.data?.message || 'Failed to update footer content', type: 'error' })

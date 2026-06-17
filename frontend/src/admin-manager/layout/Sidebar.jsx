@@ -6,7 +6,7 @@ import {
   Home, UserCircle, Mail, FileText, X, ChevronLeft, ChevronRight,
   Image, HardDrive, Activity, Download, Wrench, Bell,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
-  Shield, LogOut, Settings, Eye,
+  Shield, LogOut, Settings, Eye, Menu,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
@@ -66,6 +66,7 @@ const navGroups = [
       { path: '/admin/projects', label: 'Projects', icon: FolderKanban, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
       { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
+      { path: '/admin/navigation', label: 'Navigation', icon: Menu, roles: ['super_admin', 'admin'] },
     ],
   },
   {

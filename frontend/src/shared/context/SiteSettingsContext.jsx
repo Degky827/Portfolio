@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback } from 'react'
 import { getSiteSettings } from '../services/siteSettingsService'
 
 const SiteSettingsContext = createContext(null)
@@ -8,28 +8,28 @@ export function SiteSettingsProvider({ children }) {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  useEffect(() => {
-    let cancelled = false
-    ;(async () => {
-      try {
-        setLoading(true)
-        const res = await getSiteSettings()
-        if (!cancelled) setSettings(res.settings || {})
-      } catch (err) {
-        if (!cancelled) setError(err)
-      } finally {
-        if (!cancelled) setLoading(false)
-      }
-    })()
-    return () => { cancelled = true }
+  const fetchSettings = useCallback(async () => {
+    try {
+      setLoading(true)
+      const res = await getSiteSettings()
+      setSettings(res.settings || {})
+    } catch (err) {
+      setError(err)
+    } finally {
+      setLoading(false)
+    }
   }, [])
+
+  useEffect(() => {
+    fetchSettings()
+  }, [fetchSettings])
 
   function updateSettings(newSettings) {
     setSettings(newSettings)
   }
 
   return (
-    <SiteSettingsContext.Provider value={{ settings, loading, error, updateSettings }}>
+    <SiteSettingsContext.Provider value={{ settings, loading, error, updateSettings, refreshSettings: fetchSettings }}>
       {children}
     </SiteSettingsContext.Provider>
   )

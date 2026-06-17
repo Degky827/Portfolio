@@ -74,15 +74,8 @@ const homeContentSchema = new mongoose.Schema(
       email: { type: String, default: '' },
     },
 
-    resume: {
-      url: { type: String, default: '' },
-      fileName: { type: String, default: 'Resume.pdf' },
-    },
-
     logoImage: { type: String, default: '' },
     logoText: { type: String, default: '' },
-
-    resumeButtonText: { type: String, default: 'Download CV' },
 
     contactButtonText: { type: String, default: 'Get In Touch' },
     contactButtonLink: { type: String, default: '#contact' },
@@ -97,7 +90,6 @@ const homeContentSchema = new mongoose.Schema(
       metaTitle: { type: String, default: '' },
       metaDescription: { type: String, default: '' },
       metaKeywords: [{ type: String }],
-      ogImage: { type: String, default: '' },
     },
 
     published: { type: Boolean, default: false },
