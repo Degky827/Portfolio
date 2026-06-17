@@ -6,6 +6,8 @@ const siteSettingsSchema = new mongoose.Schema({
   professionalBadge: { type: String, default: '' },
   logoText: { type: String, default: '' },
   logoImage: { type: String, default: '' },
+  logoSubtitle: { type: String, default: '' },
+  logoEnabled: { type: Boolean, default: true },
   greeting: { type: String, default: "Hi, I'm" },
   typingWords: { type: [String], default: [] },
   shortIntroduction: { type: String, default: '' },

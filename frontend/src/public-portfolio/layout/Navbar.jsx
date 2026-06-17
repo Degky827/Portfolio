@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download, Globe, Sun, Moon } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
-import { logPortfolioEngagement } from '../../shared/services/api'
+import Logo from '../../shared/components/Logo'
 
 const navLinkIds = ['home', 'about', 'skills', 'projects', 'contact']
 
@@ -52,24 +52,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       }`}
     >
       <div className="container mx-auto px-4 sm:px-6 flex justify-between items-center">
-        <motion.a 
-          href="#home" 
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          className="flex items-center gap-2 sm:gap-3 text-xl sm:text-2xl font-black tracking-tighter"
-          onClick={(e) => handleNavClick(e, 'home')}
-        >
-          {logoImage ? (
-            <img src={logoImage} alt={logoText || 'Logo'} className="h-8 sm:h-10 w-auto" />
-          ) : (
-            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-[10px] sm:text-xs font-black">
-              {nameAmharic || 'ደካ'}
-            </div>
-          )}
-          <span className="text-gray-900 dark:text-[#F8FAFC] font-display">
-            {logoText || brandName || 'DESALEGN'}
-          </span>
-        </motion.a>
+        <Logo settings={settings} linkTo="#home" onNavClick={(e) => handleNavClick(e, 'home')} />
         
         {/* Mobile Menu Toggle */}
         <button 
@@ -137,10 +120,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
               download
               target="_blank"
               rel="noopener noreferrer"
-              onClick={() => logPortfolioEngagement({
-                action: 'cv_download',
-                page: window.location.pathname,
-              })}
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.8 }}
@@ -176,13 +155,9 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 <motion.div 
                   initial={{ scale: 0.5, rotate: -45 }}
                   animate={{ scale: 1, rotate: 0 }}
-                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-sm sm:text-base font-black overflow-hidden"
+                  className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg overflow-hidden"
                 >
-                  {logoImage ? (
-                    <img src={logoImage} alt={logoText || brandName || 'Logo'} className="w-full h-full object-cover" />
-                  ) : (
-                    nameAmharic || 'ደካ'
-                  )}
+                  <Logo settings={settings} showText={false} linkTo={null} />
                 </motion.div>
                 <motion.button 
                   whileHover={{ scale: 1.1, rotate: 90 }}
@@ -217,20 +192,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
               </ul>
 
               <div className="mt-auto space-y-6 sm:space-y-8">
-                {/* Resume CV Button */}
-                <motion.a
-              href={resumeUrl || '/resume.pdf'}
-                  download
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  onClick={() => { setIsOpen(false); logPortfolioEngagement({ action: 'cv_download', page: window.location.pathname }) }}
-                  className="flex items-center justify-center gap-3 w-full py-4 bg-primary text-white font-bold uppercase tracking-wider rounded-2xl hover:bg-secondary transition-colors shadow-lg shadow-primary/30"
-                >
-                  <Download size={20} />
-                  <span>{resumeButtonText || t('nav.downloadCv')}</span>
-                </motion.a>
 
                   {/* Contact Info Card */}
                   <div className="p-5 sm:p-6 md:p-8 bg-gray-50 dark:bg-neutral-900 rounded-2xl sm:rounded-[1.5rem] border border-gray-200 dark:border-neutral-800">

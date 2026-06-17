@@ -3,6 +3,7 @@ import { motion } from 'framer-motion'
 import { ArrowUp, MapPin, Mail, Phone } from 'lucide-react'
 import { getFooterContent } from '../../shared/services/footerService'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
+import Logo from '../../shared/components/Logo'
 import {
   FaGithub, FaLinkedin, FaTelegram, FaFacebook, FaInstagram, FaWhatsapp, FaYoutube, FaDiscord, FaTwitter,
 } from 'react-icons/fa6'
@@ -64,7 +65,7 @@ export default function Footer() {
 
   const brandName = settings?.brandName || content?.brandName || t('nav.logoText')
   const brandDescription = settings?.brandDescription || content?.brandDescription || t('footer.brandDescription')
-  const footerLogo = content?.footerLogo || ''
+  const footerLogo = settings?.logoImage || content?.footerLogo || ''
 
   const locationHeadline = content?.locationHeadline || t('footer.location')
   const subLocation = content?.subLocation || t('footer.subLocation')
@@ -120,16 +121,7 @@ export default function Footer() {
             viewport={{ once: true }}
             className="md:col-span-2"
           >
-            <div className="flex items-center gap-3 text-2xl sm:text-3xl font-black mb-4 sm:mb-6 md:mb-8">
-              {footerLogo ? (
-                <img src={footerLogo.startsWith('http') ? footerLogo : `http://localhost:5000${footerLogo}`} alt={brandName} className="h-10 sm:h-12 w-auto" />
-              ) : (
-                <span className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-[11px] sm:text-sm font-black">
-                  {brandName.charAt(0)}
-                </span>
-              )}
-              <span className="tracking-tight uppercase">{brandName}</span>
-            </div>
+            <Logo settings={settings} showText={true} linkTo={null} className="text-2xl sm:text-3xl font-black mb-4 sm:mb-6 md:mb-8" />
             <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-sm mb-6 sm:mb-8 md:mb-10 leading-relaxed">
               {brandDescription}
             </p>

@@ -12,6 +12,7 @@ import ProjectForm from '../projects-management/ProjectForm'
 import Skills from '../skills-management/SkillsList'
 import SkillForm from '../skills-management/SkillForm'
 import HomeContent from '../homepage-management/HomeContent'
+import NavigationManagement from '../navigation-management/NavigationManagement'
 import AboutContent from '../about-management/AboutContent'
 import ContactContent from '../contact-management/ContactContent'
 import MessageCenter from '../contact-management/MessageCenter'
@@ -83,6 +84,7 @@ export default function AdminRoutes() {
           <Route path="skills/new" element={<SkillForm />} />
           <Route path="skills/:id" element={<SkillForm />} />
           <Route path="home" element={<HomeContent />} />
+          <Route path="navigation" element={<NavigationManagement />} />
           <Route path="about" element={<AboutContent />} />
           <Route path="contact" element={<ContactContent />} />
           <Route path="inbox" element={<MessageCenter />} />

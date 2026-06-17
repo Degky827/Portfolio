@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useCallback } from 'react'
+import { Suspense, useEffect, useCallback, useState } from 'react'
 import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './shared/hooks'
 import api from './shared/services/api'
@@ -9,6 +9,8 @@ import Footer from './public-portfolio/layout/Footer'
 import HomePage from './public-portfolio/pages/HomePage'
 import LoginPage from './admin-manager/authentication/LoginPage'
 import AdminRoutes from './admin-manager/routes/AdminRoutes'
+import AIButton from './ai/components/AIButton'
+import ChatWindow from './ai/components/ChatWindow'
 
 function ScrollToTop() {
   const { pathname } = useLocation()
@@ -22,6 +24,7 @@ function ScrollToTop() {
 
 function PublicLayout() {
   const [darkMode, setDarkMode] = useDarkMode()
+  const [chatOpen, setChatOpen] = useState(false)
 
   const handleToggle = useCallback(() => {
     setDarkMode((prev) => {
@@ -40,6 +43,8 @@ function PublicLayout() {
         <Outlet />
       </main>
       <Footer />
+      <AIButton isOpen={chatOpen} onClick={() => setChatOpen((prev) => !prev)} />
+      <ChatWindow isOpen={chatOpen} onClose={() => setChatOpen(false)} />
     </div>
   )
 }

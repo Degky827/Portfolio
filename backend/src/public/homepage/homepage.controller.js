@@ -49,7 +49,6 @@ async function updateHomeContent(req, res) {
 
     if (body.logoImage !== undefined) content.logoImage = body.logoImage
     if (body.logoText !== undefined) content.logoText = body.logoText
-    if (body.resumeButtonText !== undefined) content.resumeButtonText = body.resumeButtonText
     if (body.contactButtonText !== undefined) content.contactButtonText = body.contactButtonText
     if (body.contactButtonLink !== undefined) content.contactButtonLink = body.contactButtonLink
 
@@ -82,11 +81,6 @@ async function updateHomeContent(req, res) {
       })
     }
 
-    if (body.resume) {
-      if (body.resume.url !== undefined) content.resume.url = body.resume.url
-      if (body.resume.fileName !== undefined) content.resume.fileName = body.resume.fileName
-    }
-
     if (body.theme) {
       if (body.theme.primaryColor !== undefined) content.theme.primaryColor = body.theme.primaryColor
       if (body.theme.secondaryColor !== undefined) content.theme.secondaryColor = body.theme.secondaryColor
@@ -97,7 +91,6 @@ async function updateHomeContent(req, res) {
       if (body.seo.metaTitle !== undefined) content.seo.metaTitle = body.seo.metaTitle
       if (body.seo.metaDescription !== undefined) content.seo.metaDescription = body.seo.metaDescription
       if (body.seo.metaKeywords !== undefined) content.seo.metaKeywords = body.seo.metaKeywords
-      if (body.seo.ogImage !== undefined) content.seo.ogImage = body.seo.ogImage
     }
 
     if (body.published !== undefined) {

@@ -14,11 +14,13 @@ async function getSiteSettings(_req, res) {
 }
 
 const textFields = [
-  'brandName', 'nameAmharic', 'professionalBadge', 'logoText', 'logoImage',
+  'brandName', 'nameAmharic', 'professionalBadge', 'logoText', 'logoImage', 'logoSubtitle',
   'greeting', 'shortIntroduction', 'email', 'phone',
   'contactButtonText', 'contactButtonLink',
   'brandDescription', 'copyrightText',
 ]
+
+const booleanFields = ['logoEnabled']
 
 const resumeKeys = ['url', 'fileName', 'buttonText']
 const socialKeys = ['github', 'linkedin', 'twitter', 'telegram', 'facebook', 'instagram', 'youtube']
@@ -34,6 +36,10 @@ async function updateSiteSettings(req, res) {
     const body = req.body
 
     textFields.forEach((field) => {
+      if (body[field] !== undefined) settings[field] = body[field]
+    })
+
+    booleanFields.forEach((field) => {
       if (body[field] !== undefined) settings[field] = body[field]
     })
 
