@@ -7,10 +7,12 @@ import {
   Plus, Image, Award, Shield, FolderKanban, Activity,
   CheckCircle, AlertTriangle, HardDrive, Bell,
   ArrowUpRight, ArrowDownRight, MoreHorizontal,
+  Mail,
 } from 'lucide-react'
 import { useAuth } from '../authentication/AuthContext'
 import api from '../../shared/services/api'
 import { listBackups } from '../../shared/services/backupService'
+import { listMessages, getUnreadMessageCount } from '../../shared/services/contactService'
 import StatCard from '../shared/StatCard'
 
 const containerVariants = {
@@ -87,6 +89,10 @@ export default function Dashboard() {
   const [lastLogin, setLastLogin] = useState('')
   const [backups, setBackups] = useState([])
   const [backupsLoading, setBackupsLoading] = useState(true)
+  const [messages, setMessages] = useState([])
+  const [messagesLoading, setMessagesLoading] = useState(true)
+  const [messageTotalCount, setMessageTotalCount] = useState(0)
+  const [unreadCount, setUnreadCount] = useState(0)
 
   useEffect(() => {
     const stored = localStorage.getItem('adminLastLogin')
@@ -132,6 +138,19 @@ export default function Dashboard() {
       .finally(() => setBackupsLoading(false))
   }, [])
 
+  useEffect(() => {
+    listMessages({ limit: 5 })
+      .then((res) => {
+        setMessages(res.messages || [])
+        setMessageTotalCount(res.totalCount || 0)
+      })
+      .catch(() => {})
+      .finally(() => setMessagesLoading(false))
+    getUnreadMessageCount()
+      .then((res) => setUnreadCount(res.count || 0))
+      .catch(() => {})
+  }, [])
+
   const todayVisits = stats?.todayCount || 0
   const monthVisits = stats?.monthCount || 0
   const totalVisits = stats?.totalCount || 0
@@ -148,11 +167,24 @@ export default function Dashboard() {
     { title: 'Unique Visitors', value: uniqueV, icon: Users, trend: stats?.trend?.unique ?? null, accent: 'primary', subtitle: 'Distinct visitors' },
     { title: "Today's Visitors", value: todayVisits, icon: UserCheck, trend: stats?.trend?.today ?? null, accent: 'primary', subtitle: 'vs. yesterday' },
     { title: 'Total Projects', value: projectCount, icon: FolderKanban, trend: null, accent: 'primary', subtitle: `${publishedCount} published` },
+    { title: 'Messages', value: messageTotalCount, icon: Mail, trend: null, accent: 'primary', subtitle: `${unreadCount} unread`, onClick: '/admin/inbox' },
   ]
 
   const quickActions = quickActionsConfig
 
-  const activityItems = stats?.recentVisits?.slice(0, 6) || []
+  const messageActivityItems = (messages || []).map((msg) => ({
+    _id: msg._id,
+    type: 'message',
+    name: msg.name || msg.email || 'Anonymous',
+    subject: msg.subject || '(No subject)',
+    email: msg.email,
+    read: msg.read,
+    timestamp: msg.createdAt,
+  }))
+  const visitActivityItems = (stats?.recentVisits || []).map((v) => ({ ...v, type: 'visit' }))
+  const activityItems = [...visitActivityItems, ...messageActivityItems]
+    .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+    .slice(0, 8)
 
   const systemStatus = [
     { label: 'Database', status: 'healthy', icon: HardDrive, color: 'text-emerald-500' },
@@ -277,7 +309,13 @@ export default function Dashboard() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5">
           {statCards.map((card, i) => (
-            <StatCard key={card.title} {...card} loading={loading} delay={i * 0.08} />
+            <div
+              key={card.title}
+              onClick={card.onClick ? () => navigate(card.onClick) : undefined}
+              className={card.onClick ? 'cursor-pointer' : ''}
+            >
+              <StatCard {...card} loading={loading} delay={i * 0.08} />
+            </div>
           ))}
         </div>
       </motion.div>
@@ -481,42 +519,70 @@ export default function Dashboard() {
                 <div className="relative">
                   <div className="absolute left-4 top-0 bottom-0 w-px bg-gray-200 dark:bg-slate-700" />
                   <div className="space-y-0">
-                    {activityItems.map((visit, i) => (
+                    {activityItems.map((item, i) => (
                       <motion.div
-                        key={visit._id || i}
+                        key={item._id || i}
                         initial={{ opacity: 0, x: -12 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ delay: i * 0.06, duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
                         className="relative flex items-start gap-4 pb-5 last:pb-0"
                       >
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          transition={{ delay: i * 0.06 + 0.1, type: 'spring', stiffness: 300 }}
-                          className="relative z-10 w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm"
-                        >
-                          {(visit.visitorName || 'A')[0].toUpperCase()}
-                        </motion.div>
+                        {item.type === 'message' ? (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: i * 0.06 + 0.1, type: 'spring', stiffness: 300 }}
+                            className={`relative z-10 w-8 h-8 rounded-xl flex items-center justify-center text-white shrink-0 shadow-sm ${
+                              item.read
+                                ? 'bg-gray-400 dark:bg-slate-600'
+                                : 'bg-indigo-500'
+                            }`}
+                          >
+                            <Mail size={14} />
+                          </motion.div>
+                        ) : (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            transition={{ delay: i * 0.06 + 0.1, type: 'spring', stiffness: 300 }}
+                            className="relative z-10 w-8 h-8 rounded-xl bg-indigo-500 flex items-center justify-center text-white text-xs font-bold shrink-0 shadow-sm"
+                          >
+                            {(item.visitorName || 'A')[0].toUpperCase()}
+                          </motion.div>
+                        )}
                         <div className="flex-1 min-w-0 pt-0.5">
                           <p className="text-sm font-semibold text-gray-900 dark:text-white truncate">
-                            {visit.visitorName || 'Anonymous'}
+                            {item.type === 'message' ? item.name : (item.visitorName || 'Anonymous')}
                           </p>
                           <div className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                            {visit.location && (
-                              <span className="flex items-center gap-1">
-                                <MapPin size={10} />
-                                {[visit.location.city, visit.location.region, visit.location.country]
-                                  .filter(Boolean)
-                                  .join(', ')}
-                              </span>
-                            )}
-                            {visit.page && (
-                              <span className="text-gray-400 truncate max-w-[120px]">{visit.page}</span>
+                            {item.type === 'message' ? (
+                              <>
+                                <span className="flex items-center gap-1 truncate">
+                                  {item.subject}
+                                </span>
+                                {!item.read && (
+                                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 shrink-0" />
+                                )}
+                              </>
+                            ) : (
+                              <>
+                                {item.location && (
+                                  <span className="flex items-center gap-1">
+                                    <MapPin size={10} />
+                                    {[item.location.city, item.location.region, item.location.country]
+                                      .filter(Boolean)
+                                      .join(', ')}
+                                  </span>
+                                )}
+                                {item.page && (
+                                  <span className="text-gray-400 truncate max-w-[120px]">{item.page}</span>
+                                )}
+                              </>
                             )}
                           </div>
                         </div>
                         <span className="text-xs text-gray-400 shrink-0 tabular-nums">
-                          {formatTimeAgo(visit.timestamp)}
+                          {formatTimeAgo(item.timestamp)}
                         </span>
                       </motion.div>
                     ))}

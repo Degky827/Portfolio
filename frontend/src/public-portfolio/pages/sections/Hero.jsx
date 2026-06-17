@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { ArrowRight, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, GraduationCap, Heart, Briefcase, Coffee, Smile, Download, MapPin } from 'lucide-react'
+import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
 
 const iconMap = {
   Award, BookOpen, Cpu, Users, Trophy, Shield,
@@ -15,15 +16,16 @@ function getIcon(name) {
 
 export default function Hero({ content, contactButtonText, contactButtonLink }) {
   const { t } = useTranslation()
+  const { settings } = useSiteSettings()
   const [typedText, setTypedText] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
 
-  const greeting = content?.greeting ?? t('hero.greeting')
-  const fullName = content?.fullName ?? t('hero.fullName')
-  const nameAmharic = content?.nameAmharic ?? t('hero.nameAmharic')
-  const badge = content?.professionalBadge ?? t('hero.badge')
-  const fullText = content?.typingWords?.[0] ?? t('hero.typingText')
-  const introduction = content?.shortIntroduction ?? t('hero.introduction')
+  const greeting = settings?.greeting || content?.greeting || t('hero.greeting')
+  const fullName = settings?.brandName || content?.fullName || t('hero.fullName')
+  const nameAmharic = settings?.nameAmharic || content?.nameAmharic || t('hero.nameAmharic')
+  const badge = settings?.professionalBadge || content?.professionalBadge || t('hero.badge')
+  const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || t('hero.typingText')
+  const introduction = settings?.shortIntroduction || content?.shortIntroduction || t('hero.introduction')
   const profilePhotoUrl = content?.profilePhoto?.url || '/BDU1601297.png'
   const profilePhotoAlt = content?.profilePhoto?.alt || t('hero.profileAlt')
   const stats = content?.statistics?.length > 0
@@ -33,8 +35,8 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
         { label: t('hero.statClassProjects'), value: '15+', icon: 'BookOpen', color: '#10b981' },
         { label: t('hero.statCoreSkills'), value: '30+', icon: 'Cpu', color: '#f59e0b' },
       ]
-  const contactBtnText = contactButtonText || t('hero.getInTouch')
-  const contactBtnLink = contactButtonLink || '#contact'
+  const contactBtnText = settings?.contactButtonText || contactButtonText || t('hero.getInTouch')
+  const contactBtnLink = settings?.contactButtonLink || contactButtonLink || '#contact'
   const ctaButtons = content?.ctaButtons?.length > 0
     ? content.ctaButtons.map((btn, i) => i === 0 ? { ...btn, text: contactBtnText, link: contactBtnLink } : btn)
     : [{ text: contactBtnText, link: contactBtnLink, openNewTab: false, icon: 'ArrowRight' }]

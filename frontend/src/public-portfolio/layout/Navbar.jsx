@@ -2,40 +2,26 @@ import { useState, useEffect } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download, Globe, Sun, Moon } from 'lucide-react'
-import { getHomeContent } from '../../shared/services/homeContentService'
+import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import { logPortfolioEngagement } from '../../shared/services/api'
 
 const navLinkIds = ['home', 'about', 'skills', 'projects', 'contact']
 
-const initialContent = {
-  logoImage: '',
-  logoText: '',
-  resumeUrl: '',
-  resumeButtonText: '',
-}
-
 export default function Navbar({ darkMode, onToggleDark }) {
   const { t, i18n } = useTranslation()
+  const { settings } = useSiteSettings()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
-  const [homeContent, setHomeContent] = useState(initialContent)
 
-  useEffect(() => {
-    getHomeContent()
-      .then((res) => {
-        if (res?.content) {
-          setHomeContent({
-            logoImage: res.content.logoImage || '',
-            logoText: res.content.logoText || '',
-            resumeUrl: res.content.resume?.url || '',
-            resumeButtonText: res.content.resumeButtonText || '',
-          })
-        }
-      })
-      .catch(() => {})
-  }, [])
-
-  const { logoImage, logoText, resumeUrl, resumeButtonText } = homeContent
+  const logoImage = settings?.logoImage || ''
+  const logoText = settings?.logoText || ''
+  const brandName = settings?.brandName || ''
+  const nameAmharic = settings?.nameAmharic || ''
+  const resumeUrl = settings?.resume?.url || ''
+  const resumeButtonText = settings?.resume?.buttonText || ''
+  const email = settings?.email || ''
+  const phone = settings?.phone || ''
+  const socialLinks = settings?.socialLinks || {}
 
   useEffect(() => {
     const handleScroll = () => {
@@ -77,11 +63,11 @@ export default function Navbar({ darkMode, onToggleDark }) {
             <img src={logoImage} alt={logoText || 'Logo'} className="h-8 sm:h-10 w-auto" />
           ) : (
             <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg sm:rounded-xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-[10px] sm:text-xs font-black">
-              ደካ
+              {nameAmharic || 'ደካ'}
             </div>
           )}
           <span className="text-gray-900 dark:text-[#F8FAFC] font-display">
-            {logoText || 'DESALEGN'}
+            {logoText || brandName || 'DESALEGN'}
           </span>
         </motion.a>
         
@@ -147,7 +133,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
             </motion.button>
             {/* CV Download */}
             <motion.a
-              href={resumeUrl || '/Desalegn_Kasaye_Resume.pdf'}
+              href={resumeUrl || '/resume.pdf'}
               download
               target="_blank"
               rel="noopener noreferrer"
@@ -193,9 +179,9 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl flex items-center justify-center shadow-lg bg-[#6366f1] text-white text-sm sm:text-base font-black overflow-hidden"
                 >
                   {logoImage ? (
-                    <img src={logoImage} alt={logoText || 'Logo'} className="w-full h-full object-cover" />
+                    <img src={logoImage} alt={logoText || brandName || 'Logo'} className="w-full h-full object-cover" />
                   ) : (
-                    'ደካ'
+                    nameAmharic || 'ደካ'
                   )}
                 </motion.div>
                 <motion.button 
@@ -233,7 +219,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
               <div className="mt-auto space-y-6 sm:space-y-8">
                 {/* Resume CV Button */}
                 <motion.a
-                  href={resumeUrl || '/Desalegn_Kasaye_Resume.pdf'}
+              href={resumeUrl || '/resume.pdf'}
                   download
                   target="_blank"
                   rel="noopener noreferrer"
@@ -251,24 +237,24 @@ export default function Navbar({ darkMode, onToggleDark }) {
                     <div className="space-y-4 sm:space-y-5">
                       <div className="flex items-center gap-3">
                         <MapPin size={18} className="text-primary" />
-                        <span className="text-sm sm:text-base font-bold text-gray-600 dark:text-gray-400">Bahirdar, Ethiopia</span>
+                        <span className="text-sm sm:text-base font-bold text-gray-600 dark:text-gray-400">{t('nav.location')}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <Phone size={18} className="text-primary" />
-                        <span className="text-sm sm:text-base font-bold text-gray-600 dark:text-gray-400">+251 908 720 092</span>
+                        <span className="text-sm sm:text-base font-bold text-gray-600 dark:text-gray-400">{phone || '+251 908 720 092'}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <Mail size={18} className="text-primary" />
-                        <span className="text-sm sm:text-base font-bold text-gray-600 dark:text-gray-400 break-all">desalegnky827@gmail.com</span>
+                        <span className="text-sm sm:text-base font-bold text-gray-600 dark:text-gray-400 break-all">{email || 'desalegnky827@gmail.com'}</span>
                       </div>
                     </div>
                   </div>
                   
                   <div className="flex justify-center gap-4 sm:gap-5 md:gap-6">
                     {[
-                      { href: 'https://linkedin.com/in/dk-cs-3rd', icon: <Linkedin size={20} /> },
-                      { href: 'https://github.com/desalegn-tech', icon: <Github size={20} /> },
-                      { href: 'https://t.me/Ds35kg', icon: <Telegram size={20} /> }
+                      { href: socialLinks?.linkedin || 'https://linkedin.com/in/dk-cs-3rd', icon: <Linkedin size={20} /> },
+                      { href: socialLinks?.github || 'https://github.com/desalegn-tech', icon: <Github size={20} /> },
+                      { href: socialLinks?.telegram || 'https://t.me/Ds35kg', icon: <Telegram size={20} /> }
                     ].map((social, idx) => (
                       <motion.a
                         key={idx}

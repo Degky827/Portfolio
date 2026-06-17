@@ -1,0 +1,66 @@
+const SiteSettings = require('../../shared/models/SiteSettings')
+
+async function getSiteSettings(_req, res) {
+  try {
+    let settings = await SiteSettings.findOne()
+    if (!settings) {
+      settings = await SiteSettings.create({})
+    }
+    res.json({ success: true, settings })
+  } catch (error) {
+    console.error('[site-settings] get error:', error)
+    res.status(500).json({ success: false, message: 'Failed to fetch site settings' })
+  }
+}
+
+const textFields = [
+  'brandName', 'nameAmharic', 'professionalBadge', 'logoText', 'logoImage',
+  'greeting', 'shortIntroduction', 'email', 'phone',
+  'contactButtonText', 'contactButtonLink',
+  'brandDescription', 'copyrightText',
+]
+
+const resumeKeys = ['url', 'fileName', 'buttonText']
+const socialKeys = ['github', 'linkedin', 'twitter', 'telegram', 'facebook', 'instagram', 'youtube']
+const themeKeys = ['primaryColor', 'secondaryColor']
+
+async function updateSiteSettings(req, res) {
+  try {
+    let settings = await SiteSettings.findOne()
+    if (!settings) {
+      settings = new SiteSettings()
+    }
+
+    const body = req.body
+
+    textFields.forEach((field) => {
+      if (body[field] !== undefined) settings[field] = body[field]
+    })
+
+    if (body.typingWords !== undefined) settings.typingWords = body.typingWords
+    if (body.resume) {
+      resumeKeys.forEach((key) => {
+        if (body.resume[key] !== undefined) settings.resume[key] = body.resume[key]
+      })
+    }
+    if (body.socialLinks) {
+      socialKeys.forEach((key) => {
+        if (body.socialLinks[key] !== undefined) settings.socialLinks[key] = body.socialLinks[key]
+      })
+    }
+    if (body.theme) {
+      themeKeys.forEach((key) => {
+        if (body.theme[key] !== undefined) settings.theme[key] = body.theme[key]
+      })
+    }
+
+    await settings.save()
+
+    res.json({ success: true, settings })
+  } catch (error) {
+    console.error('[site-settings] update error:', error)
+    res.status(500).json({ success: false, message: 'Failed to update site settings' })
+  }
+}
+
+module.exports = { getSiteSettings, updateSiteSettings }

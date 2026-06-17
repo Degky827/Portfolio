@@ -11,6 +11,8 @@ import ImageUpload from '../shared/ImageUpload'
 import FileUpload from '../shared/FileUpload'
 import Toast from '../shared/Toast'
 import { getHomeContent, updateHomeContent } from '../../shared/services/homeContentService'
+import { updateSiteSettings } from '../../shared/services/siteSettingsService'
+import { useAuth } from '../authentication/AuthContext'
 
 const ICON_OPTIONS = [
   'Award', 'BookOpen', 'Cpu', 'Code2', 'Globe', 'Rocket', 'Star', 'Zap',
@@ -295,6 +297,7 @@ function LivePreview({ form }) {
 }
 
 export default function HomeContent() {
+  const { setUserData, user: authUser } = useAuth()
   const [form, setForm] = useState(defaultForm)
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
@@ -549,6 +552,31 @@ export default function HomeContent() {
         },
       }))
       setToast({ message: 'Home content saved successfully', type: 'success' })
+      try {
+        const socialLinks = Object.fromEntries(
+          Object.entries(form.socialLinks).filter(([, v]) => v)
+        )
+        await updateSiteSettings({
+          brandName: form.hero.fullName,
+          nameAmharic: form.hero.nameAmharic,
+          professionalBadge: form.hero.professionalBadge,
+          greeting: form.hero.greeting,
+          shortIntroduction: form.hero.shortIntroduction,
+          typingWords: form.hero.typingWords,
+          logoImage: form.logoImage,
+          logoText: form.logoText,
+          contactButtonText: form.contactButtonText,
+          contactButtonLink: form.contactButtonLink,
+          resume: {
+            url: form.resume.url,
+            buttonText: form.resumeButtonText,
+          },
+          socialLinks,
+        })
+      } catch {}
+      if (authUser) {
+        setUserData({ ...authUser, displayName: form.hero.fullName })
+      }
     } catch (err) {
       setToast({
         message: err.response?.data?.message || 'Failed to save home content',
