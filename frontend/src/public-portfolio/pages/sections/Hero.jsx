@@ -152,7 +152,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
         />
       </div>
 
-      <div className="container mx-auto px-4 sm:px-6 relative z-10 mt-20 md:mt-16">
+      <div className="container mx-auto px-4 sm:px-6 relative z-10">
         <motion.div 
           variants={containerVariants}
           initial="hidden"

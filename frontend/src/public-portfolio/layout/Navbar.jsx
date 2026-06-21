@@ -31,6 +31,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
   const [navLoaded, setNavLoaded] = useState(false)
   const [navbarSettings, setNavbarSettings] = useState(null)
   const [activeSection, setActiveSection] = useState('')
+  const [breakpoint, setBreakpoint] = useState('desktop')
 
   const ns = navbarSettings
 
@@ -116,11 +117,25 @@ export default function Navbar({ darkMode, onToggleDark }) {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // ── Breakpoint Detection ──────────────────────────────────────
+
+  useEffect(() => {
+    const update = () => {
+      const w = window.innerWidth
+      if (w < 768) setBreakpoint('mobile')
+      else if (w < 1024) setBreakpoint('tablet')
+      else setBreakpoint('desktop')
+    }
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+
   // ── Settings Values (with fallbacks matching current hardcoded) ──
 
   const settings = useMemo(() => {
     const s = ns || {}
-    return {
+    const result = {
       navbarHeight: s.navbarHeight ?? 72,
       navbarWidth: s.navbarWidth ?? '100%',
       containerWidth: s.containerWidth ?? '1200px',
@@ -129,7 +144,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       fixed: s.fixed !== false,
       fullWidth: !!s.fullWidth,
       bgColor: s.bgColor || '#ffffff',
-      textColor: s.textColor || '#6b7280',
+      textColor: s.textColor || '#374151',
       hoverColor: s.hoverColor || '#6366f1',
       activeLinkColor: s.activeLinkColor || '#6366f1',
       borderColor: s.borderColor || '#e5e7eb',
@@ -178,7 +193,18 @@ export default function Navbar({ darkMode, onToggleDark }) {
       menuOpenAnimation: s.menuOpenAnimation || 'slide',
       scrollEffect: s.scrollEffect || 'shrink',
     }
-  }, [ns, t, siteSettings])
+    if (breakpoint === 'desktop') {
+      result.navbarHeight = s.desktopNavbarHeight ?? result.navbarHeight
+      result.menuGap = s.desktopMenuGap ?? result.menuGap
+    } else if (breakpoint === 'tablet') {
+      result.navbarHeight = s.tabletNavbarHeight ?? result.navbarHeight
+      result.menuGap = s.tabletMenuGap ?? result.menuGap
+    } else {
+      result.navbarHeight = s.mobileNavbarHeight ?? result.navbarHeight
+      result.menuGap = s.mobileMenuGap ?? result.menuGap
+    }
+    return result
+  }, [ns, t, siteSettings, breakpoint])
 
   // ── Merged Logo Settings ──────────────────────────────────────
 
@@ -201,12 +227,16 @@ export default function Navbar({ darkMode, onToggleDark }) {
   const positionClass = settings.fixed ? 'fixed' : settings.sticky ? 'sticky' : 'relative'
 
   const navStyle = useMemo(() => {
-    const style = { minHeight: settings.navbarHeight + 'px' }
+    const style = { minHeight: settings.navbarHeight + 'px', width: settings.navbarWidth }
     if (settings.navbarWidth !== '100%') {
-      style.width = settings.navbarWidth
+      style.left = '0'
+      style.right = '0'
+      style.margin = '0 auto'
     }
     if (scrolled) {
-      if (settings.scrollEffect === 'none') {
+      if (settings.glassmorphism) {
+        // glass-nav CSS handles the translucent background + blur
+      } else if (settings.scrollEffect === 'none') {
         style.backgroundColor = 'transparent'
       } else {
         style.backgroundColor = darkMode
@@ -225,10 +255,10 @@ export default function Navbar({ darkMode, onToggleDark }) {
     style.color = darkMode
       ? (ns?.darkTheme?.textColor || settings.textColor)
       : settings.textColor
-    if (settings.shadow && scrolled) {
+    if (settings.shadow) {
       style.boxShadow = `0 4px 20px ${settings.shadowColor}`
     }
-    if (settings.borderColor && !settings.glassmorphism) {
+    if (settings.borderColor) {
       style.borderBottom = `1px solid ${settings.borderColor}`
     }
     return style
@@ -272,7 +302,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
         return { initial: { opacity: 0, filter: 'blur(8px)' }, animate: { opacity: 1, filter: 'blur(0px)' } }
       case 'slide-down':
       default:
-        return { initial: { y: -100 }, animate: { y: 0 } }
+        return { initial: { opacity: 0, y: -10 }, animate: { opacity: 1, y: 0 } }
     }
   }, [settings.navAnimation])
 
@@ -392,9 +422,9 @@ export default function Navbar({ darkMode, onToggleDark }) {
       animate={navVariants.animate}
       transition={{ duration: 0.5 }}
       style={navStyle}
-      className={`${positionClass} w-full top-0 z-[1000] transition-all duration-500 ${
+      className={`${positionClass} top-0 z-[1000] transition-[background-color,box-shadow,padding] duration-500 ${
         scrolled
-          ? `${scrolledClasses} ${settings.glassmorphism ? 'glass-panel' : ''}`
+          ? `${scrolledClasses} ${settings.glassmorphism ? 'glass-nav' : ''}`
           : 'bg-transparent py-5 sm:py-6'
       }`}
     >

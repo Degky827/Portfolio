@@ -2,11 +2,11 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Save, RefreshCw, Layout, Plus, Trash2, Eye, EyeOff, Image,
-  Settings, ChevronDown, Info, GripVertical, Monitor, Tablet,
-  Smartphone, Menu, Sun, Moon, Globe, Download, PanelRight,
-  PanelLeft, Move, Type, Palette, Square, Layers, ExternalLink,
+  Settings, ChevronDown, Info, GripVertical,
+  Sun, Moon, Globe, Download,
+  Move, Type, Palette, Square, Layers, ExternalLink,
   Copy, ToggleLeft, ToggleRight, AlignLeft, AlignCenter, AlignRight,
-  Edit2,
+  Edit2, Sliders,
 } from 'lucide-react'
 import PageHeader from '../shared/PageHeader'
 import Toast from '../shared/Toast'
@@ -153,33 +153,6 @@ function CollapsibleSection({ title, icon: Icon, defaultOpen = false, children }
   )
 }
 
-const RESPONSIVE_PRESETS = {
-  desktop: [
-    { label: 'Desktop HD', w: 1920, h: 1080 },
-    { label: 'Desktop', w: 1440, h: 900 },
-    { label: 'Small Desktop', w: 1024, h: 768 },
-  ],
-  tablet: [
-    { label: 'iPad Pro', w: 1024, h: 1366 },
-    { label: 'iPad', w: 768, h: 1024 },
-  ],
-  mobile: [
-    { label: 'iPhone 14', w: 390, h: 844 },
-    { label: 'iPhone SE', w: 375, h: 667 },
-    { label: 'Pixel 7', w: 412, h: 915 },
-  ],
-}
-
-const HAMBURGER_STYLES = [
-  { value: 'three-lines', label: 'Three Horizontal Lines', icon: '☰' },
-  { value: 'rounded-lines', label: 'Rounded Lines', icon: '☰' },
-  { value: 'minimal-lines', label: 'Minimal Lines', icon: '≡' },
-  { value: 'modern-animated', label: 'Modern Animated', icon: '⋮' },
-  { value: 'material', label: 'Material Design', icon: '⎔' },
-  { value: 'ios', label: 'iOS Style', icon: '☰' },
-  { value: 'custom-svg', label: 'Custom SVG', icon: '✚' },
-]
-
 const ICON_OPTIONS = [
   'Home', 'User', 'Code2', 'FolderKanban', 'Mail', 'Settings',
   'Award', 'BookOpen', 'Cpu', 'Users', 'Trophy', 'Shield',
@@ -203,12 +176,7 @@ export default function NavigationManagement() {
     { id: 'menu-items', label: 'Menu Items', icon: Layout },
     { id: 'navbar', label: 'Navbar Settings', icon: Settings },
     { id: 'logo', label: 'Logo', icon: Image },
-    { id: 'resume', label: 'Resume Button', icon: Download },
-    { id: 'language', label: 'Language', icon: Globe },
-    { id: 'theme', label: 'Theme', icon: Sun },
-    { id: 'responsive', label: 'Responsive', icon: Monitor },
-    { id: 'hamburger', label: 'Hamburger', icon: Menu },
-    { id: 'animations', label: 'Animations', icon: Layers },
+    { id: 'components', label: 'Components', icon: Sliders },
   ]
 
   useEffect(() => {
@@ -516,16 +484,13 @@ export default function NavigationManagement() {
         <div className="space-y-6">
           <Card>
             <CardHeader icon={Settings} title="General Settings" subtitle="Basic navbar structure and behavior." />
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <Field label="Navbar Height (px)"><Input type="number" value={settings?.navbarHeight ?? 72} onChange={(e) => updateSetting('navbarHeight', Number(e.target.value))} /></Field>
               <Field label="Navbar Width"><Input value={settings?.navbarWidth ?? '100%'} onChange={(e) => updateSetting('navbarWidth', e.target.value)} /></Field>
-              <Field label="Container Width"><Input value={settings?.containerWidth ?? '1200px'} onChange={(e) => updateSetting('containerWidth', e.target.value)} /></Field>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <Toggle value={settings?.sticky} onChange={(v) => updateSetting('sticky', v)} label="Sticky Navbar" />
+            <div className="grid grid-cols-2 sm:grid-cols-2 gap-4">
               <Toggle value={settings?.transparent} onChange={(v) => updateSetting('transparent', v)} label="Transparent" />
               <Toggle value={settings?.fixed} onChange={(v) => updateSetting('fixed', v)} label="Fixed Navbar" />
-              <Toggle value={settings?.fullWidth} onChange={(v) => updateSetting('fullWidth', v)} label="Full Width" />
             </div>
           </Card>
 
@@ -542,18 +507,10 @@ export default function NavigationManagement() {
           </Card>
 
           <Card>
-            <CardHeader icon={Layers} title="Effects & Spacing" />
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <Toggle value={settings?.glassmorphism} onChange={(v) => updateSetting('glassmorphism', v)} label="Glassmorphism" />
-              <Toggle value={settings?.blurEffect} onChange={(v) => updateSetting('blurEffect', v)} label="Blur Effect" />
-              <Toggle value={settings?.shadow} onChange={(v) => updateSetting('shadow', v)} label="Shadow" />
-              <Toggle value={settings?.backdropFilter} onChange={(v) => updateSetting('backdropFilter', v)} label="Backdrop Filter" />
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-4">
-              <Field label="Logo Margin (px)"><Input type="number" value={settings?.logoMargin ?? 0} onChange={(e) => updateSetting('logoMargin', Number(e.target.value))} /></Field>
+            <CardHeader icon={Layers} title="Effects & Spacing" subtitle="Shadow and menu gap settings." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Toggle value={settings?.shadow} onChange={(v) => updateSetting('shadow', v)} label="Box Shadow" />
               <Field label="Menu Gap (px)"><Input type="number" value={settings?.menuGap ?? 24} onChange={(e) => updateSetting('menuGap', Number(e.target.value))} /></Field>
-              <Field label="Navbar Padding (px)"><Input type="number" value={settings?.navbarPadding ?? 16} onChange={(e) => updateSetting('navbarPadding', Number(e.target.value))} /></Field>
-              <Field label="Button Padding (px)"><Input type="number" value={settings?.buttonPadding ?? 12} onChange={(e) => updateSetting('buttonPadding', Number(e.target.value))} /></Field>
             </div>
           </Card>
         </div>
@@ -627,346 +584,88 @@ export default function NavigationManagement() {
         </Card>
       )}
 
-      {/* ── RESUME BUTTON ─────────────────────────── */}
-      {activeTab === 'resume' && (
-        <Card>
-          <CardHeader icon={Download} title="Resume Button" subtitle="Configure the CV download button in the navbar." />
-          <Toggle value={settings?.resumeEnabled} onChange={(v) => updateSetting('resumeEnabled', v)} label="Enable Resume Button" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-            <Field label="Button Text"><Input value={settings?.resumeText ?? 'Download CV'} onChange={(e) => updateSetting('resumeText', e.target.value)} /></Field>
-            <Field label="Resume File URL"><Input value={settings?.resumeFileUrl ?? ''} onChange={(e) => updateSetting('resumeFileUrl', e.target.value)} placeholder="/resume.pdf or full URL" /></Field>
-            <Field label="Button Icon">
-              <Select value={settings?.resumeIcon ?? 'Download'} onChange={(e) => updateSetting('resumeIcon', e.target.value)} options={[{ value: 'Download', label: 'Download' }, { value: 'FileText', label: 'File' }, { value: 'ExternalLink', label: 'External' }]} />
-            </Field>
-            <Field label="Icon Position">
-              <Select value={settings?.resumeIconPosition ?? 'left'} onChange={(e) => updateSetting('resumeIconPosition', e.target.value)} options={[{ value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }]} />
-            </Field>
-            <Field label="Background Color"><ColorInput value={settings?.resumeBgColor ?? '#6366f1'} onChange={(e) => updateSetting('resumeBgColor', e.target.value)} /></Field>
-            <Field label="Text Color"><ColorInput value={settings?.resumeTextColor ?? '#ffffff'} onChange={(e) => updateSetting('resumeTextColor', e.target.value)} /></Field>
-            <Field label="Hover Color"><ColorInput value={settings?.resumeHoverColor ?? '#4f46e5'} onChange={(e) => updateSetting('resumeHoverColor', e.target.value)} /></Field>
-            <Field label="Border Radius (px)"><Input type="number" value={settings?.resumeBorderRadius ?? 9999} onChange={(e) => updateSetting('resumeBorderRadius', Number(e.target.value))} /></Field>
-            <Field label="Button Size">
-              <Select value={settings?.resumeButtonSize ?? 'md'} onChange={(e) => updateSetting('resumeButtonSize', e.target.value)} options={[{ value: 'sm', label: 'Small' }, { value: 'md', label: 'Medium' }, { value: 'lg', label: 'Large' }]} />
-            </Field>
-          </div>
-        </Card>
-      )}
-
-      {/* ── LANGUAGE ──────────────────────────────── */}
-      {activeTab === 'language' && (
-        <Card>
-          <CardHeader icon={Globe} title="Language Settings" subtitle="Configure the language switcher in the navbar." />
-          <Toggle value={settings?.languageEnabled} onChange={(v) => updateSetting('languageEnabled', v)} label="Enable Language Switcher" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-            <Field label="Default Language">
-              <Select
-                value={settings?.defaultLanguage ?? 'en'}
-                onChange={(e) => updateSetting('defaultLanguage', e.target.value)}
-                options={[
-                  { value: 'en', label: 'English' },
-                  { value: 'am', label: 'Amharic' },
-                  { value: 'ar', label: 'Arabic' },
-                  { value: 'fr', label: 'French' },
-                  { value: 'es', label: 'Spanish' },
-                  { value: 'de', label: 'German' },
-                ]}
-              />
-            </Field>
-          </div>
-        </Card>
-      )}
-
-      {/* ── THEME ─────────────────────────────────── */}
-      {activeTab === 'theme' && (
-        <Card>
-          <CardHeader icon={Sun} title="Theme Settings" subtitle="Light and dark mode configuration for the navbar." />
-          <Toggle value={settings?.themeEnabled} onChange={(v) => updateSetting('themeEnabled', v)} label="Enable Theme Toggle" />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-            <Field label="Default Theme Mode">
-              <Select
-                value={settings?.themeMode ?? 'auto'}
-                onChange={(e) => updateSetting('themeMode', e.target.value)}
-                options={[
-                  { value: 'light', label: 'Light' },
-                  { value: 'dark', label: 'Dark' },
-                  { value: 'auto', label: 'Auto (System)' },
-                ]}
-              />
-            </Field>
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
-            <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 flex items-center gap-2"><Sun size={14} /> Light Theme</h4>
-              <div className="space-y-3">
-                <Field label="Background"><ColorInput value={settings?.lightTheme?.bgColor ?? '#ffffff'} onChange={(e) => updateSetting('lightTheme.bgColor', e.target.value)} /></Field>
-                <Field label="Text Color"><ColorInput value={settings?.lightTheme?.textColor ?? '#1f2937'} onChange={(e) => updateSetting('lightTheme.textColor', e.target.value)} /></Field>
-                <Field label="Hover Color"><ColorInput value={settings?.lightTheme?.hoverColor ?? '#6366f1'} onChange={(e) => updateSetting('lightTheme.hoverColor', e.target.value)} /></Field>
-              </div>
-            </div>
-            <div className="p-4 bg-gray-900 rounded-xl border border-gray-700">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 flex items-center gap-2"><Moon size={14} /> Dark Theme</h4>
-              <div className="space-y-3">
-                <Field label="Background"><input type="color" value={settings?.darkTheme?.bgColor ?? '#0f172a'} onChange={(e) => updateSetting('darkTheme.bgColor', e.target.value)} className="w-full h-10 rounded-lg border border-gray-600 cursor-pointer" /></Field>
-                <Field label="Text Color"><input type="color" value={settings?.darkTheme?.textColor ?? '#e2e8f0'} onChange={(e) => updateSetting('darkTheme.textColor', e.target.value)} className="w-full h-10 rounded-lg border border-gray-600 cursor-pointer" /></Field>
-                <Field label="Hover Color"><input type="color" value={settings?.darkTheme?.hoverColor ?? '#818cf8'} onChange={(e) => updateSetting('darkTheme.hoverColor', e.target.value)} className="w-full h-10 rounded-lg border border-gray-600 cursor-pointer" /></Field>
-              </div>
-            </div>
-          </div>
-        </Card>
-      )}
-
-      {/* ── RESPONSIVE ────────────────────────────── */}
-      {activeTab === 'responsive' && (
+      {/* ── COMPONENTS ──────────────────────────── */}
+      {activeTab === 'components' && (
         <div className="space-y-6">
-          {/* Desktop */}
           <Card>
-            <CardHeader icon={Monitor} title="Desktop Navigation" subtitle="≥ 1024px" />
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <Toggle value={settings?.desktopShowFullMenu} onChange={(v) => updateSetting('desktopShowFullMenu', v)} label="Show Full Menu" />
-              <Toggle value={settings?.desktopShowResume} onChange={(v) => updateSetting('desktopShowResume', v)} label="Show Resume Button" />
-              <Toggle value={settings?.desktopShowTheme} onChange={(v) => updateSetting('desktopShowTheme', v)} label="Show Theme Toggle" />
-              <Toggle value={settings?.desktopShowLanguage} onChange={(v) => updateSetting('desktopShowLanguage', v)} label="Show Language Switcher" />
+            <CardHeader icon={Download} title="Resume Button" subtitle="Configure the CV download button in the navbar." />
+            <Toggle value={settings?.resumeEnabled} onChange={(v) => updateSetting('resumeEnabled', v)} label="Enable Resume Button" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+              <Field label="Button Text"><Input value={settings?.resumeText ?? 'Download CV'} onChange={(e) => updateSetting('resumeText', e.target.value)} /></Field>
+              <Field label="Resume File URL"><Input value={settings?.resumeFileUrl ?? ''} onChange={(e) => updateSetting('resumeFileUrl', e.target.value)} placeholder="/resume.pdf or full URL" /></Field>
+              <Field label="Button Icon">
+                <Select value={settings?.resumeIcon ?? 'Download'} onChange={(e) => updateSetting('resumeIcon', e.target.value)} options={[{ value: 'Download', label: 'Download' }, { value: 'FileText', label: 'File' }, { value: 'ExternalLink', label: 'External' }]} />
+              </Field>
+              <Field label="Icon Position">
+                <Select value={settings?.resumeIconPosition ?? 'left'} onChange={(e) => updateSetting('resumeIconPosition', e.target.value)} options={[{ value: 'left', label: 'Left' }, { value: 'right', label: 'Right' }]} />
+              </Field>
+              <Field label="Background Color"><ColorInput value={settings?.resumeBgColor ?? '#6366f1'} onChange={(e) => updateSetting('resumeBgColor', e.target.value)} /></Field>
+              <Field label="Text Color"><ColorInput value={settings?.resumeTextColor ?? '#ffffff'} onChange={(e) => updateSetting('resumeTextColor', e.target.value)} /></Field>
+              <Field label="Hover Color"><ColorInput value={settings?.resumeHoverColor ?? '#4f46e5'} onChange={(e) => updateSetting('resumeHoverColor', e.target.value)} /></Field>
+              <Field label="Border Radius (px)"><Input type="number" value={settings?.resumeBorderRadius ?? 9999} onChange={(e) => updateSetting('resumeBorderRadius', Number(e.target.value))} /></Field>
+              <Field label="Button Size">
+                <Select value={settings?.resumeButtonSize ?? 'md'} onChange={(e) => updateSetting('resumeButtonSize', e.target.value)} options={[{ value: 'sm', label: 'Small' }, { value: 'md', label: 'Medium' }, { value: 'lg', label: 'Large' }]} />
+              </Field>
             </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
-              <Field label="Layout">
+          </Card>
+
+          <Card>
+            <CardHeader icon={Globe} title="Language" subtitle="Configure the language switcher in the navbar." />
+            <Toggle value={settings?.languageEnabled} onChange={(v) => updateSetting('languageEnabled', v)} label="Enable Language Switcher" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+              <Field label="Default Language">
                 <Select
-                  value={settings?.desktopLayout ?? 'logo-left-menu-right'}
-                  onChange={(e) => updateSetting('desktopLayout', e.target.value)}
+                  value={settings?.defaultLanguage ?? 'en'}
+                  onChange={(e) => updateSetting('defaultLanguage', e.target.value)}
                   options={[
-                    { value: 'logo-left-menu-center', label: 'Logo Left, Menu Center' },
-                    { value: 'logo-left-menu-right', label: 'Logo Left, Menu Right' },
-                    { value: 'centered', label: 'Centered' },
-                    { value: 'split', label: 'Split Navigation' },
+                    { value: 'en', label: 'English' },
+                    { value: 'am', label: 'Amharic' },
+                    { value: 'ar', label: 'Arabic' },
+                    { value: 'fr', label: 'French' },
+                    { value: 'es', label: 'Spanish' },
+                    { value: 'de', label: 'German' },
                   ]}
                 />
               </Field>
-              <Field label="Navbar Height (px)"><Input type="number" value={settings?.desktopNavbarHeight ?? 72} onChange={(e) => updateSetting('desktopNavbarHeight', Number(e.target.value))} /></Field>
-              <Field label="Logo Size (px)"><Input type="number" value={settings?.desktopLogoSize ?? 40} onChange={(e) => updateSetting('desktopLogoSize', Number(e.target.value))} /></Field>
-              <Field label="Menu Gap (px)"><Input type="number" value={settings?.desktopMenuGap ?? 24} onChange={(e) => updateSetting('desktopMenuGap', Number(e.target.value))} /></Field>
-              <Field label="Font Size"><Input value={settings?.desktopFontSize ?? '12px'} onChange={(e) => updateSetting('desktopFontSize', e.target.value)} /></Field>
-              <Field label="Icon Size (px)"><Input type="number" value={settings?.desktopIconSize ?? 16} onChange={(e) => updateSetting('desktopIconSize', Number(e.target.value))} /></Field>
             </div>
           </Card>
 
-          {/* Tablet */}
           <Card>
-            <CardHeader icon={Tablet} title="Tablet Navigation" subtitle="768px – 1023px" />
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <Toggle value={settings?.tabletShowFullMenu} onChange={(v) => updateSetting('tabletShowFullMenu', v)} label="Show Full Menu" />
-              <Toggle value={settings?.tabletShowHamburger} onChange={(v) => updateSetting('tabletShowHamburger', v)} label="Show Hamburger Menu" />
+            <CardHeader icon={Sun} title="Theme" subtitle="Light and dark mode configuration for the navbar." />
+            <Toggle value={settings?.themeEnabled} onChange={(v) => updateSetting('themeEnabled', v)} label="Enable Theme Toggle" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
+              <Field label="Default Theme Mode">
+                <Select
+                  value={settings?.themeMode ?? 'auto'}
+                  onChange={(e) => updateSetting('themeMode', e.target.value)}
+                  options={[
+                    { value: 'light', label: 'Light' },
+                    { value: 'dark', label: 'Dark' },
+                    { value: 'auto', label: 'Auto (System)' },
+                  ]}
+                />
+              </Field>
             </div>
-            <Field label="Navigation Type" className="pt-4">
-              <Select
-                value={settings?.tabletNavigationType ?? 'hamburger'}
-                onChange={(e) => updateSetting('tabletNavigationType', e.target.value)}
-                options={[
-                  { value: 'horizontal', label: 'Horizontal' },
-                  { value: 'dropdown', label: 'Dropdown' },
-                  { value: 'hamburger', label: 'Hamburger' },
-                ]}
-              />
-            </Field>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
-              <Field label="Navbar Height (px)"><Input type="number" value={settings?.tabletNavbarHeight ?? 64} onChange={(e) => updateSetting('tabletNavbarHeight', Number(e.target.value))} /></Field>
-              <Field label="Logo Size (px)"><Input type="number" value={settings?.tabletLogoSize ?? 36} onChange={(e) => updateSetting('tabletLogoSize', Number(e.target.value))} /></Field>
-              <Field label="Menu Gap (px)"><Input type="number" value={settings?.tabletMenuGap ?? 16} onChange={(e) => updateSetting('tabletMenuGap', Number(e.target.value))} /></Field>
-              <Field label="Font Size"><Input value={settings?.tabletFontSize ?? '11px'} onChange={(e) => updateSetting('tabletFontSize', e.target.value)} /></Field>
-              <Field label="Icon Size (px)"><Input type="number" value={settings?.tabletIconSize ?? 14} onChange={(e) => updateSetting('tabletIconSize', Number(e.target.value))} /></Field>
-            </div>
-          </Card>
-
-          {/* Mobile */}
-          <Card>
-            <CardHeader icon={Smartphone} title="Mobile Navigation" subtitle="320px – 767px" />
-            <div className="grid grid-cols-2 gap-4">
-              <Toggle value={settings?.mobileMenuEnabled} onChange={(v) => updateSetting('mobileMenuEnabled', v)} label="Enable Mobile Menu" />
-              <Toggle value={settings?.mobileDrawerEnabled} onChange={(v) => updateSetting('mobileDrawerEnabled', v)} label="Enable Drawer Menu" />
-              <Toggle value={settings?.mobileFullScreenMenu} onChange={(v) => updateSetting('mobileFullScreenMenu', v)} label="Full Screen Menu" />
-              <Toggle value={settings?.mobileSlideMenu} onChange={(v) => updateSetting('mobileSlideMenu', v)} label="Slide Menu" />
-            </div>
-            <Field label="Mobile Layout">
-              <Select
-                value={settings?.mobileLayout ?? 'logo-hamburger'}
-                onChange={(e) => updateSetting('mobileLayout', e.target.value)}
-                options={[
-                  { value: 'logo-only', label: 'Logo Only' },
-                  { value: 'logo-hamburger', label: 'Logo + Hamburger' },
-                  { value: 'logo-resume-hamburger', label: 'Logo + Resume + Hamburger' },
-                ]}
-              />
-            </Field>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 pt-4">
-              <Field label="Navbar Height (px)"><Input type="number" value={settings?.mobileNavbarHeight ?? 56} onChange={(e) => updateSetting('mobileNavbarHeight', Number(e.target.value))} /></Field>
-              <Field label="Logo Size (px)"><Input type="number" value={settings?.mobileLogoSize ?? 32} onChange={(e) => updateSetting('mobileLogoSize', Number(e.target.value))} /></Field>
-              <Field label="Menu Gap (px)"><Input type="number" value={settings?.mobileMenuGap ?? 12} onChange={(e) => updateSetting('mobileMenuGap', Number(e.target.value))} /></Field>
-              <Field label="Font Size"><Input value={settings?.mobileFontSize ?? '10px'} onChange={(e) => updateSetting('mobileFontSize', e.target.value)} /></Field>
-              <Field label="Icon Size (px)"><Input type="number" value={settings?.mobileIconSize ?? 14} onChange={(e) => updateSetting('mobileIconSize', Number(e.target.value))} /></Field>
-            </div>
-          </Card>
-        </div>
-      )}
-
-      {/* ── HAMBURGER ─────────────────────────────── */}
-      {activeTab === 'hamburger' && (
-        <div className="space-y-6">
-          <Card>
-            <CardHeader icon={Menu} title="Hamburger Menu Settings" subtitle="Style, position, and behavior." />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Menu Position">
-                <div className="flex gap-3">
-                  {[
-                    { value: 'left', label: 'Left', icon: PanelLeft },
-                    { value: 'right', label: 'Right', icon: PanelRight },
-                  ].map((opt) => (
-                    <button
-                      key={opt.value}
-                      onClick={() => updateSetting('hamburgerPosition', opt.value)}
-                      className={`flex items-center gap-2 px-4 py-3 rounded-xl border text-sm font-medium transition-all ${
-                        (settings?.hamburgerPosition || 'right') === opt.value
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-gray-200 dark:border-slate-700 text-gray-500 dark:text-gray-400'
-                      }`}
-                    >
-                      <opt.icon size={16} />
-                      {opt.label}
-                    </button>
-                  ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-4">
+              <div className="p-4 bg-gray-50 dark:bg-slate-800/50 rounded-xl border border-gray-200 dark:border-slate-700">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3 flex items-center gap-2"><Sun size={14} /> Light Theme</h4>
+                <div className="space-y-3">
+                  <Field label="Background"><ColorInput value={settings?.lightTheme?.bgColor ?? '#ffffff'} onChange={(e) => updateSetting('lightTheme.bgColor', e.target.value)} /></Field>
+                  <Field label="Text Color"><ColorInput value={settings?.lightTheme?.textColor ?? '#1f2937'} onChange={(e) => updateSetting('lightTheme.textColor', e.target.value)} /></Field>
+                  <Field label="Hover Color"><ColorInput value={settings?.lightTheme?.hoverColor ?? '#6366f1'} onChange={(e) => updateSetting('lightTheme.hoverColor', e.target.value)} /></Field>
                 </div>
-              </Field>
-              <Field label="Menu Style">
-                <Select
-                  value={settings?.hamburgerStyle ?? 'three-lines'}
-                  onChange={(e) => updateSetting('hamburgerStyle', e.target.value)}
-                  options={HAMBURGER_STYLES}
-                />
-              </Field>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              <Field label="Width (px)"><Input type="number" value={settings?.hamburgerWidth ?? 24} onChange={(e) => updateSetting('hamburgerWidth', Number(e.target.value))} /></Field>
-              <Field label="Height (px)"><Input type="number" value={settings?.hamburgerHeight ?? 18} onChange={(e) => updateSetting('hamburgerHeight', Number(e.target.value))} /></Field>
-              <Field label="Thickness (px)"><Input type="number" value={settings?.hamburgerThickness ?? 2} onChange={(e) => updateSetting('hamburgerThickness', Number(e.target.value))} /></Field>
-              <Field label="Color"><ColorInput value={settings?.hamburgerColor ?? '#374151'} onChange={(e) => updateSetting('hamburgerColor', e.target.value)} /></Field>
-              <Field label="Hover Color"><ColorInput value={settings?.hamburgerHoverColor ?? '#6366f1'} onChange={(e) => updateSetting('hamburgerHoverColor', e.target.value)} /></Field>
-              <Field label="Active Color"><ColorInput value={settings?.hamburgerActiveColor ?? '#6366f1'} onChange={(e) => updateSetting('hamburgerActiveColor', e.target.value)} /></Field>
-              <Field label="Animation">
-                <Select
-                  value={settings?.hamburgerAnimation ?? 'rotate-to-x'}
-                  onChange={(e) => updateSetting('hamburgerAnimation', e.target.value)}
-                  options={[
-                    { value: 'rotate-to-x', label: 'Rotate To X' },
-                    { value: 'morph-to-x', label: 'Morph To X' },
-                    { value: 'fade', label: 'Fade' },
-                    { value: 'slide', label: 'Slide' },
-                    { value: 'elastic', label: 'Elastic' },
-                  ]}
-                />
-              </Field>
-            </div>
-          </Card>
-
-          <Card>
-            <CardHeader icon={PanelRight} title="Drawer Settings" subtitle="Mobile navigation drawer." />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <Field label="Drawer Type">
-                <Select
-                  value={settings?.drawerType ?? 'slide-right'}
-                  onChange={(e) => updateSetting('drawerType', e.target.value)}
-                  options={[
-                    { value: 'slide-left', label: 'Slide From Left' },
-                    { value: 'slide-right', label: 'Slide From Right' },
-                    { value: 'slide-top', label: 'Slide From Top' },
-                    { value: 'fullscreen', label: 'Full Screen Overlay' },
-                  ]}
-                />
-              </Field>
-              <Field label="Drawer Width">
-                <Select
-                  value={settings?.drawerWidth ?? '80%'}
-                  onChange={(e) => updateSetting('drawerWidth', e.target.value)}
-                  options={[
-                    { value: '70%', label: '70%' },
-                    { value: '80%', label: '80%' },
-                    { value: '90%', label: '90%' },
-                    { value: '100%', label: '100%' },
-                  ]}
-                />
-              </Field>
-              <Field label="Background Color"><ColorInput value={settings?.drawerBgColor ?? '#ffffff'} onChange={(e) => updateSetting('drawerBgColor', e.target.value)} /></Field>
-            </div>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-              <Toggle value={settings?.drawerBlur} onChange={(v) => updateSetting('drawerBlur', v)} label="Blur Effect" />
-              <Toggle value={settings?.drawerShadow} onChange={(v) => updateSetting('drawerShadow', v)} label="Shadow" />
-            </div>
-            <div className="pt-4 border-t border-gray-100 dark:border-slate-800">
-              <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 mb-3">Drawer Content</h4>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                <Toggle value={settings?.drawerShowLogo} onChange={(v) => updateSetting('drawerShowLogo', v)} label="Show Logo" />
-                <Toggle value={settings?.drawerShowLinks} onChange={(v) => updateSetting('drawerShowLinks', v)} label="Show Links" />
-                <Toggle value={settings?.drawerShowSocial} onChange={(v) => updateSetting('drawerShowSocial', v)} label="Show Social Icons" />
-                <Toggle value={settings?.drawerShowResume} onChange={(v) => updateSetting('drawerShowResume', v)} label="Show Resume Button" />
-                <Toggle value={settings?.drawerShowTheme} onChange={(v) => updateSetting('drawerShowTheme', v)} label="Show Theme Toggle" />
-                <Toggle value={settings?.drawerShowLanguage} onChange={(v) => updateSetting('drawerShowLanguage', v)} label="Show Language Switcher" />
+              </div>
+              <div className="p-4 bg-gray-900 rounded-xl border border-gray-700">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-gray-400 mb-3 flex items-center gap-2"><Moon size={14} /> Dark Theme</h4>
+                <div className="space-y-3">
+                  <Field label="Background"><input type="color" value={settings?.darkTheme?.bgColor ?? '#0f172a'} onChange={(e) => updateSetting('darkTheme.bgColor', e.target.value)} className="w-full h-10 rounded-lg border border-gray-600 cursor-pointer" /></Field>
+                  <Field label="Text Color"><input type="color" value={settings?.darkTheme?.textColor ?? '#e2e8f0'} onChange={(e) => updateSetting('darkTheme.textColor', e.target.value)} className="w-full h-10 rounded-lg border border-gray-600 cursor-pointer" /></Field>
+                  <Field label="Hover Color"><input type="color" value={settings?.darkTheme?.hoverColor ?? '#818cf8'} onChange={(e) => updateSetting('darkTheme.hoverColor', e.target.value)} className="w-full h-10 rounded-lg border border-gray-600 cursor-pointer" /></Field>
+                </div>
               </div>
             </div>
           </Card>
         </div>
-      )}
-
-      {/* ── ANIMATIONS ────────────────────────────── */}
-      {activeTab === 'animations' && (
-        <Card>
-          <CardHeader icon={Layers} title="Animation Settings" subtitle="Framer Motion animations for the navbar." />
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Navbar Animation">
-              <Select
-                value={settings?.navbarAnimation ?? 'slide-down'}
-                onChange={(e) => updateSetting('navbarAnimation', e.target.value)}
-                options={[
-                  { value: 'fade-in', label: 'Fade In' },
-                  { value: 'slide-down', label: 'Slide Down' },
-                  { value: 'slide-up', label: 'Slide Up' },
-                  { value: 'blur-reveal', label: 'Blur Reveal' },
-                ]}
-              />
-            </Field>
-            <Field label="Hover Effect">
-              <Select
-                value={settings?.hoverEffect ?? 'underline'}
-                onChange={(e) => updateSetting('hoverEffect', e.target.value)}
-                options={[
-                  { value: 'underline', label: 'Underline Animation' },
-                  { value: 'border', label: 'Border Animation' },
-                  { value: 'glow', label: 'Glow Animation' },
-                  { value: 'scale', label: 'Scale Animation' },
-                ]}
-              />
-            </Field>
-            <Field label="Menu Open Animation">
-              <Select
-                value={settings?.menuOpenAnimation ?? 'slide'}
-                onChange={(e) => updateSetting('menuOpenAnimation', e.target.value)}
-                options={[
-                  { value: 'slide', label: 'Slide' },
-                  { value: 'fade', label: 'Fade' },
-                  { value: 'scale', label: 'Scale' },
-                  { value: 'reveal', label: 'Reveal' },
-                ]}
-              />
-            </Field>
-            <Field label="Scroll Effect">
-              <Select
-                value={settings?.scrollEffect ?? 'shrink'}
-                onChange={(e) => updateSetting('scrollEffect', e.target.value)}
-                options={[
-                  { value: 'shrink', label: 'Navbar Shrink' },
-                  { value: 'blur', label: 'Navbar Blur' },
-                  { value: 'color-change', label: 'Color Change' },
-                  { value: 'none', label: 'None' },
-                ]}
-              />
-            </Field>
-          </div>
-        </Card>
       )}
 
       {/* ── Save Button ───────────────────────────── */}

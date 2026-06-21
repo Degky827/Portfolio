@@ -6,6 +6,9 @@ const NavbarSettings = require('../../shared/models/NavbarSettings')
 async function getNavigation(_req, res) {
   try {
     const items = await Navigation.find().sort({ order: 1 })
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    res.set('Pragma', 'no-cache')
+    res.set('Expires', '0')
     res.json({ success: true, items })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch navigation' })
@@ -60,6 +63,9 @@ async function getNavbarSettings(_req, res) {
   try {
     let settings = await NavbarSettings.findOne()
     if (!settings) settings = await NavbarSettings.create({})
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate')
+    res.set('Pragma', 'no-cache')
+    res.set('Expires', '0')
     res.json({ success: true, settings })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to fetch navbar settings' })
