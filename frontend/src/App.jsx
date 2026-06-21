@@ -39,7 +39,7 @@ function PublicLayout() {
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       <ScrollProgressBar />
       <Navbar darkMode={darkMode} onToggleDark={handleToggle} />
-      <main>
+      <main className="pt-28 sm:pt-32">
         <Outlet />
       </main>
       <Footer />

@@ -60,13 +60,15 @@ const navGroups = [
     section: true,
     collapsible: true,
     items: [
+      { path: '/admin/navigation', label: 'Navigation', icon: Menu, roles: ['super_admin', 'admin'] },
       { path: '/admin/home', label: 'Home', icon: Home, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/about', label: 'About', icon: UserCircle, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/skills', label: 'Skills', icon: Code2, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/projects', label: 'Projects', icon: FolderKanban, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
       { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/navigation', label: 'Navigation', icon: Menu, roles: ['super_admin', 'admin'] },
+      { path: '/admin/contact', label: 'Contact Settings', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
+      { path: '/admin/notifications', label: 'Notifications', icon: Bell, roles: ['super_admin', 'admin'] },
     ],
   },
   {
@@ -76,10 +78,7 @@ const navGroups = [
     section: true,
     collapsible: true,
     items: [
-      { path: '/admin/contact', label: 'Contact Settings', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/inbox', label: 'Inbox', icon: MessageSquare, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/notifications', label: 'Notifications', icon: Bell, roles: ['super_admin', 'admin'] },
-      { path: '/admin/activity-logs', label: 'Activity Logs', icon: Activity, roles: ['super_admin', 'admin'] },
     ],
   },
   {
@@ -93,6 +92,7 @@ const navGroups = [
       { path: '/admin/backup', label: 'Backup & Restore', icon: HardDrive, roles: ['super_admin', 'admin'] },
       { path: '/admin/import-export', label: 'Import / Export', icon: Download, roles: ['super_admin', 'admin'] },
       { path: '/admin/maintenance', label: 'Maintenance', icon: HeartPulse, roles: ['super_admin'] },
+      { path: '/admin/activity-logs', label: 'Activity Logs', icon: Activity, roles: ['super_admin', 'admin'] },
     ],
   },
   {
