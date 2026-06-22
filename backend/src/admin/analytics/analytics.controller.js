@@ -3,9 +3,9 @@ const Project = require('../../shared/models/Project')
 const { extractIP, lookupLocation } = require('../../shared/utilities/ipLookup')
 const { parseUserAgent } = require('../../shared/utilities/parseUserAgent')
 
-const LOCAL_IPS = ['::1', '::ffff:127.0.0.1', '127.0.0.1', 'localhost']
+const BOT_KEYWORDS = ['headlesschrome', 'lighthouse', 'bot', 'crawl', 'spider', 'prerender', 'wget', 'curl', 'python-requests', 'go-http-client', 'bingpreview', 'facebookexternalhit', 'twitterbot', 'linkedinbot']
 
-const BOT_KEYWORDS = ['headlesschrome', 'lighthouse', 'bot', 'crawl', 'spider', 'prerender', 'wget', 'curl', 'python-requests', 'go-http-client']
+const ADMIN_PAGE_PATTERNS = [/^\/admin/, /^\/login/, /^\/dashboard/]
 
 function isBotAgent(ua) {
   if (!ua) return false
@@ -13,31 +13,14 @@ function isBotAgent(ua) {
   return BOT_KEYWORDS.some((kw) => lower.includes(kw))
 }
 
-const ADMIN_PATH_PATTERNS = [/^\/admin/, /^\/login/, /^\/api/]
-
-function isAdminRoute(req) {
-  return ADMIN_PATH_PATTERNS.some((pattern) => pattern.test(req.originalUrl || req.url))
-}
-
-function hasAdminToken(req) {
-  return !!(req.cookies?.token || req.headers.authorization?.startsWith('Bearer'))
-}
-
-function shouldSkipTracking(req) {
-  if (isAdminRoute(req)) return true
-  if (hasAdminToken(req)) return true
-  return false
-}
-
-function isAdminTraffic(page) {
+function isPublicPage(page) {
   if (!page) return false
-  return ADMIN_PATH_PATTERNS.some((pattern) => pattern.test(page))
+  return !ADMIN_PAGE_PATTERNS.some((pattern) => pattern.test(page))
 }
 
 function publicOnlyFilter() {
   return {
-    page: { $not: /^\/admin/ },
-    ipAddress: { $nin: LOCAL_IPS },
+    page: { $not: /^\/(admin|login|dashboard)/ },
     isBot: false,
   }
 }
@@ -71,23 +54,27 @@ function parseDiscoveryChannel(referrer, queryParams) {
 
 async function logVisit(req, res) {
   try {
-    if (shouldSkipTracking(req)) {
-      return res.status(200).json({ success: true, skipped: true })
-    }
-
-    const visitorName = req.body.visitorName || req.body.viewerName || 'Anonymous'
-    const ipAddress = extractIP(req)
-    const userAgent = req.headers['user-agent']
     const page = req.body.page || '/'
-    const referrer = req.body.referrer || req.headers.referer || ''
-    const visitorId = req.body.visitorId || null
-    const interaction = req.body.interaction || ''
+    const userAgent = req.headers['user-agent']
+    const ipAddress = extractIP(req)
 
-    if (isAdminTraffic(page)) {
-      return res.status(200).json({ success: true, skipped: true })
+    console.log(`[Analytics] Tracking page: ${page} | IP: ${ipAddress} | UA: ${userAgent || 'none'}`)
+
+    if (!isPublicPage(page)) {
+      console.log(`[Analytics] Skipped: admin page "${page}"`)
+      return res.status(200).json({ success: true, skipped: true, reason: 'admin_page' })
     }
 
     const isBot = isBotAgent(userAgent)
+    if (isBot) {
+      console.log(`[Analytics] Skipped: bot detected "${userAgent}"`)
+      return res.status(200).json({ success: true, skipped: true, reason: 'bot' })
+    }
+
+    const visitorName = req.body.visitorName || req.body.viewerName || 'Anonymous'
+    const referrer = req.body.referrer || req.headers.referer || ''
+    const visitorId = req.body.visitorId || null
+    const interaction = req.body.interaction || ''
 
     const discoveryChannel = parseDiscoveryChannel(referrer, req.body)
 
@@ -97,7 +84,7 @@ async function logVisit(req, res) {
     ])
 
     let visitorType = 'new'
-    if (visitorId && !isBot) {
+    if (visitorId) {
       const existing = await Visit.findOne({ visitorId, isBot: false }).sort({ timestamp: -1 }).lean()
       if (existing) visitorType = 'returning'
     }
@@ -116,28 +103,34 @@ async function logVisit(req, res) {
       discoveryChannel,
     })
 
+    console.log(`[Analytics] Visitor saved: ${visit._id} | page: ${page} | type: ${visitorType}`)
     res.status(201).json({ success: true, visitId: visit._id, visitorType, isBot })
   } catch (error) {
-    console.error('[analytics] logVisit error:', error)
+    console.error('[Analytics] logVisit error:', error)
     res.status(500).json({ success: false, message: 'Failed to log visit' })
   }
 }
 
 async function logEngagement(req, res) {
   try {
-    if (shouldSkipTracking(req)) {
-      return res.status(200).json({ success: true, skipped: true })
-    }
-
     const { action, page, visitorId, referrer } = req.body
     if (!action) {
       return res.status(400).json({ success: false, message: 'Action is required' })
     }
 
+    const trackPage = page || '/'
     const userAgent = req.headers['user-agent']
     const ipAddress = extractIP(req)
 
+    console.log(`[Analytics] Engagement: ${action} | page: ${trackPage} | IP: ${ipAddress}`)
+
+    if (!isPublicPage(trackPage)) {
+      console.log(`[Analytics] Skipped engagement: admin page "${trackPage}"`)
+      return res.status(200).json({ success: true, skipped: true, reason: 'admin_page' })
+    }
+
     if (isBotAgent(userAgent)) {
+      console.log(`[Analytics] Skipped engagement: bot detected`)
       return res.status(200).json({ success: true, isBot: true })
     }
 
@@ -157,10 +150,10 @@ async function logEngagement(req, res) {
       Promise.resolve(parseUserAgent(userAgent)),
     ])
 
-    await Visit.create({
+    const visit = await Visit.create({
       visitorName: 'Anonymous',
       ipAddress,
-      page: page || '/',
+      page: trackPage,
       referrer: discoveryChannel,
       visitorId: visitorId || null,
       visitorType: 'returning',
@@ -171,9 +164,10 @@ async function logEngagement(req, res) {
       discoveryChannel,
     })
 
+    console.log(`[Analytics] Engagement saved: ${visit._id} | action: ${interaction}`)
     res.status(201).json({ success: true })
   } catch (error) {
-    console.error('[analytics] logEngagement error:', error)
+    console.error('[Analytics] logEngagement error:', error)
     res.status(500).json({ success: false, message: 'Failed to log engagement' })
   }
 }
@@ -193,7 +187,9 @@ async function getMetrics(req, res) {
 
     const skip = (page - 1) * limit
 
-    const query = includeBots ? { page: { $not: /^\/admin/ }, ipAddress: { $nin: LOCAL_IPS } } : publicOnlyFilter()
+    const query = includeBots
+      ? { page: { $not: /^\/(admin|login|dashboard)/ } }
+      : publicOnlyFilter()
     if (search) {
       query.$or = [
         { visitorName: { $regex: search, $options: 'i' } },
@@ -363,8 +359,7 @@ async function getAnalyticsDashboard(req, res) {
         { $sort: { count: -1 } },
       ]),
       Visit.countDocuments({
-        page: { $not: /^\/admin/ },
-        ipAddress: { $nin: LOCAL_IPS },
+        page: { $not: /^\/(admin|login|dashboard)/ },
         isBot: true,
       }),
       Visit.countDocuments({ ...baseFilter, interaction: 'Downloaded CV' }),

@@ -21,8 +21,8 @@ const iconMap = { Award, Users, TrendingUp }
 
 export default function About({ content, hero, aboutContent }) {
   const { t } = useTranslation()
-  const title = content?.title || t('about.title')
-  const subtitle = content?.subtitle || t('about.subtitle')
+  const title = aboutContent?.title || content?.title || t('about.title')
+  const subtitle = aboutContent?.subtitle || content?.subtitle || t('about.subtitle')
   const fullName = hero?.fullName || t('about.fullName')
   const roleTitle = hero?.professionalBadge || t('about.role')
 

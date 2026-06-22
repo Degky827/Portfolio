@@ -35,7 +35,9 @@ export default function Home() {
         contactButtonText={content?.contactButtonText}
         contactButtonLink={content?.contactButtonLink}
       />
-      <About content={content?.about} hero={content?.hero} aboutContent={aboutContent} />
+      {aboutContent?.status !== 'inactive' && (
+        <About content={content?.about} hero={content?.hero} aboutContent={aboutContent} />
+      )}
       <Skills />
       <Suspense fallback={spinner}>
         <Projects />
