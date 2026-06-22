@@ -36,9 +36,27 @@ async function updateHomeContent(req, res) {
       if (h.nameAmharic !== undefined) content.hero.nameAmharic = h.nameAmharic
       if (h.professionalBadge !== undefined) content.hero.professionalBadge = h.professionalBadge
       if (h.shortIntroduction !== undefined) content.hero.shortIntroduction = h.shortIntroduction
-      if (h.typingWords !== undefined) content.hero.typingWords = h.typingWords
-      if (h.statistics !== undefined) content.hero.statistics = h.statistics
-      if (h.ctaButtons !== undefined) content.hero.ctaButtons = h.ctaButtons
+      if (h.typingWords !== undefined) {
+        content.hero.typingWords = Array.isArray(h.typingWords)
+          ? h.typingWords.filter(Boolean).map(String)
+          : content.hero.typingWords
+      }
+      if (h.statistics !== undefined && Array.isArray(h.statistics)) {
+        content.hero.statistics = h.statistics.map((s) => ({
+          label: s.label || '',
+          value: s.value || '',
+          icon: s.icon || 'Award',
+          color: s.color || '#6366f1',
+        }))
+      }
+      if (h.ctaButtons !== undefined && Array.isArray(h.ctaButtons)) {
+        content.hero.ctaButtons = h.ctaButtons.map((b) => ({
+          text: b.text || '',
+          link: b.link || '',
+          openNewTab: Boolean(b.openNewTab),
+          icon: b.icon || 'ArrowRight',
+        }))
+      }
       if (h.profilePhoto) {
         content.hero.profilePhoto = {
           url: h.profilePhoto.url !== undefined ? h.profilePhoto.url : (content.hero.profilePhoto?.url ?? ''),
@@ -57,11 +75,20 @@ async function updateHomeContent(req, res) {
       if (a.title !== undefined) content.about.title = a.title
       if (a.subtitle !== undefined) content.about.subtitle = a.subtitle
       if (a.location !== undefined) content.about.location = a.location
-      if (a.yearsOfExperience !== undefined) content.about.yearsOfExperience = Number(a.yearsOfExperience)
+      if (a.yearsOfExperience !== undefined) content.about.yearsOfExperience = Number(a.yearsOfExperience) || 0
       if (a.statClients !== undefined) content.about.statClients = a.statClients
       if (a.statNetwork !== undefined) content.about.statNetwork = a.statNetwork
-      if (a.sections !== undefined) content.about.sections = a.sections
-      if (a.achievements !== undefined) content.about.achievements = a.achievements
+      if (a.sections !== undefined && Array.isArray(a.sections)) {
+        content.about.sections = a.sections.map((s) => ({
+          title: s.title || '',
+          content: s.content || '',
+        }))
+      }
+      if (a.achievements !== undefined && Array.isArray(a.achievements)) {
+        content.about.achievements = a.achievements.map((ach) => ({
+          title: ach.title || '',
+        }))
+      }
     }
 
     if (body.cta) {
@@ -90,7 +117,9 @@ async function updateHomeContent(req, res) {
     if (body.seo) {
       if (body.seo.metaTitle !== undefined) content.seo.metaTitle = body.seo.metaTitle
       if (body.seo.metaDescription !== undefined) content.seo.metaDescription = body.seo.metaDescription
-      if (body.seo.metaKeywords !== undefined) content.seo.metaKeywords = body.seo.metaKeywords
+      if (body.seo.metaKeywords !== undefined && Array.isArray(body.seo.metaKeywords)) {
+        content.seo.metaKeywords = body.seo.metaKeywords.filter(Boolean).map(String)
+      }
     }
 
     if (body.published !== undefined) {
@@ -119,7 +148,7 @@ async function updateHomeContent(req, res) {
 
     res.json({ success: true, content })
   } catch (error) {
-    console.error('[homepage] update error:', error)
+    console.error('[homepage] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update home content' })
   }
 }

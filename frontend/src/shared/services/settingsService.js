@@ -6,9 +6,7 @@ export async function getSettings() {
 }
 
 export async function updateSettings(formData) {
-  const { data } = await api.put('/settings', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const { data } = await api.put('/settings', formData)
   return data
 }
 

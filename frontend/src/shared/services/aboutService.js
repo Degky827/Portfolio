@@ -6,8 +6,6 @@ export async function getAboutContent() {
 }
 
 export async function updateAboutContent(formData) {
-  const { data } = await api.put('/about', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const { data } = await api.put('/about', formData)
   return data
 }
