@@ -167,7 +167,7 @@ export default function Dashboard() {
     { title: 'Unique Visitors', value: uniqueV, icon: Users, trend: stats?.trend?.unique ?? null, accent: 'primary', subtitle: 'Distinct visitors' },
     { title: "Today's Visitors", value: todayVisits, icon: UserCheck, trend: stats?.trend?.today ?? null, accent: 'primary', subtitle: 'vs. yesterday' },
     { title: 'Total Projects', value: projectCount, icon: FolderKanban, trend: null, accent: 'primary', subtitle: `${publishedCount} published` },
-    { title: 'Messages', value: messageTotalCount, icon: Mail, trend: null, accent: 'primary', subtitle: `${unreadCount} unread`, onClick: '/admin/inbox' },
+    { title: 'Messages', value: messageTotalCount, icon: Mail, trend: null, accent: 'primary', subtitle: `${unreadCount} unread`, onClick: '/admin/messages' },
   ]
 
   const quickActions = quickActionsConfig

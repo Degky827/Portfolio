@@ -130,7 +130,7 @@ export default function NotificationBell() {
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => { setOpen(false); navigate('/admin/notifications') }}
+                    onClick={() => { setOpen(false); navigate('/admin/messages') }}
                     className="p-1.5 rounded-lg text-gray-400 hover:text-primary hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
                     title="View all"
                   >

@@ -24,8 +24,7 @@ const breadcrumbMap = {
   '/admin/footer': { parent: 'Portfolio CMS', label: 'Footer' },
   '/admin/navigation': { parent: 'Portfolio CMS', label: 'Navigation' },
   '/admin/contact': { parent: 'Portfolio CMS', label: 'Contact Settings' },
-  '/admin/inbox': { parent: 'Communication', label: 'Inbox' },
-  '/admin/notifications': { parent: 'Portfolio CMS', label: 'Notifications' },
+  '/admin/messages': { parent: 'Portfolio CMS', label: 'Messages' },
   '/admin/activity-logs': { parent: 'System', label: 'Activity Logs' },
   '/admin/backup': { parent: 'System', label: 'Backup & Restore' },
   '/admin/import-export': { parent: 'System', label: 'Import / Export' },
@@ -45,11 +44,10 @@ const searchableRoutes = [
   { path: '/admin/home', label: 'Home Content', keywords: 'home hero banner' },
   { path: '/admin/about', label: 'About Content', keywords: 'about biography' },
   { path: '/admin/contact', label: 'Contact Settings', keywords: 'contact settings social channels' },
-  { path: '/admin/inbox', label: 'Inbox', keywords: 'inbox messages inquiries contact submissions' },
+  { path: '/admin/messages', label: 'Messages', keywords: 'messages inbox inquiries contact submissions' },
   { path: '/admin/footer', label: 'Footer Content', keywords: 'footer links' },
   { path: '/admin/navigation', label: 'Navigation', keywords: 'navigation menu navbar links' },
   { path: '/admin/media', label: 'Media Library', keywords: 'media images files upload' },
-  { path: '/admin/notifications', label: 'Notifications', keywords: 'notifications alerts' },
   { path: '/admin/activity-logs', label: 'Activity Logs', keywords: 'logs activity history' },
   { path: '/admin/backup', label: 'Backup & Restore', keywords: 'backup restore data' },
   { path: '/admin/import-export', label: 'Import / Export', keywords: 'import export data' },
@@ -304,7 +302,7 @@ export default function Navbar() {
                         {[
                           { label: 'My Profile', icon: User, onClick: () => { setDropdownOpen(false); navigate('/admin/profile') } },
                           { label: 'Appearance', icon: Palette, onClick: () => { setDropdownOpen(false); navigate('/admin/theme') } },
-                          { label: 'Notifications', icon: Bell, onClick: () => { setDropdownOpen(false); navigate('/admin/notifications') } },
+                          { label: 'Messages', icon: Bell, onClick: () => { setDropdownOpen(false); navigate('/admin/messages') } },
                         ].map((item) => (
                           <motion.button
                             key={item.label}

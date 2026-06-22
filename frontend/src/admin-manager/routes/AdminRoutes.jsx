@@ -6,7 +6,6 @@ import AdminLayout from '../layout/AdminLayout'
 import Dashboard from '../dashboard/Dashboard'
 import Analytics from '../analytics-management/Analytics'
 import ActivityLogs from '../activity-management/ActivityLogs'
-import NotificationsPage from '../notifications/Notifications'
 import Projects from '../projects-management/ProjectsList'
 import ProjectForm from '../projects-management/ProjectForm'
 import Skills from '../skills-management/SkillsList'
@@ -52,10 +51,10 @@ export default function AdminRoutes() {
             }
           />
           <Route
-            path="notifications"
+            path="messages"
             element={
               <RoleGuard roles={['super_admin', 'admin']}>
-                <NotificationsPage />
+                <MessageCenter />
               </RoleGuard>
             }
           />
@@ -86,7 +85,6 @@ export default function AdminRoutes() {
           <Route path="navigation" element={<NavigationManagement />} />
           <Route path="about" element={<AboutContent />} />
           <Route path="contact" element={<ContactContent />} />
-          <Route path="inbox" element={<MessageCenter />} />
           <Route path="footer" element={<FooterContent />} />
           <Route
             path="users"

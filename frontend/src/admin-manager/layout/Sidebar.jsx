@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, BarChart3, FolderKanban, Code2,
   Home, UserCircle, Mail, FileText, X, ChevronLeft, ChevronRight,
-  Image, HardDrive, Activity, Download, Wrench, Bell,
+  Image, HardDrive, Activity, Download, Wrench,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
   Shield, LogOut, Eye, Menu,
 } from 'lucide-react'
@@ -68,8 +68,7 @@ const navGroups = [
       { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
       { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/contact', label: 'Contact Settings', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/inbox', label: 'Inbox', icon: MessageSquare, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/notifications', label: 'Notifications', icon: Bell, roles: ['super_admin', 'admin'] },
+      { path: '/admin/messages', label: 'Messages', icon: MessageSquare, roles: ['super_admin', 'admin', 'editor'] },
     ],
   },
   {
@@ -358,7 +357,7 @@ function NavGroup({ group, collapsed, isOpen, onToggle, onItemClick, unreadMessa
   )
 
   function getBadge(item) {
-    if (item.path === '/admin/inbox' && unreadMessages > 0) return unreadMessages
+    if (item.path === '/admin/messages' && unreadMessages > 0) return unreadMessages
     return null
   }
 
