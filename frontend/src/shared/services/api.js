@@ -7,10 +7,11 @@ const api = axios.create({
   baseURL: isProduction
     ? 'https://portfolio-backend-lgvk.onrender.com/api'
     : import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  withCredentials: true,
+  withCredentials: true, // ይህ ከኩኪዎች ጋር ለመስራት ወሳኝ ነው
 })
 
-axios.defaults.withCredentials = true
+// ለሁሉም የ axios ጥያቄዎች እንዲያገለግል
+axios.defaults.withCredentials = true 
 
 api.interceptors.response.use(
   (response) => response,
@@ -29,9 +30,14 @@ api.interceptors.response.use(
 
 export default api
 
+// የተስተካከሉ ተግባራት
 export async function logPortfolioVisit({ viewerName = 'Anonymous', page = '/', referrer = '', visitorId = '', src } = {}) {
   try {
-    await api.post('/analytics/log-visit', { viewerName, page, referrer, visitorId, src })
+    // እዚህ ላይ { withCredentials: true } በማካተት የኩኪ መላክ ጥያቄውን እናረጋግጣለን
+    await api.post('/analytics/log-visit', 
+      { viewerName, page, referrer, visitorId, src },
+      { withCredentials: true } 
+    )
   } catch (error) {
     console.warn('[tracking] Failed to log visit:', error.message)
   }
@@ -39,7 +45,10 @@ export async function logPortfolioVisit({ viewerName = 'Anonymous', page = '/', 
 
 export async function logPortfolioEngagement({ action, page, visitorId, referrer, src } = {}) {
   try {
-    await api.post('/analytics/log-engagement', { action, page, visitorId, referrer, src })
+    await api.post('/analytics/log-engagement', 
+      { action, page, visitorId, referrer, src },
+      { withCredentials: true }
+    )
   } catch (error) {
     console.warn('[tracking] Failed to log engagement:', error.message)
   }
