@@ -5,6 +5,7 @@ import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 import { logPortfolioVisit, logPortfolioEngagement } from '../../../shared/services/api'
 import { getContactContent, createMessage } from '../../../shared/services/contactService'
+import { usePortfolioSettings } from '../../../shared/hooks/usePortfolioSettings'
 
 function SocialIcon({ iconVector, size = 18, className = '' }) {
   if (!iconVector) return null
@@ -22,6 +23,7 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [content, setContent] = useState(null)
   const { t } = useTranslation()
+  const { settings } = usePortfolioSettings()
 
   useEffect(() => {
     ;(async () => {
@@ -64,8 +66,10 @@ export default function Contact() {
 
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
       // If we saved the message to the DB, don't open the user's email client — show success instead.
-      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      logPortfolioVisit(name)
+      if (settings.enableAnalytics) {
+        logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+        logPortfolioVisit(name)
+      }
       if (!saved) {
         const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
         window.location.href = mailtoLink
@@ -78,14 +82,18 @@ export default function Contact() {
 
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
-      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+      if (settings.enableAnalytics) {
+        logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+      }
       setResult(t('contact.successMessage'))
       setResultType('success')
       e.target.reset()
     } catch (error) {
       console.error('EmailJS error:', error)
       const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
-      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+      if (settings.enableAnalytics) {
+        logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+      }
       window.location.href = mailtoLink
       setResult(t('contact.errorEmailjs'))
       setResultType('error')
@@ -102,7 +110,7 @@ export default function Contact() {
 
   const socialChannels = (content?.socialChannels || []).slice().sort((a, b) => a.displayWeight - b.displayWeight)
 
-  const formEnabled = content?.contactFormEnabled !== false
+  const formEnabled = settings.enableContactForm && content?.contactFormEnabled !== false
 
   const containerVariants = {
     hidden: { opacity: 0 },

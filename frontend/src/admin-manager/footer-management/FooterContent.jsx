@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Save, RefreshCw, Plus, Trash2, GripVertical, Globe, Mail, Phone, Hash, ExternalLink } from 'lucide-react'
 import PageHeader from '../shared/PageHeader'
-import ImageUpload from '../shared/ImageUpload'
 import Toast from '../shared/Toast'
 import { getFooterContent, updateFooterContent } from '../../shared/services/footerService'
 import { updateSiteSettings } from '../../shared/services/siteSettingsService'
@@ -59,9 +58,6 @@ export default function FooterContent() {
     attributionText: '',
     status: 'active',
   })
-  const [logoFile, setLogoFile] = useState(null)
-  const [logoUrl, setLogoUrl] = useState('')
-  const [existingLogo, setExistingLogo] = useState('')
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [toast, setToast] = useState(null)
@@ -89,7 +85,6 @@ export default function FooterContent() {
             attributionText: content.attributionText || '',
             status: content.status || 'active',
           })
-          setExistingLogo(content.footerLogo || '')
         }
       } catch {
         setToast({ message: 'Failed to load footer content', type: 'error' })
@@ -152,15 +147,12 @@ export default function FooterContent() {
         fd.append(key, val)
       }
     })
-    if (logoFile) fd.append('footerLogo', logoFile)
-    else if (logoUrl) fd.append('footerLogoUrl', logoUrl)
     try {
       await updateFooterContent(fd)
       try {
         await updateSiteSettings({
           brandName: form.brandName,
           brandDescription: form.brandDescription,
-          logoImage: logoUrl || existingLogo,
           copyrightText: form.copyrightText,
           email: form.emailAddress,
           phone: form.phoneNumber,
@@ -187,7 +179,7 @@ export default function FooterContent() {
 
   return (
     <div>
-      <PageHeader title="Footer Management" subtitle="Manage your footer section — branding, navigation, contact, and bottom bar." />
+      <PageHeader title="Footer Management" subtitle="Manage your footer section — branding, navigation, contact, and copyright." />
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
@@ -204,14 +196,6 @@ export default function FooterContent() {
                 <div>
                   <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Description</label>
                   <textarea value={form.brandDescription} onChange={set('brandDescription')} rows={3} placeholder="Building robust digital experiences..." className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm resize-none" />
-                </div>
-
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Footer Logo</label>
-                  <ImageUpload value={existingLogo} onChange={(val) => {
-                    if (typeof val === 'string') { setLogoUrl(val); setLogoFile(null) }
-                    else { setLogoFile(val); setLogoUrl('') }
-                  }} />
                 </div>
 
                 <div className="border-t border-zinc-200 dark:border-zinc-700 pt-4">
@@ -366,34 +350,12 @@ export default function FooterContent() {
 
             <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
               <Card>
-                <SectionHeader title="Footer Bottom Bar" subtitle="Three horizontally aligned fields for the lower footer wrapper." />
+                <SectionHeader title="Copyright" />
                 <div>
                   <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1 flex items-center gap-1.5">
-                    <Hash size={12} /> Copyright String
+                    <Hash size={12} /> Copyright Text
                   </label>
                   <input type="text" value={form.copyrightText} onChange={set('copyrightText')} placeholder="© 2026 DESALEGN. ALL RIGHTS RESERVED." className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm" />
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Visual Middle Separator</label>
-                  <input type="text" value={form.visualSeparator} onChange={set('visualSeparator')} placeholder="MADE WITH LOVE USING" className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm" />
-
-                </div>
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Technology Attribution Tag</label>
-                  <input type="text" value={form.attributionText} onChange={set('attributionText')} placeholder="REACT & TAILWIND" className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm" />
-                </div>
-              </Card>
-            </motion.div>
-
-            <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
-              <Card>
-                <SectionHeader title="Settings" />
-                <div>
-                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Status</label>
-                  <select value={form.status} onChange={set('status')} className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm">
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
                 </div>
               </Card>
             </motion.div>

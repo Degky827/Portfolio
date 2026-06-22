@@ -22,7 +22,6 @@ import ImportExport from '../import-export/ImportExport'
 import Maintenance from '../maintenance/Maintenance'
 import UserManagement from '../user-management/UserManagement'
 import Profile from '../profile-management/Profile'
-import Settings from '../settings-management/Settings'
 import ThemeSettings from '../settings-management/ThemeSettings'
 import SystemConfig from '../system-config/SystemConfig'
 import Backup from '../backup-management/Backup'
@@ -98,14 +97,6 @@ export default function AdminRoutes() {
             }
           />
           <Route path="profile" element={<Profile />} />
-          <Route
-            path="settings"
-            element={
-              <RoleGuard roles={['super_admin', 'admin']}>
-                <Settings />
-              </RoleGuard>
-            }
-          />
           <Route
             path="theme"
             element={

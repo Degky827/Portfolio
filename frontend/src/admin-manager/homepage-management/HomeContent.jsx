@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   Save, RefreshCw, Layout, User, ArrowRight, BarChart3, Share2,
   FileText, Palette, Search, Plus, Trash2, Eye, EyeOff,
-  GraduationCap, Star, Type, Image, MousePointerClick, Medal, Settings,
+  GraduationCap, Star, Type, Image, MousePointerClick, Medal,
   ChevronDown, Info,
 } from 'lucide-react'
 import PageHeader from '../shared/PageHeader'
@@ -22,18 +22,7 @@ const ICON_OPTIONS = [
   'Heart', 'Briefcase', 'Coffee', 'Smile',
 ]
 
-const COLOR_OPTIONS = [
-  { label: 'Indigo', value: '#6366f1' },
-  { label: 'Emerald', value: '#10b981' },
-  { label: 'Amber', value: '#f59e0b' },
-  { label: 'Blue', value: '#3b82f6' },
-  { label: 'Red', value: '#ef4444' },
-  { label: 'Pink', value: '#ec4899' },
-  { label: 'Cyan', value: '#06b6d4' },
-  { label: 'Orange', value: '#f97316' },
-  { label: 'Purple', value: '#8b5cf6' },
-  { label: 'Teal', value: '#14b8a6' },
-]
+
 
 const UX_HINTS = {
   greeting: `How do you like to welcome visitors? "Hi, I'm" sets a friendly tone.`,
@@ -835,132 +824,6 @@ export default function HomeContent() {
               </Card>
             </motion.div>
 
-            {/* ── GLOBAL SETTINGS ──────────────────────── */}
-            <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
-              <CollapsibleSection title="Global Settings" icon={Settings}>
-                {/* ── Hero Logo Management ── */}
-                <HeroLogoManagement settings={settings} refreshSettings={refreshSettings} setToast={setToast} />
-
-                {/* Theme Colors */}
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Palette size={16} className="text-gray-400" />
-                    Theme Colors
-                  </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-                    {[
-                      { key: 'primaryColor', label: 'Primary', def: '#6366f1' },
-                      { key: 'secondaryColor', label: 'Secondary', def: '#10b981' },
-                      { key: 'accentColor', label: 'Accent', def: '#f59e0b' },
-                    ].map(({ key, label, def }) => (
-                      <Field key={key} label={label}>
-                        <div className="flex items-center gap-3">
-                          <input
-                            type="color"
-                            value={form.theme[key]}
-                            onChange={(e) => updateForm(`theme.${key}`, e.target.value)}
-                            className="w-12 h-12 rounded-xl border border-gray-300 dark:border-slate-700 cursor-pointer"
-                          />
-                          <div className="flex-1">
-                            <Input
-                              value={form.theme[key]}
-                              onChange={(e) => updateForm(`theme.${key}`, e.target.value)}
-                              placeholder={def}
-                            />
-                          </div>
-                        </div>
-                        <div className="flex gap-1 mt-2">
-                          {COLOR_OPTIONS.map((c) => (
-                            <button
-                              key={c.value}
-                              type="button"
-                              onClick={() => updateForm(`theme.${key}`, c.value)}
-                              className={`w-6 h-6 rounded-full border-2 transition-all ${
-                                form.theme[key] === c.value
-                                  ? 'border-gray-900 dark:border-white scale-110'
-                                  : 'border-transparent'
-                              }`}
-                              style={{ backgroundColor: c.value }}
-                              title={c.label}
-                            />
-                          ))}
-                        </div>
-                      </Field>
-                    ))}
-                  </div>
-                </div>
-
-                <hr className="border-gray-200 dark:border-slate-700" />
-
-                {/* SEO */}
-                <div>
-                  <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                    <Search size={16} className="text-gray-400" />
-                    SEO & Publishing
-                  </h4>
-                  <Field label="Meta Title" hint={UX_HINTS.metaTitle}>
-                    <Input
-                      value={form.seo.metaTitle}
-                      onChange={(e) => updateForm('seo.metaTitle', e.target.value)}
-                      placeholder="Desalegn | Full-Stack Developer & Network Designer"
-                    />
-                  </Field>
-                  <Field label="Meta Description" hint={UX_HINTS.seoDescription}>
-                    <Textarea
-                      value={form.seo.metaDescription}
-                      onChange={(e) => updateForm('seo.metaDescription', e.target.value)}
-                      placeholder="Sum up your technical expertise and passion in 2 welcoming sentences for someone discovering your work for the first time."
-                      rows={3}
-                    />
-                  </Field>
-                  <Field label="Meta Keywords">
-                    <DynamicList
-                      items={form.seo.metaKeywords}
-                      onAdd={addKeyword}
-                      onRemove={removeKeyword}
-                      addLabel="Add Keyword"
-                      emptyText="No keywords configured"
-                      renderItem={(kw, i) => (
-                        <Input
-                          value={kw}
-                          onChange={(e) => updateKeyword(i, e.target.value)}
-                          placeholder="e.g. portfolio, developer, ethiopia"
-                        />
-                      )}
-                    />
-                  </Field>
-                  <Field label="Publishing">
-                    <div className="flex flex-col gap-3 pt-1">
-                      <label className="flex items-center gap-3 cursor-pointer">
-                        <div
-                          role="checkbox"
-                          tabIndex={0}
-                          aria-checked={form.published}
-                          onClick={() => updateForm('published', !form.published)}
-                          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); updateForm('published', !form.published) } }}
-                          className={`relative w-12 h-6 rounded-full transition-colors ${
-                            form.published ? 'bg-primary' : 'bg-gray-300 dark:bg-slate-700'
-                          }`}
-                        >
-                          <motion.div
-                            animate={{ x: form.published ? 24 : 2 }}
-                            transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                            className="absolute top-1 w-5 h-5 bg-white rounded-full shadow"
-                          />
-                        </div>
-                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                          {form.published ? 'Published' : 'Draft'}
-                        </span>
-                      </label>
-                      <p className="text-xs text-gray-400">
-                        When published, the homepage will show this content. When in draft, the previous published version is shown.
-                      </p>
-                    </div>
-                  </Field>
-                </div>
-              </CollapsibleSection>
-            </motion.div>
-
             {/* Save Button */}
             <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-slate-800">
               <button
@@ -1030,87 +893,4 @@ export default function HomeContent() {
   )
 }
 
-function HeroLogoManagement({ settings, refreshSettings, setToast }) {
-  const [logoText, setLogoText] = useState(settings?.logoText || '')
-  const [logoSubtitle, setLogoSubtitle] = useState(settings?.logoSubtitle || '')
-  const [logoEnabled, setLogoEnabled] = useState(settings?.logoEnabled !== false)
-  const [saving, setSaving] = useState(false)
 
-  useEffect(() => {
-    setLogoText(settings?.logoText || '')
-    setLogoSubtitle(settings?.logoSubtitle || '')
-    setLogoEnabled(settings?.logoEnabled !== false)
-  }, [settings])
-
-  const handleSave = async () => {
-    setSaving(true)
-    try {
-      await updateSiteSettings({ logoText, logoSubtitle, logoEnabled })
-      refreshSettings()
-      setToast({ message: 'Hero logo saved successfully', type: 'success' })
-    } catch (err) {
-      setToast({ message: err.response?.data?.message || 'Failed to save logo', type: 'error' })
-    } finally {
-      setSaving(false)
-    }
-  }
-
-  return (
-    <div>
-      <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-        <Image size={16} className="text-gray-400" />
-        Hero Logo Management
-      </h4>
-
-      <div className="space-y-4">
-        <Field label="Logo Title">
-          <Input
-            value={logoText}
-            onChange={(e) => setLogoText(e.target.value)}
-            placeholder="DESALEGN"
-          />
-        </Field>
-
-        <Field label="Subtitle / Description">
-          <Input
-            value={logoSubtitle}
-            onChange={(e) => setLogoSubtitle(e.target.value)}
-            placeholder="Full-Stack Developer & Network Designer"
-          />
-        </Field>
-
-        <Field label="Display">
-          <label className="flex items-center gap-3 cursor-pointer">
-            <div
-              role="checkbox"
-              tabIndex={0}
-              aria-checked={logoEnabled}
-              onClick={() => setLogoEnabled(!logoEnabled)}
-              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setLogoEnabled(!logoEnabled) } }}
-              className={`relative w-11 h-6 rounded-full transition-colors ${logoEnabled ? 'bg-primary' : 'bg-gray-300 dark:bg-slate-700'}`}
-            >
-              <motion.div
-                animate={{ x: logoEnabled ? 22 : 2 }}
-                transition={{ type: 'spring', stiffness: 500, damping: 30 }}
-                className="absolute top-1 w-5 h-5 bg-white rounded-full shadow"
-              />
-            </div>
-            <span className="text-sm text-gray-700 dark:text-gray-300">
-              {logoEnabled ? 'Logo is visible on the public site' : 'Logo is hidden'}
-            </span>
-          </label>
-        </Field>
-      </div>
-
-      <div className="flex gap-3 mt-5 pt-4 border-t border-gray-100 dark:border-slate-800">
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
-        >
-          {saving ? <><RefreshCw size={16} className="animate-spin" /> Saving...</> : <><Save size={16} /> Save Logo</>}
-        </button>
-      </div>
-    </div>
-  )
-}

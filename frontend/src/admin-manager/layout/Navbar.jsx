@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Menu, LogOut, User, Settings, Palette, Bell, ChevronDown, ChevronRight, Search, X, Command,
+  Menu, LogOut, User, Palette, Bell, ChevronDown, ChevronRight, Search, X, Command,
 } from 'lucide-react'
 import { useAuth } from '../authentication/AuthContext'
 import { useAdmin } from '../context/AdminContext'
@@ -27,7 +27,6 @@ const breadcrumbMap = {
   '/admin/inbox': { parent: 'Communication', label: 'Inbox' },
   '/admin/notifications': { parent: 'Portfolio CMS', label: 'Notifications' },
   '/admin/activity-logs': { parent: 'System', label: 'Activity Logs' },
-  '/admin/settings': { parent: 'System', label: 'Settings' },
   '/admin/backup': { parent: 'System', label: 'Backup & Restore' },
   '/admin/import-export': { parent: 'System', label: 'Import / Export' },
   '/admin/maintenance': { parent: 'System', label: 'Maintenance' },
@@ -52,7 +51,6 @@ const searchableRoutes = [
   { path: '/admin/media', label: 'Media Library', keywords: 'media images files upload' },
   { path: '/admin/notifications', label: 'Notifications', keywords: 'notifications alerts' },
   { path: '/admin/activity-logs', label: 'Activity Logs', keywords: 'logs activity history' },
-  { path: '/admin/settings', label: 'Settings', keywords: 'settings configuration' },
   { path: '/admin/backup', label: 'Backup & Restore', keywords: 'backup restore data' },
   { path: '/admin/import-export', label: 'Import / Export', keywords: 'import export data' },
   { path: '/admin/maintenance', label: 'Maintenance', keywords: 'maintenance tools' },
@@ -305,8 +303,7 @@ export default function Navbar() {
                       <div className="py-1">
                         {[
                           { label: 'My Profile', icon: User, onClick: () => { setDropdownOpen(false); navigate('/admin/profile') } },
-                          { label: 'Account Settings', icon: Settings, onClick: () => { setDropdownOpen(false); navigate('/admin/settings') } },
-                          { label: 'Theme Settings', icon: Palette, onClick: () => { setDropdownOpen(false); navigate('/admin/theme') } },
+                          { label: 'Appearance', icon: Palette, onClick: () => { setDropdownOpen(false); navigate('/admin/theme') } },
                           { label: 'Notifications', icon: Bell, onClick: () => { setDropdownOpen(false); navigate('/admin/notifications') } },
                         ].map((item) => (
                           <motion.button

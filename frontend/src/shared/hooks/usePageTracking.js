@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { logPortfolioVisit } from '../services/api'
+import { usePortfolioSettings } from './usePortfolioSettings'
 
 function getVisitorId() {
   let id = localStorage.getItem('portfolio_visitor_id')
@@ -16,8 +17,10 @@ function getVisitorId() {
 export function usePageTracking(viewerName) {
   const lastPage = useRef('')
   const location = useLocation()
+  const { settings } = usePortfolioSettings()
 
   useEffect(() => {
+    if (!settings.enableAnalytics) return
     if (location.pathname.startsWith('/admin') || location.pathname === '/login') return
     if (lastPage.current === location.pathname) return
 
@@ -32,5 +35,5 @@ export function usePageTracking(viewerName) {
       visitorId,
       src: params.get('src') || undefined,
     })
-  }, [viewerName, location.pathname])
+  }, [viewerName, location.pathname, settings.enableAnalytics])
 }

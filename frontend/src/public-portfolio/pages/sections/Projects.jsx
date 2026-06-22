@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next'
 import projectsData from '../../../shared/data/projects.json'
 import mobileAppsData from '../../../shared/data/mobileApps.json'
 import { getProjects } from '../../../shared/services/projectService'
+import { usePortfolioSettings } from '../../../shared/hooks/usePortfolioSettings'
 
 const iconMap = {
   Globe,
@@ -53,6 +54,7 @@ const DEFAULT_THUMBNAIL = 'https://placehold.co/600x400/1E293B/94A3B8?text=Proje
 export default function Projects() {
   const { t } = useTranslation()
   const shouldReduceMotion = useReducedMotion()
+  const { settings } = usePortfolioSettings()
   const [activeTab, setActiveTab] = useState('web')
   const [searchTerm, setSearchTerm] = useState('')
   const [dbProjects, setDbProjects] = useState([])
@@ -61,7 +63,7 @@ export default function Projects() {
   useEffect(() => {
     (async () => {
       try {
-        const data = await getProjects({ public: true, limit: 50 })
+        const data = await getProjects({ public: true, limit: settings.projectsPerPage })
         setDbProjects(data.projects || [])
       } catch {
         setDbProjects([])
@@ -69,7 +71,7 @@ export default function Projects() {
         setProjectsLoading(false)
       }
     })()
-  }, [])
+  }, [settings.projectsPerPage])
 
   const hasDbProjects = dbProjects.length > 0
   const displayProjects = hasDbProjects ? dbProjects : projectsData

@@ -6,7 +6,7 @@ import {
   Home, UserCircle, Mail, FileText, X, ChevronLeft, ChevronRight,
   Image, HardDrive, Activity, Download, Wrench, Bell,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
-  Shield, LogOut, Settings, Eye, Menu,
+  Shield, LogOut, Eye, Menu,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
@@ -68,17 +68,8 @@ const navGroups = [
       { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
       { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/contact', label: 'Contact Settings', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/notifications', label: 'Notifications', icon: Bell, roles: ['super_admin', 'admin'] },
-    ],
-  },
-  {
-    id: 'communication',
-    label: 'COMMUNICATION',
-    icon: MessageSquare,
-    section: true,
-    collapsible: true,
-    items: [
       { path: '/admin/inbox', label: 'Inbox', icon: MessageSquare, roles: ['super_admin', 'admin', 'editor'] },
+      { path: '/admin/notifications', label: 'Notifications', icon: Bell, roles: ['super_admin', 'admin'] },
     ],
   },
   {
@@ -88,7 +79,6 @@ const navGroups = [
     section: true,
     collapsible: true,
     items: [
-      { path: '/admin/settings', label: 'Settings', icon: Settings, roles: ['super_admin', 'admin'] },
       { path: '/admin/backup', label: 'Backup & Restore', icon: HardDrive, roles: ['super_admin', 'admin'] },
       { path: '/admin/import-export', label: 'Import / Export', icon: Download, roles: ['super_admin', 'admin'] },
       { path: '/admin/maintenance', label: 'Maintenance', icon: HeartPulse, roles: ['super_admin'] },
@@ -137,7 +127,7 @@ export default function Sidebar() {
   const { mobileOpen, closeMobile, collapsed, toggleCollapsed } = useAdmin()
   const { user, userRole, logout } = useAuth()
   const location = useLocation()
-  const [openMenus, setOpenMenus] = useState({ cms: true, communication: false, system: false })
+  const [openMenus, setOpenMenus] = useState({ cms: true, system: false })
   const [searchQuery, setSearchQuery] = useState('')
   const { count: unreadMessages } = useUnreadMessages()
 
@@ -156,7 +146,7 @@ export default function Sidebar() {
 
   const toggleMenu = useCallback((menuId) => {
     setOpenMenus((prev) => {
-      const next = { cms: false, communication: false, system: false }
+      const next = { cms: false, system: false }
       next[menuId] = !prev[menuId]
       return next
     })

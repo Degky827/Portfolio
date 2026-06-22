@@ -241,10 +241,14 @@ export default function ContactContent() {
                     <div key={idx} className="p-3 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
                       <div className="flex items-center gap-2">
                         <GripVertical size={14} className="text-gray-400 shrink-0 cursor-grab" />
-                        <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 ${hasIcon ? 'text-gray-700 dark:text-gray-300' : 'text-gray-400'}`}
-                          dangerouslySetInnerHTML={hasIcon ? { __html: PLATFORM_ICONS[key].replace(/width="[^"]*"/, 'width="16"').replace(/height="[^"]*"/, 'height="16"') } : undefined}>
-                          {!hasIcon && <span className="text-xs font-bold uppercase">{ch.channelName?.charAt(0) || '?'}</span>}
-                        </div>
+                        {hasIcon ? (
+                          <div className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-gray-700 dark:text-gray-300`}
+                            dangerouslySetInnerHTML={{ __html: PLATFORM_ICONS[key].replace(/width="[^"]*"/, 'width="16"').replace(/height="[^"]*"/, 'height="16"') }} />
+                        ) : (
+                          <div className="w-7 h-7 rounded-lg flex items-center justify-center shrink-0 text-gray-400">
+                            <span className="text-xs font-bold uppercase">{ch.channelName?.charAt(0) || '?'}</span>
+                          </div>
+                        )}
                         <input type="text" value={ch.channelName} onChange={updateChannel(idx, 'channelName')} placeholder="GitHub" className="flex-1 px-2.5 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
                         <div className="flex items-center gap-0.5 shrink-0">
                           <button type="button" onClick={() => moveChannel(idx, -1)} disabled={idx === 0} className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30 text-xs">▲</button>
