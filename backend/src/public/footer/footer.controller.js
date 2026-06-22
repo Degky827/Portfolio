@@ -40,7 +40,15 @@ async function updateFooterContent(req, res) {
       if (typeof navigation === 'string') {
         try { navigation = JSON.parse(navigation) } catch { /* ignore */ }
       }
-      content.navigation = Array.isArray(navigation) ? navigation : []
+      if (Array.isArray(navigation)) {
+        content.navigation = navigation.map((n) => ({
+          label: n.label || '',
+          url: n.url || '',
+          order: parseInt(n.order, 10) || 0,
+        }))
+      } else {
+        content.navigation = []
+      }
     }
 
     if (req.body.socialLinks) {
@@ -48,7 +56,21 @@ async function updateFooterContent(req, res) {
       if (typeof socialLinks === 'string') {
         try { socialLinks = JSON.parse(socialLinks) } catch { /* ignore */ }
       }
-      content.socialLinks = Array.isArray(socialLinks) ? socialLinks : []
+      if (Array.isArray(socialLinks)) {
+        content.socialLinks = socialLinks.map((s) => ({
+          platform: s.platform || '',
+          url: s.url || '',
+          displayOrder: parseInt(s.displayOrder, 10) || 0,
+          active: Boolean(s.active),
+        }))
+      } else {
+        content.socialLinks = []
+      }
+    }
+
+    if (req.body.phoneProtocol !== undefined) {
+      const validProtocols = ['tel', 'whatsapp', 'telegram', 'custom']
+      content.phoneProtocol = validProtocols.includes(req.body.phoneProtocol) ? req.body.phoneProtocol : 'tel'
     }
 
     if (req.file) {
@@ -64,7 +86,7 @@ async function updateFooterContent(req, res) {
     await content.save()
     res.json({ success: true, content })
   } catch (error) {
-    console.error('[footer] update error:', error)
+    console.error('[footer] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update footer content' })
   }
 }

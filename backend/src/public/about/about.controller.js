@@ -43,22 +43,46 @@ async function updateAboutContent(req, res) {
 
     if (req.body.education) {
       const parsed = parseArrayField(req.body.education)
-      if (parsed) content.education = parsed
+      if (parsed) {
+        content.education = parsed.map((e) => ({
+          degree: e.degree || '',
+          institution: e.institution || '',
+          year: e.year || '',
+        }))
+      }
     }
 
     if (req.body.experience) {
       const parsed = parseArrayField(req.body.experience)
-      if (parsed) content.experience = parsed
+      if (parsed) {
+        content.experience = parsed.map((e) => ({
+          role: e.role || '',
+          company: e.company || '',
+          duration: e.duration || '',
+          description: e.description || '',
+        }))
+      }
     }
 
     if (req.body.certifications) {
       const parsed = parseArrayField(req.body.certifications)
-      if (parsed) content.certifications = parsed
+      if (parsed) {
+        content.certifications = parsed.map((c) => ({
+          title: c.title || '',
+          verificationUrl: c.verificationUrl || '',
+          displayOrder: parseInt(c.displayOrder, 10) || 0,
+        }))
+      }
     }
 
     if (req.body.storyPillars) {
       const parsed = parseArrayField(req.body.storyPillars)
-      if (parsed) content.storyPillars = parsed
+      if (parsed) {
+        content.storyPillars = parsed.map((p) => ({
+          title: p.title || '',
+          content: p.content || '',
+        }))
+      }
     }
 
     if (req.body.idePresentation) {
@@ -75,7 +99,13 @@ async function updateAboutContent(req, res) {
 
     if (req.body.highlightMetrics) {
       const parsed = parseArrayField(req.body.highlightMetrics)
-      if (parsed) content.highlightMetrics = parsed
+      if (parsed) {
+        content.highlightMetrics = parsed.map((m) => ({
+          icon: m.icon || '',
+          title: m.title || '',
+          value: m.value || '',
+        }))
+      }
     }
 
     if (req.file) {
@@ -91,7 +121,7 @@ async function updateAboutContent(req, res) {
     await content.save()
     res.json({ success: true, content })
   } catch (error) {
-    console.error('[about] update error:', error)
+    console.error('[about] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update about content' })
   }
 }

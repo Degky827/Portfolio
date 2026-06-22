@@ -6,8 +6,6 @@ export async function getFooterContent() {
 }
 
 export async function updateFooterContent(formData) {
-  const { data } = await api.put('/footer', formData, {
-    headers: { 'Content-Type': 'multipart/form-data' },
-  })
+  const { data } = await api.put('/footer', formData)
   return data
 }

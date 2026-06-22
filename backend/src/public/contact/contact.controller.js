@@ -36,13 +36,24 @@ async function updateContactContent(req, res) {
       if (typeof channels === 'string') {
         try { channels = JSON.parse(channels) } catch { /* ignore */ }
       }
-      content.socialChannels = Array.isArray(channels) ? channels : []
+      if (Array.isArray(channels)) {
+        content.socialChannels = channels
+          .filter((ch) => ch.channelName && ch.linkUrl)
+          .map((ch) => ({
+            channelName: ch.channelName || '',
+            linkUrl: ch.linkUrl || '',
+            iconVector: ch.iconVector || '',
+            displayWeight: parseInt(ch.displayWeight, 10) || 0,
+          }))
+      } else {
+        content.socialChannels = []
+      }
     }
 
     await content.save()
     res.json({ success: true, content })
   } catch (error) {
-    console.error('[contact] update error:', error)
+    console.error('[contact] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update contact content' })
   }
 }
