@@ -3,6 +3,8 @@ const Skill = require('../../shared/models/Skill')
 const Settings = require('../../shared/models/Settings')
 const HomeContent = require('../../shared/models/HomeContent')
 const AboutContent = require('../../shared/models/AboutContent')
+const ContactContent = require('../../shared/models/ContactContent')
+const FooterContent = require('../../shared/models/FooterContent')
 
 function toCSV(items, fields) {
   const esc = (v) => {
@@ -83,6 +85,8 @@ const UPS_COLLECTIONS = [
   { model: Project, key: 'projects' },
   { model: HomeContent, key: 'homeContent' },
   { model: AboutContent, key: 'aboutContent' },
+  { model: ContactContent, key: 'contactContent' },
+  { model: FooterContent, key: 'footerContent' },
 ]
 
 async function buildUPSSnapshot() {
@@ -225,7 +229,19 @@ async function previewImport(req, res) {
         rows = parseCSV(raw)
       } else {
         const parsed = JSON.parse(raw)
-        rows = Array.isArray(parsed) ? parsed : [parsed]
+        if (Array.isArray(parsed)) {
+          rows = parsed
+        } else if (parsed.projects && type === 'projects') {
+          rows = parsed.projects
+        } else if (parsed.skills && type === 'skills') {
+          rows = parsed.skills
+        } else if (type === 'projects' && Array.isArray(parsed.projects)) {
+          rows = parsed.projects
+        } else if (type === 'skills' && Array.isArray(parsed.skills)) {
+          rows = parsed.skills
+        } else {
+          rows = [parsed]
+        }
       }
     } catch {
       return res.status(400).json({ success: false, message: `Invalid ${isCSV ? 'CSV' : 'JSON'} file format` })

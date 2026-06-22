@@ -1,0 +1,627 @@
+{
+  "projects": [
+    {
+      "_id": "6a38e9229206d4899f746582",
+      "title": "LakeTana Tourist Management System",
+      "slug": "laketana-tourist-management-system",
+      "shortDescription": "A full-stack MERN marketplace platform empowering eco-tourism, local boat operator management, and historical monastery tour bookings around Lake Tana.",
+      "fullDescription": "Built a robust, localized full-stack e-commerce and booking architecture tailored for regional tourism around Lake Tana, Ethiopia. The platform Bridges the gap between international travelers and local boat operators, offering real-time scheduling, dynamic tour package configurations, and automated reservation management.\n\nKey Engineering Milestones:\n• Designed an optimized MongoDB database schema handling relational references for tour routes, operator availability matrixes, and secure reservation logs.\n• Built a fully responsive frontend client featuring interactive routing maps, rich search filtering for historic island monasteries, and crisp modular dashboards for system administrators.\n• Engineered secure, atomic transaction handling logic with decoupled automated messaging triggers to streamline client-operator coordination.",
+      "technologies": [
+        "Next.js",
+        "node.js",
+        "express.js",
+        "mongoDB"
+      ],
+      "githubUrl": "https://github.com/desalegnkasayemuluyekasaye-tech/LTTMS",
+      "liveDemoUrl": "https://lttms-98vb.vercel.app/",
+      "thumbnail": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781313713/portfolio_assets/lhyl6n1nxmypcmc3nr3q.png",
+      "images": [
+        "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781313743/portfolio_assets/xnwo1wvmndcqr3igls09.png"
+      ],
+      "category": "Web App",
+      "featured": true,
+      "displayOrder": 1,
+      "status": "in_progress",
+      "published": true,
+      "archived": false,
+      "metaTitle": "Fullstack Tourist Management System",
+      "metaDescription": "Deep dive into LTTMS, an automated student clearance web application built using React and relational backend scripts featuring role-based access controls.",
+      "keywords": "Next.js,Node.js,Express.js,mongoDB",
+      "createdAt": "2026-06-13T01:22:32.263Z",
+      "updatedAt": "2026-06-13T01:22:32.263Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746583",
+      "title": "tttt",
+      "slug": "tttt",
+      "shortDescription": "ertyuiop",
+      "fullDescription": "zxcvbnm,dfghjkertyui",
+      "technologies": [
+        "java",
+        "html",
+        "css"
+      ],
+      "githubUrl": "https://wwee,com",
+      "liveDemoUrl": "https://wwee,com",
+      "thumbnail": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781340723/portfolio_assets/zg6r2kfe4n4uihgvuexy.png",
+      "images": [],
+      "category": "Web App",
+      "featured": false,
+      "displayOrder": 0,
+      "status": "completed",
+      "published": true,
+      "archived": false,
+      "metaTitle": "sdfgh",
+      "metaDescription": "werty",
+      "keywords": "rr,tt",
+      "createdAt": "2026-06-13T08:52:23.323Z",
+      "updatedAt": "2026-06-13T08:52:23.323Z",
+      "__v": 0
+    }
+  ],
+  "skills": [
+    {
+      "_id": "6a38e9229206d4899f746573",
+      "name": "REACT.JS",
+      "category": "Frontend Development",
+      "icon": "",
+      "proficiency": 70,
+      "description": "",
+      "displayOrder": 2,
+      "featured": true,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T09:50:02.317Z",
+      "updatedAt": "2026-06-11T09:50:02.317Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746574",
+      "name": "JAVASCRIPT",
+      "category": "Frontend Development",
+      "icon": "",
+      "proficiency": 50,
+      "description": "",
+      "displayOrder": 1,
+      "featured": true,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T09:50:34.466Z",
+      "updatedAt": "2026-06-11T09:50:34.466Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746575",
+      "name": "Tailwind CSS",
+      "category": "Frontend Development",
+      "icon": "",
+      "proficiency": 70,
+      "description": "",
+      "displayOrder": 3,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T09:51:29.545Z",
+      "updatedAt": "2026-06-11T09:51:29.545Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746576",
+      "name": "Node.js",
+      "category": "Backend Development",
+      "icon": "",
+      "proficiency": 80,
+      "description": "",
+      "displayOrder": 1,
+      "featured": true,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T09:52:54.391Z",
+      "updatedAt": "2026-06-11T09:53:14.925Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746577",
+      "name": "Express.js",
+      "category": "Backend Development",
+      "icon": "",
+      "proficiency": 80,
+      "description": "",
+      "displayOrder": 2,
+      "featured": true,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T09:53:45.703Z",
+      "updatedAt": "2026-06-11T09:53:45.703Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746578",
+      "name": "mongoDB",
+      "category": "Backend Development",
+      "icon": "",
+      "proficiency": 80,
+      "description": "",
+      "displayOrder": 3,
+      "featured": true,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T09:54:18.102Z",
+      "updatedAt": "2026-06-11T09:54:18.102Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746579",
+      "name": "Hackaton",
+      "category": "Certificates",
+      "icon": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781171813/portfolio_assets/l6o11dahasxqsuszjlgb.jpg",
+      "proficiency": null,
+      "description": "This is the 48hours competation certificate and worked a full stack website",
+      "displayOrder": 0,
+      "featured": false,
+      "status": "active",
+      "issuer": "Bahir Dar University",
+      "issueDate": "2025",
+      "certificateUrl": "",
+      "createdAt": "2026-06-11T09:57:06.175Z",
+      "updatedAt": "2026-06-11T09:57:06.175Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f74657a",
+      "name": "Flutter",
+      "category": "Mobile Development",
+      "icon": "",
+      "proficiency": 75,
+      "description": "",
+      "displayOrder": 1,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-13T01:01:52.774Z",
+      "updatedAt": "2026-06-13T01:01:52.774Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f74657b",
+      "name": "Firebase",
+      "category": "Mobile Development",
+      "icon": "",
+      "proficiency": 50,
+      "description": "",
+      "displayOrder": 2,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-13T01:02:40.471Z",
+      "updatedAt": "2026-06-13T01:02:40.471Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f74657c",
+      "name": "Git",
+      "category": "Tools",
+      "icon": "",
+      "proficiency": 80,
+      "description": "",
+      "displayOrder": 0,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-13T01:03:47.140Z",
+      "updatedAt": "2026-06-13T01:03:47.140Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f74657d",
+      "name": "Github",
+      "category": "Tools",
+      "icon": "",
+      "proficiency": 75,
+      "description": "",
+      "displayOrder": 2,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-13T01:04:56.761Z",
+      "updatedAt": "2026-06-13T01:04:56.761Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f74657e",
+      "name": "Visual Studio code",
+      "category": "Tools",
+      "icon": "",
+      "proficiency": 85,
+      "description": "",
+      "displayOrder": 3,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-13T01:05:50.306Z",
+      "updatedAt": "2026-06-13T01:05:50.306Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f74657f",
+      "name": "Cisco",
+      "category": "Networking",
+      "icon": "",
+      "proficiency": 70,
+      "description": "",
+      "displayOrder": 1,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-13T01:06:34.758Z",
+      "updatedAt": "2026-06-13T01:06:34.758Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746580",
+      "name": "Internnet of Things",
+      "category": "Networking",
+      "icon": "",
+      "proficiency": 65,
+      "description": "",
+      "displayOrder": 2,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-13T01:07:27.229Z",
+      "updatedAt": "2026-06-13T01:07:27.229Z",
+      "__v": 0
+    },
+    {
+      "_id": "6a38e9229206d4899f746581",
+      "name": "flutter",
+      "category": "Frontend Development",
+      "icon": "",
+      "proficiency": 85,
+      "description": "",
+      "displayOrder": 6,
+      "featured": false,
+      "status": "active",
+      "issuer": "",
+      "issueDate": "",
+      "certificateUrl": "",
+      "createdAt": "2026-06-13T08:48:07.324Z",
+      "updatedAt": "2026-06-13T08:48:07.324Z",
+      "__v": 0
+    }
+  ],
+  "homeContent": [
+    {
+      "_id": "6a38e9229206d4899f746584",
+      "heroTitle": "",
+      "heroSubtitle": "",
+      "heroDescription": "",
+      "profileImage": "",
+      "resumeUrl": "",
+      "primaryButtonText": "Get Started",
+      "primaryButtonLink": "#projects",
+      "secondaryButtonText": "Contact Me",
+      "secondaryButtonLink": "#contact",
+      "socialLinks": {
+        "github": "https://github.com/desalegnkasayemuluyekasaye-tech",
+        "linkedin": "https://linkedin.com/in/dk-cs-3rd",
+        "telegram": "",
+        "twitter": "",
+        "facebook": "",
+        "instagram": "",
+        "email": "",
+        "youtube": ""
+      },
+      "createdAt": "2026-06-09T07:41:22.933Z",
+      "updatedAt": "2026-06-17T10:03:44.373Z",
+      "__v": 10,
+      "about": {
+        "achievements": [],
+        "location": "Bahir Dar,Ethiopia",
+        "sections": [],
+        "statClients": "10+ Clients",
+        "statNetwork": "Full Stack Developer",
+        "subtitle": "",
+        "title": "Get to Know Me",
+        "yearsOfExperience": 0
+      },
+      "contactButtonLink": "#contact",
+      "contactButtonText": "Get In Touch",
+      "cta": {
+        "backgroundImage": "",
+        "buttonLink": "#contact",
+        "buttonText": "Get In Touch",
+        "subtitle": "",
+        "title": "Let's Work Together"
+      },
+      "hero": {
+        "ctaButtons": [
+          {
+            "text": "View Projects",
+            "link": "#projects",
+            "openNewTab": false,
+            "icon": "ArrowRight"
+          }
+        ],
+        "fullName": "Desalegn",
+        "greeting": "Hi, I'm",
+        "nameAmharic": "ደሳለኝ",
+        "professionalBadge": "Full Stack Developer",
+        "profilePhoto": {
+          "url": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781175411/portfolio_assets/mi4bdb1gvzbq7katnw6a.png",
+          "alt": "Desiye"
+        },
+        "shortIntroduction": "Passionate about creating secure, scalable digital solutions and designing robust network architectures. Specializing in modern web development and enterprise networking.",
+        "statistics": [
+          {
+            "label": "certifications",
+            "value": "3+",
+            "icon": "Award",
+            "color": "#f264d8"
+          },
+          {
+            "label": "Technologies",
+            "value": "10+",
+            "icon": "Code2",
+            "color": "#64f26e"
+          },
+          {
+            "label": "clients",
+            "value": "3+",
+            "icon": "Wifi",
+            "color": "#f2648f"
+          }
+        ],
+        "typingWords": [
+          "Full Stack and Mobile Application Developer"
+        ]
+      },
+      "logoImage": "",
+      "logoText": "",
+      "published": true,
+      "resume": {
+        "fileName": "Resume.pdf",
+        "url": "https://drive.google.com/file/d/1eRVlm8cfOskv3kIeEtq0DiBbRAsVTS5E/view?usp=sharing"
+      },
+      "resumeButtonText": "View CV",
+      "seo": {
+        "metaDescription": "",
+        "metaKeywords": [],
+        "metaTitle": "Desalegn",
+        "ogImage": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781175411/portfolio_assets/mi4bdb1gvzbq7katnw6a.png"
+      },
+      "theme": {
+        "accentColor": "#f59e0b",
+        "primaryColor": "#6366f1",
+        "secondaryColor": "#10b981"
+      }
+    }
+  ],
+  "aboutContent": [
+    {
+      "_id": "6a38e9229206d4899f746585",
+      "title": "Get To Know Me",
+      "subtitle": "",
+      "description": "",
+      "profileImage": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781175411/portfolio_assets/mi4bdb1gvzbq7katnw6a.png",
+      "yearsOfExperience": 0,
+      "location": "Bahir Dar,Ethiopia",
+      "cvUrl": "https://drive.google.com/file/d/1eRVlm8cfOskv3kIeEtq0DiBbRAsVTS5E/view?usp=sharing",
+      "status": "active",
+      "education": [],
+      "experience": [],
+      "achievements": [],
+      "createdAt": "2026-06-08T09:55:57.044Z",
+      "updatedAt": "2026-06-13T06:37:33.748Z",
+      "__v": 0
+    }
+  ],
+  "contactContent": [
+    {
+      "_id": "6a268843206ea7d78049b7f5",
+      "email": "desalegn@gmail.com",
+      "phone": "0987654321",
+      "address": "Bahir Dar Ethiopia",
+      "mapLink": "",
+      "whatsapp": "",
+      "telegram": "",
+      "linkedin": "",
+      "github": "",
+      "twitter": "",
+      "facebook": "",
+      "instagram": "",
+      "contactFormEnabled": false,
+      "createdAt": "2026-06-08T09:15:47.219Z",
+      "updatedAt": "2026-06-22T07:05:48.771Z",
+      "__v": 4,
+      "socialChannels": [
+        {
+          "channelName": "Linkedin",
+          "linkUrl": "https://github.com/desalegnkasayemuluyekasaye-tech",
+          "iconVector": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z\"/></svg>",
+          "displayWeight": 1,
+          "_id": "6a2cc30962eb7be3f4bb76ce"
+        },
+        {
+          "channelName": "Github",
+          "linkUrl": "https://github.com/desalegn",
+          "iconVector": "<svg viewBox=\"0 0 24 24\" fill=\"currentColor\"><path d=\"M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z\"/></svg>",
+          "displayWeight": 1,
+          "_id": "6a2ce52dd13d748b2d7ab202"
+        }
+      ]
+    }
+  ],
+  "footerContent": [
+    {
+      "_id": "6a268845206ea7d78049b7f6",
+      "footerDescription": "",
+      "copyrightText": "© 2026 DESALEGN.ALL RIGHT ARE RESERVED",
+      "footerLogo": "https://res.cloudinary.com/dp5rhg9n3/image/upload/v1781138743/portfolio_assets/uev2tp2jz1ookcyggr1e.jpg",
+      "status": "inactive",
+      "quickLinks": [
+        {
+          "label": "home",
+          "url": "#home",
+          "displayOrder": 0,
+          "_id": "6a2a7fd352bc69c986dbfc60"
+        },
+        {
+          "label": "about",
+          "url": "#about",
+          "displayOrder": 0,
+          "_id": "6a2a7fd352bc69c986dbfc61"
+        },
+        {
+          "label": "projects",
+          "url": "#projects",
+          "displayOrder": 0,
+          "_id": "6a2a7fd352bc69c986dbfc62"
+        }
+      ],
+      "socialLinks": [
+        {
+          "platform": "github",
+          "url": "https://github.com/desalegnkasayemuluyekasaye-tech@gmail.com",
+          "displayOrder": 0,
+          "active": true,
+          "_id": "6a2a7fd352bc69c986dbfc63"
+        },
+        {
+          "platform": "linkedin",
+          "url": "https://linked.com/fff",
+          "displayOrder": 1,
+          "active": true,
+          "_id": "6a2b702d414f7757d93bd4f0"
+        }
+      ],
+      "createdAt": "2026-06-08T09:15:49.107Z",
+      "updatedAt": "2026-06-22T02:03:18.016Z",
+      "__v": 9,
+      "brandName": "Desalegn",
+      "builtWithText": "BUILT WITH PASSION",
+      "country": "",
+      "email": "",
+      "iconKeyword": "coffee",
+      "location": "",
+      "madeWithText": "React and Tailwind CSS",
+      "phone": "",
+      "region": "",
+      "emailProtocol": "mailto",
+      "locationLine1": "",
+      "locationLine2": "",
+      "phoneCustomUrl": "",
+      "phoneProtocol": "tel",
+      "techAttribution": "Build With React and Tailwind CSS",
+      "visualSeparator": "",
+      "attributionText": "",
+      "brandDescription": "",
+      "emailAddress": "",
+      "locationHeadline": "",
+      "locationMapUrl": "",
+      "navigation": [
+        {
+          "label": "Home",
+          "url": "#home",
+          "order": 0,
+          "_id": "6a31e6170621d4676ce6852e"
+        },
+        {
+          "label": "About",
+          "url": "#about",
+          "order": 0,
+          "_id": "6a31e6170621d4676ce6852f"
+        },
+        {
+          "label": "Skills",
+          "url": "#skills",
+          "order": 0,
+          "_id": "6a34954092cdaac97423b9c0"
+        }
+      ],
+      "phoneNumber": "",
+      "subLocation": ""
+    }
+  ],
+  "settings": [
+    {
+      "_id": "6a38e9229206d4899f746572",
+      "ownerName": "Desalegn Kasaye",
+      "title": "",
+      "description": "",
+      "logo": "",
+      "favicon": "",
+      "defaultTheme": "light",
+      "projectsPerPage": 6,
+      "certificatesPerPage": 6,
+      "enableAnalytics": true,
+      "enableContactForm": true,
+      "publicEmail": "desalegnky827@gmail.com",
+      "publicPhone": "0987654321",
+      "publicAddress": "Bahir Dar Ethiopia",
+      "socialLinks": {
+        "github": "",
+        "linkedin": "",
+        "telegram": "https://t.me/Ds35kg",
+        "twitter": "",
+        "facebook": "",
+        "instagram": "",
+        "youtube": ""
+      },
+      "createdAt": "2026-06-11T10:48:48.481Z",
+      "updatedAt": "2026-06-18T01:53:34.028Z",
+      "__v": 0,
+      "branding": {
+        "faviconMaxSizeKB": 50,
+        "faviconAllowedFormats": [
+          "ico",
+          "webp",
+          "png"
+        ],
+        "faviconEnforceAspectRatio": true,
+        "logoSettings": {
+          "requireTransparent": true,
+          "format": "svg"
+        },
+        "descriptionMeta": {
+          "minChars": 120,
+          "maxChars": 160,
+          "recommendedMin": 120,
+          "recommendedMax": 160
+        }
+      },
+      "globalAppearance": {
+        "mode": "light",
+        "syncedAt": "2026-06-18T01:53:34.022Z"
+      },
+      "responseMessageTemplate": "thanks"
+    }
+  ]
+}

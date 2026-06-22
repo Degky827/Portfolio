@@ -197,18 +197,20 @@ async function uploadBackup(req, res) {
       return res.status(400).json({ success: false, message: 'Invalid JSON file' })
     }
 
-    const requiredKeys = COLLECTIONS.map((c) => c.key)
-    const missing = requiredKeys.filter((k) => !(k in parsed))
-    if (missing.length > 0) {
-      return res.status(400).json({
-        success: false,
-        message: `Invalid backup file. Missing sections: ${missing.join(', ')}`,
-      })
+    if (parsed.format === 'ups' && parsed.data) {
+      parsed = parsed.data
     }
+
+    const requiredKeys = COLLECTIONS.map((c) => c.key)
+    requiredKeys.forEach((k) => {
+      if (!Array.isArray(parsed[k])) {
+        parsed[k] = []
+      }
+    })
 
     const summary = {}
     requiredKeys.forEach((key) => {
-      summary[key] = Array.isArray(parsed[key]) ? parsed[key].length : 0
+      summary[key] = parsed[key].length
     })
 
     const backup = await Backup.create({

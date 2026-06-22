@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import api from '../services/api'
 
 export function useDarkMode() {
@@ -7,17 +7,26 @@ export function useDarkMode() {
     return saved ? JSON.parse(saved) : false
   })
 
-  useEffect(() => {
-    api.get('/settings/appearance')
+  const fetchAppearance = useCallback(() => {
+    return api.get('/settings/appearance')
       .then(({ data }) => {
         if (data?.appearance?.mode) {
           const mode = data.appearance.mode
           const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
           setDarkMode(isDark)
+          return isDark
         }
       })
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    fetchAppearance()
+
+    const interval = setInterval(fetchAppearance, 10000)
+
+    return () => clearInterval(interval)
+  }, [fetchAppearance])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)

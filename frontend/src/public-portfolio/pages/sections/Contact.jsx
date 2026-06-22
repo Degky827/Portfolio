@@ -5,7 +5,7 @@ import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 import { logPortfolioVisit, logPortfolioEngagement } from '../../../shared/services/api'
 import { getContactContent, createMessage } from '../../../shared/services/contactService'
-import { usePortfolioSettings } from '../../../shared/hooks/usePortfolioSettings'
+import { getSettings } from '../../../shared/services/settingsService'
 
 function SocialIcon({ iconVector, size = 18, className = '' }) {
   if (!iconVector) return null
@@ -16,6 +16,38 @@ function SocialIcon({ iconVector, size = 18, className = '' }) {
   )
 }
 
+function validate(values) {
+  const errors = {}
+  const name = (values.from_name || '').trim()
+  const email = (values.reply_to || '').trim()
+  const phone = (values.phone || '').trim()
+  const message = (values.message || '').trim()
+
+  if (!name) {
+    errors.from_name = 'Full name is required'
+  } else if (name.length < 2) {
+    errors.from_name = 'Name must be at least 2 characters'
+  }
+
+  if (!email) {
+    errors.reply_to = 'Email is required'
+  } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    errors.reply_to = 'Please enter a valid email'
+  }
+
+  if (phone && !/^[+]?[\d\s\-()]{7,20}$/.test(phone)) {
+    errors.phone = 'Please enter a valid phone number'
+  }
+
+  if (!message) {
+    errors.message = 'Message is required'
+  } else if (message.length < 10) {
+    errors.message = 'Message must be at least 10 characters'
+  }
+
+  return errors
+}
+
 export default function Contact() {
   const form = useRef()
   const [result, setResult] = useState('')
@@ -23,7 +55,11 @@ export default function Contact() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [content, setContent] = useState(null)
   const { t } = useTranslation()
-  const { settings } = usePortfolioSettings()
+
+  const [values, setValues] = useState({ from_name: '', reply_to: '', phone: '', message: '' })
+  const [errors, setErrors] = useState({})
+  const [touched, setTouched] = useState({})
+  const [contactFormEnabled, setContactFormEnabled] = useState(true)
 
   useEffect(() => {
     ;(async () => {
@@ -34,10 +70,53 @@ export default function Contact() {
         // fall back to hardcoded
       }
     })()
+    ;(async () => {
+      try {
+        const { settings } = await getSettings()
+        if (settings?.enableContactForm !== undefined) {
+          setContactFormEnabled(settings.enableContactForm)
+        }
+      } catch {
+        // default to enabled
+      }
+    })()
   }, [])
+
+  const validationErrors = validate(values)
+  const isValid = Object.keys(validationErrors).length === 0
+
+  const handleChange = (field) => (e) => {
+    const val = e.target.value
+    setValues((prev) => ({ ...prev, [field]: val }))
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
+  }
+
+  const handleBlur = (field) => () => {
+    setTouched((prev) => ({ ...prev, [field]: true }))
+    const fieldErrors = validate({ ...values, [field]: values[field] })
+    if (fieldErrors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: fieldErrors[field] }))
+    }
+  }
+
+  const fieldError = (field) => {
+    if (!touched[field]) return ''
+    return errors[field] || validationErrors[field] || ''
+  }
+
+  const inputClass = (field) =>
+    `w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 ${
+      fieldError(field) ? 'border-red-400 dark:border-red-500' : 'border-transparent focus:border-primary'
+    } focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm`
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+
+    setTouched({ from_name: true, reply_to: true, phone: true, message: true })
+    const errs = validate(values)
+    setErrors(errs)
+    if (Object.keys(errs).length > 0) return
+
     setIsSubmitting(true)
     setResult('')
 
@@ -45,31 +124,26 @@ export default function Contact() {
     const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
     const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
 
-    const formData = new FormData(form.current)
-    const name = formData.get('from_name') || ''
-    const email = formData.get('reply_to') || ''
-    const phone = formData.get('phone') || ''
-    const message = formData.get('message') || ''
+    const name = values.from_name.trim()
+    const email = values.reply_to.trim()
+    const phone = values.phone.trim()
+    const message = values.message.trim()
 
     const emailTo = content?.email || 'desalegnky827@gmail.com'
 
     let saved = false
     try {
       await createMessage({ name, email, phone, message })
-      // Show success confirmation to the visitor after storing the message
       setResult(t('contact.successMessage'))
       setResultType('success')
       saved = true
-    } catch (err) {
+    } catch {
       saved = false
     }
 
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      // If we saved the message to the DB, don't open the user's email client — show success instead.
-      if (settings.enableAnalytics) {
-        logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-        logPortfolioVisit(name)
-      }
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+      logPortfolioVisit(name)
       if (!saved) {
         const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
         window.location.href = mailtoLink
@@ -82,18 +156,17 @@ export default function Contact() {
 
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
-      if (settings.enableAnalytics) {
-        logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      }
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       setResult(t('contact.successMessage'))
       setResultType('success')
+      setValues({ from_name: '', reply_to: '', phone: '', message: '' })
+      setTouched({})
+      setErrors({})
       e.target.reset()
     } catch (error) {
       console.error('EmailJS error:', error)
       const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
-      if (settings.enableAnalytics) {
-        logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      }
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       window.location.href = mailtoLink
       setResult(t('contact.errorEmailjs'))
       setResultType('error')
@@ -109,8 +182,6 @@ export default function Contact() {
   ]
 
   const socialChannels = (content?.socialChannels || []).slice().sort((a, b) => a.displayWeight - b.displayWeight)
-
-  const formEnabled = settings.enableContactForm && content?.contactFormEnabled !== false
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -162,11 +233,11 @@ export default function Contact() {
           viewport={{ once: true, margin: "-50px" }}
           className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
         >
-          <div className={`grid relative z-10 ${formEnabled ? 'lg:grid-cols-5' : 'lg:grid-cols-1'}`}>
+          <div className={`grid relative z-10 ${contactFormEnabled ? 'lg:grid-cols-5' : 'lg:grid-cols-1'}`}>
             {/* Contact Info Sidebar */}
             <motion.div
               variants={itemVariants}
-              className={`${formEnabled ? 'lg:col-span-2' : 'lg:col-span-1'} bg-transparent dark:bg-transparent p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16 text-gray-900 dark:text-white relative overflow-hidden`}
+              className={`${contactFormEnabled ? 'lg:col-span-2' : 'lg:col-span-1'} bg-transparent dark:bg-transparent p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16 text-gray-900 dark:text-white relative overflow-hidden`}
             >
               <div className="relative z-10">
                 <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6 sm:mb-8 md:mb-10 leading-tight font-display tracking-tight text-gray-900 dark:text-white">{t('contact.connectTitle')}</h3>
@@ -241,47 +312,60 @@ export default function Contact() {
             </motion.div>
 
             {/* Contact Form */}
-            {formEnabled && (
+            {contactFormEnabled && (
               <motion.div variants={itemVariants} className="lg:col-span-3 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
-                <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} aria-label={t('contact.formAriaLabel')}>
-                  <div className="grid md:grid-cols-2 gap-6 sm:gap-8">
-                    <div className="space-y-2 sm:space-y-3">
-                      <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">{t('contact.formLabelName')}</label>
-                      <div className="relative group">
-                        <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                          <User size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </span>
-                        <input
-                          id="from_name"
-                          name="from_name"
-                          type="text"
-                          required
-                          placeholder={t('contact.formPlaceholderName')}
-                          className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
-                          aria-describedby={result ? "form-message" : undefined}
-                        />
-                      </div>
+                <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} noValidate aria-label={t('contact.formAriaLabel')}>
+                  {/* Full Name */}
+                  <div className="space-y-2 sm:space-y-3">
+                    <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">
+                      Full Name <span className="text-red-400">*</span>
+                    </label>
+                    <div className="relative group">
+                      <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
+                        <User size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </span>
+                      <input
+                        id="from_name"
+                        name="from_name"
+                        type="text"
+                        value={values.from_name}
+                        onChange={handleChange('from_name')}
+                        onBlur={handleBlur('from_name')}
+                        placeholder="e.g. John Doe"
+                        className={inputClass('from_name')}
+                      />
                     </div>
-                    <div className="space-y-2 sm:space-y-3">
-                      <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">{t('contact.formLabelEmail')}</label>
-                      <div className="relative group">
-                        <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                          <Mail size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
-                        </span>
-                        <input
-                          id="reply_to"
-                          name="reply_to"
-                          type="email"
-                          required
-                          placeholder={t('contact.formPlaceholderEmail')}
-                          className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
-                        />
-                      </div>
-                    </div>
+                    {fieldError('from_name') && <p className="text-xs text-red-500 dark:text-red-400 ml-1">{fieldError('from_name')}</p>}
                   </div>
 
+                  {/* Email */}
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="phone" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">{t('contact.formLabelPhone')}</label>
+                    <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">
+                      Email Address <span className="text-red-400">*</span>
+                    </label>
+                    <div className="relative group">
+                      <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
+                        <Mail size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </span>
+                      <input
+                        id="reply_to"
+                        name="reply_to"
+                        type="email"
+                        value={values.reply_to}
+                        onChange={handleChange('reply_to')}
+                        onBlur={handleBlur('reply_to')}
+                        placeholder="e.g. john@example.com"
+                        className={inputClass('reply_to')}
+                      />
+                    </div>
+                    {fieldError('reply_to') && <p className="text-xs text-red-500 dark:text-red-400 ml-1">{fieldError('reply_to')}</p>}
+                  </div>
+
+                  {/* Phone (optional) */}
+                  <div className="space-y-2 sm:space-y-3">
+                    <label htmlFor="phone" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">
+                      Phone Number <span className="text-gray-400 dark:text-gray-500 text-[10px]">(optional)</span>
+                    </label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                         <Phone size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -290,14 +374,21 @@ export default function Contact() {
                         id="phone"
                         name="phone"
                         type="tel"
-                        placeholder={t('contact.formPlaceholderPhone')}
-                        className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm"
+                        value={values.phone}
+                        onChange={handleChange('phone')}
+                        onBlur={handleBlur('phone')}
+                        placeholder="e.g. +1 (555) 123-4567"
+                        className={inputClass('phone')}
                       />
                     </div>
+                    {fieldError('phone') && <p className="text-xs text-red-500 dark:text-red-400 ml-1">{fieldError('phone')}</p>}
                   </div>
 
+                  {/* Message */}
                   <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">{t('contact.formLabelMessage')}</label>
+                    <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">
+                      Message <span className="text-red-400">*</span>
+                    </label>
                     <div className="relative group">
                       <span className="absolute left-4 sm:left-5 top-5 sm:top-6 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
                         <MessageSquare size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -305,14 +396,18 @@ export default function Contact() {
                       <textarea
                         id="message"
                         name="message"
-                        required
-                        placeholder={t('contact.formPlaceholderMessage')}
+                        value={values.message}
+                        onChange={handleChange('message')}
+                        onBlur={handleBlur('message')}
                         rows="5"
-                        className="w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 border-transparent focus:border-primary focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base resize-none shadow-sm"
+                        placeholder="Write your message here..."
+                        className={`${inputClass('message')} resize-none`}
                       />
                     </div>
+                    {fieldError('message') && <p className="text-xs text-red-500 dark:text-red-400 ml-1">{fieldError('message')}</p>}
                   </div>
 
+                  {/* Result Message */}
                   <AnimatePresence>
                     {result && (
                       <motion.div
@@ -329,12 +424,17 @@ export default function Contact() {
                     )}
                   </AnimatePresence>
 
+                  {/* Submit Button */}
                   <motion.button
                     type="submit"
-                    disabled={isSubmitting}
-                    whileHover={{ scale: 1.02, translateY: -2 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="w-full py-4 sm:py-5 bg-primary hover:bg-[#4F46E5] text-white font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 disabled:opacity-70 disabled:cursor-not-allowed group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+                    disabled={isSubmitting || !isValid}
+                    whileHover={isValid ? { scale: 1.02, translateY: -2 } : {}}
+                    whileTap={isValid ? { scale: 0.98 } : {}}
+                    className={`w-full py-4 sm:py-5 font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
+                      isValid && !isSubmitting
+                        ? 'bg-primary hover:bg-[#4F46E5] text-white cursor-pointer'
+                        : 'bg-gray-300 dark:bg-slate-700 text-gray-500 dark:text-slate-400 cursor-not-allowed opacity-60'
+                    }`}
                     aria-label={isSubmitting ? t('contact.submitAriaSubmitting') : t('contact.submitAriaNormal')}
                   >
                     <span className="relative z-10 flex items-center gap-2 sm:gap-3">
@@ -343,7 +443,7 @@ export default function Contact() {
                       ) : (
                         <>
                           {t('contact.submitText')}
-                          <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.5, repeat: Infinity }} aria-hidden="true">
+                          <motion.span animate={isValid ? { x: [0, 5, 0] } : {}} transition={{ duration: 1.5, repeat: Infinity }} aria-hidden="true">
                             <Send size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
                           </motion.span>
                         </>

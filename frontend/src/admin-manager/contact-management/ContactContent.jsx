@@ -64,7 +64,6 @@ export default function ContactContent() {
     phone: '',
     address: '',
     mapLink: '',
-    contactFormEnabled: true,
     socialChannels: [],
   })
   const [loading, setLoading] = useState(false)
@@ -82,7 +81,6 @@ export default function ContactContent() {
             phone: content.phone || '',
             address: content.address || '',
             mapLink: content.mapLink || '',
-            contactFormEnabled: content.contactFormEnabled !== false,
             socialChannels: content.socialChannels || [],
           })
         }
@@ -175,7 +173,7 @@ export default function ContactContent() {
     <div>
       <PageHeader title="Contact Settings & Channels" subtitle="Manage contact information, social channel links, and review recent activity." />
       <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
 
           {/* ═══════ COLUMN 1: Contact Info + Settings ═══════ */}
           <div className="space-y-6">
@@ -203,24 +201,40 @@ export default function ContactContent() {
               </Card>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
               <Card>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Settings</h2>
-                <label className="flex items-center gap-3 cursor-pointer">
-                  <div className="relative">
-                    <input type="checkbox" checked={form.contactFormEnabled} onChange={set('contactFormEnabled')} className="sr-only peer" />
-                    <div className="w-10 h-6 bg-gray-300 dark:bg-slate-700 rounded-full peer-checked:bg-primary transition-colors" />
-                    <div className="absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow peer-checked:translate-x-4 transition-transform" />
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Recent Contact Activity</h2>
+                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3">Last 3 audit log entries where resource contains "Contact".</p>
+                {auditLogs.length === 0 ? (
+                  <EmptyState message="No Contact-module activity recorded yet." />
+                ) : (
+                  <div className="space-y-2">
+                    {auditLogs.map((log) => (
+                      <div key={log._id} className="flex items-start gap-3 p-3 rounded-xl border border-gray-100 dark:border-slate-800">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium ${actionBadge[log.action] || 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400'}`}>
+                              {log.action}
+                            </span>
+                            <span className="text-[10px] text-gray-400">{new Date(log.createdAt).toLocaleDateString()}</span>
+                          </div>
+                          <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
+                            {log.resource}{log.details?.field ? ` — ${log.details.field}` : ''}
+                          </p>
+                          {log.user?.name && (
+                            <p className="text-[11px] text-gray-400 mt-0.5">by {log.user.name}</p>
+                          )}
+                        </div>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Contact Form Enabled</span>
-                </label>
-                <p className="text-xs text-gray-400 -mt-2">When disabled, the public form fields are hidden and contact details expand full-width.</p>
+                )}
               </Card>
             </motion.div>
           </div>
 
           {/* ═══════ COLUMN 2: Social Channels (Polymorphic Array) ═══════ */}
-          <div className="lg:col-span-1 space-y-6">
+          <div className="space-y-6">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
               <Card>
                 <div className="flex items-center justify-between">
@@ -268,40 +282,6 @@ export default function ContactContent() {
                     )
                   })}
                 </div>
-              </Card>
-            </motion.div>
-          </div>
-
-          {/* ═══════ COLUMN 3: Recent Audit Activity ═══════ */}
-          <div className="space-y-6">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
-              <Card>
-                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Recent Contact Activity</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3">Last 3 audit log entries where resource contains "Contact".</p>
-                {auditLogs.length === 0 ? (
-                  <EmptyState message="No Contact-module activity recorded yet." />
-                ) : (
-                  <div className="space-y-2">
-                    {auditLogs.map((log) => (
-                      <div key={log._id} className="flex items-start gap-3 p-3 rounded-xl border border-gray-100 dark:border-slate-800">
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <span className={`inline-block px-2 py-0.5 rounded-full text-[10px] font-medium ${actionBadge[log.action] || 'bg-gray-100 dark:bg-slate-800 text-gray-600 dark:text-gray-400'}`}>
-                              {log.action}
-                            </span>
-                            <span className="text-[10px] text-gray-400">{new Date(log.createdAt).toLocaleDateString()}</span>
-                          </div>
-                          <p className="text-xs font-medium text-gray-700 dark:text-gray-300 truncate">
-                            {log.resource}{log.details?.field ? ` — ${log.details.field}` : ''}
-                          </p>
-                          {log.user?.name && (
-                            <p className="text-[11px] text-gray-400 mt-0.5">by {log.user.name}</p>
-                          )}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                )}
               </Card>
             </motion.div>
           </div>
