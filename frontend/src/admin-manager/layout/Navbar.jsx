@@ -8,6 +8,7 @@ import { useAuth } from '../authentication/AuthContext'
 import { useAdmin } from '../context/AdminContext'
 import { useSocket } from '../../shared/context/SocketContext'
 import { logout as logoutApi } from '../../shared/services/authService'
+import { getMediaUrl } from '../../shared/services/api'
 import ThemeToggle from './ThemeToggle'
 import NotificationBell from '../shared/NotificationBell'
 import Toast from '../shared/Toast'
@@ -242,8 +243,8 @@ export default function Navbar() {
                 aria-label="Account menu"
                 aria-expanded={dropdownOpen}
               >
-                {user?.avatar ? (
-                  <img src={user.avatar} alt="" className="w-7 h-7 rounded-lg object-cover shadow-md shadow-indigo-500/20" />
+                {getMediaUrl(user?.avatar) ? (
+                  <img src={getMediaUrl(user.avatar)} alt="" className="w-7 h-7 rounded-lg object-cover shadow-md shadow-indigo-500/20" />
                 ) : (
                   <motion.div
                     whileHover={{ scale: 1.05 }}
@@ -273,8 +274,8 @@ export default function Navbar() {
                     >
                       <div className="px-4 py-4 border-b border-gray-100/60 dark:border-slate-800/60">
                         <div className="flex items-center gap-3">
-                          {user?.avatar ? (
-                            <img src={user.avatar} alt="" className="w-10 h-10 rounded-xl object-cover shadow-md shadow-indigo-500/20" />
+                          {getMediaUrl(user?.avatar) ? (
+                            <img src={getMediaUrl(user.avatar)} alt="" className="w-10 h-10 rounded-xl object-cover shadow-md shadow-indigo-500/20" />
                           ) : (
                             <motion.div
                               whileHover={{ scale: 1.05 }}

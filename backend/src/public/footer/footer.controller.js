@@ -1,6 +1,10 @@
 const fs = require('fs')
 const path = require('path')
 const FooterContent = require('../../shared/models/FooterContent')
+const NavbarSettings = require('../../shared/models/NavbarSettings')
+const HomeContent = require('../../shared/models/HomeContent')
+const User = require('../../shared/models/User')
+const SiteSettings = require('../../shared/models/SiteSettings')
 
 async function getFooterContent(_req, res) {
   try {
@@ -84,6 +88,22 @@ async function updateFooterContent(req, res) {
     }
 
     await content.save()
+
+    const syncBrandName = req.body.brandName
+    if (syncBrandName !== undefined) {
+      try { await NavbarSettings.findOneAndUpdate({}, { $set: { brandName: syncBrandName } }, { upsert: true }) } catch (e) { console.error('[footer] sync NavbarSettings.brandName:', e.message) }
+      try { await HomeContent.findOneAndUpdate({}, { $set: { 'hero.fullName': syncBrandName } }, { upsert: true }) } catch (e) { console.error('[footer] sync HomeContent.hero.fullName:', e.message) }
+      try { await User.updateMany({}, { $set: { displayName: syncBrandName } }) } catch (e) { console.error('[footer] sync User.displayName:', e.message) }
+      try { await SiteSettings.findOneAndUpdate({}, { $set: { brandName: syncBrandName } }, { upsert: true }) } catch (e) { console.error('[footer] sync SiteSettings.brandName:', e.message) }
+    }
+
+    if (content.footerLogo) {
+      try { await SiteSettings.findOneAndUpdate({}, { $set: { logoImage: content.footerLogo } }, { upsert: true }) } catch (e) { console.error('[footer] sync SiteSettings.logoImage:', e.message) }
+      try { await NavbarSettings.findOneAndUpdate({}, { $set: { logo: content.footerLogo } }, { upsert: true }) } catch (e) { console.error('[footer] sync NavbarSettings.logo:', e.message) }
+      try { await HomeContent.findOneAndUpdate({}, { $set: { 'hero.profilePhoto.url': content.footerLogo } }, { upsert: true }) } catch (e) { console.error('[footer] sync HomeContent.profilePhoto:', e.message) }
+      try { await User.updateMany({}, { $set: { avatar: content.footerLogo } }) } catch (e) { console.error('[footer] sync User.avatar:', e.message) }
+    }
+
     res.json({ success: true, content })
   } catch (error) {
     console.error('[footer] update error:', error.message, error.errors || '')

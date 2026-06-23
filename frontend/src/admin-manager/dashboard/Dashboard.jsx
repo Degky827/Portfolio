@@ -10,7 +10,7 @@ import {
   Mail,
 } from 'lucide-react'
 import { useAuth } from '../authentication/AuthContext'
-import api from '../../shared/services/api'
+import api, { getMediaUrl } from '../../shared/services/api'
 import { listBackups } from '../../shared/services/backupService'
 import { listMessages, getUnreadMessageCount } from '../../shared/services/contactService'
 import StatCard from '../shared/StatCard'
@@ -201,8 +201,8 @@ export default function Dashboard() {
           <div className="p-6 sm:p-8">
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-6">
               <div className="flex items-start gap-4">
-                {user?.avatar ? (
-                  <img src={user.avatar} alt="" className="w-14 h-14 rounded-2xl object-cover shadow-lg shadow-indigo-500/20 shrink-0" />
+                {getMediaUrl(user?.avatar) ? (
+                  <img src={getMediaUrl(user.avatar)} alt="" className="w-14 h-14 rounded-2xl object-cover shadow-lg shadow-indigo-500/20 shrink-0" />
                 ) : (
                   <motion.div
                     whileHover={{ scale: 1.05 }}

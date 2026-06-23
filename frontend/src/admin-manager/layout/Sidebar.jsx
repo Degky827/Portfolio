@@ -12,16 +12,18 @@ import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
 import { canAccess } from '../authentication/RoleGuard'
 import useUnreadMessages from '../../shared/hooks/useUnreadMessages'
+import { getMediaUrl } from '../../shared/services/api'
 
 function UserAvatar({ user, size = 'md', className = '' }) {
   const sizeMap = { sm: 'w-7 h-7 text-[8px]', md: 'w-10 h-10 text-sm', lg: 'w-16 h-16 text-xl' }
   const dim = sizeMap[size] || sizeMap.md
   const initials = (user?.displayName || user?.name || 'D').charAt(0).toUpperCase()
+  const avatarUrl = getMediaUrl(user?.avatar) || user?.avatar
 
-  if (user?.avatar) {
+  if (avatarUrl) {
     return (
       <img
-        src={user.avatar}
+        src={avatarUrl}
         alt=""
         className={`${dim} rounded-lg object-cover shrink-0 shadow-md ${className}`}
       />
