@@ -49,10 +49,11 @@ function getPhoneHref(phone, protocol, customUrl) {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { settings } = useSiteSettings()
   const [content, setContent] = useState(null)
   const [ns, setNs] = useState(null)
+  const isAm = i18n.language === 'am'
 
   useEffect(() => {
     ;(async () => {
@@ -85,8 +86,12 @@ export default function Footer() {
     logoEnabled: ns?.logoEnabled !== false,
   }), [settings, ns])
 
-  const brandName = mergedSettings?.brandName || content?.brandName || t('nav.logoText')
-  const brandDescription = settings?.brandDescription || content?.brandDescription || t('footer.brandDescription')
+  const brandName = isAm
+    ? (mergedSettings?.brandNameAm || content?.brandNameAm || mergedSettings?.brandName || content?.brandName || t('nav.logoText'))
+    : (mergedSettings?.brandName || content?.brandName || t('nav.logoText'))
+  const brandDescription = isAm
+    ? (settings?.brandDescriptionAm || content?.brandDescriptionAm || settings?.brandDescription || content?.brandDescription || t('footer.brandDescription'))
+    : (settings?.brandDescription || content?.brandDescription || t('footer.brandDescription'))
   const footerLogo = mergedSettings?.logoImage || content?.footerLogo || ''
 
   const locationHeadline = content?.locationHeadline || t('footer.location')

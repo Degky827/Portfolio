@@ -46,7 +46,9 @@ export default function FooterContent() {
   const { setUserData, user: authUser } = useAuth()
   const [form, setForm] = useState({
     brandName: '',
+    brandNameAm: '',
     brandDescription: '',
+    brandDescriptionAm: '',
     socialLinks: [],
     navigation: [],
     locationHeadline: '',
@@ -73,7 +75,9 @@ export default function FooterContent() {
         if (content) {
           setForm({
             brandName: content.brandName || '',
+            brandNameAm: content.brandNameAm || '',
             brandDescription: content.brandDescription || '',
+            brandDescriptionAm: content.brandDescriptionAm || '',
             socialLinks: content.socialLinks || [],
             navigation: content.navigation || [],
             locationHeadline: content.locationHeadline || '',
@@ -156,7 +160,9 @@ export default function FooterContent() {
       try {
         await updateSiteSettings({
           brandName: form.brandName,
+          brandNameAm: form.brandNameAm,
           brandDescription: form.brandDescription,
+          brandDescriptionAm: form.brandDescriptionAm,
           copyrightText: form.copyrightText,
           email: form.emailAddress,
           phone: form.phoneNumber,
@@ -165,12 +171,14 @@ export default function FooterContent() {
       try {
         await updateNavbarSettings({
           brandName: form.brandName,
+          brandNameAm: form.brandNameAm,
         })
       } catch {}
       try {
         await updateHomeContent({
           hero: {
             fullName: form.brandName,
+            fullNameAm: form.brandNameAm,
           },
         })
       } catch {}
@@ -210,6 +218,11 @@ export default function FooterContent() {
                 <div>
                   <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Brand Name</label>
                   <input type="text" value={form.brandName} onChange={set('brandName')} placeholder="DESALEGN" className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm" />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-500 dark:text-zinc-400 mb-1">Brand Name (Amharic)</label>
+                  <input type="text" value={form.brandNameAm} onChange={set('brandNameAm')} placeholder="Amharic brand name" className="w-full px-4 py-2.5 rounded-lg border border-zinc-300 dark:border-zinc-700 bg-white dark:bg-zinc-800/80 text-zinc-900 dark:text-zinc-100 placeholder-zinc-400 dark:placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 dark:focus:ring-zinc-500/50 transition-all text-sm" />
                 </div>
 
                 <div>

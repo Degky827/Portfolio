@@ -4,6 +4,7 @@ const SiteSettings = require('../../shared/models/SiteSettings')
 const FooterContent = require('../../shared/models/FooterContent')
 const HomeContent = require('../../shared/models/HomeContent')
 const User = require('../../shared/models/User')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 // ─── Navigation (Menu Items) ────────────────────────────────────────
 
@@ -23,6 +24,7 @@ async function createNavigation(req, res) {
   try {
     const count = await Navigation.countDocuments()
     const item = await Navigation.create({ ...req.body, order: count })
+    await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Navigation', resourceId: item._id, details: { label: item.label }, req })
     res.json({ success: true, item })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to create navigation item' })
@@ -33,6 +35,7 @@ async function updateNavigation(req, res) {
   try {
     const item = await Navigation.findByIdAndUpdate(req.params.id, req.body, { new: true })
     if (!item) return res.status(404).json({ success: false, message: 'Navigation item not found' })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Navigation', resourceId: item._id, details: { label: item.label }, req })
     res.json({ success: true, item })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update navigation item' })
@@ -43,6 +46,7 @@ async function deleteNavigation(req, res) {
   try {
     const item = await Navigation.findByIdAndDelete(req.params.id)
     if (!item) return res.status(404).json({ success: false, message: 'Navigation item not found' })
+    await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Navigation', resourceId: item._id, details: { label: item.label }, req })
     res.json({ success: true, message: 'Navigation item deleted' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete navigation item' })
@@ -91,6 +95,13 @@ async function updateNavbarSettings(req, res) {
       try { await User.updateMany({}, { $set: { displayName: syncBrandName } }) } catch (e) { console.error('[navbar] sync User.displayName:', e.message) }
     }
 
+    const syncBrandNameAm = req.body.brandNameAm
+    if (syncBrandNameAm !== undefined) {
+      try { await SiteSettings.findOneAndUpdate({}, { $set: { brandNameAm: syncBrandNameAm } }, { upsert: true }) } catch (e) { console.error('[navbar] sync SiteSettings.brandNameAm:', e.message) }
+      try { await FooterContent.findOneAndUpdate({}, { $set: { brandNameAm: syncBrandNameAm } }, { upsert: true }) } catch (e) { console.error('[navbar] sync FooterContent.brandNameAm:', e.message) }
+      try { await HomeContent.findOneAndUpdate({}, { $set: { 'hero.fullNameAm': syncBrandNameAm } }, { upsert: true }) } catch (e) { console.error('[navbar] sync HomeContent.hero.fullNameAm:', e.message) }
+    }
+
     const logoFields = ['logo', 'logoSvg', 'logoAlt', 'logoWidth', 'logoHeight', 'logoBorderRadius', 'logoBgColor', 'logoPosition']
     const siteSettingsUpdate = {}
     const footerUpdate = {}
@@ -122,6 +133,7 @@ async function updateNavbarSettings(req, res) {
     }
 
     res.json({ success: true, settings })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'NavbarSettings', resourceId: settings._id, details: { updatedFields: Object.keys(req.body) }, req })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update navbar settings' })
   }

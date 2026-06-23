@@ -84,9 +84,13 @@ async function logVisit(req, res) {
     ])
 
     let visitorType = 'new'
+    let pagesViewed = [page]
     if (visitorId) {
       const existing = await Visit.findOne({ visitorId, isBot: false }).sort({ timestamp: -1 }).lean()
-      if (existing) visitorType = 'returning'
+      if (existing) {
+        visitorType = 'returning'
+        pagesViewed = [...new Set([...(existing.pagesViewed || []), page])]
+      }
     }
 
     const visit = await Visit.create({
@@ -101,6 +105,7 @@ async function logVisit(req, res) {
       isBot,
       interaction,
       discoveryChannel,
+      pagesViewed,
     })
 
     console.log(`[Analytics] Visitor saved: ${visit._id} | page: ${page} | type: ${visitorType}`)
@@ -288,14 +293,16 @@ async function getAnalyticsDashboard(req, res) {
 
     function applyFilters(extra = {}) {
       const f = { ...baseFilter, ...extra }
+      f.timestamp = { ...(f.timestamp || {}), ...(extra.timestamp || {}) }
       if (dateFrom) {
-        f.timestamp = { ...(f.timestamp || {}), $gte: new Date(dateFrom) }
+        f.timestamp.$gte = new Date(dateFrom)
       }
       if (dateTo) {
         const end = new Date(dateTo)
         end.setHours(23, 59, 59, 999)
-        f.timestamp = { ...(f.timestamp || {}), $lte: end }
+        f.timestamp.$lte = end
       }
+      if (!dateFrom && !dateTo && !extra.timestamp) delete f.timestamp
       if (countryFilter) f['location.country'] = { $regex: countryFilter, $options: 'i' }
       if (deviceFilter) f['deviceInfo.deviceType'] = { $regex: `^${deviceFilter}$`, $options: 'i' }
       if (browserFilter) f['deviceInfo.browser'] = { $regex: `^${browserFilter}$`, $options: 'i' }
@@ -404,4 +411,15 @@ async function getAnalyticsDashboard(req, res) {
   }
 }
 
-module.exports = { logVisit, logEngagement, getMetrics, getDashboardStats, getAnalyticsDashboard }
+async function clearAnalytics(_req, res) {
+  try {
+    const result = await Visit.deleteMany({})
+    console.log(`[Analytics] Cleared ${result.deletedCount} visit records`)
+    res.json({ success: true, deletedCount: result.deletedCount })
+  } catch (error) {
+    console.error('[analytics] clearAnalytics error:', error)
+    res.status(500).json({ success: false, message: 'Failed to clear analytics data' })
+  }
+}
+
+module.exports = { logVisit, logEngagement, getMetrics, getDashboardStats, getAnalyticsDashboard, clearAnalytics }

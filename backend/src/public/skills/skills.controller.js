@@ -1,6 +1,7 @@
 const Skill = require('../../shared/models/Skill')
 const Category = require('../../shared/models/Category')
 const { createNotification } = require('../../admin/notifications/notifications.controller')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 const VALID_CATEGORIES = [
   'Frontend Development',
@@ -100,6 +101,7 @@ async function createSkill(req, res) {
     })
 
     res.status(201).json({ success: true, skill })
+    await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Skill', resourceId: skill._id, details: { name: skill.name, category: skill.category }, req })
   } catch (error) {
     console.error('[skills] createSkill error:', error)
     if (error.name === 'ValidationError') {
@@ -222,6 +224,7 @@ async function updateSkill(req, res) {
     })
 
     res.json({ success: true, skill })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Skill', resourceId: skill._id, details: { name: skill.name, category: skill.category }, req })
   } catch (error) {
     console.error('[skills] updateSkill error:', error)
     if (error.name === 'ValidationError') {
@@ -250,6 +253,8 @@ async function deleteSkill(req, res) {
       link: '/admin/skills',
       metadata: { category: skill.category, isCert },
     })
+
+    await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Skill', resourceId: skill._id, details: { name: skill.name, category: skill.category }, req })
 
     res.json({ success: true, message: 'Skill deleted successfully' })
   } catch (error) {

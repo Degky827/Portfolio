@@ -44,11 +44,16 @@ const UX_HINTS = {
 const defaultForm = {
   hero: {
     greeting: "Hi, I'm",
+    greetingAm: '',
     fullName: 'Desalegn',
+    fullNameAm: '',
     nameAmharic: 'ደካ',
     professionalBadge: 'Student Developer',
+    professionalBadgeAm: '',
     typingWords: [],
+    typingWordsAm: [],
     shortIntroduction: '',
+    shortIntroductionAm: '',
     profilePhoto: { url: '', alt: '' },
     statistics: [],
     ctaButtons: [],
@@ -302,11 +307,16 @@ export default function HomeContent() {
           setForm({
             hero: {
               greeting: content.hero?.greeting ?? defaultForm.hero.greeting,
+              greetingAm: content.hero?.greetingAm ?? '',
               fullName: content.hero?.fullName ?? defaultForm.hero.fullName,
+              fullNameAm: content.hero?.fullNameAm ?? '',
               nameAmharic: content.hero?.nameAmharic ?? defaultForm.hero.nameAmharic,
               professionalBadge: content.hero?.professionalBadge ?? defaultForm.hero.professionalBadge,
+              professionalBadgeAm: content.hero?.professionalBadgeAm ?? '',
               typingWords: content.hero?.typingWords ?? [],
+              typingWordsAm: content.hero?.typingWordsAm ?? [],
               shortIntroduction: content.hero?.shortIntroduction ?? '',
+              shortIntroductionAm: content.hero?.shortIntroductionAm ?? '',
               profilePhoto: {
                 url: content.hero?.profilePhoto?.url ?? '',
                 alt: content.hero?.profilePhoto?.alt ?? '',
@@ -460,11 +470,16 @@ export default function HomeContent() {
     const payload = {
       hero: {
         greeting: form.hero.greeting,
+        greetingAm: form.hero.greetingAm,
         fullName: form.hero.fullName,
+        fullNameAm: form.hero.fullNameAm,
         nameAmharic: form.hero.nameAmharic,
         professionalBadge: form.hero.professionalBadge,
+        professionalBadgeAm: form.hero.professionalBadgeAm,
         shortIntroduction: form.hero.shortIntroduction,
+        shortIntroductionAm: form.hero.shortIntroductionAm,
         typingWords: form.hero.typingWords,
+        typingWordsAm: form.hero.typingWordsAm,
         profilePhoto: {
           url: form.hero.profilePhoto.url || '',
           alt: form.hero.profilePhoto.alt,
@@ -539,11 +554,16 @@ export default function HomeContent() {
         )
         await updateSiteSettings({
           brandName: form.hero.fullName,
+          brandNameAm: form.hero.fullNameAm,
           nameAmharic: form.hero.nameAmharic,
           professionalBadge: form.hero.professionalBadge,
+          professionalBadgeAm: form.hero.professionalBadgeAm,
           greeting: form.hero.greeting,
+          greetingAm: form.hero.greetingAm,
           shortIntroduction: form.hero.shortIntroduction,
+          shortIntroductionAm: form.hero.shortIntroductionAm,
           typingWords: form.hero.typingWords,
+          typingWordsAm: form.hero.typingWordsAm,
           logoImage: form.logoImage,
           logoText: form.logoText,
           logoSubtitle: form.logoSubtitle,
@@ -610,6 +630,13 @@ export default function HomeContent() {
                     placeholder="e.g. Student Developer | Full-Stack Engineer | Cybersecurity Analyst"
                   />
                 </Field>
+                <Field label="Professional Badge (Amharic)">
+                  <Input
+                    value={form.hero.professionalBadgeAm}
+                    onChange={(e) => updateForm('hero.professionalBadgeAm', e.target.value)}
+                    placeholder="Amharic translation of badge"
+                  />
+                </Field>
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                   <Field label="Greeting" hint={UX_HINTS.greeting}>
                     <Input
@@ -630,6 +657,22 @@ export default function HomeContent() {
                       value={form.hero.nameAmharic}
                       onChange={(e) => updateForm('hero.nameAmharic', e.target.value)}
                       placeholder="ደካ"
+                    />
+                  </Field>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                  <Field label="Greeting (Amharic)">
+                    <Input
+                      value={form.hero.greetingAm}
+                      onChange={(e) => updateForm('hero.greetingAm', e.target.value)}
+                      placeholder="ሰላም፣ እኔ"
+                    />
+                  </Field>
+                  <Field label="Full Name (Amharic)">
+                    <Input
+                      value={form.hero.fullNameAm}
+                      onChange={(e) => updateForm('hero.fullNameAm', e.target.value)}
+                      placeholder="Amharic full name"
                     />
                   </Field>
                 </div>
@@ -656,6 +699,25 @@ export default function HomeContent() {
                     value={form.hero.shortIntroduction}
                     onChange={(e) => updateForm('hero.shortIntroduction', e.target.value)}
                     placeholder="Passionate about creating secure, scalable digital solutions and designing robust network architectures..."
+                    rows={3}
+                  />
+                </Field>
+                <Field label="Typing Animation Word (Amharic)">
+                  <Input
+                    value={form.hero.typingWordsAm?.[0] || ''}
+                    onChange={(e) => {
+                      const arr = [...(form.hero.typingWordsAm || [])]
+                      arr[0] = e.target.value
+                      updateForm('hero.typingWordsAm', arr)
+                    }}
+                    placeholder="Amharic typing word"
+                  />
+                </Field>
+                <Field label="Short Introduction (Amharic)">
+                  <Textarea
+                    value={form.hero.shortIntroductionAm}
+                    onChange={(e) => updateForm('hero.shortIntroductionAm', e.target.value)}
+                    placeholder="Amharic translation of introduction"
                     rows={3}
                   />
                 </Field>

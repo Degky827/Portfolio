@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const Settings = require('../../shared/models/Settings')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function getSettings(_req, res) {
   try {
@@ -44,6 +45,7 @@ async function updateGlobalAppearance(req, res) {
     }
 
     await settings.save()
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Settings', resourceId: settings._id, details: { updatedFields: Object.keys(req.body) }, req })
     res.json({ success: true, appearance: settings.globalAppearance })
   } catch (error) {
     console.error('[settings] updateGlobalAppearance error:', error)
@@ -135,6 +137,7 @@ async function updateSettings(req, res) {
     })
 
     await settings.save()
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Settings', resourceId: settings._id, details: { updatedFields: Object.keys(req.body) }, req })
     res.json({ success: true, settings })
   } catch (error) {
     console.error('[settings] update error:', error)

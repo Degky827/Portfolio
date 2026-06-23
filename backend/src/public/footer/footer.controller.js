@@ -5,6 +5,7 @@ const NavbarSettings = require('../../shared/models/NavbarSettings')
 const HomeContent = require('../../shared/models/HomeContent')
 const User = require('../../shared/models/User')
 const SiteSettings = require('../../shared/models/SiteSettings')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function getFooterContent(_req, res) {
   try {
@@ -27,7 +28,7 @@ async function updateFooterContent(req, res) {
     }
 
     const textFields = [
-      'brandName', 'brandDescription', 'copyrightText', 'status',
+      'brandName', 'brandNameAm', 'brandDescription', 'brandDescriptionAm', 'copyrightText', 'status',
       'locationHeadline', 'subLocation', 'locationMapUrl',
       'emailAddress', 'emailProtocol',
       'phoneNumber', 'phoneProtocol', 'phoneCustomUrl',
@@ -97,6 +98,13 @@ async function updateFooterContent(req, res) {
       try { await SiteSettings.findOneAndUpdate({}, { $set: { brandName: syncBrandName } }, { upsert: true }) } catch (e) { console.error('[footer] sync SiteSettings.brandName:', e.message) }
     }
 
+    const syncBrandNameAm = req.body.brandNameAm
+    if (syncBrandNameAm !== undefined) {
+      try { await NavbarSettings.findOneAndUpdate({}, { $set: { brandNameAm: syncBrandNameAm } }, { upsert: true }) } catch (e) { console.error('[footer] sync NavbarSettings.brandNameAm:', e.message) }
+      try { await HomeContent.findOneAndUpdate({}, { $set: { 'hero.fullNameAm': syncBrandNameAm } }, { upsert: true }) } catch (e) { console.error('[footer] sync HomeContent.hero.fullNameAm:', e.message) }
+      try { await SiteSettings.findOneAndUpdate({}, { $set: { brandNameAm: syncBrandNameAm } }, { upsert: true }) } catch (e) { console.error('[footer] sync SiteSettings.brandNameAm:', e.message) }
+    }
+
     if (content.footerLogo) {
       try { await SiteSettings.findOneAndUpdate({}, { $set: { logoImage: content.footerLogo } }, { upsert: true }) } catch (e) { console.error('[footer] sync SiteSettings.logoImage:', e.message) }
       try { await NavbarSettings.findOneAndUpdate({}, { $set: { logo: content.footerLogo } }, { upsert: true }) } catch (e) { console.error('[footer] sync NavbarSettings.logo:', e.message) }
@@ -105,6 +113,7 @@ async function updateFooterContent(req, res) {
     }
 
     res.json({ success: true, content })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'FooterContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
   } catch (error) {
     console.error('[footer] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update footer content' })

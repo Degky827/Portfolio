@@ -50,17 +50,20 @@ const socialIconMap = {
 }
 
 export default function Hero({ content, contactButtonText, contactButtonLink }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const { settings } = useSiteSettings()
   const [typedText, setTypedText] = useState('')
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const isAm = i18n.language === 'am'
 
-  const greeting = settings?.greeting || content?.greeting || t('hero.greeting')
-  const fullName = settings?.brandName || content?.fullName || t('hero.fullName')
+  const greeting = isAm ? (settings?.greetingAm || content?.greetingAm || settings?.greeting || content?.greeting || t('hero.greeting')) : (settings?.greeting || content?.greeting || t('hero.greeting'))
+  const fullName = isAm ? (settings?.brandNameAm || content?.fullNameAm || settings?.brandName || content?.fullName || t('hero.fullName')) : (settings?.brandName || content?.fullName || t('hero.fullName'))
   const nameAmharic = settings?.nameAmharic || content?.nameAmharic || t('hero.nameAmharic')
-  const badge = settings?.professionalBadge || content?.professionalBadge || t('hero.badge')
-  const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || t('hero.typingText')
-  const introduction = settings?.shortIntroduction || content?.shortIntroduction || t('hero.introduction')
+  const badge = isAm ? (settings?.professionalBadgeAm || content?.professionalBadgeAm || settings?.professionalBadge || content?.professionalBadge || t('hero.badge')) : (settings?.professionalBadge || content?.professionalBadge || t('hero.badge'))
+  const fullText = isAm
+    ? ((settings?.typingWordsAm?.length ? settings.typingWordsAm : content?.typingWordsAm)?.[0] || (settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || t('hero.typingText'))
+    : ((settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || t('hero.typingText'))
+  const introduction = isAm ? (settings?.shortIntroductionAm || content?.shortIntroductionAm || settings?.shortIntroduction || content?.shortIntroduction || t('hero.introduction')) : (settings?.shortIntroduction || content?.shortIntroduction || t('hero.introduction'))
   const profilePhotoUrl = content?.profilePhoto?.url || '/BDU1601297.png'
   const profilePhotoAlt = content?.profilePhoto?.alt || t('hero.profileAlt')
   const stats = content?.statistics?.length > 0
@@ -70,7 +73,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
         { label: t('hero.statClassProjects'), value: '15+', icon: 'BookOpen', color: '#10b981' },
         { label: t('hero.statCoreSkills'), value: '30+', icon: 'Cpu', color: '#f59e0b' },
       ]
-  const contactBtnText = settings?.contactButtonText || contactButtonText || t('hero.getInTouch')
+  const contactBtnText = isAm ? (settings?.contactButtonTextAm || contactButtonText || t('hero.getInTouch')) : (settings?.contactButtonText || contactButtonText || t('hero.getInTouch'))
   const contactBtnLink = settings?.contactButtonLink || contactButtonLink || '#contact'
   const ctaButtons = content?.ctaButtons?.length > 0
     ? content.ctaButtons

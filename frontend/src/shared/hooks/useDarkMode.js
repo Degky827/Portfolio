@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect } from 'react'
 import api from '../services/api'
 
 export function useDarkMode() {
@@ -7,26 +7,23 @@ export function useDarkMode() {
     return saved ? JSON.parse(saved) : false
   })
 
-  const fetchAppearance = useCallback(() => {
-    return api.get('/settings/appearance')
-      .then(({ data }) => {
-        if (data?.appearance?.mode) {
-          const mode = data.appearance.mode
-          const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-          setDarkMode(isDark)
-          return isDark
-        }
-      })
-      .catch(() => {})
-  }, [])
-
   useEffect(() => {
+    const fetchAppearance = () => {
+      api.get('/settings/appearance')
+        .then(({ data }) => {
+          if (data?.appearance?.mode) {
+            const mode = data.appearance.mode
+            const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+            setDarkMode(isDark)
+          }
+        })
+        .catch(() => {})
+    }
+
     fetchAppearance()
-
-    const interval = setInterval(fetchAppearance, 10000)
-
+    const interval = setInterval(fetchAppearance, 5000)
     return () => clearInterval(interval)
-  }, [fetchAppearance])
+  }, [])
 
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)

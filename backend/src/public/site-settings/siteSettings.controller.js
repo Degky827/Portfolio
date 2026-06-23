@@ -1,4 +1,5 @@
 const SiteSettings = require('../../shared/models/SiteSettings')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function getSiteSettings(_req, res) {
   try {
@@ -14,13 +15,13 @@ async function getSiteSettings(_req, res) {
 }
 
 const textFields = [
-  'brandName', 'nameAmharic', 'professionalBadge', 'logoText', 'logoImage', 'logoSubtitle',
-  'greeting', 'shortIntroduction', 'email', 'phone',
+  'brandName', 'brandNameAm', 'nameAmharic', 'professionalBadge', 'professionalBadgeAm', 'logoText', 'logoImage', 'logoSubtitle',
+  'greeting', 'greetingAm', 'shortIntroduction', 'shortIntroductionAm', 'email', 'phone',
   'contactButtonText', 'contactButtonLink',
-  'brandDescription', 'copyrightText',
+  'brandDescription', 'brandDescriptionAm', 'copyrightText', 'defaultLanguage',
 ]
 
-const booleanFields = ['logoEnabled']
+const booleanFields = ['logoEnabled', 'languageEnabled']
 
 const resumeKeys = ['url', 'fileName', 'buttonText']
 const socialKeys = ['github', 'linkedin', 'twitter', 'telegram', 'facebook', 'instagram', 'youtube']
@@ -61,6 +62,8 @@ async function updateSiteSettings(req, res) {
     }
 
     await settings.save()
+
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'SiteSettings', resourceId: settings._id, details: { updatedFields: Object.keys(body) }, req })
 
     res.json({ success: true, settings })
   } catch (error) {

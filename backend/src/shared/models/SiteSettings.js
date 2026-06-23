@@ -2,8 +2,10 @@ const mongoose = require('mongoose')
 
 const siteSettingsSchema = new mongoose.Schema({
   brandName: { type: String, default: '' },
+  brandNameAm: { type: String, default: '' },
   nameAmharic: { type: String, default: '' },
   professionalBadge: { type: String, default: '' },
+  professionalBadgeAm: { type: String, default: '' },
   logoText: { type: String, default: '' },
   logoImage: { type: String, default: '' },
   logoSvg: { type: String, default: '' },
@@ -15,8 +17,11 @@ const siteSettingsSchema = new mongoose.Schema({
   logoBgColor: { type: String, default: 'transparent' },
   logoPosition: { type: String, enum: ['left', 'center', 'right'], default: 'left' },
   greeting: { type: String, default: "Hi, I'm" },
+  greetingAm: { type: String, default: '' },
   typingWords: { type: [String], default: [] },
+  typingWordsAm: { type: [String], default: [] },
   shortIntroduction: { type: String, default: '' },
+  shortIntroductionAm: { type: String, default: '' },
 
   email: { type: String, default: '' },
   phone: { type: String, default: '' },
@@ -40,12 +45,16 @@ const siteSettingsSchema = new mongoose.Schema({
   },
 
   brandDescription: { type: String, default: '' },
+  brandDescriptionAm: { type: String, default: '' },
   copyrightText: { type: String, default: '' },
 
   theme: {
     primaryColor: { type: String, default: '#6366f1' },
     secondaryColor: { type: String, default: '#10b981' },
   },
+
+  defaultLanguage: { type: String, default: 'en' },
+  languageEnabled: { type: Boolean, default: true },
 }, { timestamps: true })
 
 module.exports = mongoose.model('SiteSettings', siteSettingsSchema)

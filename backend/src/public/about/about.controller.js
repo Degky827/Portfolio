@@ -1,6 +1,7 @@
 const fs = require('fs')
 const path = require('path')
 const AboutContent = require('../../shared/models/AboutContent')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function getAboutContent(_req, res) {
   try {
@@ -30,7 +31,7 @@ async function updateAboutContent(req, res) {
       content = new AboutContent()
     }
 
-    const textFields = ['title', 'subtitle', 'location', 'status']
+    const textFields = ['title', 'titleAm', 'subtitle', 'subtitleAm', 'location', 'status']
     textFields.forEach((field) => {
       if (req.body[field] !== undefined) {
         content[field] = req.body[field]
@@ -80,7 +81,9 @@ async function updateAboutContent(req, res) {
       if (parsed) {
         content.storyPillars = parsed.map((p) => ({
           title: p.title || '',
+          titleAm: p.titleAm || '',
           content: p.content || '',
+          contentAm: p.contentAm || '',
         }))
       }
     }
@@ -103,6 +106,7 @@ async function updateAboutContent(req, res) {
         content.highlightMetrics = parsed.map((m) => ({
           icon: m.icon || '',
           title: m.title || '',
+          titleAm: m.titleAm || '',
           value: m.value || '',
         }))
       }
@@ -119,6 +123,7 @@ async function updateAboutContent(req, res) {
     }
 
     await content.save()
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'AboutContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
     res.json({ success: true, content })
   } catch (error) {
     console.error('[about] update error:', error.message, error.errors || '')

@@ -1,11 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import {
-  Search, X, Download, RefreshCw, Filter, Activity,
+  Search, X, Download, RefreshCw, Filter, Activity, Trash2,
 } from 'lucide-react'
 import PageHeader from '../shared/PageHeader'
 import Toast from '../shared/Toast'
-import { listLogs, exportLogs, getActions } from '../../shared/services/activityLogService'
+import { listLogs, exportLogs, getActions, clearLogs } from '../../shared/services/activityLogService'
 
 const actionStyles = {
   LOGIN_SUCCESS: 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-700 dark:text-emerald-400',
@@ -36,6 +36,8 @@ export default function ActivityLogs() {
   const [availableActions, setAvailableActions] = useState([])
   const [toast, setToast] = useState(null)
   const [exporting, setExporting] = useState(false)
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
+  const [clearing, setClearing] = useState(false)
 
   const fetchLogs = useCallback(async () => {
     setLoading(true)
@@ -99,24 +101,47 @@ export default function ActivityLogs() {
 
   const hasFilters = search || actionFilter || resourceFilter
 
+  const handleClearAll = async () => {
+    setClearing(true)
+    try {
+      await clearLogs()
+      setShowClearConfirm(false)
+      setToast({ message: 'All activity logs cleared', type: 'success' })
+      fetchLogs()
+    } catch {
+      setToast({ message: 'Failed to clear activity logs', type: 'error' })
+    } finally {
+      setClearing(false)
+    }
+  }
+
   return (
     <div>
       <PageHeader
         title="Activity Logs"
         subtitle={`${totalCount} event${totalCount !== 1 ? 's' : ''} recorded`}
         actions={
-          <button
-            onClick={handleExport}
-            disabled={exporting}
-            className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
-          >
-            {exporting ? (
-              <RefreshCw size={18} className="animate-spin" />
-            ) : (
-              <Download size={18} />
-            )}
-            Export CSV
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleExport}
+              disabled={exporting}
+              className="flex items-center gap-2 px-4 py-2.5 border border-gray-300 dark:border-slate-700 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 text-sm font-medium rounded-xl transition-colors disabled:opacity-50"
+            >
+              {exporting ? (
+                <RefreshCw size={18} className="animate-spin" />
+              ) : (
+                <Download size={18} />
+              )}
+              Export CSV
+            </button>
+            <button
+              onClick={() => setShowClearConfirm(true)}
+              className="flex items-center gap-2 px-4 py-2.5 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 hover:bg-red-100 dark:hover:bg-red-900/30 text-sm font-medium rounded-xl transition-colors"
+            >
+              <Trash2 size={18} />
+              Clear All
+            </button>
+          </div>
         }
       />
 
@@ -274,6 +299,34 @@ export default function ActivityLogs() {
 
       {toast && (
         <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />
+      )}
+
+      {showClearConfirm && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 w-full max-w-md shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-2">Clear All Activity Logs</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+              This will permanently delete all activity log records. This action cannot be undone.
+            </p>
+            <div className="flex items-center justify-end gap-3">
+              <button
+                onClick={() => setShowClearConfirm(false)}
+                disabled={clearing}
+                className="px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleClearAll}
+                disabled={clearing}
+                className="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white text-sm font-medium rounded-xl hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                {clearing && <RefreshCw size={16} className="animate-spin" />}
+                Clear All
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

@@ -116,18 +116,20 @@ function EntryActions({ onRemove, onMoveUp, onMoveDown, isFirst, isLast }) {
 export default function AboutContent() {
   const [form, setForm] = useState({
     title: '',
+    titleAm: '',
     subtitle: '',
+    subtitleAm: '',
     yearsOfExperience: 0,
     status: 'active',
     education: [],
     experience: [],
     certifications: [],
-    storyPillars: STORY_PILLAR_TEMPLATES.map((t) => ({ title: t.title, content: '' })),
+    storyPillars: STORY_PILLAR_TEMPLATES.map((t) => ({ title: t.title, titleAm: '', content: '', contentAm: '' })),
     idePresentation: { skills: ['React', 'Node'], available: true, location: '' },
     highlightMetrics: [
-      { icon: 'Award', title: 'Network Designer', value: '' },
-      { icon: 'Users', title: 'Happy Clients', value: '50+' },
-      { icon: 'TrendingUp', title: 'Years Experience', value: '5+' },
+      { icon: 'Award', title: 'Network Designer', titleAm: '', value: '' },
+      { icon: 'Users', title: 'Happy Clients', titleAm: '', value: '50+' },
+      { icon: 'TrendingUp', title: 'Years Experience', titleAm: '', value: '5+' },
     ],
   })
   const [loading, setLoading] = useState(false)
@@ -141,7 +143,9 @@ export default function AboutContent() {
         if (content) {
           setForm({
             title: content.title || '',
+            titleAm: content.titleAm || '',
             subtitle: content.subtitle || '',
+            subtitleAm: content.subtitleAm || '',
             yearsOfExperience: content.yearsOfExperience || 0,
             status: content.status || 'active',
             education: content.education || [],
@@ -149,14 +153,14 @@ export default function AboutContent() {
             certifications: content.certifications || [],
             storyPillars: content.storyPillars?.length
               ? content.storyPillars
-              : STORY_PILLAR_TEMPLATES.map((t) => ({ title: t.title, content: '' })),
+              : STORY_PILLAR_TEMPLATES.map((t) => ({ title: t.title, titleAm: '', content: '', contentAm: '' })),
             idePresentation: content.idePresentation || { skills: ['React', 'Node'], available: true, location: '' },
             highlightMetrics: content.highlightMetrics?.length
               ? content.highlightMetrics
               : [
-                  { icon: 'Award', title: 'Network Designer', value: '' },
-                  { icon: 'Users', title: 'Happy Clients', value: '50+' },
-                  { icon: 'TrendingUp', title: 'Years Experience', value: '5+' },
+                  { icon: 'Award', title: 'Network Designer', titleAm: '', value: '' },
+                  { icon: 'Users', title: 'Happy Clients', titleAm: '', value: '50+' },
+                  { icon: 'TrendingUp', title: 'Years Experience', titleAm: '', value: '5+' },
                 ],
           })
         }
@@ -203,10 +207,10 @@ export default function AboutContent() {
     })
   }, [])
 
-  const updatePillarContent = useCallback((idx, content) => {
+  const updatePillarContent = useCallback((idx, field, value) => {
     setForm((prev) => {
       const pillars = [...prev.storyPillars]
-      pillars[idx] = { ...pillars[idx], content }
+      pillars[idx] = { ...pillars[idx], [field]: value }
       return { ...prev, storyPillars: pillars }
     })
   }, [])
@@ -263,7 +267,9 @@ export default function AboutContent() {
     setLoading(true)
     const fd = new FormData()
     fd.append('title', form.title)
+    fd.append('titleAm', form.titleAm)
     fd.append('subtitle', form.subtitle)
+    fd.append('subtitleAm', form.subtitleAm)
     fd.append('yearsOfExperience', form.yearsOfExperience)
     fd.append('status', form.status)
     fd.append('education', JSON.stringify(form.education))
@@ -322,15 +328,31 @@ export default function AboutContent() {
                           {tpl.title}
                         </span>
                       </div>
-                      <div className="quill-editor-min-h">
-                        <ReactQuill
-                          theme="snow"
-                          value={form.storyPillars[idx]?.content || ''}
-                          onChange={(val) => updatePillarContent(idx, val)}
-                          modules={quillModules}
-                          formats={quillFormats}
-                          placeholder={`Write about your ${tpl.title.toLowerCase()}...`}
-                        />
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">English Content</label>
+                        <div className="quill-editor-min-h">
+                          <ReactQuill
+                            theme="snow"
+                            value={form.storyPillars[idx]?.content || ''}
+                            onChange={(val) => updatePillarContent(idx, 'content', val)}
+                            modules={quillModules}
+                            formats={quillFormats}
+                            placeholder={`Write about your ${tpl.title.toLowerCase()}...`}
+                          />
+                        </div>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Amharic Content (አማርኛ)</label>
+                        <div className="quill-editor-min-h">
+                          <ReactQuill
+                            theme="snow"
+                            value={form.storyPillars[idx]?.contentAm || ''}
+                            onChange={(val) => updatePillarContent(idx, 'contentAm', val)}
+                            modules={quillModules}
+                            formats={quillFormats}
+                            placeholder={`ስለ ${tpl.title.toLowerCase()} በአማርኛ ይፃፉ...`}
+                          />
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -577,7 +599,7 @@ export default function AboutContent() {
                             </select>
                           </div>
                           <div>
-                            <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Title</label>
+                            <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Title (English)</label>
                             <input
                               type="text"
                               value={metric.title}
@@ -587,15 +609,27 @@ export default function AboutContent() {
                             />
                           </div>
                         </div>
-                        <div>
-                          <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Value</label>
-                          <input
-                            type="text"
-                            value={metric.value}
-                            onChange={updateMetric(idx, 'value')}
-                            placeholder="e.g. 50+"
-                            className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                          />
+                        <div className="grid grid-cols-2 gap-2">
+                          <div>
+                            <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Title (Amharic / አማርኛ)</label>
+                            <input
+                              type="text"
+                              value={metric.titleAm}
+                              onChange={updateMetric(idx, 'titleAm')}
+                              placeholder="e.g. የኔትወርክ ዲዛይነር"
+                              className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Value</label>
+                            <input
+                              type="text"
+                              value={metric.value}
+                              onChange={updateMetric(idx, 'value')}
+                              placeholder="e.g. 50+"
+                              className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
+                            />
+                          </div>
                         </div>
                         <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
                           <Icon size={16} className="text-primary shrink-0" />
@@ -621,12 +655,20 @@ export default function AboutContent() {
                 <SectionHeader title="Settings" />
                 <div className="space-y-4">
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Title</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Title (English)</label>
                     <input type="text" value={form.title} onChange={set('title')} placeholder="e.g. Get to Know Me" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
                   </div>
                   <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Subtitle</label>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Title (Amharic / አማርኛ)</label>
+                    <input type="text" value={form.titleAm} onChange={set('titleAm')} placeholder="e.g. እኔን ይወቁ" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Subtitle (English)</label>
                     <input type="text" value={form.subtitle} onChange={set('subtitle')} placeholder="e.g. A passionate developer..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Subtitle (Amharic / አማርኛ)</label>
+                    <input type="text" value={form.subtitleAm} onChange={set('subtitleAm')} placeholder="e.g. ደህንነታቸው የተጠበቀ..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
                   </div>
                   <div>
                     <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Status</label>

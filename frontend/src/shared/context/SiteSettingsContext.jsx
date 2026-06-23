@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { changeLanguageWithPersistence } from '../../i18n'
 import { getSiteSettings } from '../services/siteSettingsService'
 
 const SiteSettingsContext = createContext(null)
@@ -12,7 +13,11 @@ export function SiteSettingsProvider({ children }) {
     try {
       setLoading(true)
       const res = await getSiteSettings()
-      setSettings(res.settings || {})
+      const s = res.settings || {}
+      setSettings(s)
+      if (!localStorage.getItem('i18n_user_choice') && s.defaultLanguage) {
+        changeLanguageWithPersistence(s.defaultLanguage)
+      }
     } catch (err) {
       setError(err)
     } finally {
