@@ -6,7 +6,7 @@ import {
   Home, UserCircle, Mail, FileText, X, ChevronLeft, ChevronRight,
   Image, HardDrive, Activity, Download, Wrench,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
-  Shield, LogOut, Eye, Menu,
+  Shield, LogOut, Eye, Menu, Globe,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
@@ -71,6 +71,7 @@ const navGroups = [
       { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/contact', label: 'Contact Settings', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/messages', label: 'Messages', icon: MessageSquare, roles: ['super_admin', 'admin', 'editor'] },
+      { path: '/admin/custom-pages', label: 'Custom Pages', icon: Globe, roles: ['super_admin', 'admin'] },
     ],
   },
   {
@@ -485,7 +486,7 @@ function NavItem({ item, collapsed, onItemClick, badge }) {
     if (item.path === '/admin/dashboard') {
       return location.pathname === '/admin/dashboard'
     }
-    if (item.path === '/admin/projects' || item.path === '/admin/skills') {
+    if (item.path === '/admin/projects' || item.path === '/admin/skills' || item.path === '/admin/custom-pages') {
       return location.pathname.startsWith(item.path)
     }
     return location.pathname === item.path

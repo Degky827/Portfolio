@@ -6,6 +6,7 @@ import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
 import Navbar from './public-portfolio/layout/Navbar'
 import Footer from './public-portfolio/layout/Footer'
 import HomePage from './public-portfolio/pages/HomePage'
+import DynamicCustomPage from './public-portfolio/pages/DynamicCustomPage'
 import LoginPage from './admin-manager/authentication/LoginPage'
 import AdminRoutes from './admin-manager/routes/AdminRoutes'
 import AIButton from './ai/components/AIButton'
@@ -54,6 +55,7 @@ function App() {
         <Routes>
           <Route element={<PublicLayout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/:customSlug" element={<DynamicCustomPage />} />
           </Route>
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin/*" element={<AdminRoutes />} />
