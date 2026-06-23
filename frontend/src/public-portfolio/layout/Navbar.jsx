@@ -447,7 +447,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
         style={settings.fullWidth ? {} : { maxWidth: settings.containerWidth }}
       >
         <div style={settings.logoMargin ? { marginLeft: settings.logoMargin + 'px', marginRight: settings.logoMargin + 'px' } : {}}>
-          <Logo settings={mergedSettings} linkTo="#home" onNavClick={(e) => handleNavClick(e, { sectionId: 'home', url: '#home', isExternal: false, openNewTab: false })} />
+          <Logo settings={mergedSettings} linkTo="/" onNavClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsOpen(false) }} />
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -477,7 +477,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 transition={{ delay: 0.1 * idx + 0.5 }}
               >
                 <a
-                  href={item.active ? (item.url || `#${item.sectionId}`) : undefined}
+                  href="#"
                   target={item.active && item.openNewTab ? '_blank' : undefined}
                   rel={item.active && item.openNewTab ? 'noopener noreferrer' : undefined}
                   className={`text-xs sm:text-sm font-bold uppercase tracking-widest transition-colors relative group ${
@@ -639,7 +639,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                     transition={{ delay: 0.1 * idx, type: 'spring' }}
                   >
                     <a
-                      href={item.active ? (item.url || `#${item.sectionId}`) : undefined}
+                      href="#"
                       target={item.active && item.openNewTab ? '_blank' : undefined}
                       rel={item.active && item.openNewTab ? 'noopener noreferrer' : undefined}
                       className={`text-3xl sm:text-4xl md:text-5xl font-black transition-all flex items-center justify-between group font-display tracking-tighter ${
