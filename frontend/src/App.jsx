@@ -1,4 +1,4 @@
-import { Suspense, useEffect, useCallback, useState } from 'react'
+import { Suspense, useEffect, useCallback, useState, lazy } from 'react'
 import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './shared/hooks'
 import ErrorBoundary from './shared/components/ErrorBoundary'
@@ -12,6 +12,8 @@ import AdminRoutes from './admin-manager/routes/AdminRoutes'
 import AIButton from './ai/components/AIButton'
 import ChatWindow from './ai/components/ChatWindow'
 
+const ThreeDPortfolio = lazy(() => import('./public-portfolio/3d/ThreeDPortfolio'))
+
 function ScrollToTop() {
   const { pathname } = useLocation()
 
@@ -23,17 +25,13 @@ function ScrollToTop() {
 }
 
 function PublicLayout() {
-  const [darkMode, setDarkMode] = useDarkMode()
+  const [darkMode, toggleDarkMode] = useDarkMode()
   const [chatOpen, setChatOpen] = useState(false)
-
-  const handleToggle = useCallback(() => {
-    setDarkMode((prev) => !prev)
-  }, [setDarkMode])
 
   return (
     <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
       <ScrollProgressBar />
-      <Navbar darkMode={darkMode} onToggleDark={handleToggle} />
+      <Navbar darkMode={darkMode} onToggleDark={toggleDarkMode} />
       <main className="pt-28 sm:pt-32">
         <Outlet />
       </main>
@@ -57,6 +55,11 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/:customSlug" element={<DynamicCustomPage />} />
           </Route>
+          <Route path="/3d" element={
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#0a0a1a]"><div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" /></div>}>
+              <ThreeDPortfolio />
+            </Suspense>
+          } />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/admin/*" element={<AdminRoutes />} />
         </Routes>
