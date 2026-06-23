@@ -1,7 +1,9 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import api from '../services/api'
 
 export function useDarkMode() {
+  const userHasToggled = useRef(false)
+
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode')
     return saved ? JSON.parse(saved) : false
@@ -9,8 +11,10 @@ export function useDarkMode() {
 
   useEffect(() => {
     const fetchAppearance = () => {
+      if (userHasToggled.current) return
       api.get('/settings/appearance')
         .then(({ data }) => {
+          if (userHasToggled.current) return
           if (data?.appearance?.mode) {
             const mode = data.appearance.mode
             const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
@@ -30,5 +34,10 @@ export function useDarkMode() {
     localStorage.setItem('darkMode', JSON.stringify(darkMode))
   }, [darkMode])
 
-  return [darkMode, setDarkMode]
+  const toggleDarkMode = useCallback(() => {
+    userHasToggled.current = true
+    setDarkMode((prev) => !prev)
+  }, [])
+
+  return [darkMode, toggleDarkMode]
 }
