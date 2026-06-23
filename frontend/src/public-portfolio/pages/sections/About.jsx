@@ -28,11 +28,19 @@ export default function About({ content, hero, aboutContent }) {
   const subtitle = isAm
     ? (aboutContent?.subtitleAm || aboutContent?.subtitle || content?.subtitle || t('about.subtitle'))
     : (aboutContent?.subtitle || content?.subtitle || t('about.subtitle'))
-  const fullName = hero?.fullName || t('about.fullName')
-  const roleTitle = hero?.professionalBadge || t('about.role')
+  const fullName = isAm
+    ? (hero?.fullNameAm || hero?.fullName || t('about.fullName'))
+    : (hero?.fullName || t('about.fullName'))
+  const roleTitle = isAm
+    ? (hero?.professionalBadgeAm || hero?.professionalBadge || t('about.role'))
+    : (hero?.professionalBadge || t('about.role'))
 
   const storyPillars = aboutContent?.storyPillars?.length
-    ? aboutContent.storyPillars.filter((p) => p.content && p.content !== '<p><br></p>')
+    ? aboutContent.storyPillars.filter((p) => {
+        const enContent = p.content && p.content !== '<p><br></p>'
+        const amContent = p.contentAm && p.contentAm !== '<p><br></p>'
+        return isAm ? (amContent || enContent) : enContent
+      })
     : []
 
   const aboutSections = storyPillars.length > 0

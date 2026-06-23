@@ -33,6 +33,7 @@ export default function Home() {
       <Hero
         content={content?.hero}
         contactButtonText={content?.contactButtonText}
+        contactButtonTextAm={content?.contactButtonTextAm}
         contactButtonLink={content?.contactButtonLink}
       />
       {aboutContent?.status !== 'inactive' && (
