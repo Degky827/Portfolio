@@ -28,6 +28,8 @@ const systemConfigRoutes = require('./admin/system/system.routes')
 const maintenanceRoutes = require('./admin/maintenance/maintenance.routes')
 const notificationRoutes = require('./admin/notifications/notifications.routes')
 const navigationRoutes = require('./public/navigation/navigation.routes')
+const customPageAdminRoutes = require('./admin/custom-pages/custom-pages.routes')
+const customPagePublicRoutes = require('./public/custom-pages/custom-pages-public.routes')
 
 const app = express()
 
@@ -117,6 +119,8 @@ app.use('/api/maintenance', maintenanceRoutes)
 app.use('/api/notifications', notificationRoutes)
 app.use('/api', chatRoutes)
 app.use('/api', navigationRoutes)
+app.use('/api', customPageAdminRoutes)
+app.use('/api', customPagePublicRoutes)
 
 app.use('/uploads', express.static('uploads'))
 

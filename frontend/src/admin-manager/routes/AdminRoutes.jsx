@@ -24,6 +24,8 @@ import Profile from '../profile-management/Profile'
 import ThemeSettings from '../settings-management/ThemeSettings'
 import SystemConfig from '../system-config/SystemConfig'
 import Backup from '../backup-management/Backup'
+import CustomPagesList from '../custom-pages-management/CustomPagesList'
+import CustomPageForm from '../custom-pages-management/CustomPageForm'
 
 export default function AdminRoutes() {
   const { user } = useAuth()
@@ -61,6 +63,9 @@ export default function AdminRoutes() {
           <Route path="projects" element={<Projects />} />
           <Route path="projects/new" element={<ProjectForm />} />
           <Route path="projects/:id" element={<ProjectForm />} />
+          <Route path="custom-pages" element={<CustomPagesList />} />
+          <Route path="custom-pages/new" element={<CustomPageForm />} />
+          <Route path="custom-pages/:id" element={<CustomPageForm />} />
           <Route path="media" element={<MediaLibrary />} />
           <Route
             path="import-export"
