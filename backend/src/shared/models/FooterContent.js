@@ -16,7 +16,9 @@ const navigationItemSchema = new mongoose.Schema({
 const footerContentSchema = new mongoose.Schema({
   // ── Column 1: Brand & Identity ──
   brandName: { type: String, default: '' },
+  brandNameAm: { type: String, default: '' },
   brandDescription: { type: String, default: '' },
+  brandDescriptionAm: { type: String, default: '' },
   footerLogo: { type: String, default: '' },
   socialLinks: { type: [socialLinkSchema], default: [] },
 

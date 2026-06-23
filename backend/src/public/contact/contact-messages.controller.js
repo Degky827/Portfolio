@@ -1,6 +1,7 @@
 const ContactMessage = require('../../shared/models/ContactMessage')
 const Message = require('../../shared/models/Message')
 const { emitToAdmin } = require('../../infrastructure/socket')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function createNotification({ type, title, message, link, metadata }) {
   try {
@@ -105,6 +106,7 @@ async function markRead(req, res) {
     if (!msg) {
       return res.status(404).json({ success: false, message: 'Message not found' })
     }
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Message', resourceId: msg._id, details: { action: 'markRead' }, req })
     res.json({ success: true, message: msg })
   } catch (error) {
     console.error('[contact-messages] markRead error:', error)
@@ -122,6 +124,7 @@ async function markUnread(req, res) {
     if (!msg) {
       return res.status(404).json({ success: false, message: 'Message not found' })
     }
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Message', resourceId: msg._id, details: { action: 'markUnread' }, req })
     res.json({ success: true, message: msg })
   } catch (error) {
     console.error('[contact-messages] markUnread error:', error)
@@ -145,6 +148,7 @@ async function deleteMessage(req, res) {
     if (!msg) {
       return res.status(404).json({ success: false, message: 'Message not found' })
     }
+    await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Message', resourceId: msg._id, details: { from: msg.name || '' }, req })
     res.json({ success: true, message: 'Message deleted successfully' })
   } catch (error) {
     console.error('[contact-messages] deleteMessage error:', error)

@@ -2,6 +2,7 @@ const fs = require('fs')
 const path = require('path')
 const Media = require('../../shared/models/Media')
 const { cloudinary, isCloudinaryConfigured } = require('../../infrastructure/storage/cloudinary')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 const uploadDir = path.resolve(__dirname, '..', '..', '..', 'uploads')
 
@@ -36,6 +37,7 @@ async function uploadMedia(req, res) {
     })
 
     res.status(201).json({ success: true, media })
+    await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Media', resourceId: media._id, details: { filename: media.originalName }, req })
   } catch (error) {
     console.error('[media] upload error:', error)
     res.status(500).json({ success: false, message: 'Failed to upload media' })
@@ -113,6 +115,7 @@ async function updateMedia(req, res) {
     }
 
     await media.save()
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Media', resourceId: media._id, details: { filename: media.originalName }, req })
     res.json({ success: true, media })
   } catch (error) {
     console.error('[media] update error:', error)
@@ -141,6 +144,7 @@ async function deleteMedia(req, res) {
     }
 
     await Media.findByIdAndDelete(req.params.id)
+    await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Media', resourceId: media._id, details: { filename: media.originalName }, req })
     res.json({ success: true, message: 'Media deleted successfully' })
   } catch (error) {
     console.error('[media] delete error:', error)

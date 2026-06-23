@@ -6,6 +6,7 @@ const navbarSettingsSchema = new mongoose.Schema({
   logoSvg: { type: String, default: '' },
   logoAlt: { type: String, default: 'Logo' },
   brandName: { type: String, default: 'DESALEGN' },
+  brandNameAm: { type: String, default: '' },
   logoWidth: { type: Number, default: 40 },
   logoHeight: { type: Number, default: 40 },
   logoBorderRadius: { type: Number, default: 8 },

@@ -1,4 +1,5 @@
 const ContactContent = require('../../shared/models/ContactContent')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function getContactContent(_req, res) {
   try {
@@ -51,6 +52,7 @@ async function updateContactContent(req, res) {
     }
 
     await content.save()
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'ContactContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
     res.json({ success: true, content })
   } catch (error) {
     console.error('[contact] update error:', error.message, error.errors || '')

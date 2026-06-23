@@ -60,3 +60,13 @@ export async function logPortfolioEngagement({ action, page, visitorId, referrer
     console.warn('[tracking] Failed to log engagement:', error.message)
   }
 }
+
+export async function clearAnalyticsData() {
+  try {
+    const response = await api.delete('/analytics/clear', { withCredentials: true })
+    return response.data
+  } catch (error) {
+    console.warn('[analytics] Failed to clear analytics:', error.message)
+    throw error
+  }
+}

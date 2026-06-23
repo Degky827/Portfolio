@@ -1,7 +1,6 @@
 import { Suspense, useEffect, useCallback, useState } from 'react'
 import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './shared/hooks'
-import api from './shared/services/api'
 import ErrorBoundary from './shared/components/ErrorBoundary'
 import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
 import Navbar from './public-portfolio/layout/Navbar'
@@ -27,12 +26,7 @@ function PublicLayout() {
   const [chatOpen, setChatOpen] = useState(false)
 
   const handleToggle = useCallback(() => {
-    setDarkMode((prev) => {
-      const next = !prev
-      const mode = next ? 'dark' : 'light'
-      api.patch('/settings/appearance', { mode }).catch(() => {})
-      return next
-    })
+    setDarkMode((prev) => !prev)
   }, [setDarkMode])
 
   return (

@@ -7,6 +7,7 @@ const ContactContent = require('../../shared/models/ContactContent')
 const FooterContent = require('../../shared/models/FooterContent')
 const Settings = require('../../shared/models/Settings')
 const { createNotification } = require('../notifications/notifications.controller')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 const mongoose = require('mongoose')
 const fs = require('fs')
 const path = require('path')
@@ -125,6 +126,8 @@ async function createBackup(req, res) {
 
       createNotification({ type: 'backup_completed', title: 'Backup Completed', message: `Manual backup "${name}" created successfully.`, link: '/admin/backup' })
 
+      await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Backup', resourceId: backup._id, details: { name, fileSize }, req })
+
       return res.status(201).json({
         success: true,
         message: 'Backup created successfully',
@@ -177,6 +180,7 @@ async function deleteBackup(req, res) {
     if (!backup) {
       return res.status(404).json({ success: false, message: 'Backup not found' })
     }
+    await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Backup', resourceId: backup._id, details: { name: backup.name }, req })
     res.json({ success: true, message: 'Backup deleted successfully' })
   } catch (error) {
     console.error('Backup Error:', error)
@@ -221,6 +225,8 @@ async function uploadBackup(req, res) {
       data: parsed,
     })
 
+    await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Backup', resourceId: backup._id, details: { name: backup.name, type: 'uploaded' }, req })
+
     res.status(201).json({ success: true, backup })
   } catch (error) {
     console.error('Backup Error:', error)
@@ -245,6 +251,8 @@ async function restoreBackup(req, res) {
     }
 
     createNotification({ type: 'restore_completed', title: 'Restore Completed', message: `Backup "${backup.name}" was restored successfully.`, link: '/admin/backup' })
+
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Backup', resourceId: backup._id, details: { action: 'restore', name: backup.name }, req })
 
     res.json({
       success: true,

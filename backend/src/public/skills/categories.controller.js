@@ -1,5 +1,6 @@
 const Category = require('../../shared/models/Category')
 const Skill = require('../../shared/models/Skill')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function createCategory(req, res) {
   try {
@@ -17,6 +18,8 @@ async function createCategory(req, res) {
       order: parseInt(order, 10) || 0,
       type: type || 'skills',
     })
+
+    await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Category', resourceId: category._id, details: { title: category.title }, req })
 
     res.status(201).json({ success: true, category })
   } catch (error) {
@@ -99,6 +102,8 @@ async function updateCategory(req, res) {
 
     await category.save()
 
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Category', resourceId: category._id, details: { title: category.title }, req })
+
     res.json({ success: true, category })
   } catch (error) {
     console.error('[categories] updateCategory error:', error)
@@ -119,6 +124,8 @@ async function deleteCategory(req, res) {
 
     await Skill.deleteMany({ category: category.title })
     await Category.findByIdAndDelete(req.params.id)
+
+    await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Category', resourceId: category._id, details: { title: category.title }, req })
 
     res.json({ success: true, message: 'Category and its skills deleted successfully' })
   } catch (error) {

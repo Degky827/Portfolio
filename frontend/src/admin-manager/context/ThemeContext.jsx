@@ -54,9 +54,11 @@ export function ThemeProvider({ children }) {
       if (token) {
         import('../../shared/services/api').then((mod) => {
           mod.default.patch('/auth/me', { theme: t }).catch(() => {})
-          mod.default.patch('/settings/appearance', { mode: t }).catch(() => {})
         })
       }
+      import('../../shared/services/api').then((mod) => {
+        mod.default.patch('/settings/appearance', { mode: t }).catch(() => {})
+      })
     } catch { /* background save; non-critical */ }
   }, [])
 

@@ -57,6 +57,10 @@ const visitSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    pagesViewed: {
+      type: [String],
+      default: [],
+    },
   },
   {
     timestamps: true,

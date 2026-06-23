@@ -2,7 +2,9 @@ const mongoose = require('mongoose')
 
 const storyPillarSchema = new mongoose.Schema({
   title: { type: String, default: '' },
+  titleAm: { type: String, default: '' },
   content: { type: String, default: '' },
+  contentAm: { type: String, default: '' },
 }, { _id: true })
 
 const educationSchema = new mongoose.Schema({
@@ -27,12 +29,15 @@ const certificationSchema = new mongoose.Schema({
 const metricSchema = new mongoose.Schema({
   icon: { type: String, default: '' },
   title: { type: String, default: '' },
+  titleAm: { type: String, default: '' },
   value: { type: String, default: '' },
 }, { _id: true })
 
 const aboutContentSchema = new mongoose.Schema({
   title: { type: String, default: '' },
+  titleAm: { type: String, default: '' },
   subtitle: { type: String, default: '' },
+  subtitleAm: { type: String, default: '' },
   profileImage: { type: String, default: '' },
   yearsOfExperience: { type: Number, default: 0 },
   location: { type: String, default: '' },

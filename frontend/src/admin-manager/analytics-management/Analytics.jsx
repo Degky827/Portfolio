@@ -3,8 +3,9 @@ import { motion, AnimatePresence } from 'framer-motion'
 import {
   RefreshCw, Eye, Users, UserCheck, TrendingUp,
   Monitor, Globe, Link, Filter, X, ChevronDown, Download,
-  MessageSquare, Bot,
+  MessageSquare, Bot, Trash2,
 } from 'lucide-react'
+import { clearAnalyticsData } from '../../shared/services/api'
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
@@ -32,6 +33,8 @@ const itemVariants = {
 
 export default function Analytics() {
   const [showFilters, setShowFilters] = useState(false)
+  const [clearing, setClearing] = useState(false)
+  const [showClearConfirm, setShowClearConfirm] = useState(false)
   const {
     data, visits, totalCount, loading, visitsLoading, error,
     filters, activeFilterCount,
@@ -243,6 +246,16 @@ export default function Analytics() {
               >
                 <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
                 {loading ? 'Loading...' : 'Refresh'}
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowClearConfirm(true)}
+                disabled={clearing || totalCount === 0}
+                className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+              >
+                <Trash2 size={14} />
+                Clear Analytics
               </motion.button>
             </div>
           }
@@ -548,6 +561,62 @@ export default function Analytics() {
       </motion.div>
       </>
       )}
+
+      <AnimatePresence>
+        {showClearConfirm && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]"
+            onClick={() => setShowClearConfirm(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.95, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.95, opacity: 0 }}
+              className="bg-white dark:bg-slate-900 rounded-2xl p-6 shadow-xl max-w-md mx-4"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center">
+                  <Trash2 size={20} className="text-red-600 dark:text-red-400" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-gray-900 dark:text-white">Clear All Analytics?</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400">This will permanently delete all visitor data and analytics.</p>
+                </div>
+              </div>
+              <div className="flex gap-3 justify-end mt-6">
+                <button
+                  onClick={() => setShowClearConfirm(false)}
+                  className="px-4 py-2 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={async () => {
+                    setClearing(true)
+                    try {
+                      await clearAnalyticsData()
+                      setShowClearConfirm(false)
+                      refresh()
+                    } catch {
+                      // error handled in api
+                    } finally {
+                      setClearing(false)
+                    }
+                  }}
+                  disabled={clearing}
+                  className="px-4 py-2 rounded-xl text-sm font-medium bg-red-600 text-white hover:bg-red-700 transition-colors disabled:opacity-50"
+                >
+                  {clearing ? 'Clearing...' : 'Clear All'}
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </motion.div>
   )
 }

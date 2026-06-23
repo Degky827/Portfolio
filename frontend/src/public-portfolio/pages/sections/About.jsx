@@ -20,9 +20,14 @@ const hardcodedAchievements = [
 const iconMap = { Award, Users, TrendingUp }
 
 export default function About({ content, hero, aboutContent }) {
-  const { t } = useTranslation()
-  const title = aboutContent?.title || content?.title || t('about.title')
-  const subtitle = aboutContent?.subtitle || content?.subtitle || t('about.subtitle')
+  const { t, i18n } = useTranslation()
+  const isAm = i18n.language === 'am'
+  const title = isAm
+    ? (aboutContent?.titleAm || aboutContent?.title || content?.title || t('about.title'))
+    : (aboutContent?.title || content?.title || t('about.title'))
+  const subtitle = isAm
+    ? (aboutContent?.subtitleAm || aboutContent?.subtitle || content?.subtitle || t('about.subtitle'))
+    : (aboutContent?.subtitle || content?.subtitle || t('about.subtitle'))
   const fullName = hero?.fullName || t('about.fullName')
   const roleTitle = hero?.professionalBadge || t('about.role')
 
@@ -31,7 +36,10 @@ export default function About({ content, hero, aboutContent }) {
     : []
 
   const aboutSections = storyPillars.length > 0
-    ? storyPillars.map((p) => ({ title: p.title, content: p.content }))
+    ? storyPillars.map((p) => ({
+        title: isAm ? (p.titleAm || p.title) : p.title,
+        content: isAm ? (p.contentAm || p.content) : p.content,
+      }))
     : hardcodedSections(t)
 
   const ide = aboutContent?.idePresentation || {}
@@ -296,9 +304,12 @@ export default function About({ content, hero, aboutContent }) {
 
                 {/* Highlight Metrics Below Code */}
                 <div className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6 border-t border-slate-700/50 bg-slate-800/30">
-                  {highlightMetrics.map((metric, idx) => {
-                    const val = metric.value || (idx === 0 ? '' : idx === 1 ? '50+' : '5+')
-                    const lbl = metric.title || (idx === 0 ? t('about.metricNetworkDesigner') : idx === 1 ? t('about.metricHappyClients') : t('about.metricYearsExperience'))
+                    {highlightMetrics.map((metric, idx) => {
+                      const val = metric.value || (idx === 0 ? '' : idx === 1 ? '50+' : '5+')
+                      const defaultLabel = idx === 0 ? t('about.metricNetworkDesigner') : idx === 1 ? t('about.metricHappyClients') : t('about.metricYearsExperience')
+                      const lbl = isAm
+                        ? (metric.titleAm || metric.title || defaultLabel)
+                        : (metric.title || defaultLabel)
                     return (
                       <div key={idx} className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
                         <MetricIcon name={metric.icon} className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1"

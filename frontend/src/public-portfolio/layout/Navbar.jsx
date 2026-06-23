@@ -3,8 +3,21 @@ import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download, Globe, Sun, Moon } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
+import { changeLanguageWithPersistence } from '../../i18n'
 import Logo from '../../shared/components/Logo'
 import { getNavigation, getNavbarSettings } from '../../shared/services/navigationService'
+import { logPortfolioEngagement } from '../../shared/services/api'
+
+function getVisitorId() {
+  let id = localStorage.getItem('portfolio_visitor_id')
+  if (!id) {
+    const bytes = new Uint8Array(16)
+    crypto.getRandomValues(bytes)
+    id = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('')
+    localStorage.setItem('portfolio_visitor_id', id)
+  }
+  return id
+}
 
 const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'contact']
 
@@ -165,7 +178,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       resumeHoverColor: s.resumeHoverColor || '#4f46e5',
       resumeBorderRadius: s.resumeBorderRadius ?? 9999,
       resumeButtonSize: s.resumeButtonSize || 'md',
-      languageEnabled: s.languageEnabled !== false,
+      languageEnabled: siteSettings?.languageEnabled !== false,
       themeEnabled: s.themeEnabled !== false,
       themeMode: s.themeMode || 'auto',
       lightBg: s.lightTheme?.bgColor || '#ffffff',
@@ -213,6 +226,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
     logoImage: ns?.logo || siteSettings?.logoImage || '',
     logoSvg: ns?.logoSvg || siteSettings?.logoSvg || '',
     brandName: ns?.brandName || siteSettings?.brandName || '',
+    brandNameAm: ns?.brandNameAm || siteSettings?.brandNameAm || '',
     logoText: ns?.logoAlt || siteSettings?.logoText || '',
     logoWidth: ns?.logoWidth ?? siteSettings?.logoWidth ?? 40,
     logoHeight: ns?.logoHeight ?? siteSettings?.logoHeight ?? 40,
@@ -516,7 +530,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 transition={{ delay: 0.6 }}
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
-                onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en')}
+                onClick={() => changeLanguageWithPersistence(i18n.language === 'en' ? 'am' : 'en')}
                 className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-primary hover:text-white transition-colors"
                 style={{ backgroundColor: controlBg, color: controlTextColor }}
                 aria-label={i18n.language === 'en' ? t('nav.switchLanguage') : t('nav.switchLanguage_am')}
@@ -555,6 +569,14 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 style={resumeStyle}
                 onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = settings.resumeHoverColor }}
                 onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = settings.resumeBgColor }}
+                onClick={() => {
+                  logPortfolioEngagement({
+                    action: 'cv_download',
+                    page: window.location.pathname,
+                    visitorId: getVisitorId(),
+                    referrer: document.referrer || 'Direct',
+                  })
+                }}
               >
                 <Download size={14} className="w-3 h-3 sm:w-4 sm:h-4 group-hover:animate-bounce" />
                 <span>{settings.resumeText}</span>
@@ -668,7 +690,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   <div className="flex justify-center gap-3 sm:gap-4">
                     {settings.drawerShowLanguage && settings.languageEnabled && (
                       <button
-                        onClick={() => i18n.changeLanguage(i18n.language === 'en' ? 'am' : 'en')}
+                        onClick={() => changeLanguageWithPersistence(i18n.language === 'en' ? 'am' : 'en')}
                         className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"
                         style={{ backgroundColor: controlBg, color: controlTextColor }}
                         aria-label={t('nav.switchLanguage')}
@@ -694,6 +716,14 @@ export default function Navbar({ darkMode, onToggleDark }) {
                         rel="noopener noreferrer"
                         className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"
                         style={{ backgroundColor: controlBg, color: controlTextColor }}
+                        onClick={() => {
+                          logPortfolioEngagement({
+                            action: 'cv_download',
+                            page: window.location.pathname,
+                            visitorId: getVisitorId(),
+                            referrer: document.referrer || 'Direct',
+                          })
+                        }}
                       >
                         <Download size={18} />
                       </a>

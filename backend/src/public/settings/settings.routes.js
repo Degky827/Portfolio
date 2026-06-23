@@ -17,6 +17,6 @@ router.put(
 )
 
 router.get('/appearance', getGlobalAppearance)
-router.patch('/appearance', updateGlobalAppearance)
+router.patch('/appearance', authenticateToken, updateGlobalAppearance)
 
 module.exports = router

@@ -18,6 +18,7 @@ import {
 import { updateSiteSettings } from '../../shared/services/siteSettingsService'
 import { updateHomeContent } from '../../shared/services/homeContentService'
 import { updateFooterContent } from '../../shared/services/footerService'
+import { updateGlobalAppearance } from '../../shared/services/settingsService'
 import api, { getMediaUrl } from '../../shared/services/api'
 import { useAuth } from '../authentication/AuthContext'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
@@ -231,6 +232,7 @@ export default function NavigationManagement() {
       try {
         await updateSiteSettings({
           brandName: settings.brandName,
+          brandNameAm: settings.brandNameAm,
           logoImage: settings.logo,
           logoSvg: settings.logoSvg,
           logoText: settings.logoAlt,
@@ -254,6 +256,10 @@ export default function NavigationManagement() {
         fd.append('brandName', settings.brandName || '')
         fd.append('footerLogoUrl', settings.logo || '')
         await updateFooterContent(fd)
+      } catch {}
+      try {
+        const mode = settings.themeMode || 'auto'
+        await updateGlobalAppearance({ mode })
       } catch {}
       if (authUser) {
         setUserData({ ...authUser, displayName: settings.brandName, avatar: getMediaUrl(settings.logo) || settings.logo })
@@ -569,6 +575,9 @@ export default function NavigationManagement() {
             <Field label="Brand Name">
               <Input value={settings?.brandName ?? 'DESALEGN'} onChange={(e) => updateSetting('brandName', e.target.value)} />
             </Field>
+            <Field label="Brand Name (Amharic)">
+              <Input value={settings?.brandNameAm ?? ''} onChange={(e) => updateSetting('brandNameAm', e.target.value)} placeholder="Amharic brand name" />
+            </Field>
             <Field label="Logo Alt Text">
               <Input value={settings?.logoAlt ?? ''} onChange={(e) => updateSetting('logoAlt', e.target.value)} />
             </Field>
@@ -644,27 +653,6 @@ export default function NavigationManagement() {
               <Field label="Border Radius (px)"><Input type="number" value={settings?.resumeBorderRadius ?? 9999} onChange={(e) => updateSetting('resumeBorderRadius', Number(e.target.value))} /></Field>
               <Field label="Button Size">
                 <Select value={settings?.resumeButtonSize ?? 'md'} onChange={(e) => updateSetting('resumeButtonSize', e.target.value)} options={[{ value: 'sm', label: 'Small' }, { value: 'md', label: 'Medium' }, { value: 'lg', label: 'Large' }]} />
-              </Field>
-            </div>
-          </Card>
-
-          <Card>
-            <CardHeader icon={Globe} title="Language" subtitle="Configure the language switcher in the navbar." />
-            <Toggle value={settings?.languageEnabled} onChange={(v) => updateSetting('languageEnabled', v)} label="Enable Language Switcher" />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
-              <Field label="Default Language">
-                <Select
-                  value={settings?.defaultLanguage ?? 'en'}
-                  onChange={(e) => updateSetting('defaultLanguage', e.target.value)}
-                  options={[
-                    { value: 'en', label: 'English' },
-                    { value: 'am', label: 'Amharic' },
-                    { value: 'ar', label: 'Arabic' },
-                    { value: 'fr', label: 'French' },
-                    { value: 'es', label: 'Spanish' },
-                    { value: 'de', label: 'German' },
-                  ]}
-                />
               </Field>
             </div>
           </Card>

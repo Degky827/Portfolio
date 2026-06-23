@@ -22,3 +22,8 @@ export async function getActions() {
   const { data } = await api.get('/activity-logs/actions')
   return data
 }
+
+export async function clearLogs() {
+  const { data } = await api.delete('/activity-logs')
+  return data
+}

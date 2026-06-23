@@ -3,6 +3,7 @@ const User = require('../../shared/models/User')
 const FooterContent = require('../../shared/models/FooterContent')
 const NavbarSettings = require('../../shared/models/NavbarSettings')
 const SiteSettings = require('../../shared/models/SiteSettings')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 const socialKeys = [
   'github', 'linkedin', 'telegram', 'twitter',
@@ -34,14 +35,23 @@ async function updateHomeContent(req, res) {
     if (body.hero) {
       const h = body.hero
       if (h.greeting !== undefined) content.hero.greeting = h.greeting
+      if (h.greetingAm !== undefined) content.hero.greetingAm = h.greetingAm
       if (h.fullName !== undefined) content.hero.fullName = h.fullName
+      if (h.fullNameAm !== undefined) content.hero.fullNameAm = h.fullNameAm
       if (h.nameAmharic !== undefined) content.hero.nameAmharic = h.nameAmharic
       if (h.professionalBadge !== undefined) content.hero.professionalBadge = h.professionalBadge
+      if (h.professionalBadgeAm !== undefined) content.hero.professionalBadgeAm = h.professionalBadgeAm
       if (h.shortIntroduction !== undefined) content.hero.shortIntroduction = h.shortIntroduction
+      if (h.shortIntroductionAm !== undefined) content.hero.shortIntroductionAm = h.shortIntroductionAm
       if (h.typingWords !== undefined) {
         content.hero.typingWords = Array.isArray(h.typingWords)
           ? h.typingWords.filter(Boolean).map(String)
           : content.hero.typingWords
+      }
+      if (h.typingWordsAm !== undefined) {
+        content.hero.typingWordsAm = Array.isArray(h.typingWordsAm)
+          ? h.typingWordsAm.filter(Boolean).map(String)
+          : content.hero.typingWordsAm
       }
       if (h.statistics !== undefined && Array.isArray(h.statistics)) {
         content.hero.statistics = h.statistics.map((s) => ({
@@ -70,6 +80,7 @@ async function updateHomeContent(req, res) {
     if (body.logoImage !== undefined) content.logoImage = body.logoImage
     if (body.logoText !== undefined) content.logoText = body.logoText
     if (body.contactButtonText !== undefined) content.contactButtonText = body.contactButtonText
+    if (body.contactButtonTextAm !== undefined) content.contactButtonTextAm = body.contactButtonTextAm
     if (body.contactButtonLink !== undefined) content.contactButtonLink = body.contactButtonLink
 
     if (body.about) {
@@ -174,6 +185,7 @@ async function updateHomeContent(req, res) {
     }
 
     res.json({ success: true, content })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'HomeContent', resourceId: content._id, details: { updatedFields: Object.keys(body) }, req })
   } catch (error) {
     console.error('[homepage] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update home content' })

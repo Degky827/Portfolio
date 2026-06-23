@@ -4,11 +4,16 @@ const homeContentSchema = new mongoose.Schema(
   {
     hero: {
       greeting: { type: String, default: "Hi, I'm" },
+      greetingAm: { type: String, default: '' },
       fullName: { type: String, default: 'Desalegn' },
+      fullNameAm: { type: String, default: '' },
       nameAmharic: { type: String, default: 'ደካ' },
       professionalBadge: { type: String, default: 'Student Developer' },
+      professionalBadgeAm: { type: String, default: '' },
       typingWords: [{ type: String }],
+      typingWordsAm: [{ type: String }],
       shortIntroduction: { type: String, default: '' },
+      shortIntroductionAm: { type: String, default: '' },
       profilePhoto: {
         url: { type: String, default: '' },
         alt: { type: String, default: '' },
@@ -78,6 +83,7 @@ const homeContentSchema = new mongoose.Schema(
     logoText: { type: String, default: '' },
 
     contactButtonText: { type: String, default: 'Get In Touch' },
+    contactButtonTextAm: { type: String, default: '' },
     contactButtonLink: { type: String, default: '#contact' },
 
     theme: {

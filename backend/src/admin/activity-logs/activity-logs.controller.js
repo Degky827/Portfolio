@@ -1,5 +1,6 @@
 const AuditLog = require('../../shared/models/AuditLog')
 const User = require('../../shared/models/User')
+const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function listLogs(req, res) {
   try {
@@ -162,4 +163,14 @@ async function getActions(_req, res) {
   }
 }
 
-module.exports = { listLogs, getLog, exportLogs, getActions }
+async function clearLogs(_req, res) {
+  try {
+    const result = await AuditLog.deleteMany({})
+    res.json({ success: true, message: `Cleared ${result.deletedCount} activity log records` })
+  } catch (error) {
+    console.error('[activityLog] clear error:', error)
+    res.status(500).json({ success: false, message: 'Failed to clear activity logs' })
+  }
+}
+
+module.exports = { listLogs, getLog, exportLogs, getActions, clearLogs }
