@@ -49,7 +49,7 @@ const socialIconMap = {
   email: EmailIcon,
 }
 
-export default function Hero({ content, contactButtonText, contactButtonLink }) {
+export default function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLink }) {
   const { t, i18n } = useTranslation()
   const { settings } = useSiteSettings()
   const [typedText, setTypedText] = useState('')
@@ -73,7 +73,7 @@ export default function Hero({ content, contactButtonText, contactButtonLink }) 
         { label: t('hero.statClassProjects'), value: '15+', icon: 'BookOpen', color: '#10b981' },
         { label: t('hero.statCoreSkills'), value: '30+', icon: 'Cpu', color: '#f59e0b' },
       ]
-  const contactBtnText = isAm ? (settings?.contactButtonTextAm || contactButtonText || t('hero.getInTouch')) : (settings?.contactButtonText || contactButtonText || t('hero.getInTouch'))
+  const contactBtnText = isAm ? (contactButtonTextAm || settings?.contactButtonTextAm || contactButtonText || t('hero.getInTouch')) : (settings?.contactButtonText || contactButtonText || t('hero.getInTouch'))
   const contactBtnLink = settings?.contactButtonLink || contactButtonLink || '#contact'
   const ctaButtons = content?.ctaButtons?.length > 0
     ? content.ctaButtons
