@@ -15,6 +15,12 @@ import {
   getNavigation, createNavigation, updateNavigation, deleteNavigation, reorderNavigation,
   getNavbarSettings, updateNavbarSettings,
 } from '../../shared/services/navigationService'
+import { updateSiteSettings } from '../../shared/services/siteSettingsService'
+import { updateHomeContent } from '../../shared/services/homeContentService'
+import { updateFooterContent } from '../../shared/services/footerService'
+import api, { getMediaUrl } from '../../shared/services/api'
+import { useAuth } from '../authentication/AuthContext'
+import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 
 function Field({ label, children, hint }) {
   return (
@@ -160,6 +166,8 @@ const ICON_OPTIONS = [
 ]
 
 export default function NavigationManagement() {
+  const { setUserData, user: authUser } = useAuth()
+  const { refreshSettings } = useSiteSettings()
   const [navItems, setNavItems] = useState([])
   const [settings, setSettings] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -220,6 +228,37 @@ export default function NavigationManagement() {
     setSaving(true)
     try {
       await updateNavbarSettings(settings)
+      try {
+        await updateSiteSettings({
+          brandName: settings.brandName,
+          logoImage: settings.logo,
+          logoSvg: settings.logoSvg,
+          logoText: settings.logoAlt,
+          logoWidth: settings.logoWidth,
+          logoHeight: settings.logoHeight,
+          logoBorderRadius: settings.logoBorderRadius,
+          logoBgColor: settings.logoBgColor,
+          logoPosition: settings.logoPosition,
+        })
+      } catch {}
+      try {
+        await updateHomeContent({
+          hero: {
+            fullName: settings.brandName,
+            profilePhoto: { url: settings.logo || '', alt: settings.logoAlt || '' },
+          },
+        })
+      } catch {}
+      try {
+        const fd = new FormData()
+        fd.append('brandName', settings.brandName || '')
+        fd.append('footerLogoUrl', settings.logo || '')
+        await updateFooterContent(fd)
+      } catch {}
+      if (authUser) {
+        setUserData({ ...authUser, displayName: settings.brandName, avatar: getMediaUrl(settings.logo) || settings.logo })
+      }
+      refreshSettings()
       setToast({ message: 'Settings saved successfully', type: 'success' })
     } catch (err) {
       setToast({ message: err.response?.data?.message || 'Failed to save settings', type: 'error' })

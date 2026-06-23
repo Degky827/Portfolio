@@ -30,6 +30,13 @@ api.interceptors.response.use(
 
 export default api
 
+export function getMediaUrl(url) {
+  if (!url) return ''
+  if (url.startsWith('http')) return url
+  const base = api.defaults.baseURL.replace(/\/api$/, '')
+  return `${base}${url}`
+}
+
 // የተስተካከሉ ተግባራት
 export async function logPortfolioVisit({ viewerName = 'Anonymous', page = '/', referrer = '', visitorId = '', src } = {}) {
   try {

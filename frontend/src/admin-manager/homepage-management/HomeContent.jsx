@@ -12,6 +12,9 @@ import FileUpload from '../shared/FileUpload'
 import Toast from '../shared/Toast'
 import { getHomeContent, updateHomeContent } from '../../shared/services/homeContentService'
 import { updateSiteSettings } from '../../shared/services/siteSettingsService'
+import { updateNavbarSettings } from '../../shared/services/navigationService'
+import { updateFooterContent } from '../../shared/services/footerService'
+import api, { getMediaUrl } from '../../shared/services/api'
 import { useAuth } from '../authentication/AuthContext'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 
@@ -550,8 +553,21 @@ export default function HomeContent() {
           socialLinks,
         })
       } catch {}
+      try {
+        await updateNavbarSettings({
+          brandName: form.hero.fullName,
+          logo: form.hero.profilePhoto?.url || '',
+          logoAlt: form.hero.profilePhoto?.alt || '',
+        })
+      } catch {}
+      try {
+        const fd = new FormData()
+        fd.append('brandName', form.hero.fullName || '')
+        fd.append('footerLogoUrl', form.hero.profilePhoto?.url || '')
+        await updateFooterContent(fd)
+      } catch {}
       if (authUser) {
-        setUserData({ ...authUser, displayName: form.hero.fullName })
+        setUserData({ ...authUser, displayName: form.hero.fullName, avatar: getMediaUrl(form.hero.profilePhoto?.url) || form.hero.profilePhoto?.url || authUser.avatar })
       }
       refreshSettings()
     } catch (err) {

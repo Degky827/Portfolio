@@ -5,6 +5,9 @@ import PageHeader from '../shared/PageHeader'
 import Toast from '../shared/Toast'
 import { getFooterContent, updateFooterContent } from '../../shared/services/footerService'
 import { updateSiteSettings } from '../../shared/services/siteSettingsService'
+import { updateNavbarSettings } from '../../shared/services/navigationService'
+import { updateHomeContent } from '../../shared/services/homeContentService'
+import { useAuth } from '../authentication/AuthContext'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 
 const emptySocialLink = { platform: '', url: '', displayOrder: 0, active: true }
@@ -40,6 +43,7 @@ function EmptyState({ message }) {
 
 export default function FooterContent() {
   const { refreshSettings } = useSiteSettings()
+  const { setUserData, user: authUser } = useAuth()
   const [form, setForm] = useState({
     brandName: '',
     brandDescription: '',
@@ -158,6 +162,21 @@ export default function FooterContent() {
           phone: form.phoneNumber,
         })
       } catch {}
+      try {
+        await updateNavbarSettings({
+          brandName: form.brandName,
+        })
+      } catch {}
+      try {
+        await updateHomeContent({
+          hero: {
+            fullName: form.brandName,
+          },
+        })
+      } catch {}
+      if (authUser) {
+        setUserData({ ...authUser, displayName: form.brandName })
+      }
       refreshSettings()
       setToast({ message: 'Footer content updated successfully', type: 'success' })
     } catch (err) {

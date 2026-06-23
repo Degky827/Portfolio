@@ -1,6 +1,8 @@
 const HomeContent = require('../../shared/models/HomeContent')
 const User = require('../../shared/models/User')
 const FooterContent = require('../../shared/models/FooterContent')
+const NavbarSettings = require('../../shared/models/NavbarSettings')
+const SiteSettings = require('../../shared/models/SiteSettings')
 
 const socialKeys = [
   'github', 'linkedin', 'telegram', 'twitter',
@@ -144,6 +146,31 @@ async function updateHomeContent(req, res) {
       } catch (syncErr) {
         console.error('[homepage] Failed to sync FooterContent.brandName:', syncErr)
       }
+      try {
+        await NavbarSettings.findOneAndUpdate(
+          {},
+          { $set: { brandName: updatedName } },
+          { upsert: true },
+        )
+      } catch (syncErr) {
+        console.error('[homepage] Failed to sync NavbarSettings.brandName:', syncErr)
+      }
+    }
+
+    if (body.hero?.profilePhoto?.url !== undefined) {
+      const photoUrl = body.hero.profilePhoto.url
+      const logoSync = { logoImage: photoUrl, logo: photoUrl, footerLogo: photoUrl, avatar: photoUrl }
+      try { await SiteSettings.findOneAndUpdate({}, { $set: { logoImage: photoUrl } }, { upsert: true }) } catch (e) { console.error('[homepage] sync SiteSettings.logoImage:', e.message) }
+      try { await NavbarSettings.findOneAndUpdate({}, { $set: { logo: photoUrl } }, { upsert: true }) } catch (e) { console.error('[homepage] sync NavbarSettings.logo:', e.message) }
+      try { await FooterContent.findOneAndUpdate({}, { $set: { footerLogo: photoUrl } }, { upsert: true }) } catch (e) { console.error('[homepage] sync FooterContent.footerLogo:', e.message) }
+      try { await User.updateMany({}, { $set: { avatar: photoUrl } }) } catch (e) { console.error('[homepage] sync User.avatar:', e.message) }
+    }
+
+    if (body.logoImage !== undefined || body.logoText !== undefined) {
+      const siteUpdate = {}
+      if (body.logoImage !== undefined) siteUpdate.logoImage = body.logoImage
+      if (body.logoText !== undefined) siteUpdate.logoText = body.logoText
+      try { await SiteSettings.findOneAndUpdate({}, { $set: siteUpdate }, { upsert: true }) } catch (e) { console.error('[homepage] sync SiteSettings logo:', e.message) }
     }
 
     res.json({ success: true, content })

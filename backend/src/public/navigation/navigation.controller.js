@@ -1,5 +1,9 @@
 const Navigation = require('../../shared/models/Navigation')
 const NavbarSettings = require('../../shared/models/NavbarSettings')
+const SiteSettings = require('../../shared/models/SiteSettings')
+const FooterContent = require('../../shared/models/FooterContent')
+const HomeContent = require('../../shared/models/HomeContent')
+const User = require('../../shared/models/User')
 
 // ─── Navigation (Menu Items) ────────────────────────────────────────
 
@@ -78,6 +82,45 @@ async function updateNavbarSettings(req, res) {
     if (!settings) settings = new NavbarSettings()
     Object.assign(settings, req.body)
     await settings.save()
+
+    const syncBrandName = req.body.brandName
+    if (syncBrandName !== undefined) {
+      try { await SiteSettings.findOneAndUpdate({}, { $set: { brandName: syncBrandName } }, { upsert: true }) } catch (e) { console.error('[navbar] sync SiteSettings.brandName:', e.message) }
+      try { await FooterContent.findOneAndUpdate({}, { $set: { brandName: syncBrandName } }, { upsert: true }) } catch (e) { console.error('[navbar] sync FooterContent.brandName:', e.message) }
+      try { await HomeContent.findOneAndUpdate({}, { $set: { 'hero.fullName': syncBrandName } }, { upsert: true }) } catch (e) { console.error('[navbar] sync HomeContent.hero.fullName:', e.message) }
+      try { await User.updateMany({}, { $set: { displayName: syncBrandName } }) } catch (e) { console.error('[navbar] sync User.displayName:', e.message) }
+    }
+
+    const logoFields = ['logo', 'logoSvg', 'logoAlt', 'logoWidth', 'logoHeight', 'logoBorderRadius', 'logoBgColor', 'logoPosition']
+    const siteSettingsUpdate = {}
+    const footerUpdate = {}
+    let hasLogoUpdate = false
+
+    for (const field of logoFields) {
+      if (req.body[field] !== undefined) {
+        hasLogoUpdate = true
+        if (field === 'logo') {
+          siteSettingsUpdate.logoImage = req.body[field]
+          footerUpdate.footerLogo = req.body[field]
+        } else if (field === 'logoAlt') {
+          siteSettingsUpdate.logoText = req.body[field]
+        } else {
+          siteSettingsUpdate[field] = req.body[field]
+        }
+      }
+    }
+
+    if (hasLogoUpdate) {
+      try { await SiteSettings.findOneAndUpdate({}, { $set: siteSettingsUpdate }, { upsert: true }) } catch (e) { console.error('[navbar] sync SiteSettings logo fields:', e.message) }
+      try { await FooterContent.findOneAndUpdate({}, { $set: footerUpdate }, { upsert: true }) } catch (e) { console.error('[navbar] sync FooterContent logo:', e.message) }
+
+      const photoUrl = req.body.logo
+      if (photoUrl !== undefined) {
+        try { await HomeContent.findOneAndUpdate({}, { $set: { 'hero.profilePhoto.url': photoUrl } }, { upsert: true }) } catch (e) { console.error('[navbar] sync HomeContent.profilePhoto:', e.message) }
+        try { await User.updateMany({}, { $set: { avatar: photoUrl } }) } catch (e) { console.error('[navbar] sync User.avatar:', e.message) }
+      }
+    }
+
     res.json({ success: true, settings })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update navbar settings' })

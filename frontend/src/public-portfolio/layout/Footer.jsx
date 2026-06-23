@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUp, MapPin, Mail, Phone } from 'lucide-react'
 import { getFooterContent } from '../../shared/services/footerService'
+import { getNavbarSettings } from '../../shared/services/navigationService'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import Logo from '../../shared/components/Logo'
 import {
@@ -51,6 +52,7 @@ export default function Footer() {
   const { t } = useTranslation()
   const { settings } = useSiteSettings()
   const [content, setContent] = useState(null)
+  const [ns, setNs] = useState(null)
 
   useEffect(() => {
     ;(async () => {
@@ -61,11 +63,31 @@ export default function Footer() {
         /* fall back to hardcoded */
       }
     })()
+    ;(async () => {
+      try {
+        const res = await getNavbarSettings()
+        setNs(res.settings || null)
+      } catch {}
+    })()
   }, [])
 
-  const brandName = settings?.brandName || content?.brandName || t('nav.logoText')
+  const mergedSettings = useMemo(() => ({
+    ...settings,
+    logoImage: ns?.logo || settings?.logoImage || '',
+    logoSvg: ns?.logoSvg || settings?.logoSvg || '',
+    brandName: ns?.brandName || settings?.brandName || '',
+    logoText: ns?.logoAlt || settings?.logoText || '',
+    logoWidth: ns?.logoWidth ?? settings?.logoWidth ?? 40,
+    logoHeight: ns?.logoHeight ?? settings?.logoHeight ?? 40,
+    logoBorderRadius: ns?.logoBorderRadius ?? settings?.logoBorderRadius ?? 8,
+    logoBgColor: ns?.logoBgColor || settings?.logoBgColor || 'transparent',
+    logoPosition: ns?.logoPosition || settings?.logoPosition || 'left',
+    logoEnabled: ns?.logoEnabled !== false,
+  }), [settings, ns])
+
+  const brandName = mergedSettings?.brandName || content?.brandName || t('nav.logoText')
   const brandDescription = settings?.brandDescription || content?.brandDescription || t('footer.brandDescription')
-  const footerLogo = settings?.logoImage || content?.footerLogo || ''
+  const footerLogo = mergedSettings?.logoImage || content?.footerLogo || ''
 
   const locationHeadline = content?.locationHeadline || t('footer.location')
   const subLocation = content?.subLocation || t('footer.subLocation')
@@ -121,7 +143,7 @@ export default function Footer() {
             viewport={{ once: true }}
             className="md:col-span-2"
           >
-            <Logo settings={settings} showText={true} linkTo={null} className="text-2xl sm:text-3xl font-black mb-4 sm:mb-6 md:mb-8" />
+            <Logo settings={mergedSettings} showText={true} linkTo={null} className="text-2xl sm:text-3xl font-black mb-4 sm:mb-6 md:mb-8" />
             <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-sm mb-6 sm:mb-8 md:mb-10 leading-relaxed">
               {brandDescription}
             </p>
