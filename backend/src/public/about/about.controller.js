@@ -123,8 +123,8 @@ async function updateAboutContent(req, res) {
     }
 
     await content.save()
-    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'AboutContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
     res.json({ success: true, content })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'AboutContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
   } catch (error) {
     console.error('[about] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update about content' })

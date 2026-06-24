@@ -141,6 +141,9 @@ async function updateHomeContent(req, res) {
 
     await content.save()
 
+    res.json({ success: true, content })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'HomeContent', resourceId: content._id, details: { updatedFields: Object.keys(body) }, req })
+
     const updatedName = body.hero?.fullName
     if (updatedName !== undefined) {
       try {
@@ -183,9 +186,6 @@ async function updateHomeContent(req, res) {
       if (body.logoText !== undefined) siteUpdate.logoText = body.logoText
       try { await SiteSettings.findOneAndUpdate({}, { $set: siteUpdate }, { upsert: true }) } catch (e) { console.error('[homepage] sync SiteSettings logo:', e.message) }
     }
-
-    res.json({ success: true, content })
-    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'HomeContent', resourceId: content._id, details: { updatedFields: Object.keys(body) }, req })
   } catch (error) {
     console.error('[homepage] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update home content' })

@@ -11,7 +11,6 @@ import { useAuth } from '../authentication/AuthContext'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 
 const emptySocialLink = { platform: '', url: '', displayOrder: 0, active: true }
-const emptyNavItem = { label: '', url: '', order: 0 }
 
 const PHONE_PROTOCOLS = [
   { value: 'tel', label: 'Standard Call (tel:)' },
@@ -266,31 +265,6 @@ export default function FooterContent() {
                       ))}
                     </AnimatePresence>
                   </div>
-                </div>
-              </Card>
-            </motion.div>
-          </div>
-
-          <div className={colScroll}>
-            <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
-              <Card>
-                <SectionHeader title="Navigation Links" subtitle="Synced automatically from Navigation Management. Visible items appear in the footer Explore section." />
-                <p className="text-xs text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg px-3 py-2">
-                  These links are managed in <strong>Navigation Management</strong> → Menu Items. Only items marked <em>Visible</em> and <em>Active</em> appear here.
-                </p>
-                {form.navigation.length === 0 && <EmptyState message="No navigation links synced yet. Add items in Navigation Management." />}
-                <div className="space-y-2 opacity-70 pointer-events-none">
-                  {form.navigation.map((link, idx) => (
-                    <div
-                      key={idx}
-                      className="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700/50"
-                    >
-                      <GripVertical size={14} className="text-zinc-400 shrink-0" />
-                      <input type="text" value={link.label} readOnly placeholder="Home" className="w-24 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400" />
-                      <input type="text" value={link.url} readOnly placeholder="#home" className="flex-1 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400" />
-                      <span className="text-xs text-zinc-400 px-2">{idx + 1}</span>
-                    </div>
-                  ))}
                 </div>
               </Card>
             </motion.div>

@@ -65,6 +65,9 @@ async function updateSiteSettings(req, res) {
 
     await settings.save()
 
+    res.json({ success: true, settings })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'SiteSettings', resourceId: settings._id, details: { updatedFields: Object.keys(body) }, req })
+
     const footerSync = {}
     const contactSync = {}
     if (body.email !== undefined) {
@@ -81,10 +84,6 @@ async function updateSiteSettings(req, res) {
     if (Object.keys(contactSync).length > 0) {
       try { await ContactContent.findOneAndUpdate({}, { $set: contactSync }, { upsert: true }) } catch (e) { console.error('[site-settings] sync ContactContent:', e.message) }
     }
-
-    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'SiteSettings', resourceId: settings._id, details: { updatedFields: Object.keys(body) }, req })
-
-    res.json({ success: true, settings })
   } catch (error) {
     console.error('[site-settings] update error:', error)
     res.status(500).json({ success: false, message: 'Failed to update site settings' })
