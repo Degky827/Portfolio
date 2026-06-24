@@ -55,6 +55,9 @@ async function updateContactContent(req, res) {
 
     await content.save()
 
+    res.json({ success: true, content })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'ContactContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
+
     const footerSync = {}
     const siteSync = {}
     if (req.body.email !== undefined) {
@@ -69,6 +72,9 @@ async function updateContactContent(req, res) {
       footerSync.locationHeadline = req.body.address
       footerSync.subLocation = ''
     }
+    if (req.body.mapLink !== undefined) {
+      footerSync.locationMapUrl = req.body.mapLink
+    }
     if (Object.keys(footerSync).length > 0) {
       try { await FooterContent.findOneAndUpdate({}, { $set: footerSync }, { upsert: true }) } catch (e) { console.error('[contact] sync FooterContent:', e.message) }
     }
@@ -76,8 +82,17 @@ async function updateContactContent(req, res) {
       try { await SiteSettings.findOneAndUpdate({}, { $set: siteSync }, { upsert: true }) } catch (e) { console.error('[contact] sync SiteSettings:', e.message) }
     }
 
-    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'ContactContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
-    res.json({ success: true, content })
+    if (req.body.socialChannels) {
+      try {
+        const socialLinks = (content.socialChannels || []).map((ch, i) => ({
+          platform: ch.channelName || '',
+          url: ch.linkUrl || '',
+          displayOrder: ch.displayWeight ?? i,
+          active: true,
+        }))
+        await FooterContent.findOneAndUpdate({}, { $set: { socialLinks } }, { upsert: true })
+      } catch (e) { console.error('[contact] sync FooterContent.socialLinks:', e.message) }
+    }
   } catch (error) {
     console.error('[contact] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update contact content' })

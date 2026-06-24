@@ -91,6 +91,9 @@ async function updateFooterContent(req, res) {
 
     await content.save()
 
+    res.json({ success: true, content })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'FooterContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
+
     const syncBrandName = req.body.brandName
     if (syncBrandName !== undefined) {
       try { await NavbarSettings.findOneAndUpdate({}, { $set: { brandName: syncBrandName } }, { upsert: true }) } catch (e) { console.error('[footer] sync NavbarSettings.brandName:', e.message) }
@@ -125,8 +128,18 @@ async function updateFooterContent(req, res) {
       try { await SiteSettings.findOneAndUpdate({}, { $set: contactSync }, { upsert: true }) } catch (e) { console.error('[footer] sync SiteSettings contact:', e.message) }
     }
 
-    res.json({ success: true, content })
-    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'FooterContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
+    if (req.body.socialLinks) {
+      try {
+        const activeLinks = content.socialLinks.filter(s => s.active !== false)
+        const socialChannels = activeLinks.map((s, i) => ({
+          channelName: s.platform || '',
+          linkUrl: s.url || '',
+          iconVector: '',
+          displayWeight: s.displayOrder ?? i,
+        }))
+        await ContactContent.findOneAndUpdate({}, { $set: { socialChannels } }, { upsert: true })
+      } catch (e) { console.error('[footer] sync ContactContent.socialChannels:', e.message) }
+    }
   } catch (error) {
     console.error('[footer] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update footer content' })
