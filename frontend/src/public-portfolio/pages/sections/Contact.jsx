@@ -143,7 +143,7 @@ export default function Contact() {
 
     if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      logPortfolioVisit(name)
+      logPortfolioVisit({ viewerName: name, page: window.location.pathname })
       if (!saved) {
         const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
         window.location.href = mailtoLink

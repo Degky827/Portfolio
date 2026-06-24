@@ -141,13 +141,15 @@ async function orphanFiles(_req, res) {
 
     const homeContentDocs = await HomeContent.find({
       $or: [
-        { profileImage: { $ne: '', $regex: '^/uploads/' } },
-        { resumeFile: { $ne: '', $regex: '^/uploads/' } },
+        { 'hero.profilePhoto.url': { $ne: '', $regex: '^/uploads/' } },
+        { logoImage: { $ne: '', $regex: '^/uploads/' } },
+        { 'cta.backgroundImage': { $ne: '', $regex: '^/uploads/' } },
       ],
-    }).select('profileImage resumeFile').lean()
+    }).select('hero.profilePhoto.url logoImage cta.backgroundImage').lean()
     homeContentDocs.forEach((d) => {
-      if (d.profileImage) referenced.add(path.basename(d.profileImage))
-      if (d.resumeFile) referenced.add(path.basename(d.resumeFile))
+      if (d.hero?.profilePhoto?.url) referenced.add(path.basename(d.hero.profilePhoto.url))
+      if (d.logoImage) referenced.add(path.basename(d.logoImage))
+      if (d.cta?.backgroundImage) referenced.add(path.basename(d.cta.backgroundImage))
     })
 
     const orphanFiles = []

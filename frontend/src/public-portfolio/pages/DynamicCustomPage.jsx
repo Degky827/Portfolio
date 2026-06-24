@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { getMediaUrl } from '../../shared/services/api'
+import api, { getMediaUrl } from '../../shared/services/api'
 
 export default function DynamicCustomPage() {
   const { customSlug } = useParams()
@@ -15,9 +15,8 @@ export default function DynamicCustomPage() {
       try {
         setLoading(true)
         setError(null)
-        const res = await fetch(`/api/custom-pages/public/${customSlug}`)
-        if (!res.ok) throw new Error('Page not found')
-        const data = await res.json()
+        const res = await api.get(`/custom-pages/public/${customSlug}`)
+        const data = res.data
         if (!cancelled) {
           setPage(data.page)
         }

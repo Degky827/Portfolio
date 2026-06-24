@@ -30,13 +30,13 @@ router.get('/slug/:slug', getProjectBySlug)
 router.get('/:id', getProject)
 
 router.post('/', authenticateToken, authorizeSuperAdmin, projectValidation, handleValidation, createProject)
+router.put('/reorder', authenticateToken, authorizeSuperAdmin, reorderProjects)
 router.put('/:id', authenticateToken, authorizeSuperAdmin, projectValidation, handleValidation, updateProject)
 router.delete('/:id', authenticateToken, authorizeSuperAdmin, deleteProject)
 router.post('/:id/duplicate', authenticateToken, authorizeSuperAdmin, duplicateProject)
 router.patch('/:id/featured', authenticateToken, authorizeSuperAdmin, toggleFeatured)
 router.patch('/:id/publish', authenticateToken, authorizeSuperAdmin, togglePublish)
 router.patch('/:id/archive', authenticateToken, authorizeSuperAdmin, toggleArchive)
-router.put('/reorder', authenticateToken, authorizeSuperAdmin, reorderProjects)
 router.patch('/:id/images', authenticateToken, authorizeSuperAdmin, updateImages)
 
 module.exports = router
