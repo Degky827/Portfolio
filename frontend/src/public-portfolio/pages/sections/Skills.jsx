@@ -39,6 +39,7 @@ import {
   SiCisco,
 } from 'react-icons/si'
 import { getSkills } from '../../../shared/services/skillService'
+import { getMediaUrl } from '../../../shared/services/api'
 
 const skillIconMap = {
   SiHtml5, HTML5: SiHtml5, HTML: SiHtml5,
@@ -445,7 +446,7 @@ function SkillCard({ card, itemVariants, onCertClick }) {
               >
                 {cert.icon ? (
                   <img
-                    src={cert.icon.startsWith('http') ? cert.icon : `http://localhost:5000${cert.icon}`}
+                    src={getMediaUrl(cert.icon)}
                     alt=""
                     className="w-7 h-7 rounded-lg object-cover flex-shrink-0"
                   />
@@ -579,7 +580,7 @@ function CertModal({ cert, onClose }) {
         {cert.icon && (
           <div className="h-36 bg-gray-100 dark:bg-slate-800 overflow-hidden">
             <img
-              src={cert.icon.startsWith('http') ? cert.icon : `http://localhost:5000${cert.icon}`}
+              src={getMediaUrl(cert.icon)}
               alt={cert.name}
               className="w-full h-full object-cover"
             />

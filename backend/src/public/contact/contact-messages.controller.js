@@ -2,16 +2,7 @@ const ContactMessage = require('../../shared/models/ContactMessage')
 const Message = require('../../shared/models/Message')
 const { emitToAdmin } = require('../../infrastructure/socket')
 const { auditLog } = require('../../shared/utilities/auditLogger')
-
-async function createNotification({ type, title, message, link, metadata }) {
-  try {
-    const Notification = require('../../shared/models/Notification')
-    return await Notification.create({ type, title, message, link, metadata })
-  } catch (error) {
-    console.error('[notifications] create error:', error)
-    return null
-  }
-}
+const { createNotification } = require('../../admin/notifications/notifications.controller')
 
 async function getMessages(req, res) {
   try {

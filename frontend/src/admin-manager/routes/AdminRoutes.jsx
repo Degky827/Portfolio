@@ -1,39 +1,42 @@
+import { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from '../authentication/AuthContext'
 import RoleGuard from '../authentication/RoleGuard'
 import ProtectedRoute from '../authentication/ProtectedRoute'
 import AdminLayout from '../layout/AdminLayout'
-import Dashboard from '../dashboard/Dashboard'
-import Analytics from '../analytics-management/Analytics'
-import ActivityLogs from '../activity-management/ActivityLogs'
-import Projects from '../projects-management/ProjectsList'
-import ProjectForm from '../projects-management/ProjectForm'
-import Skills from '../skills-management/SkillsList'
-import SkillForm from '../skills-management/SkillForm'
-import HomeContent from '../homepage-management/HomeContent'
-import NavigationManagement from '../navigation-management/NavigationManagement'
-import AboutContent from '../about-management/AboutContent'
-import ContactContent from '../contact-management/ContactContent'
-import MessageCenter from '../contact-management/MessageCenter'
-import FooterContent from '../footer-management/FooterContent'
-import MediaLibrary from '../media-management/MediaLibrary'
-import ImportExport from '../import-export/ImportExport'
-import Maintenance from '../maintenance/Maintenance'
-import UserManagement from '../user-management/UserManagement'
-import Profile from '../profile-management/Profile'
-import ThemeSettings from '../settings-management/ThemeSettings'
-import SystemConfig from '../system-config/SystemConfig'
-import Backup from '../backup-management/Backup'
-import CustomPagesList from '../custom-pages-management/CustomPagesList'
-import CustomPageForm from '../custom-pages-management/CustomPageForm'
+
+const Dashboard = lazy(() => import('../dashboard/Dashboard'))
+const Analytics = lazy(() => import('../analytics-management/Analytics'))
+const ActivityLogs = lazy(() => import('../activity-management/ActivityLogs'))
+const Projects = lazy(() => import('../projects-management/ProjectsList'))
+const ProjectForm = lazy(() => import('../projects-management/ProjectForm'))
+const Skills = lazy(() => import('../skills-management/SkillsList'))
+const SkillForm = lazy(() => import('../skills-management/SkillForm'))
+const HomeContent = lazy(() => import('../homepage-management/HomeContent'))
+const NavigationManagement = lazy(() => import('../navigation-management/NavigationManagement'))
+const AboutContent = lazy(() => import('../about-management/AboutContent'))
+const ContactContent = lazy(() => import('../contact-management/ContactContent'))
+const MessageCenter = lazy(() => import('../contact-management/MessageCenter'))
+const FooterContent = lazy(() => import('../footer-management/FooterContent'))
+const MediaLibrary = lazy(() => import('../media-management/MediaLibrary'))
+const ImportExport = lazy(() => import('../import-export/ImportExport'))
+const Maintenance = lazy(() => import('../maintenance/Maintenance'))
+const UserManagement = lazy(() => import('../user-management/UserManagement'))
+const Profile = lazy(() => import('../profile-management/Profile'))
+const ThemeSettings = lazy(() => import('../settings-management/ThemeSettings'))
+const SystemConfig = lazy(() => import('../system-config/SystemConfig'))
+const Backup = lazy(() => import('../backup-management/Backup'))
+const CustomPagesList = lazy(() => import('../custom-pages-management/CustomPagesList'))
+const CustomPageForm = lazy(() => import('../custom-pages-management/CustomPageForm'))
 
 export default function AdminRoutes() {
   const { user } = useAuth()
 
   return (
     <ProtectedRoute>
-      <Routes>
-        <Route element={<AdminLayout />}>
+      <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900"><div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" /></div>}>
+        <Routes>
+          <Route element={<AdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
           <Route
@@ -126,6 +129,7 @@ export default function AdminRoutes() {
           />
         </Route>
       </Routes>
+      </Suspense>
     </ProtectedRoute>
   )
 }

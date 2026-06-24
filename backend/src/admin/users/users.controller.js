@@ -2,6 +2,7 @@ const User = require('../../shared/models/User')
 const HomeContent = require('../../shared/models/HomeContent')
 const AboutContent = require('../../shared/models/AboutContent')
 const { createAuditLog, generate2FASecret, generateQRCodeDataURL } = require('../auth/auth.controller')
+const { escapeRegex } = require('../../shared/utilities/escapeRegex')
 
 async function getUsers(req, res) {
   try {
@@ -15,9 +16,10 @@ async function getUsers(req, res) {
     const query = {}
 
     if (search) {
+      const safeSearch = escapeRegex(search)
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { email: { $regex: search, $options: 'i' } },
+        { name: { $regex: safeSearch, $options: 'i' } },
+        { email: { $regex: safeSearch, $options: 'i' } },
       ]
     }
     if (role) {
@@ -57,13 +59,12 @@ async function getUsers(req, res) {
 
 async function getUser(req, res) {
   try {
-    const user = await User.findById(req.params.id).select('+twoFactorSecret +twoFactorEnabled +failedLoginAttempts +lockedUntil')
+    const user = await User.findById(req.params.id).select('+twoFactorEnabled +failedLoginAttempts +lockedUntil')
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' })
     }
     const data = user.toJSON()
     data.twoFactorEnabled = user.twoFactorEnabled
-    data.twoFactorSecret = user.twoFactorSecret || ''
     data.failedLoginAttempts = user.failedLoginAttempts
     data.lockedUntil = user.lockedUntil
     res.json({ success: true, user: data })

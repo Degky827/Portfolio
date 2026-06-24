@@ -4,6 +4,7 @@ import {
   X, ExternalLink, ChevronLeft, ChevronRight,
   CheckCircle, Clock, AlertCircle, Star,
 } from 'lucide-react'
+import { getMediaUrl } from '../../shared/services/api'
 
 const statusConfig = {
   completed: { label: 'Completed', classes: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
@@ -73,7 +74,7 @@ export default function ProjectPreview({ project, onClose }) {
               {allImages.length > 0 && (
                 <div className="relative rounded-xl overflow-hidden bg-gray-100 dark:bg-slate-800">
                   <img
-                    src={currentImage.startsWith('http') ? currentImage : `http://localhost:5000${currentImage}`}
+                    src={getMediaUrl(currentImage)}
                     alt={project.title}
                     className="w-full aspect-video object-cover"
                   />

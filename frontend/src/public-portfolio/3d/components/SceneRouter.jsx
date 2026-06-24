@@ -26,7 +26,7 @@ const sceneFallback = null
  * Uses React.lazy for code-splitting each scene.
  * Preloads adjacent scenes for smoother transitions.
  */
-export default function SceneRouter({ activeSection, sectionProgress }) {
+export default function SceneRouter({ activeSection, sectionProgress, scrollProgress }) {
   const section = PORTFOLIO_SECTIONS[activeSection]
   if (!section) return null
 
@@ -37,6 +37,7 @@ export default function SceneRouter({ activeSection, sectionProgress }) {
     <Suspense fallback={sceneFallback}>
       <SceneComponent
         sectionProgress={sectionProgress}
+        scrollProgress={scrollProgress}
         isActive={true}
       />
     </Suspense>

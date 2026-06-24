@@ -2,6 +2,7 @@ const Skill = require('../../shared/models/Skill')
 const Category = require('../../shared/models/Category')
 const { createNotification } = require('../../admin/notifications/notifications.controller')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { escapeRegex } = require('../../shared/utilities/escapeRegex')
 
 const VALID_CATEGORIES = [
   'Frontend Development',
@@ -67,8 +68,6 @@ async function createSkill(req, res) {
       issuer, issueDate, certificateUrl,
     } = req.body
 
-    console.log('[skills] Incoming category:', JSON.stringify(category))
-
     if (!VALID_CATEGORIES.includes(category)) {
       return res.status(400).json({
         success: false,
@@ -130,10 +129,11 @@ async function getSkills(req, res) {
     }
 
     if (search) {
+      const safeSearch = escapeRegex(search)
       query.$or = [
-        { name: { $regex: search, $options: 'i' } },
-        { category: { $regex: search, $options: 'i' } },
-        { issuer: { $regex: search, $options: 'i' } },
+        { name: { $regex: safeSearch, $options: 'i' } },
+        { category: { $regex: safeSearch, $options: 'i' } },
+        { issuer: { $regex: safeSearch, $options: 'i' } },
       ]
     }
     if (category) {

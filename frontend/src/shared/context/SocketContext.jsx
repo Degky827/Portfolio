@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useRef, useState, useCallback } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { io } from 'socket.io-client'
 import { useAuth } from '../../admin-manager/authentication/AuthContext'
 
@@ -71,7 +71,7 @@ export function SocketProvider({ children }) {
     }
   }, [])
 
-  const value = { socket: socketRef.current, connected, on, off }
+  const value = useMemo(() => ({ socket: socketRef.current, connected, on, off }), [connected, on, off])
 
   return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
 }

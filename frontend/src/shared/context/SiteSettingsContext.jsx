@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react'
 import { changeLanguageWithPersistence } from '../../i18n'
 import { getSiteSettings } from '../services/siteSettingsService'
 
@@ -29,12 +29,20 @@ export function SiteSettingsProvider({ children }) {
     fetchSettings()
   }, [fetchSettings])
 
-  function updateSettings(newSettings) {
+  const updateSettings = useCallback((newSettings) => {
     setSettings(newSettings)
-  }
+  }, [])
+
+  const value = useMemo(() => ({
+    settings,
+    loading,
+    error,
+    updateSettings,
+    refreshSettings: fetchSettings,
+  }), [settings, loading, error, updateSettings, fetchSettings])
 
   return (
-    <SiteSettingsContext.Provider value={{ settings, loading, error, updateSettings, refreshSettings: fetchSettings }}>
+    <SiteSettingsContext.Provider value={value}>
       {children}
     </SiteSettingsContext.Provider>
   )

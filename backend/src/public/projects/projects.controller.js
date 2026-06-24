@@ -1,30 +1,8 @@
 const Project = require('../../shared/models/Project')
 const AuditLog = require('../../shared/models/AuditLog')
 const { createNotification } = require('../../admin/notifications/notifications.controller')
-
-function slugify(text) {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-async function ensureUniqueSlug(baseSlug, excludeId) {
-  let slug = baseSlug
-  let counter = 1
-  const query = { slug }
-  if (excludeId) query._id = { $ne: excludeId }
-  while (await Project.findOne(query)) {
-    slug = `${baseSlug}-${counter}`
-    query.slug = slug
-    counter++
-  }
-  return slug
-}
+const { slugify, ensureUniqueSlug } = require('../../shared/utilities/slugify')
+const { escapeRegex } = require('../../shared/utilities/escapeRegex')
 
 async function logActivity({ userId, action, resource, resourceId, details, req }) {
   try {
@@ -44,9 +22,6 @@ async function logActivity({ userId, action, resource, resourceId, details, req 
 
 async function createProject(req, res) {
   try {
-    console.log('[projects] Incoming Body Keys:', Object.keys(req.body))
-    console.log('[projects] Incoming Body:', JSON.stringify(req.body, null, 2).slice(0, 2000))
-
     const {
       title, shortDescription, fullDescription,
       technologies, githubUrl, liveDemoUrl,
@@ -56,10 +31,8 @@ async function createProject(req, res) {
       metaTitle, metaDescription, keywords,
     } = req.body
 
-    console.log('[projects] Parsed fullDescription length:', fullDescription?.length || 0)
-
     let slug = slugify(title)
-    slug = await ensureUniqueSlug(slug, null)
+    slug = await ensureUniqueSlug(Project, slug, null)
 
     const projectData = {
       title,
@@ -82,11 +55,7 @@ async function createProject(req, res) {
       keywords: keywords || '',
     }
 
-    console.log('[projects] Project Data Before Save:', JSON.stringify(projectData, null, 2).slice(0, 2000))
-
     const project = await Project.create(projectData)
-
-    console.log('[projects] Project created successfully:', project._id)
 
     await logActivity({
       userId: req.user?._id,
@@ -107,27 +76,20 @@ async function createProject(req, res) {
 
     res.status(201).json({ success: true, project })
   } catch (error) {
-    console.error('[projects] createProject error:', error)
-    console.error('[projects] Error name:', error.name)
-    console.error('[projects] Error code:', error.code)
-    console.error('[projects] Error message:', error.message)
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map((e) => e.message)
       return res.status(400).json({ success: false, message: 'Validation Error: ' + messages.join(', ') })
     }
     if (error.name === 'CastError') {
-      return res.status(400).json({ success: false, message: 'Cast Error: Invalid value for field "' + error.path + '"' })
+      return res.status(400).json({ success: false, message: 'Invalid value provided.' })
     }
     if (error.code === 11000) {
-      return res.status(400).json({ success: false, message: 'Duplicate Key Error: A project with this title already exists.' })
-    }
-    if (error.name === 'MongooseError' || error.name === 'MongoServerError') {
-      return res.status(500).json({ success: false, message: 'Database Error: ' + error.message })
+      return res.status(400).json({ success: false, message: 'A project with this title already exists.' })
     }
     if (error.type === 'entity.too.large') {
       return res.status(413).json({ success: false, message: 'Request body too large. Reduce the content size and try again.' })
     }
-    res.status(500).json({ success: false, message: 'Failed to Create Project: ' + error.message })
+    res.status(500).json({ success: false, message: 'Failed to create project.' })
   }
 }
 
@@ -160,18 +122,19 @@ async function getProjects(req, res) {
     }
 
     if (search) {
+      const safeSearch = escapeRegex(search)
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { technologies: { $regex: search, $options: 'i' } },
-        { category: { $regex: search, $options: 'i' } },
-        { shortDescription: { $regex: search, $options: 'i' } },
+        { title: { $regex: safeSearch, $options: 'i' } },
+        { technologies: { $regex: safeSearch, $options: 'i' } },
+        { category: { $regex: safeSearch, $options: 'i' } },
+        { shortDescription: { $regex: safeSearch, $options: 'i' } },
       ]
     }
     if (category) {
       query.category = category
     }
     if (technology) {
-      query.technologies = { $in: [new RegExp(technology, 'i')] }
+      query.technologies = { $in: [new RegExp(escapeRegex(technology), 'i')] }
     }
     if (featured === 'true') {
       query.featured = true
@@ -286,7 +249,7 @@ async function updateProject(req, res) {
 
     if (slugChanged) {
       let slug = slugify(project.title)
-      slug = await ensureUniqueSlug(slug, project._id)
+      slug = await ensureUniqueSlug(Project, slug, project._id)
       project.slug = slug
     }
 
@@ -362,7 +325,7 @@ async function duplicateProject(req, res) {
 
     const baseTitle = `${source.title} (Copy)`
     let slug = slugify(baseTitle)
-    slug = await ensureUniqueSlug(slug, null)
+    slug = await ensureUniqueSlug(Project, slug, null)
 
     const duplicate = await Project.create({
       title: baseTitle,

@@ -1,6 +1,7 @@
 const { Router } = require('express')
-const { body, validationResult } = require('express-validator')
+const { body } = require('express-validator')
 const { authenticateToken, authorizeSuperAdmin } = require('../../shared/middleware/auth')
+const { handleValidation } = require('../../shared/middleware/validate')
 const {
   createProject,
   getProjects,
@@ -17,17 +18,6 @@ const {
 } = require('./projects.controller')
 
 const router = Router()
-
-function handleValidation(req, res, next) {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: errors.array().map((e) => e.msg).join(', '),
-    })
-  }
-  next()
-}
 
 const projectValidation = [
   body('title').trim().notEmpty().withMessage('Project title is required'),

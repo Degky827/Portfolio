@@ -72,6 +72,7 @@ export default function ThreeDPortfolio() {
             <SceneRouter
               activeSection={activeSection}
               sectionProgress={sectionProgress}
+              scrollProgress={scrollProgress}
             />
           </Suspense>
 

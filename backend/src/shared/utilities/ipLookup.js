@@ -29,7 +29,7 @@ function cleanIP(ip) {
 }
 
 async function lookupViaIpApi(ip) {
-  const { data } = await axios.get(`http://ip-api.com/json/${ip}?fields=status,country,regionName,city,query`, {
+  const { data } = await axios.get(`https://ip-api.com/json/${ip}?fields=status,country,regionName,city,query`, {
     timeout: 4000,
   })
   if (data.status !== 'success') {

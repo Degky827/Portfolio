@@ -16,6 +16,7 @@ import {
   getProjects, deleteProject, duplicateProject,
   toggleFeatured, togglePublish, toggleArchive,
 } from '../../shared/services/projectService'
+import { getMediaUrl } from '../../shared/services/api'
 
 const statusConfig = {
   completed: {
@@ -200,7 +201,7 @@ export default function Projects() {
       <div className="relative aspect-video bg-gray-100 dark:bg-slate-800 overflow-hidden">
         {project.thumbnail || (project.images && project.images[0]) ? (
           <img
-            src={(project.thumbnail || project.images[0]).startsWith('http') ? (project.thumbnail || project.images[0]) : `http://localhost:5000${project.thumbnail || project.images[0]}`}
+                                  src={getMediaUrl(project.thumbnail || project.images[0])}
             alt={project.title}
             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
           />
@@ -523,7 +524,7 @@ export default function Projects() {
                             <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden">
                               {project.thumbnail || (project.images && project.images[0]) ? (
                                 <img
-                                  src={(project.thumbnail || project.images[0]).startsWith('http') ? (project.thumbnail || project.images[0]) : `http://localhost:5000${project.thumbnail || project.images[0]}`}
+            src={getMediaUrl(project.thumbnail || project.images[0])}
                                   alt=""
                                   className="w-full h-full object-cover"
                                 />

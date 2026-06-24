@@ -10,6 +10,7 @@ import PageHeader from '../shared/PageHeader'
 import ConfirmModal from '../shared/ConfirmModal'
 import Toast from '../shared/Toast'
 import { getMedia, uploadMedia, deleteMedia, updateMedia } from '../../shared/services/mediaService'
+import { getMediaUrl } from '../../shared/services/api'
 
 const FILE_SIZE_LIMIT = 10 * 1024 * 1024
 
@@ -360,7 +361,7 @@ export default function MediaLibrary() {
                 >
                   {item.fileType === 'image' ? (
                     <img
-                      src={item.url.startsWith('http') ? item.url : `http://localhost:5000${item.url}`}
+                      src={getMediaUrl(item.url)}
                       alt={item.originalName}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     />
@@ -422,7 +423,7 @@ export default function MediaLibrary() {
                         <div className="w-10 h-10 rounded-lg bg-gray-100 dark:bg-slate-800 flex items-center justify-center shrink-0 overflow-hidden">
                           {item.fileType === 'image' ? (
                             <img
-                              src={item.url.startsWith('http') ? item.url : `http://localhost:5000${item.url}`}
+                              src={getMediaUrl(item.url)}
                               alt=""
                               className="w-full h-full object-cover"
                             />
@@ -514,7 +515,7 @@ export default function MediaLibrary() {
               {previewTarget.fileType === 'image' ? (
                 <div className="relative">
                   <img
-                    src={previewTarget.url.startsWith('http') ? previewTarget.url : `http://localhost:5000${previewTarget.url}`}
+                    src={getMediaUrl(previewTarget.url)}
                     alt={previewTarget.originalName}
                     className="w-full max-h-[60vh] object-contain bg-gray-100 dark:bg-slate-800"
                   />

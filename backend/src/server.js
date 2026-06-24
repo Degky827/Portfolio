@@ -15,7 +15,6 @@ const homeContentRoutes = require('./public/homepage/homepage.routes')
 const aboutRoutes = require('./public/about/about.routes')
 const contactRoutes = require('./public/contact/contact.routes')
 const contactMessageRoutes = require('./public/contact/contact-messages.routes')
-const messagesRoutes = require('./public/contact/messages.routes')
 const footerRoutes = require('./public/footer/footer.routes')
 const siteSettingsRoutes = require('./public/site-settings/siteSettings.routes')
 const chatRoutes = require('./ai/routes/chat.routes')
@@ -37,15 +36,8 @@ app.set('trust proxy', config.nodeEnv === 'production' ? 1 : 'loopback')
 
 app.use(cookieParser())
 
-const hardcodedOrigins = [
-  'https://modernize-portifo.vercel.app',
-  'http://localhost:5173',
-  'http://localhost:3000',
-]
-
 const allowedOrigins = [
-  ...hardcodedOrigins,
-  ...config.corsOrigins.filter((o) => !hardcodedOrigins.includes(o)),
+  ...config.corsOrigins,
   config.frontendUrl,
 ].filter(Boolean)
 
@@ -65,26 +57,6 @@ const corsOptions = {
 }
 
 app.use(cors(corsOptions))
-
-// Production origin diagnostic middleware
-app.use((req, res, next) => {
-  try {
-    if (config.nodeEnv === 'production') {
-      const origin = req.get('Origin') || '<none>'
-      console.log('==================================================')
-      console.log('[PRODUCTION ORIGIN DIAGNOSTIC]')
-      console.log('Request:', req.method, req.originalUrl)
-      console.log('Origin header:', origin)
-      console.log('Host header:', req.get('Host') || '<none>')
-      console.log('Forwarded for (x-forwarded-for):', req.get('X-Forwarded-For') || '<none>')
-      console.log('User-Agent:', req.get('User-Agent') || '<none>')
-      console.log('==================================================')
-    }
-  } catch (err) {
-    console.error('[PRODUCTION ORIGIN DIAGNOSTIC] logging failed:', err && err.stack ? err.stack : err)
-  }
-  return next()
-})
 
 app.use(express.json({ strict: true, limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
@@ -106,7 +78,6 @@ app.use('/api/home-content', homeContentRoutes)
 app.use('/api/about', aboutRoutes)
 app.use('/api/contact', contactRoutes)
 app.use('/api/contact-messages', contactMessageRoutes)
-app.use('/api/messages', messagesRoutes)
 app.use('/api/footer', footerRoutes)
 app.use('/api/site-settings', siteSettingsRoutes)
 app.use('/api/media', mediaRoutes)
@@ -139,7 +110,7 @@ app.use((err, _req, res, _next) => {
   if (err.code === 'LIMIT_FILE_SIZE') {
     return res.status(400).json({ success: false, message: 'File exceeds size limit.' })
   }
-  res.status(err.status || 500).json({ success: false, message: err.message || 'Internal server error' })
+  res.status(err.status || 500).json({ success: false, message: 'Internal server error' })
 })
 
 async function start() {

@@ -10,6 +10,7 @@ import MediaPicker from '../shared/MediaPicker'
 import Toast from '../shared/Toast'
 import { createProject, updateProject, getProject } from '../../shared/services/projectService'
 import { uploadMedia } from '../../shared/services/mediaService'
+import { getMediaUrl } from '../../shared/services/api'
 
 const categories = [
   'Web App', 'Mobile App', 'Network', 'API', 'Library', 'Other',
@@ -545,7 +546,7 @@ export default function ProjectForm() {
               {thumbnail ? (
                 <div className="relative group">
                   <img
-                    src={thumbnail.startsWith('http') ? thumbnail : `http://localhost:5000${thumbnail}`}
+                    src={getMediaUrl(thumbnail)}
                     alt="Thumbnail"
                     className="w-full aspect-video rounded-xl object-cover"
                   />
@@ -647,7 +648,7 @@ export default function ProjectForm() {
                   {galleryImages.map((url, index) => (
                     <div key={index} className="relative group aspect-video rounded-xl overflow-hidden bg-gray-100 dark:bg-slate-800">
                       <img
-                        src={url.startsWith('http') ? url : `http://localhost:5000${url}`}
+                        src={getMediaUrl(url)}
                         alt={`Gallery ${index + 1}`}
                         className="w-full h-full object-cover"
                       />

@@ -2,6 +2,7 @@ const Visit = require('../../shared/models/Visit')
 const Project = require('../../shared/models/Project')
 const { extractIP, lookupLocation } = require('../../shared/utilities/ipLookup')
 const { parseUserAgent } = require('../../shared/utilities/parseUserAgent')
+const { escapeRegex } = require('../../shared/utilities/escapeRegex')
 
 const BOT_KEYWORDS = ['headlesschrome', 'lighthouse', 'bot', 'crawl', 'spider', 'prerender', 'wget', 'curl', 'python-requests', 'go-http-client', 'bingpreview', 'facebookexternalhit', 'twitterbot', 'linkedinbot']
 
@@ -58,16 +59,12 @@ async function logVisit(req, res) {
     const userAgent = req.headers['user-agent']
     const ipAddress = extractIP(req)
 
-    console.log(`[Analytics] Tracking page: ${page} | IP: ${ipAddress} | UA: ${userAgent || 'none'}`)
-
     if (!isPublicPage(page)) {
-      console.log(`[Analytics] Skipped: admin page "${page}"`)
       return res.status(200).json({ success: true, skipped: true, reason: 'admin_page' })
     }
 
     const isBot = isBotAgent(userAgent)
     if (isBot) {
-      console.log(`[Analytics] Skipped: bot detected "${userAgent}"`)
       return res.status(200).json({ success: true, skipped: true, reason: 'bot' })
     }
 
@@ -108,7 +105,6 @@ async function logVisit(req, res) {
       pagesViewed,
     })
 
-    console.log(`[Analytics] Visitor saved: ${visit._id} | page: ${page} | type: ${visitorType}`)
     res.status(201).json({ success: true, visitId: visit._id, visitorType, isBot })
   } catch (error) {
     console.error('[Analytics] logVisit error:', error)
@@ -127,15 +123,11 @@ async function logEngagement(req, res) {
     const userAgent = req.headers['user-agent']
     const ipAddress = extractIP(req)
 
-    console.log(`[Analytics] Engagement: ${action} | page: ${trackPage} | IP: ${ipAddress}`)
-
     if (!isPublicPage(trackPage)) {
-      console.log(`[Analytics] Skipped engagement: admin page "${trackPage}"`)
       return res.status(200).json({ success: true, skipped: true, reason: 'admin_page' })
     }
 
     if (isBotAgent(userAgent)) {
-      console.log(`[Analytics] Skipped engagement: bot detected`)
       return res.status(200).json({ success: true, isBot: true })
     }
 
@@ -169,7 +161,6 @@ async function logEngagement(req, res) {
       discoveryChannel,
     })
 
-    console.log(`[Analytics] Engagement saved: ${visit._id} | action: ${interaction}`)
     res.status(201).json({ success: true })
   } catch (error) {
     console.error('[Analytics] logEngagement error:', error)
@@ -196,15 +187,16 @@ async function getMetrics(req, res) {
       ? { page: { $not: /^\/(admin|login|dashboard)/ } }
       : publicOnlyFilter()
     if (search) {
+      const safeSearch = escapeRegex(search)
       query.$or = [
-        { visitorName: { $regex: search, $options: 'i' } },
-        { 'location.city': { $regex: search, $options: 'i' } },
-        { 'location.region': { $regex: search, $options: 'i' } },
-        { 'location.country': { $regex: search, $options: 'i' } },
-        { 'deviceInfo.browser': { $regex: search, $options: 'i' } },
-        { 'deviceInfo.os': { $regex: search, $options: 'i' } },
-        { 'deviceInfo.deviceType': { $regex: search, $options: 'i' } },
-        { referrer: { $regex: search, $options: 'i' } },
+        { visitorName: { $regex: safeSearch, $options: 'i' } },
+        { 'location.city': { $regex: safeSearch, $options: 'i' } },
+        { 'location.region': { $regex: safeSearch, $options: 'i' } },
+        { 'location.country': { $regex: safeSearch, $options: 'i' } },
+        { 'deviceInfo.browser': { $regex: safeSearch, $options: 'i' } },
+        { 'deviceInfo.os': { $regex: safeSearch, $options: 'i' } },
+        { 'deviceInfo.deviceType': { $regex: safeSearch, $options: 'i' } },
+        { referrer: { $regex: safeSearch, $options: 'i' } },
       ]
     }
     if (deviceType) query['deviceInfo.deviceType'] = { $regex: `^${deviceType}$`, $options: 'i' }

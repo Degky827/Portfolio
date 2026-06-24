@@ -131,7 +131,7 @@ async function triggerBackup(req, res) {
     await backupScheduler.executeScheduledBackup()
     res.json({ success: true, message: 'Backup triggered successfully' })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    res.status(500).json({ success: false, message: 'Failed to trigger backup.' })
   }
 }
 
@@ -144,7 +144,7 @@ async function triggerHealthCheck(req, res) {
       ...healthMonitor.getMonitorStatus(),
     })
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message })
+    res.status(500).json({ success: false, message: 'Failed to perform health check.' })
   }
 }
 
