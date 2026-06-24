@@ -7,6 +7,7 @@ const User = require('../../shared/models/User')
 const SiteSettings = require('../../shared/models/SiteSettings')
 const ContactContent = require('../../shared/models/ContactContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { syncFooterSocial } = require('../../shared/utilities/socialSync')
 
 async function getFooterContent(_req, res) {
   try {
@@ -129,16 +130,7 @@ async function updateFooterContent(req, res) {
     }
 
     if (req.body.socialLinks) {
-      try {
-        const activeLinks = content.socialLinks.filter(s => s.active !== false)
-        const socialChannels = activeLinks.map((s, i) => ({
-          channelName: s.platform || '',
-          linkUrl: s.url || '',
-          iconVector: '',
-          displayWeight: s.displayOrder ?? i,
-        }))
-        await ContactContent.findOneAndUpdate({}, { $set: { socialChannels } }, { upsert: true })
-      } catch (e) { console.error('[footer] sync ContactContent.socialChannels:', e.message) }
+      try { await syncFooterSocial(content.socialLinks) } catch (e) { console.error('[footer] syncFooterSocial:', e.message) }
     }
   } catch (error) {
     console.error('[footer] update error:', error.message, error.errors || '')

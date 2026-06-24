@@ -4,6 +4,7 @@ const FooterContent = require('../../shared/models/FooterContent')
 const NavbarSettings = require('../../shared/models/NavbarSettings')
 const SiteSettings = require('../../shared/models/SiteSettings')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { syncHomeSocial } = require('../../shared/utilities/socialSync')
 
 const socialKeys = [
   'github', 'linkedin', 'telegram', 'twitter',
@@ -185,6 +186,10 @@ async function updateHomeContent(req, res) {
       if (body.logoImage !== undefined) siteUpdate.logoImage = body.logoImage
       if (body.logoText !== undefined) siteUpdate.logoText = body.logoText
       try { await SiteSettings.findOneAndUpdate({}, { $set: siteUpdate }, { upsert: true }) } catch (e) { console.error('[homepage] sync SiteSettings logo:', e.message) }
+    }
+
+    if (body.socialLinks) {
+      try { await syncHomeSocial(content.socialLinks) } catch (e) { console.error('[homepage] syncHomeSocial:', e.message) }
     }
   } catch (error) {
     console.error('[homepage] update error:', error.message, error.errors || '')
