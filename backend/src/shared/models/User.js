@@ -118,7 +118,6 @@ userSchema.methods.toJSON = function () {
   delete obj.failedLoginAttempts
   delete obj.lockedUntil
   delete obj.twoFactorSecret
-  delete obj.twoFactorEnabled
   delete obj.googleId
   return obj
 }

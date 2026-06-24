@@ -64,7 +64,7 @@ const IMPORT_CONFIG = {
       category: row.category || '',
       featured: row.featured === true || row.featured === 'true' || row.featured === 'Yes',
       displayOrder: parseInt(row.displayOrder, 10) || 0,
-      status: row.status || 'active',
+      status: row.status || 'completed',
     }),
   },
   skills: {

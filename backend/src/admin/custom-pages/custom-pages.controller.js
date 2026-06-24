@@ -252,7 +252,7 @@ async function toggleCustomPageStatus(req, res) {
     })
 
     await createNotification({
-      type: 'custom_page_status_changed',
+      type: page.status === 'published' ? 'custom_page_published' : 'custom_page_unpublished',
       title: page.status === 'published' ? 'Page Published' : 'Page Unpublished',
       message: `"${page.title}" has been ${page.status === 'published' ? 'published' : 'unpublished'}.`,
       link: `/admin/custom-pages/${page._id}`,

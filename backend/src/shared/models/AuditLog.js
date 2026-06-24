@@ -23,6 +23,7 @@ const auditLogSchema = new mongoose.Schema(
         'ROLE_CHANGE',
         'ACCOUNT_DISABLED',
         'ACCOUNT_ENABLED',
+        'GOOGLE_LOGIN',
       ],
     },
     resource: {
