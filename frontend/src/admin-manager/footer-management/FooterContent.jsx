@@ -149,7 +149,8 @@ export default function FooterContent() {
     setLoading(true)
     const fd = new FormData()
     Object.entries(form).forEach(([key, val]) => {
-      if (key === 'navigation' || key === 'socialLinks') {
+      if (key === 'navigation') return
+      if (key === 'socialLinks') {
         fd.append(key, JSON.stringify(val))
       } else {
         fd.append(key, val)
@@ -273,35 +274,23 @@ export default function FooterContent() {
           <div className={colScroll}>
             <motion.div layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
               <Card>
-                <div className="flex items-center justify-between">
-                  <SectionHeader title="Navigation Links" subtitle="Reorderable anchor links for your page sections." />
-                  <button type="button" onClick={() => addItem('navigation', emptyNavItem)} className="flex items-center gap-1.5 text-sm font-medium text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-200 transition-colors">
-                    <Plus size={16} /> Add Link
-                  </button>
-                </div>
-                {form.navigation.length === 0 && <EmptyState message="No navigation links yet." />}
-                <div className="space-y-2">
-                  <AnimatePresence mode="popLayout">
-                    {form.navigation.map((link, idx) => (
-                      <motion.div
-                        key={idx}
-                        layout
-                        initial={{ opacity: 0, scale: 0.95 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.95, transition: { duration: 0.15 } }}
-                        className="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700/50"
-                      >
-                        <GripVertical size={14} className="text-zinc-400 shrink-0 cursor-grab" />
-                        <input type="text" value={link.label} onChange={updateItem('navigation', idx, 'label')} placeholder="Home" className="w-24 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 transition-all" />
-                        <input type="text" value={link.url} onChange={updateItem('navigation', idx, 'url')} placeholder="#home" className="flex-1 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400 focus:outline-none focus:ring-1 focus:ring-zinc-400/50 transition-all" />
-                        <div className="flex items-center gap-0.5 shrink-0">
-                          <button type="button" onClick={() => moveItem('navigation', idx, -1)} disabled={idx === 0} className="p-1 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 disabled:opacity-30 text-xs">▲</button>
-                          <button type="button" onClick={() => moveItem('navigation', idx, 1)} disabled={idx === form.navigation.length - 1} className="p-1 rounded text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-300 disabled:opacity-30 text-xs">▼</button>
-                        </div>
-                        <button type="button" onClick={() => removeItem('navigation', idx)} className="p-1.5 rounded-lg text-zinc-400 hover:text-red-500 dark:hover:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-500/5 transition-colors shrink-0"><Trash2 size={13} /></button>
-                      </motion.div>
-                    ))}
-                  </AnimatePresence>
+                <SectionHeader title="Navigation Links" subtitle="Synced automatically from Navigation Management. Visible items appear in the footer Explore section." />
+                <p className="text-xs text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/50 rounded-lg px-3 py-2">
+                  These links are managed in <strong>Navigation Management</strong> → Menu Items. Only items marked <em>Visible</em> and <em>Active</em> appear here.
+                </p>
+                {form.navigation.length === 0 && <EmptyState message="No navigation links synced yet. Add items in Navigation Management." />}
+                <div className="space-y-2 opacity-70 pointer-events-none">
+                  {form.navigation.map((link, idx) => (
+                    <div
+                      key={idx}
+                      className="flex items-center gap-2 p-2.5 rounded-lg border border-zinc-200 dark:border-zinc-700/50"
+                    >
+                      <GripVertical size={14} className="text-zinc-400 shrink-0" />
+                      <input type="text" value={link.label} readOnly placeholder="Home" className="w-24 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400" />
+                      <input type="text" value={link.url} readOnly placeholder="#home" className="flex-1 px-2.5 py-1.5 rounded-md border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800/60 text-sm text-zinc-800 dark:text-zinc-200 placeholder-zinc-400" />
+                      <span className="text-xs text-zinc-400 px-2">{idx + 1}</span>
+                    </div>
+                  ))}
                 </div>
               </Card>
             </motion.div>
