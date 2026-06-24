@@ -6,6 +6,7 @@ const visitSchema = new mongoose.Schema(
       type: String,
       default: 'Anonymous',
       trim: true,
+      maxlength: 100,
     },
     timestamp: {
       type: Date,
@@ -14,21 +15,25 @@ const visitSchema = new mongoose.Schema(
     ipAddress: {
       type: String,
       trim: true,
+      maxlength: 45,
     },
     page: {
       type: String,
       trim: true,
       default: '/',
+      maxlength: 500,
     },
     referrer: {
       type: String,
       trim: true,
       default: 'Direct',
+      maxlength: 500,
     },
     visitorId: {
       type: String,
       trim: true,
       index: true,
+      maxlength: 100,
     },
     visitorType: {
       type: String,
@@ -36,14 +41,14 @@ const visitSchema = new mongoose.Schema(
       default: 'new',
     },
     location: {
-      country: { type: String, trim: true },
-      region: { type: String, trim: true },
-      city: { type: String, trim: true },
+      country: { type: String, trim: true, maxlength: 100 },
+      region: { type: String, trim: true, maxlength: 100 },
+      city: { type: String, trim: true, maxlength: 100 },
     },
     deviceInfo: {
-      browser: { type: String, trim: true },
-      os: { type: String, trim: true },
-      deviceType: { type: String, trim: true },
+      browser: { type: String, trim: true, maxlength: 100 },
+      os: { type: String, trim: true, maxlength: 100 },
+      deviceType: { type: String, trim: true, maxlength: 50 },
     },
     isBot: {
       type: Boolean,

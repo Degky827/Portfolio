@@ -20,9 +20,9 @@ const {
 const router = Router()
 
 const projectValidation = [
-  body('title').trim().notEmpty().withMessage('Project title is required'),
-  body('shortDescription').trim().notEmpty().withMessage('Short description is required'),
-  body('category').trim().notEmpty().withMessage('Category is required'),
+  body('title').trim().notEmpty().withMessage('Project title is required').isLength({ max: 200 }).withMessage('Title too long'),
+  body('shortDescription').trim().notEmpty().withMessage('Short description is required').isLength({ max: 500 }).withMessage('Description too long'),
+  body('category').trim().notEmpty().withMessage('Category is required').isLength({ max: 100 }).withMessage('Category too long'),
 ]
 
 router.get('/', getProjects)

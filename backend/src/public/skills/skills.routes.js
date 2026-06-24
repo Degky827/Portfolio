@@ -13,8 +13,8 @@ const {
 const router = Router()
 
 const skillValidation = [
-  body('name').trim().notEmpty().withMessage('Name is required'),
-  body('category').trim().notEmpty().withMessage('Category is required'),
+  body('name').trim().notEmpty().withMessage('Name is required').isLength({ max: 100 }).withMessage('Name too long'),
+  body('category').trim().notEmpty().withMessage('Category is required').isLength({ max: 100 }).withMessage('Category too long'),
 ]
 
 router.post('/', authenticateToken, skillValidation, handleValidation, createSkill)

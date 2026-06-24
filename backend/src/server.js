@@ -1,10 +1,12 @@
 const http = require('http')
 const express = require('express')
+const helmet = require('helmet')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
 const config = require('./infrastructure/config')
 const connectDB = require('./infrastructure/database/db')
 const { initSocket } = require('./infrastructure/socket')
+const { csrfProtection } = require('./shared/middleware/csrf')
 const analyticsRoutes = require('./admin/analytics/analytics.routes')
 const authRoutes = require('./admin/auth/auth.routes')
 const userRoutes = require('./admin/users/users.routes')
@@ -36,6 +38,11 @@ app.set('trust proxy', config.nodeEnv === 'production' ? 1 : 'loopback')
 
 app.use(cookieParser())
 
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginEmbedderPolicy: false,
+}))
+
 const allowedOrigins = [
   ...config.corsOrigins,
   config.frontendUrl,
@@ -60,6 +67,8 @@ app.use(cors(corsOptions))
 
 app.use(express.json({ strict: true, limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
+
+app.use(csrfProtection)
 
 app.get('/api/health', (_req, res) => {
   res.json({
