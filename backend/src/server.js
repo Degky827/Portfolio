@@ -7,6 +7,8 @@ const config = require('./infrastructure/config')
 const connectDB = require('./infrastructure/database/db')
 const { initSocket } = require('./infrastructure/socket')
 const { csrfProtection } = require('./shared/middleware/csrf')
+const { sanitizeMongo } = require('./shared/middleware/sanitize')
+const { globalLimiter } = require('./shared/middleware/globalRateLimiter')
 const analyticsRoutes = require('./admin/analytics/analytics.routes')
 const authRoutes = require('./admin/auth/auth.routes')
 const userRoutes = require('./admin/users/users.routes')
@@ -39,8 +41,26 @@ app.set('trust proxy', config.nodeEnv === 'production' ? 1 : 'loopback')
 app.use(cookieParser())
 
 app.use(helmet({
-  contentSecurityPolicy: false,
+  contentSecurityPolicy: {
+    directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'"],
+      styleSrc: ["'self'", "'unsafe-inline'"],
+      imgSrc: ["'self'", 'data:', 'https:'],
+      fontSrc: ["'self'", 'https://fonts.gstatic.com'],
+      connectSrc: ["'self'", config.frontendUrl].filter(Boolean),
+      frameSrc: ["'none'"],
+      objectSrc: ["'none'"],
+      baseUri: ["'self'"],
+      formAction: ["'self'"],
+    },
+  },
   crossOriginEmbedderPolicy: false,
+  crossOriginResourcePolicy: { policy: 'same-site' },
+  referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
+  hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
+  noSniff: true,
+  xssFilter: true,
 }))
 
 const allowedOrigins = [
@@ -68,6 +88,8 @@ app.use(cors(corsOptions))
 app.use(express.json({ strict: true, limit: '10mb' }))
 app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 
+app.use(sanitizeMongo)
+app.use(globalLimiter)
 app.use(csrfProtection)
 
 app.get('/api/health', (_req, res) => {
