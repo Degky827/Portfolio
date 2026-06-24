@@ -7,11 +7,43 @@ const api = axios.create({
   baseURL: isProduction
     ? 'https://portfolio-backend-lgvk.onrender.com/api'
     : import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
-  withCredentials: true, // ይህ ከኩኪዎች ጋር ለመስራት ወሳኝ ነው
+  withCredentials: true,
 })
 
-// ለሁሉም የ axios ጥያቄዎች እንዲያገለግል
-axios.defaults.withCredentials = true 
+axios.defaults.withCredentials = true
+
+function getCsrfToken() {
+  const match = document.cookie.match(/(?:^|;\s*)_csrf=([^;]*)/)
+  if (!match) return null
+  const value = match[1]
+  const parts = value.split('.')
+  return parts.length >= 1 ? parts[0] : null
+}
+
+let csrfInitialized = false
+
+async function ensureCsrfToken() {
+  if (getCsrfToken()) return
+  if (csrfInitialized) return
+  csrfInitialized = true
+  try {
+    await axios.get(`${api.defaults.baseURL}/health`, { withCredentials: true })
+  } catch {
+    // health endpoint may not exist; other GETs will set the cookie
+  }
+}
+
+api.interceptors.request.use(async (config) => {
+  const unsafeMethods = ['post', 'put', 'patch', 'delete']
+  if (unsafeMethods.includes(config.method?.toLowerCase())) {
+    await ensureCsrfToken()
+    const token = getCsrfToken()
+    if (token) {
+      config.headers['x-csrf-token'] = token
+    }
+  }
+  return config
+})
 
 api.interceptors.response.use(
   (response) => response,
