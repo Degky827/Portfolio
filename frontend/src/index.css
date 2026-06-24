@@ -334,3 +334,24 @@ h1, h2, h3, h4, h5, h6 {
   padding-left: 1rem;
   color: theme('colors.slate.400');
 }
+
+/* 1. The entire scrollbar */
+::-webkit-scrollbar {
+  width: 10px; /* Width of the vertical scrollbar */
+}
+
+/* 2. The track (the background part) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* Light gray background */
+}
+
+/* 3. The handle (the part you drag) */
+::-webkit-scrollbar-thumb {
+  background: #888; /* Dark gray color */
+  border-radius: 5px; /* Rounded corners */
+}
+
+/* 4. The handle on hover */
+::-webkit-scrollbar-thumb:hover {
+  background: #555; /* Darker color when hovering */
+}

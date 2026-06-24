@@ -24,7 +24,10 @@ async function createNavigation(req, res) {
   try {
     const count = await Navigation.countDocuments()
     const item = await Navigation.create({ ...req.body, order: count })
-    await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Navigation', resourceId: item._id, details: { label: item.label }, req })
+    await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Navigation', resourceId: item._id, details: { label: item.title }, req })
+
+    await syncNavigationToFooter()
+
     res.json({ success: true, item })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to create navigation item' })
@@ -35,7 +38,10 @@ async function updateNavigation(req, res) {
   try {
     const item = await Navigation.findByIdAndUpdate(req.params.id, req.body, { new: true })
     if (!item) return res.status(404).json({ success: false, message: 'Navigation item not found' })
-    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Navigation', resourceId: item._id, details: { label: item.label }, req })
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Navigation', resourceId: item._id, details: { label: item.title }, req })
+
+    await syncNavigationToFooter()
+
     res.json({ success: true, item })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update navigation item' })
@@ -46,7 +52,10 @@ async function deleteNavigation(req, res) {
   try {
     const item = await Navigation.findByIdAndDelete(req.params.id)
     if (!item) return res.status(404).json({ success: false, message: 'Navigation item not found' })
-    await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Navigation', resourceId: item._id, details: { label: item.label }, req })
+    await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Navigation', resourceId: item._id, details: { label: item.title }, req })
+
+    await syncNavigationToFooter()
+
     res.json({ success: true, message: 'Navigation item deleted' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete navigation item' })
@@ -59,9 +68,26 @@ async function reorderNavigation(req, res) {
     for (const { _id, order } of items) {
       await Navigation.findByIdAndUpdate(_id, { order })
     }
+
+    await syncNavigationToFooter()
+
     res.json({ success: true, message: 'Navigation reordered' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to reorder navigation' })
+  }
+}
+
+async function syncNavigationToFooter() {
+  try {
+    const navItems = await Navigation.find({ visible: true, active: true }).sort({ order: 1 })
+    const footerNav = navItems.map((item, index) => ({
+      label: item.title || '',
+      url: item.url || '#',
+      order: item.order ?? index,
+    }))
+    await FooterContent.findOneAndUpdate({}, { $set: { navigation: footerNav } }, { upsert: true })
+  } catch (err) {
+    console.error('[navigation] sync to footer failed:', err.message)
   }
 }
 

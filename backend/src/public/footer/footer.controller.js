@@ -5,6 +5,7 @@ const NavbarSettings = require('../../shared/models/NavbarSettings')
 const HomeContent = require('../../shared/models/HomeContent')
 const User = require('../../shared/models/User')
 const SiteSettings = require('../../shared/models/SiteSettings')
+const ContactContent = require('../../shared/models/ContactContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function getFooterContent(_req, res) {
@@ -110,6 +111,18 @@ async function updateFooterContent(req, res) {
       try { await NavbarSettings.findOneAndUpdate({}, { $set: { logo: content.footerLogo } }, { upsert: true }) } catch (e) { console.error('[footer] sync NavbarSettings.logo:', e.message) }
       try { await HomeContent.findOneAndUpdate({}, { $set: { 'hero.profilePhoto.url': content.footerLogo } }, { upsert: true }) } catch (e) { console.error('[footer] sync HomeContent.profilePhoto:', e.message) }
       try { await User.updateMany({}, { $set: { avatar: content.footerLogo } }) } catch (e) { console.error('[footer] sync User.avatar:', e.message) }
+    }
+
+    const contactSync = {}
+    if (req.body.emailAddress !== undefined) contactSync.email = req.body.emailAddress
+    if (req.body.phoneNumber !== undefined) contactSync.phone = req.body.phoneNumber
+    if (req.body.locationHeadline !== undefined || req.body.subLocation !== undefined) {
+      const parts = [req.body.locationHeadline || content.locationHeadline, req.body.subLocation || content.subLocation].filter(Boolean)
+      contactSync.address = parts.join(', ')
+    }
+    if (Object.keys(contactSync).length > 0) {
+      try { await ContactContent.findOneAndUpdate({}, { $set: contactSync }, { upsert: true }) } catch (e) { console.error('[footer] sync ContactContent:', e.message) }
+      try { await SiteSettings.findOneAndUpdate({}, { $set: contactSync }, { upsert: true }) } catch (e) { console.error('[footer] sync SiteSettings contact:', e.message) }
     }
 
     res.json({ success: true, content })

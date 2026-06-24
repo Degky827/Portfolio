@@ -1,4 +1,6 @@
 const ContactContent = require('../../shared/models/ContactContent')
+const FooterContent = require('../../shared/models/FooterContent')
+const SiteSettings = require('../../shared/models/SiteSettings')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function getContactContent(_req, res) {
@@ -52,6 +54,28 @@ async function updateContactContent(req, res) {
     }
 
     await content.save()
+
+    const footerSync = {}
+    const siteSync = {}
+    if (req.body.email !== undefined) {
+      footerSync.emailAddress = req.body.email
+      siteSync.email = req.body.email
+    }
+    if (req.body.phone !== undefined) {
+      footerSync.phoneNumber = req.body.phone
+      siteSync.phone = req.body.phone
+    }
+    if (req.body.address !== undefined) {
+      footerSync.locationHeadline = req.body.address
+      footerSync.subLocation = ''
+    }
+    if (Object.keys(footerSync).length > 0) {
+      try { await FooterContent.findOneAndUpdate({}, { $set: footerSync }, { upsert: true }) } catch (e) { console.error('[contact] sync FooterContent:', e.message) }
+    }
+    if (Object.keys(siteSync).length > 0) {
+      try { await SiteSettings.findOneAndUpdate({}, { $set: siteSync }, { upsert: true }) } catch (e) { console.error('[contact] sync SiteSettings:', e.message) }
+    }
+
     await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'ContactContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
     res.json({ success: true, content })
   } catch (error) {

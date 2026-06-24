@@ -1,4 +1,6 @@
 const SiteSettings = require('../../shared/models/SiteSettings')
+const FooterContent = require('../../shared/models/FooterContent')
+const ContactContent = require('../../shared/models/ContactContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 
 async function getSiteSettings(_req, res) {
@@ -62,6 +64,23 @@ async function updateSiteSettings(req, res) {
     }
 
     await settings.save()
+
+    const footerSync = {}
+    const contactSync = {}
+    if (body.email !== undefined) {
+      footerSync.emailAddress = body.email
+      contactSync.email = body.email
+    }
+    if (body.phone !== undefined) {
+      footerSync.phoneNumber = body.phone
+      contactSync.phone = body.phone
+    }
+    if (Object.keys(footerSync).length > 0) {
+      try { await FooterContent.findOneAndUpdate({}, { $set: footerSync }, { upsert: true }) } catch (e) { console.error('[site-settings] sync FooterContent:', e.message) }
+    }
+    if (Object.keys(contactSync).length > 0) {
+      try { await ContactContent.findOneAndUpdate({}, { $set: contactSync }, { upsert: true }) } catch (e) { console.error('[site-settings] sync ContactContent:', e.message) }
+    }
 
     await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'SiteSettings', resourceId: settings._id, details: { updatedFields: Object.keys(body) }, req })
 
