@@ -68,7 +68,11 @@ function csrfProtection(req, res, next) {
     return res.status(403).json({ success: false, message: 'CSRF token mismatch' })
   }
 
-  const secret = process.env.CSRF_SECRET || process.env.JWT_SECRET || 'csrf-fallback-secret'
+  const secret = process.env.CSRF_SECRET || process.env.JWT_SECRET
+  if (!secret) {
+    console.error('[csrf] Neither CSRF_SECRET nor JWT_SECRET is set — cannot verify tokens')
+    return res.status(500).json({ success: false, message: 'Server configuration error' })
+  }
   if (!verify(token, secret, signature)) {
     return res.status(403).json({ success: false, message: 'CSRF token signature invalid' })
   }
