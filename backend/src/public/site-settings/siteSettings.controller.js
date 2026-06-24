@@ -2,6 +2,7 @@ const SiteSettings = require('../../shared/models/SiteSettings')
 const FooterContent = require('../../shared/models/FooterContent')
 const ContactContent = require('../../shared/models/ContactContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { syncHomeSocial } = require('../../shared/utilities/socialSync')
 
 async function getSiteSettings(_req, res) {
   try {
@@ -83,6 +84,10 @@ async function updateSiteSettings(req, res) {
     }
     if (Object.keys(contactSync).length > 0) {
       try { await ContactContent.findOneAndUpdate({}, { $set: contactSync }, { upsert: true }) } catch (e) { console.error('[site-settings] sync ContactContent:', e.message) }
+    }
+
+    if (body.socialLinks) {
+      try { await syncHomeSocial(settings.socialLinks) } catch (e) { console.error('[site-settings] syncHomeSocial:', e.message) }
     }
   } catch (error) {
     console.error('[site-settings] update error:', error)

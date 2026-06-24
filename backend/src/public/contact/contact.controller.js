@@ -2,6 +2,7 @@ const ContactContent = require('../../shared/models/ContactContent')
 const FooterContent = require('../../shared/models/FooterContent')
 const SiteSettings = require('../../shared/models/SiteSettings')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { syncContactSocial } = require('../../shared/utilities/socialSync')
 
 async function getContactContent(_req, res) {
   try {
@@ -83,15 +84,7 @@ async function updateContactContent(req, res) {
     }
 
     if (req.body.socialChannels) {
-      try {
-        const socialLinks = (content.socialChannels || []).map((ch, i) => ({
-          platform: ch.channelName || '',
-          url: ch.linkUrl || '',
-          displayOrder: ch.displayWeight ?? i,
-          active: true,
-        }))
-        await FooterContent.findOneAndUpdate({}, { $set: { socialLinks } }, { upsert: true })
-      } catch (e) { console.error('[contact] sync FooterContent.socialLinks:', e.message) }
+      try { await syncContactSocial(content.socialChannels) } catch (e) { console.error('[contact] syncContactSocial:', e.message) }
     }
   } catch (error) {
     console.error('[contact] update error:', error.message, error.errors || '')
