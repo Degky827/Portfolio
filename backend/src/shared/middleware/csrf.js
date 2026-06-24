@@ -1,6 +1,5 @@
 const crypto = require('crypto')
 
-const CSRF_COOKIE_NAME = '_csrf'
 const CSRF_HEADER_NAME = 'x-csrf-token'
 const CSRF_MAX_AGE_MS = 60 * 60 * 1000
 
@@ -52,26 +51,20 @@ function csrfProtection(req, res, next) {
   if (!isUnsafeMethod) {
     const token = generateToken(secret)
     const signature = sign(token, secret)
+    const payload = `${token}.${signature}.${Date.now()}`
 
-    res.cookie(CSRF_COOKIE_NAME, `${token}.${signature}.${Date.now()}`, {
-      httpOnly: false,
-      sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
-      secure: process.env.NODE_ENV === 'production',
-      path: '/',
-      maxAge: CSRF_MAX_AGE_MS,
-    })
+    res.setHeader(CSRF_HEADER_NAME, payload)
 
     return next()
   }
 
-  const cookieValue = req.cookies[CSRF_COOKIE_NAME]
   const headerToken = req.headers[CSRF_HEADER_NAME]
 
-  if (!cookieValue || !headerToken) {
+  if (!headerToken) {
     return res.status(403).json({ success: false, message: 'CSRF token missing' })
   }
 
-  const parts = cookieValue.split('.')
+  const parts = headerToken.split('.')
   if (parts.length !== 3) {
     return res.status(403).json({ success: false, message: 'CSRF token invalid' })
   }
@@ -80,10 +73,6 @@ function csrfProtection(req, res, next) {
   const age = Date.now() - parseInt(timestamp, 10)
   if (isNaN(age) || age > CSRF_MAX_AGE_MS) {
     return res.status(403).json({ success: false, message: 'CSRF token expired' })
-  }
-
-  if (headerToken !== token) {
-    return res.status(403).json({ success: false, message: 'CSRF token mismatch' })
   }
 
   if (!verify(token, secret, signature)) {
