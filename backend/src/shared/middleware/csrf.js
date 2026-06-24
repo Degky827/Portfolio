@@ -2,12 +2,12 @@ const crypto = require('crypto')
 
 const CSRF_COOKIE_NAME = '_csrf'
 const CSRF_HEADER_NAME = 'x-csrf-token'
-const CSRF_SECRET_LENGTH = 32
-const CSRF_TOKEN_LENGTH = 64
 const CSRF_MAX_AGE_MS = 60 * 60 * 1000
 
-function generateSecret() {
-  return crypto.randomBytes(CSRF_SECRET_LENGTH).toString('hex')
+function getSecret() {
+  const secret = process.env.CSRF_SECRET || process.env.JWT_SECRET
+  if (!secret) throw new Error('CSRF_SECRET or JWT_SECRET must be set')
+  return secret
 }
 
 function generateToken(secret) {
@@ -28,10 +28,17 @@ function verify(token, secret, signature) {
 }
 
 function csrfProtection(req, res, next) {
+  let secret
+  try {
+    secret = getSecret()
+  } catch (err) {
+    console.error('[csrf]', err.message)
+    return res.status(500).json({ success: false, message: 'Server configuration error' })
+  }
+
   const isUnsafeMethod = ['POST', 'PUT', 'PATCH', 'DELETE'].includes(req.method)
 
   if (!isUnsafeMethod) {
-    const secret = generateSecret()
     const token = generateToken(secret)
     const signature = sign(token, secret)
 
@@ -68,11 +75,6 @@ function csrfProtection(req, res, next) {
     return res.status(403).json({ success: false, message: 'CSRF token mismatch' })
   }
 
-  const secret = process.env.CSRF_SECRET || process.env.JWT_SECRET
-  if (!secret) {
-    console.error('[csrf] Neither CSRF_SECRET nor JWT_SECRET is set — cannot verify tokens')
-    return res.status(500).json({ success: false, message: 'Server configuration error' })
-  }
   if (!verify(token, secret, signature)) {
     return res.status(403).json({ success: false, message: 'CSRF token signature invalid' })
   }

@@ -1,4 +1,4 @@
-const { csrfProtection } = require('../csrf')
+const crypto = require('crypto')
 
 function createMockReq(method = 'GET', cookies = {}, headers = {}) {
   return { method, cookies, headers, get: (h) => headers[h.toLowerCase()] || null }
@@ -13,18 +13,19 @@ function createMockRes() {
 }
 
 describe('CSRF Middleware', () => {
-  let originalEnv
+  const SECRET = crypto.randomBytes(32).toString('hex')
 
   beforeEach(() => {
-    originalEnv = process.env.NODE_ENV
-    process.env.NODE_ENV = 'test'
+    process.env.JWT_SECRET = SECRET
   })
 
   afterEach(() => {
-    process.env.NODE_ENV = originalEnv
+    delete process.env.JWT_SECRET
+    delete process.env.CSRF_SECRET
   })
 
   it('sets CSRF cookie on GET requests', () => {
+    const { csrfProtection } = require('../csrf')
     const req = createMockReq('GET')
     const res = createMockRes()
     const next = jest.fn()
@@ -32,13 +33,13 @@ describe('CSRF Middleware', () => {
     csrfProtection(req, res, next)
 
     expect(next).toHaveBeenCalled()
-    expect(res.cookies['_csrf']).toBeDefined()
     const cookieVal = res.cookies['_csrf']
-    const parts = cookieVal.split('.')
-    expect(parts.length).toBe(3)
+    expect(cookieVal).toBeDefined()
+    expect(cookieVal.split('.').length).toBe(3)
   })
 
   it('allows GET requests without token header', () => {
+    const { csrfProtection } = require('../csrf')
     const req = createMockReq('GET')
     const res = createMockRes()
     const next = jest.fn()
@@ -50,6 +51,7 @@ describe('CSRF Middleware', () => {
   })
 
   it('rejects POST without CSRF cookie', () => {
+    const { csrfProtection } = require('../csrf')
     const req = createMockReq('POST', {}, { 'x-csrf-token': 'some-token' })
     const res = createMockRes()
     const next = jest.fn()
@@ -62,6 +64,7 @@ describe('CSRF Middleware', () => {
   })
 
   it('rejects POST without CSRF header', () => {
+    const { csrfProtection } = require('../csrf')
     const req = createMockReq('POST', { _csrf: 'token.sig.123' }, {})
     const res = createMockRes()
     const next = jest.fn()
@@ -74,6 +77,7 @@ describe('CSRF Middleware', () => {
   })
 
   it('rejects POST with malformed cookie (not 3 parts)', () => {
+    const { csrfProtection } = require('../csrf')
     const req = createMockReq('POST', { _csrf: 'invalid' }, { 'x-csrf-token': 'token' })
     const res = createMockRes()
     const next = jest.fn()
@@ -85,13 +89,28 @@ describe('CSRF Middleware', () => {
     expect(res.body.message).toContain('invalid')
   })
 
-  it('rejects POST when header token does not match cookie token', () => {
-    const crypto = require('crypto')
-    const secret = crypto.randomBytes(32).toString('hex')
-    process.env.JWT_SECRET = secret
+  it('accepts valid CSRF token on POST', () => {
+    const { csrfProtection } = require('../csrf')
 
-    const token = crypto.createHmac('sha256', secret).update(crypto.randomBytes(16).toString('hex')).digest('hex')
-    const signature = crypto.createHmac('sha256', secret).update(token).digest('hex')
+    const token = crypto.createHmac('sha256', SECRET).update(crypto.randomBytes(16).toString('hex')).digest('hex')
+    const signature = crypto.createHmac('sha256', SECRET).update(token).digest('hex')
+    const timestamp = Date.now().toString()
+
+    const req = createMockReq('POST', { _csrf: `${token}.${signature}.${timestamp}` }, { 'x-csrf-token': token })
+    const res = createMockRes()
+    const next = jest.fn()
+
+    csrfProtection(req, res, next)
+
+    expect(next).toHaveBeenCalled()
+    expect(res.statusCode).toBeNull()
+  })
+
+  it('rejects POST with mismatched token', () => {
+    const { csrfProtection } = require('../csrf')
+
+    const token = crypto.createHmac('sha256', SECRET).update(crypto.randomBytes(16).toString('hex')).digest('hex')
+    const signature = crypto.createHmac('sha256', SECRET).update(token).digest('hex')
     const timestamp = Date.now().toString()
 
     const req = createMockReq('POST', { _csrf: `${token}.${signature}.${timestamp}` }, { 'x-csrf-token': 'different-token' })
@@ -106,13 +125,11 @@ describe('CSRF Middleware', () => {
   })
 
   it('rejects POST with expired token', () => {
-    const crypto = require('crypto')
-    const secret = crypto.randomBytes(32).toString('hex')
-    process.env.JWT_SECRET = secret
+    const { csrfProtection } = require('../csrf')
 
-    const token = crypto.createHmac('sha256', secret).update(crypto.randomBytes(16).toString('hex')).digest('hex')
-    const signature = crypto.createHmac('sha256', secret).update(token).digest('hex')
-    const oldTimestamp = (Date.now() - 2 * 60 * 60 * 1000).toString() // 2 hours ago
+    const token = crypto.createHmac('sha256', SECRET).update(crypto.randomBytes(16).toString('hex')).digest('hex')
+    const signature = crypto.createHmac('sha256', SECRET).update(token).digest('hex')
+    const oldTimestamp = (Date.now() - 2 * 60 * 60 * 1000).toString()
 
     const req = createMockReq('POST', { _csrf: `${token}.${signature}.${oldTimestamp}` }, { 'x-csrf-token': token })
     const res = createMockRes()
@@ -125,15 +142,12 @@ describe('CSRF Middleware', () => {
     expect(res.body.message).toContain('expired')
   })
 
-  it('returns 500 when neither CSRF_SECRET nor JWT_SECRET is set', () => {
+  it('returns 500 when no secret is configured', () => {
     delete process.env.JWT_SECRET
     delete process.env.CSRF_SECRET
 
-    const crypto = require('crypto')
-    const fakeToken = 'a'.repeat(64)
-    const fakeSig = 'b'.repeat(64)
-
-    const req = createMockReq('POST', { _csrf: `${fakeToken}.${fakeSig}.${Date.now()}` }, { 'x-csrf-token': fakeToken })
+    const { csrfProtection } = require('../csrf')
+    const req = createMockReq('POST', { _csrf: 'a.b.123' }, { 'x-csrf-token': 'a' })
     const res = createMockRes()
     const next = jest.fn()
 
