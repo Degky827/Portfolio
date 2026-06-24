@@ -4,6 +4,13 @@ const CSRF_COOKIE_NAME = '_csrf'
 const CSRF_HEADER_NAME = 'x-csrf-token'
 const CSRF_MAX_AGE_MS = 60 * 60 * 1000
 
+const CSRF_SKIP_PATHS = [
+  '/api/auth/login',
+  '/api/auth/verify-2fa',
+  '/api/auth/google',
+  '/api/auth/refresh',
+]
+
 function getSecret() {
   const secret = process.env.CSRF_SECRET || process.env.JWT_SECRET
   if (!secret) throw new Error('CSRF_SECRET or JWT_SECRET must be set')
@@ -28,6 +35,10 @@ function verify(token, secret, signature) {
 }
 
 function csrfProtection(req, res, next) {
+  if (CSRF_SKIP_PATHS.includes(req.path)) {
+    return next()
+  }
+
   let secret
   try {
     secret = getSecret()
