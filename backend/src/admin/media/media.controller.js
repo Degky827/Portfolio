@@ -3,6 +3,7 @@ const path = require('path')
 const Media = require('../../shared/models/Media')
 const { cloudinary, isCloudinaryConfigured } = require('../../infrastructure/storage/cloudinary')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { escapeRegex } = require('../../shared/utilities/escapeRegex')
 
 const uploadDir = path.resolve(__dirname, '..', '..', '..', 'uploads')
 
@@ -56,7 +57,7 @@ async function getMedia(req, res) {
     const query = {}
 
     if (search) {
-      query.originalName = { $regex: search, $options: 'i' }
+      query.originalName = { $regex: escapeRegex(search), $options: 'i' }
     }
     if (fileType) {
       query.fileType = fileType

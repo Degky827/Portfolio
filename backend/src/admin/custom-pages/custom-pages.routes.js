@@ -1,6 +1,7 @@
 const { Router } = require('express')
-const { body, validationResult } = require('express-validator')
+const { body } = require('express-validator')
 const { authenticateToken, authorizeSuperAdmin } = require('../../shared/middleware/auth')
+const { handleValidation } = require('../../shared/middleware/validate')
 const {
   getCustomPages,
   getCustomPageById,
@@ -12,17 +13,6 @@ const {
 } = require('./custom-pages.controller')
 
 const router = Router()
-
-function handleValidation(req, res, next) {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: errors.array().map((e) => e.msg).join(', '),
-    })
-  }
-  next()
-}
 
 const pageValidation = [
   body('title').trim().notEmpty().withMessage('Page title is required'),

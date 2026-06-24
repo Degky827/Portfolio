@@ -3,27 +3,12 @@ const { OAuth2Client } = require('google-auth-library')
 const User = require('../../shared/models/User')
 const AuditLog = require('../../shared/models/AuditLog')
 const config = require('../../infrastructure/config')
+const { generateAccessToken, generateRefreshToken } = require('../../shared/utilities/tokenUtils')
 
 const googleClient = new OAuth2Client(
   config.googleClientId,
   config.googleClientSecret,
 )
-
-function generateAccessToken(user) {
-  return jwt.sign(
-    { id: user._id, email: user.email, role: user.role },
-    config.jwtSecret,
-    { expiresIn: '24h' },
-  )
-}
-
-function generateRefreshToken(user) {
-  return jwt.sign(
-    { id: user._id, type: 'refresh' },
-    config.jwtSecret,
-    { expiresIn: '7d' },
-  )
-}
 
 async function createAuditLog({ user, action, resource, resourceId, details, req, success }) {
   try {
@@ -40,35 +25,6 @@ async function createAuditLog({ user, action, resource, resourceId, details, req
   } catch (err) {
     console.error('[audit] Failed to create audit log:', err.message)
   }
-}
-
-function logDiagnostics(payload, idToken) {
-  const diag = {
-    timestamp: new Date().toISOString(),
-    environment: config.nodeEnv,
-    googleClientIdConfigured: !!config.googleClientId,
-    googleClientIdPrefix: config.googleClientId ? config.googleClientId.substring(0, 12) + '...' : 'N/A',
-    adminEmailConfigured: !!config.adminEmail,
-    adminEmailValue: config.adminEmail,
-    tokenEmail: payload?.email || 'N/A',
-    tokenIssuer: payload?.iss || 'N/A',
-    tokenAudience: payload?.aud || 'N/A',
-    tokenSubject: payload?.sub ? payload.sub.substring(0, 10) + '...' : 'N/A',
-    tokenExpiry: payload?.exp ? new Date(payload.exp * 1000).toISOString() : 'N/A',
-    idTokenFirstChars: idToken ? idToken.substring(0, 20) + '...' : 'N/A',
-  }
-
-  if (config.nodeEnv === 'production') {
-    console.log('========== GOOGLE AUTH DIAGNOSTIC ==========')
-    for (const [key, value] of Object.entries(diag)) {
-      console.log(`  [diag] ${key}: ${JSON.stringify(value)}`)
-    }
-    console.log('============================================')
-  } else {
-    console.log('[google-auth] Diagnostic:', JSON.stringify(diag, null, 2))
-  }
-
-  return diag
 }
 
 async function googleLogin(req, res) {
@@ -124,8 +80,6 @@ async function googleLogin(req, res) {
 
     const incomingGoogleEmail = (payload.email || '').trim().toLowerCase()
 
-    logDiagnostics(payload, idToken)
-
     if (!incomingGoogleEmail) {
       return res.status(400).json({
         success: false,
@@ -134,7 +88,6 @@ async function googleLogin(req, res) {
     }
 
     if (config.adminEmail && incomingGoogleEmail !== config.adminEmail) {
-      console.warn(`[google-auth] Email mismatch: token="${incomingGoogleEmail}" !== configured="${config.adminEmail}"`)
       return res.status(403).json({
         success: false,
         message: 'This Google account is not authorized. Contact an administrator.',
@@ -146,7 +99,6 @@ async function googleLogin(req, res) {
     })
 
     if (!user) {
-      console.warn(`[google-auth] No user found for email: ${incomingGoogleEmail}`)
       return res.status(403).json({
         success: false,
         message: 'No account found with this email. Contact an administrator.',
@@ -154,7 +106,6 @@ async function googleLogin(req, res) {
     }
 
     if (!user.isActive) {
-      console.warn(`[google-auth] Disabled account attempted login: ${incomingGoogleEmail}`)
       return res.status(403).json({
         success: false,
         message: 'Your account has been disabled.',
@@ -218,8 +169,6 @@ async function googleLogin(req, res) {
       req,
       success: true,
     })
-
-    console.log(`[google-auth] Login successful for: ${incomingGoogleEmail}`)
 
     return res.status(200).json({
       success: true,

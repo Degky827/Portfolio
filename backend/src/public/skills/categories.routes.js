@@ -1,6 +1,7 @@
 const { Router } = require('express')
-const { body, validationResult } = require('express-validator')
+const { body } = require('express-validator')
 const { authenticateToken } = require('../../shared/middleware/auth')
+const { handleValidation } = require('../../shared/middleware/validate')
 const {
   createCategory,
   getCategories,
@@ -11,17 +12,6 @@ const {
 } = require('./categories.controller')
 
 const router = Router()
-
-function handleValidation(req, res, next) {
-  const errors = validationResult(req)
-  if (!errors.isEmpty()) {
-    return res.status(400).json({
-      success: false,
-      message: errors.array().map((e) => e.msg).join(', '),
-    })
-  }
-  next()
-}
 
 const categoryValidation = [
   body('title').trim().notEmpty().withMessage('Category title is required'),

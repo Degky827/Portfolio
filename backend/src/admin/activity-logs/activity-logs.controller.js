@@ -1,6 +1,7 @@
 const AuditLog = require('../../shared/models/AuditLog')
 const User = require('../../shared/models/User')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { escapeRegex } = require('../../shared/utilities/escapeRegex')
 
 async function listLogs(req, res) {
   try {
@@ -15,7 +16,7 @@ async function listLogs(req, res) {
     const query = {}
 
     if (action) query.action = action
-    if (resource) query.resource = { $regex: resource, $options: 'i' }
+    if (resource) query.resource = { $regex: escapeRegex(resource), $options: 'i' }
 
     if (startDate || endDate) {
       query.createdAt = {}
@@ -28,10 +29,11 @@ async function listLogs(req, res) {
     }
 
     if (search) {
+      const safeSearch = escapeRegex(search)
       const matchingUsers = await User.find({
         $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { email: { $regex: search, $options: 'i' } },
+          { name: { $regex: safeSearch, $options: 'i' } },
+          { email: { $regex: safeSearch, $options: 'i' } },
         ],
       }).select('_id').lean()
 
@@ -39,9 +41,9 @@ async function listLogs(req, res) {
 
       query.$or = [
         { user: { $in: userIds } },
-        { action: { $regex: search, $options: 'i' } },
-        { resource: { $regex: search, $options: 'i' } },
-        { ipAddress: { $regex: search, $options: 'i' } },
+        { action: { $regex: safeSearch, $options: 'i' } },
+        { resource: { $regex: safeSearch, $options: 'i' } },
+        { ipAddress: { $regex: safeSearch, $options: 'i' } },
       ]
     }
 
@@ -99,7 +101,7 @@ async function exportLogs(req, res) {
 
     const query = {}
     if (action) query.action = action
-    if (resource) query.resource = { $regex: resource, $options: 'i' }
+    if (resource) query.resource = { $regex: escapeRegex(resource), $options: 'i' }
     if (startDate || endDate) {
       query.createdAt = {}
       if (startDate) query.createdAt.$gte = new Date(startDate)

@@ -7,11 +7,11 @@ import Navbar from './public-portfolio/layout/Navbar'
 import Footer from './public-portfolio/layout/Footer'
 import HomePage from './public-portfolio/pages/HomePage'
 import DynamicCustomPage from './public-portfolio/pages/DynamicCustomPage'
-import LoginPage from './admin-manager/authentication/LoginPage'
-import AdminRoutes from './admin-manager/routes/AdminRoutes'
 import AIButton from './ai/components/AIButton'
 import ChatWindow from './ai/components/ChatWindow'
 
+const LoginPage = lazy(() => import('./admin-manager/authentication/LoginPage'))
+const AdminRoutes = lazy(() => import('./admin-manager/routes/AdminRoutes'))
 const ThreeDPortfolio = lazy(() => import('./public-portfolio/3d/ThreeDPortfolio'))
 
 function ScrollToTop() {

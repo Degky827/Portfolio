@@ -4,25 +4,10 @@ const qrcode = require('qrcode')
 const User = require('../../shared/models/User')
 const AuditLog = require('../../shared/models/AuditLog')
 const config = require('../../infrastructure/config')
+const { generateAccessToken, generateRefreshToken } = require('../../shared/utilities/tokenUtils')
 
 const MAX_FAILED_ATTEMPTS = 5
 const LOCK_DURATION_MINUTES = 15
-
-function generateAccessToken(user) {
-  return jwt.sign(
-    { id: user._id, email: user.email, role: user.role },
-    config.jwtSecret,
-    { expiresIn: '24h' },
-  )
-}
-
-function generateRefreshToken(user) {
-  return jwt.sign(
-    { id: user._id, type: 'refresh' },
-    config.jwtSecret,
-    { expiresIn: '7d' },
-  )
-}
 
 function generate2FASecret(email) {
   const secret = speakeasy.generateSecret({
@@ -69,9 +54,6 @@ async function loginStep1(req, res) {
         message: 'Email and password are required.',
       })
     }
-
-    console.log('[auth] loginStep1 — password length:', password.length)
-    console.log('[auth] loginStep1 — password char codes:', [...password].map((c) => c.charCodeAt(0)))
 
     const user = await User.findOne({ email: email.toLowerCase() }).select(
       '+password +failedLoginAttempts +lockedUntil',
@@ -153,7 +135,6 @@ async function loginStep1(req, res) {
     return res.status(500).json({
       success: false,
       message: 'Server error during login',
-      error: error.message,
     })
   }
 }
@@ -289,7 +270,6 @@ async function verify2FA(req, res) {
     return res.status(500).json({
       success: false,
       message: 'Server error during 2FA verification.',
-      error: error.message,
     })
   }
 }

@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Search, X, ImageIcon, Upload, Loader2, Check } from 'lucide-react'
 import { getMedia, uploadMedia } from '../../shared/services/mediaService'
+import { getMediaUrl } from '../../shared/services/api'
 
 export default function MediaPicker({ open, onClose, onSelect }) {
   const [media, setMedia] = useState([])
@@ -129,7 +130,7 @@ export default function MediaPicker({ open, onClose, onSelect }) {
                       }`}
                     >
                       <img
-                        src={item.url.startsWith('http') ? item.url : `${import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000'}${item.url}`}
+                        src={getMediaUrl(item.url)}
                         alt=""
                         className="w-full h-full object-cover"
                       />

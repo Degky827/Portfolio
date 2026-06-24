@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { getMediaUrl } from '../services/api'
 
 export default function Logo({ settings, showText = true, linkTo = '#home', onNavClick, className = '' }) {
   const { i18n } = useTranslation()
@@ -38,7 +39,7 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
           <div className="w-full h-full flex items-center justify-center" dangerouslySetInnerHTML={{ __html: logoSvg }} />
         ) : logoImage ? (
           <img
-            src={logoImage.startsWith('http') ? logoImage : `http://localhost:5000${logoImage}`}
+            src={getMediaUrl(logoImage)}
             alt={logoText || brandName}
             className="w-full h-full object-contain p-0.5"
           />

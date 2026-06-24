@@ -1,30 +1,8 @@
 const CustomPage = require('../../shared/models/CustomPage')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { createNotification } = require('../notifications/notifications.controller')
-
-function slugify(text) {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
-
-async function ensureUniqueSlug(baseSlug, excludeId) {
-  let slug = baseSlug
-  let counter = 1
-  const query = { slug }
-  if (excludeId) query._id = { $ne: excludeId }
-  while (await CustomPage.findOne(query)) {
-    slug = `${baseSlug}-${counter}`
-    query.slug = slug
-    counter++
-  }
-  return slug
-}
+const { slugify, ensureUniqueSlug } = require('../../shared/utilities/slugify')
+const { escapeRegex } = require('../../shared/utilities/escapeRegex')
 
 async function getCustomPages(req, res) {
   try {
@@ -40,10 +18,11 @@ async function getCustomPages(req, res) {
     }
 
     if (search) {
+      const safeSearch = escapeRegex(search)
       query.$or = [
-        { title: { $regex: search, $options: 'i' } },
-        { slug: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
+        { title: { $regex: safeSearch, $options: 'i' } },
+        { slug: { $regex: safeSearch, $options: 'i' } },
+        { description: { $regex: safeSearch, $options: 'i' } },
       ]
     }
 
@@ -111,7 +90,7 @@ async function createCustomPage(req, res) {
     } = req.body
 
     let slug = slugify(title)
-    slug = await ensureUniqueSlug(slug, null)
+    slug = await ensureUniqueSlug(CustomPage, slug, null)
 
     const page = await CustomPage.create({
       title,
@@ -187,7 +166,7 @@ async function updateCustomPage(req, res) {
 
     if (slugChanged) {
       let slug = slugify(page.title)
-      slug = await ensureUniqueSlug(slug, page._id)
+      slug = await ensureUniqueSlug(CustomPage, slug, page._id)
       page.slug = slug
     }
 

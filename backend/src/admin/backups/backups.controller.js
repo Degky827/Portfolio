@@ -66,7 +66,7 @@ async function listBackups(req, res) {
     res.json({ success: true, backups })
   } catch (error) {
     console.error('Backup Error:', error)
-    res.status(500).json({ success: false, error: error.message || 'Failed to list backups' })
+    res.status(500).json({ success: false, message: error.message || 'Failed to list backups' })
   }
 }
 
@@ -74,8 +74,7 @@ async function createBackup(req, res) {
   try {
     if (!mongoose.connection || mongoose.connection.readyState !== 1) {
       const msg = 'MongoDB connection failed'
-      console.error('Backup Error:', msg)
-      return res.status(500).json({ success: false, error: msg })
+      return res.status(500).json({ success: false, message: msg })
     }
 
     const { data, summary } = await gatherAllData()
@@ -86,7 +85,7 @@ async function createBackup(req, res) {
       await fs.promises.mkdir(BACKUPS_DIR, { recursive: true })
     } catch (err) {
       console.error('Backup Error: failed to create backups directory', err)
-      return res.status(500).json({ success: false, error: 'Permission denied while creating backups directory' })
+      return res.status(500).json({ success: false, message: 'Permission denied while creating backups directory' })
     }
 
     const d = new Date()
@@ -101,7 +100,7 @@ async function createBackup(req, res) {
       await fs.promises.writeFile(filepath, fileData, 'utf8')
     } catch (err) {
       console.error('Backup Error: failed to write backup file', err)
-      return res.status(500).json({ success: false, error: 'Permission denied while writing backup file' })
+      return res.status(500).json({ success: false, message: 'Permission denied while writing backup file' })
     }
 
     const fileSize = Buffer.byteLength(fileData, 'utf8')
@@ -117,7 +116,7 @@ async function createBackup(req, res) {
       })
     } catch (createErr) {
       console.error('Backup Error: Backup.create failed:', createErr && createErr.stack ? createErr.stack : createErr)
-      return res.status(500).json({ success: false, error: 'Failed to persist backup to database' })
+      return res.status(500).json({ success: false, message: 'Failed to persist backup to database' })
     }
 
     try {
@@ -137,11 +136,11 @@ async function createBackup(req, res) {
       })
     } catch (respErr) {
       console.error('Backup Error: Preparing response failed:', respErr && respErr.stack ? respErr.stack : respErr)
-      return res.status(500).json({ success: false, error: 'Failed to prepare backup response' })
+      return res.status(500).json({ success: false, message: 'Failed to prepare backup response' })
     }
   } catch (error) {
     console.error('Backup Error:', error)
-    res.status(500).json({ success: false, error: error.message || 'Failed to create backup' })
+    res.status(500).json({ success: false, message: error.message || 'Failed to create backup' })
   }
 }
 
@@ -154,7 +153,7 @@ async function getBackup(req, res) {
     res.json({ success: true, backup })
   } catch (error) {
     console.error('Backup Error:', error)
-    res.status(500).json({ success: false, error: error.message || 'Failed to fetch backup' })
+    res.status(500).json({ success: false, message: error.message || 'Failed to fetch backup' })
   }
 }
 
@@ -170,7 +169,7 @@ async function downloadBackup(req, res) {
     res.json(backup.data)
   } catch (error) {
     console.error('Backup Error:', error)
-    res.status(500).json({ success: false, error: error.message || 'Failed to download backup' })
+    res.status(500).json({ success: false, message: error.message || 'Failed to download backup' })
   }
 }
 
@@ -184,7 +183,7 @@ async function deleteBackup(req, res) {
     res.json({ success: true, message: 'Backup deleted successfully' })
   } catch (error) {
     console.error('Backup Error:', error)
-    res.status(500).json({ success: false, error: error.message || 'Failed to delete backup' })
+    res.status(500).json({ success: false, message: error.message || 'Failed to delete backup' })
   }
 }
 
@@ -230,7 +229,7 @@ async function uploadBackup(req, res) {
     res.status(201).json({ success: true, backup })
   } catch (error) {
     console.error('Backup Error:', error)
-    res.status(500).json({ success: false, error: error.message || 'Failed to process uploaded backup' })
+    res.status(500).json({ success: false, message: error.message || 'Failed to process uploaded backup' })
   }
 }
 
@@ -261,7 +260,7 @@ async function restoreBackup(req, res) {
     })
   } catch (error) {
     console.error('Backup Error:', error)
-    res.status(500).json({ success: false, error: error.message || 'Failed to restore backup' })
+    res.status(500).json({ success: false, message: error.message || 'Failed to restore backup' })
   }
 }
 

@@ -22,7 +22,6 @@ async function run() {
     process.exit(1)
   }
 
-  // Derive a human-friendly display name
   const local = adminEmail.split('@')[0]
   let display = local.split(/[._-]/)[0]
   if (display.startsWith('desalegn')) display = 'Desalegn'

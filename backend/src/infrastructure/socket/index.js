@@ -5,15 +5,8 @@ const config = require('../config')
 let io = null
 
 function initSocket(server) {
-  const hardcodedOrigins = [
-    'https://modernize-portifo.vercel.app',
-    'http://localhost:5173',
-    'http://localhost:3000',
-  ]
-
   const allowedOrigins = [
-    ...hardcodedOrigins,
-    ...config.corsOrigins.filter((o) => !hardcodedOrigins.includes(o)),
+    ...config.corsOrigins,
     config.frontendUrl,
   ].filter(Boolean)
 
@@ -46,11 +39,9 @@ function initSocket(server) {
   })
 
   io.on('connection', (socket) => {
-    console.log(`[socket] Admin connected: ${socket.adminUser.email}`)
     socket.join('admin')
 
     socket.on('disconnect', () => {
-      console.log(`[socket] Admin disconnected: ${socket.adminUser.email}`)
     })
   })
 

@@ -619,7 +619,7 @@ export default function NavigationManagement() {
                 }}
               >
                 {settings?.logo ? (
-                  <img src={settings.logo.startsWith('http') ? settings.logo : `http://localhost:5000${settings.logo}`} alt={settings?.logoAlt || 'Logo'} className="w-full h-full object-contain" />
+                  <img src={getMediaUrl(settings.logo)} alt={settings?.logoAlt || 'Logo'} className="w-full h-full object-contain" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center bg-primary text-white text-sm font-black">
                     {(settings?.brandName || 'D').charAt(0)}
