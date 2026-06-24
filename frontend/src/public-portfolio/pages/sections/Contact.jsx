@@ -165,11 +165,20 @@ export default function Contact() {
       e.target.reset()
     } catch (error) {
       console.error('EmailJS error:', error)
-      const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      window.location.href = mailtoLink
-      setResult(t('contact.errorEmailjs'))
-      setResultType('error')
+      if (saved) {
+        setResult(t('contact.successMessage'))
+        setResultType('success')
+        setValues({ from_name: '', reply_to: '', phone: '', message: '' })
+        setTouched({})
+        setErrors({})
+        e.target.reset()
+      } else {
+        const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
+        window.location.href = mailtoLink
+        setResult(t('contact.mailtoFallback'))
+        setResultType('success')
+      }
     }
 
     setIsSubmitting(false)
