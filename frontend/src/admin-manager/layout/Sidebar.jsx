@@ -3,7 +3,7 @@ import { NavLink, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   LayoutDashboard, BarChart3, FolderKanban, Code2,
-  Home, UserCircle, Mail, FileText, X, ChevronLeft, ChevronRight,
+  Home, UserCircle, FileText, X, ChevronLeft, ChevronRight,
   Image, HardDrive, Activity, Download, Wrench,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
   Shield, LogOut, Eye, Menu, Globe,
@@ -69,7 +69,6 @@ const navGroups = [
       { path: '/admin/projects', label: 'Projects', icon: FolderKanban, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
       { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/contact', label: 'Contact Settings', icon: Mail, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/messages', label: 'Messages', icon: MessageSquare, roles: ['super_admin', 'admin', 'editor'] },
       { path: '/admin/custom-pages', label: 'Custom Pages', icon: Globe, roles: ['super_admin', 'admin'] },
     ],
