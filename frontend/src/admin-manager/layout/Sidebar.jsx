@@ -6,7 +6,7 @@ import {
   Home, UserCircle, FileText, X, ChevronLeft, ChevronRight,
   Image, HardDrive, Activity, Download, Wrench,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
-  Shield, LogOut, Eye, Menu, Globe,
+  Shield, LogOut, Eye, Menu, Globe, Lock,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
@@ -84,6 +84,7 @@ const navGroups = [
       { path: '/admin/import-export', label: 'Import / Export', icon: Download, roles: ['super_admin', 'admin'] },
       { path: '/admin/maintenance', label: 'Maintenance', icon: HeartPulse, roles: ['super_admin'] },
       { path: '/admin/activity-logs', label: 'Activity Logs', icon: Activity, roles: ['super_admin', 'admin'] },
+      { path: '/admin/security', label: 'Security', icon: Lock, roles: ['super_admin', 'admin'] },
     ],
   },
   {

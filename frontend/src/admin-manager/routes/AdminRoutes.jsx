@@ -26,6 +26,7 @@ const Profile = lazy(() => import('../profile-management/Profile'))
 const ThemeSettings = lazy(() => import('../settings-management/ThemeSettings'))
 const SystemConfig = lazy(() => import('../system-config/SystemConfig'))
 const Backup = lazy(() => import('../backup-management/Backup'))
+const Security = lazy(() => import('../security-management/Security'))
 const CustomPagesList = lazy(() => import('../custom-pages-management/CustomPagesList'))
 const CustomPageForm = lazy(() => import('../custom-pages-management/CustomPageForm'))
 
@@ -124,6 +125,14 @@ export default function AdminRoutes() {
             element={
               <RoleGuard roles={['super_admin', 'admin']}>
                 <Backup />
+              </RoleGuard>
+            }
+          />
+          <Route
+            path="security"
+            element={
+              <RoleGuard roles={['super_admin', 'admin']}>
+                <Security />
               </RoleGuard>
             }
           />
