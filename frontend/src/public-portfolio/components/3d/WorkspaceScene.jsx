@@ -8,6 +8,7 @@ const Monitor = lazy(() => import('./Monitor'))
 const Keyboard = lazy(() => import('./Keyboard'))
 const PC = lazy(() => import('./PC'))
 const Speaker = lazy(() => import('./Speaker'))
+const ProfileCard3D = lazy(() => import('./ProfileCard3D'))
 
 /**
  * WorkspaceScene
