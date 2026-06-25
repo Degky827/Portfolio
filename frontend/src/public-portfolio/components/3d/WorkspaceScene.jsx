@@ -197,6 +197,9 @@ export default function WorkspaceScene() {
           {/* Speakers */}
           <Speaker position={[-1.8, 0.78, 0.1]} side="left" />
           <Speaker position={[1.8, 0.78, 0.1]} side="right" />
+
+          {/* Floating Profile Card - above monitor */}
+          <ProfileCard3D position={[0, 2.6, 0.3]} />
         </Suspense>
 
         <Preload all />
