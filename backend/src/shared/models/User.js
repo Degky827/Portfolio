@@ -85,6 +85,10 @@ const userSchema = new mongoose.Schema(
     },
     refreshTokens: [{
       token: String,
+      device: { type: String, default: '' },
+      browser: { type: String, default: '' },
+      os: { type: String, default: '' },
+      ipAddress: { type: String, default: '' },
       createdAt: { type: Date, default: Date.now },
     }],
     twoFactorSecret: {

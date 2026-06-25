@@ -5,6 +5,7 @@ const User = require('../../shared/models/User')
 const AuditLog = require('../../shared/models/AuditLog')
 const config = require('../../infrastructure/config')
 const { generateAccessToken, generateRefreshToken } = require('../../shared/utilities/tokenUtils')
+const { parseUserAgent } = require('../../shared/utilities/userAgentParser')
 
 const MAX_FAILED_ATTEMPTS = 5
 const LOCK_DURATION_MINUTES = 15
@@ -226,6 +227,11 @@ async function verify2FA(req, res) {
     }
 
     const accessToken = generateAccessToken(user)
+    const refreshToken = generateRefreshToken(user)
+
+    const userAgent = req.headers['user-agent'] || ''
+    const parsed = parseUserAgent(userAgent)
+    const ipAddress = req.ip || req.headers['x-forwarded-for'] || ''
 
     await User.updateOne(
       { _id: user._id },
@@ -234,6 +240,19 @@ async function verify2FA(req, res) {
           failedLoginAttempts: 0,
           lockedUntil: null,
           lastLogin: new Date(),
+        },
+        $push: {
+          refreshTokens: {
+            $each: [{
+              token: refreshToken,
+              device: parsed.device,
+              browser: parsed.browser,
+              os: parsed.os,
+              ipAddress,
+              createdAt: new Date(),
+            }],
+            $slice: -10,
+          },
         },
       },
     )
@@ -335,7 +354,17 @@ async function refresh(req, res) {
     const newAccessToken = generateAccessToken(user)
     const newRefreshToken = generateRefreshToken(user)
 
-    user.refreshTokens.push({ token: newRefreshToken })
+    const userAgent = req.headers['user-agent'] || ''
+    const parsed = parseUserAgent(userAgent)
+    const ipAddress = req.ip || req.headers['x-forwarded-for'] || ''
+
+    user.refreshTokens.push({
+      token: newRefreshToken,
+      device: parsed.device,
+      browser: parsed.browser,
+      os: parsed.os,
+      ipAddress,
+    })
     if (user.refreshTokens.length > 10) {
       user.refreshTokens = user.refreshTokens.slice(-10)
     }
