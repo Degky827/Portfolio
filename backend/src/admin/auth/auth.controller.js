@@ -57,7 +57,7 @@ async function loginStep1(req, res) {
     }
 
     const user = await User.findOne({ email: email.toLowerCase() }).select(
-      '+password +failedLoginAttempts +lockedUntil',
+      '+password +twoFactorEnabled +twoFactorSecret +failedLoginAttempts +lockedUntil',
     )
     if (!user) {
       return res.status(401).json({
@@ -124,6 +124,64 @@ async function loginStep1(req, res) {
       { _id: user._id },
       { $set: { failedLoginAttempts: 0, lockedUntil: null } },
     )
+
+    if (!user.twoFactorEnabled) {
+      const accessToken = generateAccessToken(user)
+      const refreshToken = generateRefreshToken(user)
+
+      const userAgent = req.headers['user-agent'] || ''
+      const parsed = parseUserAgent(userAgent)
+      const ipAddress = req.ip || req.headers['x-forwarded-for'] || ''
+
+      await User.updateOne(
+        { _id: user._id },
+        {
+          $set: { failedLoginAttempts: 0, lockedUntil: null, lastLogin: new Date() },
+          $push: {
+            refreshTokens: {
+              $each: [{
+                token: refreshToken,
+                device: parsed.device,
+                browser: parsed.browser,
+                os: parsed.os,
+                ipAddress,
+                createdAt: new Date(),
+              }],
+              $slice: -10,
+            },
+          },
+        },
+      )
+
+      const userPayload = {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        avatar: user.avatar,
+        isActive: user.isActive,
+        lastLogin: user.lastLogin,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+      }
+
+      const isProduction = config.nodeEnv === 'production'
+
+      res.cookie('token', accessToken, {
+        httpOnly: true,
+        secure: isProduction,
+        sameSite: isProduction ? 'none' : 'lax',
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/',
+      })
+
+      return res.status(200).json({
+        success: true,
+        require2FA: false,
+        user: userPayload,
+        message: 'Authentication successful. Welcome back!',
+      })
+    }
 
     return res.status(200).json({
       success: true,
@@ -194,7 +252,7 @@ async function verify2FA(req, res) {
       secret: user.twoFactorSecret,
       encoding: 'base32',
       token: totpCode,
-      window: 1,
+      window: 2,
     })
 
     if (!isVerified) {
@@ -440,7 +498,7 @@ async function verify2FASetup(req, res) {
       secret: user.twoFactorSecret,
       encoding: 'base32',
       token: totpCode,
-      window: 1,
+      window: 2,
     })
 
     if (!tokenValid) {

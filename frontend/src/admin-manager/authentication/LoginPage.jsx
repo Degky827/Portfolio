@@ -181,8 +181,15 @@ export default function Login() {
 
     try {
       const data = await loginApi(email, password)
-      setVerifiedEmail(data.email)
-      setStep('totp')
+      if (data.require2FA) {
+        setVerifiedEmail(data.email)
+        setStep('totp')
+      } else {
+        navigatingRef.current = true
+        setAuth('cookie', data.user, rememberMe)
+        await new Promise((r) => setTimeout(r, 150))
+        navigate(from, { replace: true })
+      }
     } catch (err) {
       if (err.response?.data?.message) {
         setError(err.response.data.message)
