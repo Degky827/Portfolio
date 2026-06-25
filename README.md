@@ -1,4 +1,4 @@
-# Modernize-Portfolio
+# Portifolio
 
 A full-stack MERN portfolio for Desalegn — React frontend with Tailwind CSS + Express/MongoDB backend with a 2FA-protected enterprise-grade admin dashboard featuring real-time visitor analytics, AI chatbot, 3D scrollable portfolio, and comprehensive security management.
 
@@ -189,299 +189,299 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 
 ### Health Check
 
-| Method | Path              | Auth | Description         |
-| ------ | ----------------- | ---- | ------------------- |
-| GET    | `/api/health`     | No   | Server health check |
+| Method | Path          | Auth | Description         |
+| ------ | ------------- | ---- | ------------------- |
+| GET    | `/api/health` | No   | Server health check |
 
 ### Auth
 
-| Method | Path                        | Auth                     | Description                                  |
-| ------ | --------------------------- | ------------------------ | -------------------------------------------- |
-| POST   | `/api/auth/login`           | No (rate-limited: 10/15m) | Step 1: password verification               |
-| POST   | `/api/auth/verify-2fa`      | No (rate-limited: 20/15m) | Step 2: TOTP verification → JWT             |
-| POST   | `/api/auth/google`          | No (rate-limited: 5/15m)  | Google OAuth login                           |
-| POST   | `/api/auth/logout`          | JWT                      | Logout, clear cookie                         |
-| POST   | `/api/auth/refresh`         | No                       | Refresh access + refresh tokens              |
-| GET    | `/api/auth/me`              | JWT                      | Get current user profile                     |
-| PATCH  | `/api/auth/me`              | JWT                      | Update current user profile                  |
-| POST   | `/api/auth/setup-2fa`       | JWT                      | Generate TOTP secret + QR code               |
-| POST   | `/api/auth/verify-2fa-setup`| JWT                      | Verify TOTP and enable 2FA                   |
-| POST   | `/api/auth/disable-2fa`     | JWT                      | Disable 2FA                                  |
+| Method | Path                         | Auth                      | Description                     |
+| ------ | ---------------------------- | ------------------------- | ------------------------------- |
+| POST   | `/api/auth/login`            | No (rate-limited: 10/15m) | Step 1: password verification   |
+| POST   | `/api/auth/verify-2fa`       | No (rate-limited: 20/15m) | Step 2: TOTP verification → JWT |
+| POST   | `/api/auth/google`           | No (rate-limited: 5/15m)  | Google OAuth login              |
+| POST   | `/api/auth/logout`           | JWT                       | Logout, clear cookie            |
+| POST   | `/api/auth/refresh`          | No                        | Refresh access + refresh tokens |
+| GET    | `/api/auth/me`               | JWT                       | Get current user profile        |
+| PATCH  | `/api/auth/me`               | JWT                       | Update current user profile     |
+| POST   | `/api/auth/setup-2fa`        | JWT                       | Generate TOTP secret + QR code  |
+| POST   | `/api/auth/verify-2fa-setup` | JWT                       | Verify TOTP and enable 2FA      |
+| POST   | `/api/auth/disable-2fa`      | JWT                       | Disable 2FA                     |
 
 ### Users (super_admin only)
 
-| Method | Path              | Auth                | Description      |
-| ------ | ----------------- | ------------------- | ---------------- |
-| GET    | `/api/users`      | JWT + super_admin   | List all users   |
-| GET    | `/api/users/:id`  | JWT + super_admin   | Get user by ID   |
-| POST   | `/api/users`      | JWT + super_admin   | Create user      |
-| PUT    | `/api/users/:id`  | JWT + super_admin   | Update user      |
-| DELETE | `/api/users/:id`  | JWT + super_admin   | Delete user      |
+| Method | Path             | Auth              | Description    |
+| ------ | ---------------- | ----------------- | -------------- |
+| GET    | `/api/users`     | JWT + super_admin | List all users |
+| GET    | `/api/users/:id` | JWT + super_admin | Get user by ID |
+| POST   | `/api/users`     | JWT + super_admin | Create user    |
+| PUT    | `/api/users/:id` | JWT + super_admin | Update user    |
+| DELETE | `/api/users/:id` | JWT + super_admin | Delete user    |
 
 ### Analytics
 
-| Method | Path                                | Auth                     | Description                              |
-| ------ | ----------------------------------- | ------------------------ | ---------------------------------------- |
-| POST   | `/api/analytics/log-visit`          | No (rate-limited: 60/m)  | Log a portfolio visit                    |
-| POST   | `/api/analytics/log-engagement`     | No (rate-limited: 60/m)  | Log user engagement event                |
-| GET    | `/api/analytics/metrics`            | JWT                      | Paginated visit log with filters         |
-| GET    | `/api/analytics/stats`              | JWT                      | Dashboard aggregate stats                |
-| GET    | `/api/analytics/analytics-dashboard`| JWT                      | Full analytics dashboard data            |
-| DELETE | `/api/analytics/clear`              | JWT                      | Clear all analytics data                 |
+| Method | Path                                 | Auth                    | Description                      |
+| ------ | ------------------------------------ | ----------------------- | -------------------------------- |
+| POST   | `/api/analytics/log-visit`           | No (rate-limited: 60/m) | Log a portfolio visit            |
+| POST   | `/api/analytics/log-engagement`      | No (rate-limited: 60/m) | Log user engagement event        |
+| GET    | `/api/analytics/metrics`             | JWT                     | Paginated visit log with filters |
+| GET    | `/api/analytics/stats`               | JWT                     | Dashboard aggregate stats        |
+| GET    | `/api/analytics/analytics-dashboard` | JWT                     | Full analytics dashboard data    |
+| DELETE | `/api/analytics/clear`               | JWT                     | Clear all analytics data         |
 
 ### Projects
 
-| Method | Path                          | Auth                | Description              |
-| ------ | ----------------------------- | ------------------- | ------------------------ |
-| GET    | `/api/projects`               | No                  | List all projects        |
-| GET    | `/api/projects/slug/:slug`    | No                  | Get project by slug      |
-| GET    | `/api/projects/:id`           | No                  | Get project by ID        |
-| POST   | `/api/projects`               | JWT + super_admin   | Create project           |
-| PUT    | `/api/projects/reorder`       | JWT + super_admin   | Reorder projects         |
-| PUT    | `/api/projects/:id`           | JWT + super_admin   | Update project           |
-| DELETE | `/api/projects/:id`           | JWT + super_admin   | Delete project           |
-| POST   | `/api/projects/:id/duplicate` | JWT + super_admin   | Duplicate project        |
-| PATCH  | `/api/projects/:id/featured`  | JWT + super_admin   | Toggle featured          |
-| PATCH  | `/api/projects/:id/publish`   | JWT + super_admin   | Toggle publish           |
-| PATCH  | `/api/projects/:id/archive`   | JWT + super_admin   | Toggle archive           |
-| PATCH  | `/api/projects/:id/images`    | JWT + super_admin   | Update images            |
+| Method | Path                          | Auth              | Description         |
+| ------ | ----------------------------- | ----------------- | ------------------- |
+| GET    | `/api/projects`               | No                | List all projects   |
+| GET    | `/api/projects/slug/:slug`    | No                | Get project by slug |
+| GET    | `/api/projects/:id`           | No                | Get project by ID   |
+| POST   | `/api/projects`               | JWT + super_admin | Create project      |
+| PUT    | `/api/projects/reorder`       | JWT + super_admin | Reorder projects    |
+| PUT    | `/api/projects/:id`           | JWT + super_admin | Update project      |
+| DELETE | `/api/projects/:id`           | JWT + super_admin | Delete project      |
+| POST   | `/api/projects/:id/duplicate` | JWT + super_admin | Duplicate project   |
+| PATCH  | `/api/projects/:id/featured`  | JWT + super_admin | Toggle featured     |
+| PATCH  | `/api/projects/:id/publish`   | JWT + super_admin | Toggle publish      |
+| PATCH  | `/api/projects/:id/archive`   | JWT + super_admin | Toggle archive      |
+| PATCH  | `/api/projects/:id/images`    | JWT + super_admin | Update images       |
 
 ### Skills
 
-| Method | Path              | Auth | Description        |
-| ------ | ----------------- | ---- | ------------------ |
-| GET    | `/api/skills`     | No   | List all skills    |
-| GET    | `/api/skills/:id` | No   | Get skill by ID    |
-| POST   | `/api/skills`     | JWT  | Create skill       |
-| PUT    | `/api/skills/:id` | JWT  | Update skill       |
-| DELETE | `/api/skills/:id` | JWT  | Delete skill       |
+| Method | Path              | Auth | Description     |
+| ------ | ----------------- | ---- | --------------- |
+| GET    | `/api/skills`     | No   | List all skills |
+| GET    | `/api/skills/:id` | No   | Get skill by ID |
+| POST   | `/api/skills`     | JWT  | Create skill    |
+| PUT    | `/api/skills/:id` | JWT  | Update skill    |
+| DELETE | `/api/skills/:id` | JWT  | Delete skill    |
 
 ### Categories
 
-| Method | Path                    | Auth | Description          |
-| ------ | ----------------------- | ---- | -------------------- |
-| GET    | `/api/categories`       | No   | List all categories  |
-| GET    | `/api/categories/:id`   | No   | Get category by ID   |
-| POST   | `/api/categories`       | JWT  | Create category      |
-| PUT    | `/api/categories/reorder`| JWT  | Reorder categories   |
-| PUT    | `/api/categories/:id`   | JWT  | Update category      |
-| DELETE | `/api/categories/:id`   | JWT  | Delete category      |
+| Method | Path                      | Auth | Description         |
+| ------ | ------------------------- | ---- | ------------------- |
+| GET    | `/api/categories`         | No   | List all categories |
+| GET    | `/api/categories/:id`     | No   | Get category by ID  |
+| POST   | `/api/categories`         | JWT  | Create category     |
+| PUT    | `/api/categories/reorder` | JWT  | Reorder categories  |
+| PUT    | `/api/categories/:id`     | JWT  | Update category     |
+| DELETE | `/api/categories/:id`     | JWT  | Delete category     |
 
 ### Homepage Content
 
-| Method | Path                | Auth | Description              |
-| ------ | ------------------- | ---- | ------------------------ |
-| GET    | `/api/home-content` | No   | Get homepage/hero content|
-| PUT    | `/api/home-content` | JWT  | Update homepage content  |
+| Method | Path                | Auth | Description               |
+| ------ | ------------------- | ---- | ------------------------- |
+| GET    | `/api/home-content` | No   | Get homepage/hero content |
+| PUT    | `/api/home-content` | JWT  | Update homepage content   |
 
 ### About Content
 
-| Method | Path           | Auth | Description                    |
-| ------ | -------------- | ---- | ------------------------------ |
-| GET    | `/api/about`   | No   | Get about content              |
-| PUT    | `/api/about`   | JWT  | Update about content           |
+| Method | Path         | Auth | Description          |
+| ------ | ------------ | ---- | -------------------- |
+| GET    | `/api/about` | No   | Get about content    |
+| PUT    | `/api/about` | JWT  | Update about content |
 
 ### Contact
 
-| Method | Path              | Auth | Description              |
-| ------ | ----------------- | ---- | ------------------------ |
-| GET    | `/api/contact`    | No   | Get contact info         |
-| PUT    | `/api/contact`    | JWT  | Update contact info      |
+| Method | Path           | Auth | Description         |
+| ------ | -------------- | ---- | ------------------- |
+| GET    | `/api/contact` | No   | Get contact info    |
+| PUT    | `/api/contact` | JWT  | Update contact info |
 
 ### Contact Messages
 
-| Method | Path                                    | Auth                     | Description            |
-| ------ | --------------------------------------- | ------------------------ | ---------------------- |
-| POST   | `/api/contact-messages`                 | No (rate-limited: 10/15m)| Submit contact message |
-| GET    | `/api/contact-messages`                 | JWT                      | List all messages      |
-| GET    | `/api/contact-messages/unread-count`    | JWT                      | Get unread count       |
-| GET    | `/api/contact-messages/:id`             | JWT                      | Get message by ID      |
-| PATCH  | `/api/contact-messages/:id/read`        | JWT                      | Mark as read           |
-| PATCH  | `/api/contact-messages/:id/unread`      | JWT                      | Mark as unread         |
-| DELETE | `/api/contact-messages/:id`             | JWT                      | Delete message         |
+| Method | Path                                 | Auth                      | Description            |
+| ------ | ------------------------------------ | ------------------------- | ---------------------- |
+| POST   | `/api/contact-messages`              | No (rate-limited: 10/15m) | Submit contact message |
+| GET    | `/api/contact-messages`              | JWT                       | List all messages      |
+| GET    | `/api/contact-messages/unread-count` | JWT                       | Get unread count       |
+| GET    | `/api/contact-messages/:id`          | JWT                       | Get message by ID      |
+| PATCH  | `/api/contact-messages/:id/read`     | JWT                       | Mark as read           |
+| PATCH  | `/api/contact-messages/:id/unread`   | JWT                       | Mark as unread         |
+| DELETE | `/api/contact-messages/:id`          | JWT                       | Delete message         |
 
 ### Footer Content
 
-| Method | Path             | Auth | Description           |
-| ------ | ---------------- | ---- | --------------------- |
-| GET    | `/api/footer`    | No   | Get footer content    |
-| PUT    | `/api/footer`    | JWT  | Update footer content |
+| Method | Path          | Auth | Description           |
+| ------ | ------------- | ---- | --------------------- |
+| GET    | `/api/footer` | No   | Get footer content    |
+| PUT    | `/api/footer` | JWT  | Update footer content |
 
 ### Navigation
 
-| Method | Path                      | Auth | Description                |
-| ------ | ------------------------- | ---- | -------------------------- |
-| GET    | `/api/navigation`         | No   | Get navigation items       |
-| GET    | `/api/navbar-settings`    | No   | Get navbar settings        |
-| POST   | `/api/navigation`         | JWT  | Create navigation item     |
-| PUT    | `/api/navigation/:id`     | JWT  | Update navigation item     |
-| DELETE | `/api/navigation/:id`     | JWT  | Delete navigation item     |
-| PUT    | `/api/navigation-reorder` | JWT  | Reorder navigation items   |
-| PUT    | `/api/navbar-settings`    | JWT  | Update navbar settings     |
+| Method | Path                      | Auth | Description              |
+| ------ | ------------------------- | ---- | ------------------------ |
+| GET    | `/api/navigation`         | No   | Get navigation items     |
+| GET    | `/api/navbar-settings`    | No   | Get navbar settings      |
+| POST   | `/api/navigation`         | JWT  | Create navigation item   |
+| PUT    | `/api/navigation/:id`     | JWT  | Update navigation item   |
+| DELETE | `/api/navigation/:id`     | JWT  | Delete navigation item   |
+| PUT    | `/api/navigation-reorder` | JWT  | Reorder navigation items |
+| PUT    | `/api/navbar-settings`    | JWT  | Update navbar settings   |
 
 ### Site Settings
 
-| Method | Path                  | Auth | Description           |
-| ------ | --------------------- | ---- | --------------------- |
-| GET    | `/api/site-settings`  | No   | Get site settings     |
-| PUT    | `/api/site-settings`  | JWT  | Update site settings  |
+| Method | Path                 | Auth | Description          |
+| ------ | -------------------- | ---- | -------------------- |
+| GET    | `/api/site-settings` | No   | Get site settings    |
+| PUT    | `/api/site-settings` | JWT  | Update site settings |
 
 ### Settings
 
-| Method | Path                        | Auth | Description             |
-| ------ | --------------------------- | ---- | ----------------------- |
-| GET    | `/api/settings`             | No   | Get settings            |
-| PUT    | `/api/settings`             | JWT  | Update settings         |
-| GET    | `/api/settings/appearance`  | No   | Get appearance config   |
-| PATCH  | `/api/settings/appearance`  | JWT  | Update appearance       |
+| Method | Path                       | Auth | Description           |
+| ------ | -------------------------- | ---- | --------------------- |
+| GET    | `/api/settings`            | No   | Get settings          |
+| PUT    | `/api/settings`            | JWT  | Update settings       |
+| GET    | `/api/settings/appearance` | No   | Get appearance config |
+| PATCH  | `/api/settings/appearance` | JWT  | Update appearance     |
 
 ### Media
 
-| Method | Path                      | Auth                | Description              |
-| ------ | ------------------------- | ------------------- | ------------------------ |
-| POST   | `/api/media/upload`        | JWT + super_admin   | Upload image (Cloudinary)|
-| POST   | `/api/media/upload-document`| JWT + super_admin  | Upload document          |
-| GET    | `/api/media`              | No                  | List all media           |
-| GET    | `/api/media/:id`          | No                  | Get media by ID          |
-| PUT    | `/api/media/:id`          | JWT + super_admin   | Update media item        |
-| DELETE | `/api/media/:id`          | JWT + super_admin   | Delete media item        |
+| Method | Path                         | Auth              | Description               |
+| ------ | ---------------------------- | ----------------- | ------------------------- |
+| POST   | `/api/media/upload`          | JWT + super_admin | Upload image (Cloudinary) |
+| POST   | `/api/media/upload-document` | JWT + super_admin | Upload document           |
+| GET    | `/api/media`                 | No                | List all media            |
+| GET    | `/api/media/:id`             | No                | Get media by ID           |
+| PUT    | `/api/media/:id`             | JWT + super_admin | Update media item         |
+| DELETE | `/api/media/:id`             | JWT + super_admin | Delete media item         |
 
 ### Custom Pages (Admin)
 
-| Method | Path                              | Auth                | Description              |
-| ------ | --------------------------------- | ------------------- | ------------------------ |
-| GET    | `/api/custom-pages`               | JWT + super_admin   | List all custom pages    |
-| POST   | `/api/custom-pages`               | JWT + super_admin   | Create custom page       |
-| GET    | `/api/custom-pages/:id`           | JWT + super_admin   | Get custom page by ID    |
-| PUT    | `/api/custom-pages/:id`           | JWT + super_admin   | Update custom page       |
-| DELETE | `/api/custom-pages/:id`           | JWT + super_admin   | Delete custom page       |
-| PATCH  | `/api/custom-pages/:id/status`    | JWT + super_admin   | Toggle page status       |
+| Method | Path                           | Auth              | Description           |
+| ------ | ------------------------------ | ----------------- | --------------------- |
+| GET    | `/api/custom-pages`            | JWT + super_admin | List all custom pages |
+| POST   | `/api/custom-pages`            | JWT + super_admin | Create custom page    |
+| GET    | `/api/custom-pages/:id`        | JWT + super_admin | Get custom page by ID |
+| PUT    | `/api/custom-pages/:id`        | JWT + super_admin | Update custom page    |
+| DELETE | `/api/custom-pages/:id`        | JWT + super_admin | Delete custom page    |
+| PATCH  | `/api/custom-pages/:id/status` | JWT + super_admin | Toggle page status    |
 
 ### Custom Pages (Public)
 
-| Method | Path                                  | Auth | Description                    |
-| ------ | ------------------------------------- | ---- | ------------------------------ |
-| GET    | `/api/custom-pages/public`            | No   | List published pages           |
-| GET    | `/api/custom-pages/public/:slug`      | No   | Get published page by slug     |
+| Method | Path                             | Auth | Description                |
+| ------ | -------------------------------- | ---- | -------------------------- |
+| GET    | `/api/custom-pages/public`       | No   | List published pages       |
+| GET    | `/api/custom-pages/public/:slug` | No   | Get published page by slug |
 
 ### Backups
 
-| Method | Path                      | Auth | Description              |
-| ------ | ------------------------- | ---- | ------------------------ |
-| GET    | `/api/backups`            | JWT  | List all backups         |
-| POST   | `/api/backups`            | JWT  | Create backup            |
-| POST   | `/api/backups/upload`     | JWT  | Upload backup file       |
-| GET    | `/api/backups/:id`        | JWT  | Get backup details       |
-| GET    | `/api/backups/:id/download`| JWT | Download backup          |
-| POST   | `/api/backups/:id/restore`| JWT  | Restore from backup      |
-| DELETE | `/api/backups/:id`        | JWT  | Delete backup            |
+| Method | Path                        | Auth | Description         |
+| ------ | --------------------------- | ---- | ------------------- |
+| GET    | `/api/backups`              | JWT  | List all backups    |
+| POST   | `/api/backups`              | JWT  | Create backup       |
+| POST   | `/api/backups/upload`       | JWT  | Upload backup file  |
+| GET    | `/api/backups/:id`          | JWT  | Get backup details  |
+| GET    | `/api/backups/:id/download` | JWT  | Download backup     |
+| POST   | `/api/backups/:id/restore`  | JWT  | Restore from backup |
+| DELETE | `/api/backups/:id`          | JWT  | Delete backup       |
 
 ### Activity Logs
 
-| Method | Path                      | Auth | Description              |
-| ------ | ------------------------- | ---- | ------------------------ |
-| GET    | `/api/activity-logs`      | JWT  | List activity logs       |
-| GET    | `/api/activity-logs/actions`| JWT| Get available action types|
-| GET    | `/api/activity-logs/export`| JWT | Export logs              |
-| GET    | `/api/activity-logs/:id`  | JWT  | Get log by ID            |
-| DELETE | `/api/activity-logs`      | JWT  | Clear all logs           |
+| Method | Path                         | Auth | Description                |
+| ------ | ---------------------------- | ---- | -------------------------- |
+| GET    | `/api/activity-logs`         | JWT  | List activity logs         |
+| GET    | `/api/activity-logs/actions` | JWT  | Get available action types |
+| GET    | `/api/activity-logs/export`  | JWT  | Export logs                |
+| GET    | `/api/activity-logs/:id`     | JWT  | Get log by ID              |
+| DELETE | `/api/activity-logs`         | JWT  | Clear all logs             |
 
 ### Import/Export
 
-| Method | Path                          | Auth | Description              |
-| ------ | ----------------------------- | ---- | ------------------------ |
-| GET    | `/api/import-export/export`   | JWT  | Export all data          |
-| POST   | `/api/import-export/preview`  | JWT  | Preview import file      |
-| POST   | `/api/import-export/import`   | JWT  | Execute data import      |
-| POST   | `/api/import-export/import-ups`| JWT| Import UPS snapshot     |
+| Method | Path                            | Auth | Description         |
+| ------ | ------------------------------- | ---- | ------------------- |
+| GET    | `/api/import-export/export`     | JWT  | Export all data     |
+| POST   | `/api/import-export/preview`    | JWT  | Preview import file |
+| POST   | `/api/import-export/import`     | JWT  | Execute data import |
+| POST   | `/api/import-export/import-ups` | JWT  | Import UPS snapshot |
 
 ### System Config
 
-| Method | Path                                  | Auth | Description              |
-| ------ | ------------------------------------- | ---- | ------------------------ |
-| GET    | `/api/system-config`                  | JWT  | Get system config        |
-| PUT    | `/api/system-config`                  | JWT  | Update system config     |
-| POST   | `/api/system-config/trigger-backup`   | JWT  | Manually trigger backup  |
-| POST   | `/api/system-config/trigger-health-check`| JWT| Manually trigger health check|
+| Method | Path                                      | Auth | Description                   |
+| ------ | ----------------------------------------- | ---- | ----------------------------- |
+| GET    | `/api/system-config`                      | JWT  | Get system config             |
+| PUT    | `/api/system-config`                      | JWT  | Update system config          |
+| POST   | `/api/system-config/trigger-backup`       | JWT  | Manually trigger backup       |
+| POST   | `/api/system-config/trigger-health-check` | JWT  | Manually trigger health check |
 
 ### Maintenance
 
-| Method | Path                          | Auth | Description              |
-| ------ | ----------------------------- | ---- | ------------------------ |
-| GET    | `/api/maintenance/health`     | JWT  | DB health check          |
-| GET    | `/api/maintenance/storage`    | JWT  | Storage usage stats      |
-| GET    | `/api/maintenance/collections`| JWT  | Collection statistics    |
-| GET    | `/api/maintenance/indexes`    | JWT  | Index status             |
-| GET    | `/api/maintenance/orphan-files`| JWT | Find orphan files       |
+| Method | Path                            | Auth | Description           |
+| ------ | ------------------------------- | ---- | --------------------- |
+| GET    | `/api/maintenance/health`       | JWT  | DB health check       |
+| GET    | `/api/maintenance/storage`      | JWT  | Storage usage stats   |
+| GET    | `/api/maintenance/collections`  | JWT  | Collection statistics |
+| GET    | `/api/maintenance/indexes`      | JWT  | Index status          |
+| GET    | `/api/maintenance/orphan-files` | JWT  | Find orphan files     |
 
 ### Security
 
-| Method | Path                              | Auth                | Description              |
-| ------ | --------------------------------- | ------------------- | ------------------------ |
-| GET    | `/api/security/settings`          | JWT + super_admin   | Get security settings    |
-| PUT    | `/api/security/settings`          | JWT + super_admin   | Update security settings |
-| GET    | `/api/security/sessions`          | JWT                 | Get active sessions      |
-| DELETE | `/api/security/sessions/:index`   | JWT                 | Revoke specific session  |
-| DELETE | `/api/security/sessions`          | JWT                 | Revoke all sessions      |
-| GET    | `/api/security/audit`             | JWT + super_admin   | Run security audit       |
+| Method | Path                            | Auth              | Description              |
+| ------ | ------------------------------- | ----------------- | ------------------------ |
+| GET    | `/api/security/settings`        | JWT + super_admin | Get security settings    |
+| PUT    | `/api/security/settings`        | JWT + super_admin | Update security settings |
+| GET    | `/api/security/sessions`        | JWT               | Get active sessions      |
+| DELETE | `/api/security/sessions/:index` | JWT               | Revoke specific session  |
+| DELETE | `/api/security/sessions`        | JWT               | Revoke all sessions      |
+| GET    | `/api/security/audit`           | JWT + super_admin | Run security audit       |
 
 ### Notifications
 
-| Method | Path                              | Auth | Description              |
-| ------ | --------------------------------- | ---- | ------------------------ |
-| GET    | `/api/notifications`              | JWT  | List notifications       |
-| GET    | `/api/notifications/unread-count` | JWT  | Get unread count         |
-| PATCH  | `/api/notifications/:id/read`     | JWT  | Mark notification read   |
-| POST   | `/api/notifications/mark-all-read`| JWT  | Mark all read            |
-| DELETE | `/api/notifications/:id`          | JWT  | Delete notification      |
+| Method | Path                               | Auth | Description            |
+| ------ | ---------------------------------- | ---- | ---------------------- |
+| GET    | `/api/notifications`               | JWT  | List notifications     |
+| GET    | `/api/notifications/unread-count`  | JWT  | Get unread count       |
+| PATCH  | `/api/notifications/:id/read`      | JWT  | Mark notification read |
+| POST   | `/api/notifications/mark-all-read` | JWT  | Mark all read          |
+| DELETE | `/api/notifications/:id`           | JWT  | Delete notification    |
 
 ### AI Chat
 
-| Method | Path        | Auth                     | Description                    |
-| ------ | ----------- | ------------------------ | ------------------------------ |
-| POST   | `/api/chat` | No (rate-limited: 30/m)  | Send chat message to AI bot    |
+| Method | Path        | Auth                    | Description                 |
+| ------ | ----------- | ----------------------- | --------------------------- |
+| POST   | `/api/chat` | No (rate-limited: 30/m) | Send chat message to AI bot |
 
 ## Frontend Routes
 
 ### Public Portfolio
 
-| Path           | Component         | Description                                  |
-| -------------- | ----------------- | -------------------------------------------- |
-| `/`            | Home              | Portfolio landing page with all 2D sections  |
-| `/3d`          | ThreeDPortfolio   | Immersive 3D scrollable portfolio            |
-| `/:customSlug` | DynamicCustomPage | Admin-managed custom pages rendered by slug  |
+| Path           | Component         | Description                                 |
+| -------------- | ----------------- | ------------------------------------------- |
+| `/`            | Home              | Portfolio landing page with all 2D sections |
+| `/3d`          | ThreeDPortfolio   | Immersive 3D scrollable portfolio           |
+| `/:customSlug` | DynamicCustomPage | Admin-managed custom pages rendered by slug |
 
 ### Admin Dashboard
 
-| Path                     | Component             | Roles               | Description                                        |
-| ------------------------ | --------------------- | ------------------- | -------------------------------------------------- |
-| `/admin/dashboard`       | Dashboard             | All                 | Overview with stat cards, recent activity          |
-| `/admin/analytics`       | Analytics             | super_admin, admin  | Full visitor analytics with 6 charts, filters      |
-| `/admin/activity-logs`   | ActivityLogs          | super_admin, admin  | Admin action audit trail                           |
-| `/admin/messages`        | MessageCenter         | super_admin, admin  | Contact message management                         |
-| `/admin/projects`        | Projects              | All                 | Portfolio project list                             |
-| `/admin/projects/new`    | ProjectForm           | All                 | Create new project                                 |
-| `/admin/projects/:id`    | ProjectForm           | All                 | Edit project                                       |
-| `/admin/skills`          | Skills                | All                 | Technology skill list                              |
-| `/admin/skills/new`      | SkillForm             | All                 | Create new skill                                   |
-| `/admin/skills/:id`      | SkillForm             | All                 | Edit skill                                         |
-| `/admin/custom-pages`    | CustomPagesList       | All                 | Custom pages list                                  |
-| `/admin/custom-pages/new`| CustomPageForm        | All                 | Create custom page                                 |
-| `/admin/custom-pages/:id`| CustomPageForm        | All                 | Edit custom page                                   |
-| `/admin/media`           | MediaLibrary          | All                 | File/image upload management                       |
-| `/admin/navigation`      | NavigationManagement  | All                 | Navigation menu editor                             |
-| `/admin/home`            | HomeContent           | All                 | Hero section content editor                        |
-| `/admin/about`           | AboutContent          | All                 | Biography, experience, education editor            |
-| `/admin/contact`         | ContactContent        | All                 | Contact info & social links editor                 |
-| `/admin/footer`          | FooterContent         | All                 | Footer content editor                              |
-| `/admin/import-export`   | ImportExport          | super_admin, admin  | Data import/export tools                           |
-| `/admin/maintenance`     | Maintenance           | super_admin only    | DB health, indexes, orphan files                   |
-| `/admin/system-config`   | SystemConfig          | super_admin only    | System-wide settings                               |
-| `/admin/backup`          | Backup                | super_admin, admin  | Database backup & restore                          |
-| `/admin/security`        | Security              | super_admin, admin  | Security settings, sessions, audit                 |
-| `/admin/users`           | UserManagement        | super_admin only    | Admin user CRUD                                    |
-| `/admin/profile`         | Profile               | All                 | Admin account profile                              |
-| `/admin/theme`           | ThemeSettings         | super_admin, admin  | Light/dark/system theme configuration              |
+| Path                      | Component            | Roles              | Description                                   |
+| ------------------------- | -------------------- | ------------------ | --------------------------------------------- |
+| `/admin/dashboard`        | Dashboard            | All                | Overview with stat cards, recent activity     |
+| `/admin/analytics`        | Analytics            | super_admin, admin | Full visitor analytics with 6 charts, filters |
+| `/admin/activity-logs`    | ActivityLogs         | super_admin, admin | Admin action audit trail                      |
+| `/admin/messages`         | MessageCenter        | super_admin, admin | Contact message management                    |
+| `/admin/projects`         | Projects             | All                | Portfolio project list                        |
+| `/admin/projects/new`     | ProjectForm          | All                | Create new project                            |
+| `/admin/projects/:id`     | ProjectForm          | All                | Edit project                                  |
+| `/admin/skills`           | Skills               | All                | Technology skill list                         |
+| `/admin/skills/new`       | SkillForm            | All                | Create new skill                              |
+| `/admin/skills/:id`       | SkillForm            | All                | Edit skill                                    |
+| `/admin/custom-pages`     | CustomPagesList      | All                | Custom pages list                             |
+| `/admin/custom-pages/new` | CustomPageForm       | All                | Create custom page                            |
+| `/admin/custom-pages/:id` | CustomPageForm       | All                | Edit custom page                              |
+| `/admin/media`            | MediaLibrary         | All                | File/image upload management                  |
+| `/admin/navigation`       | NavigationManagement | All                | Navigation menu editor                        |
+| `/admin/home`             | HomeContent          | All                | Hero section content editor                   |
+| `/admin/about`            | AboutContent         | All                | Biography, experience, education editor       |
+| `/admin/contact`          | ContactContent       | All                | Contact info & social links editor            |
+| `/admin/footer`           | FooterContent        | All                | Footer content editor                         |
+| `/admin/import-export`    | ImportExport         | super_admin, admin | Data import/export tools                      |
+| `/admin/maintenance`      | Maintenance          | super_admin only   | DB health, indexes, orphan files              |
+| `/admin/system-config`    | SystemConfig         | super_admin only   | System-wide settings                          |
+| `/admin/backup`           | Backup               | super_admin, admin | Database backup & restore                     |
+| `/admin/security`         | Security             | super_admin, admin | Security settings, sessions, audit            |
+| `/admin/users`            | UserManagement       | super_admin only   | Admin user CRUD                               |
+| `/admin/profile`          | Profile              | All                | Admin account profile                         |
+| `/admin/theme`            | ThemeSettings        | super_admin, admin | Light/dark/system theme configuration         |
 
 ## Features
 
