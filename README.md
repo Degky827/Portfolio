@@ -1,4 +1,4 @@
-# Modernize-Portifolio
+# Portifolio
 
 A full-stack MERN portfolio for Desalegn — React frontend with Tailwind CSS + Express/MongoDB backend with a 2FA-protected enterprise-grade admin dashboard featuring real public portfolio visitor analytics. Includes both a 2D and immersive 3D scrollable portfolio experience.
 
