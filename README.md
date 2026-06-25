@@ -1,48 +1,105 @@
-# Modernize-Portifolio
+# Modernize-Portfolio
 
-A full-stack MERN portfolio for Desalegn — React frontend with Tailwind CSS + Express/MongoDB backend with a 2FA-protected enterprise-grade admin dashboard featuring real public portfolio visitor analytics. Includes both a 2D and immersive 3D scrollable portfolio experience.
+A full-stack MERN portfolio for Desalegn — React frontend with Tailwind CSS + Express/MongoDB backend with a 2FA-protected enterprise-grade admin dashboard featuring real-time visitor analytics, AI chatbot, 3D scrollable portfolio, and comprehensive security management.
 
 ## Architecture
 
 ```
 modernize-portifo/
-├── frontend/              React + Vite + Tailwind CSS
+├── frontend/                    React + Vite + Tailwind CSS
 │   ├── src/
-│   │   ├── components/       UI components (Navbar, Footer, sections)
-│   │   ├── hooks/            Custom hooks (dark mode, scroll, tracking)
-│   │   ├── pages/            Route pages (Home, Login)
-│   │   ├── context/          Auth state management
-│   │   ├── services/         Axios API client with JWT interceptor
-│   │   ├── admin/            Admin dashboard (8 pages, 15+ components)
-│   │   │   ├── components/   Sidebar, Navbar, DataTable, StatCard, ...
-│   │   │   ├── pages/        Dashboard, Analytics, Projects, CMS, ...
-│   │   │   ├── context/      Admin sidebar/theme state
-│   │   │   ├── layout/       AdminLayout with AnimatePresence routing
-│   │   │   └── routes/       Admin route definitions
-│   │   └── public-portfolio/ Public portfolio pages & 3D engine
-│   │       ├── pages/        HomePage, DynamicCustomPage, NotFound
-│   │       ├── sections/     Hero, About, Skills, Projects, Contact, Footer
-│   │       ├── layout/       PublicLayout with Navbar
-│   │       └── 3d/           3D scrollable portfolio engine
-│   │           ├── config/       Section definitions & mode config
-│   │           ├── hooks/        useScrollManager, useHeroData, useAboutData, ...
-│   │           ├── components/   SceneRouter, SceneEnvironment, ScrollIndicator
-│   │           └── scenes/       Hero/, About/, Skills/, Projects/, Contact, Footer
-│   └── dist/                 Production build
-├── backend/               Express + Mongoose + MongoDB Atlas
+│   │   ├── admin-manager/       Admin dashboard (26 modules)
+│   │   │   ├── about-management/
+│   │   │   ├── activity-management/
+│   │   │   ├── analytics-management/
+│   │   │   ├── authentication/    Login, AuthContext, RoleGuard, ProtectedRoute
+│   │   │   ├── backup-management/
+│   │   │   ├── contact-management/
+│   │   │   ├── context/           AdminContext, ThemeContext
+│   │   │   ├── custom-pages-management/
+│   │   │   ├── dashboard/
+│   │   │   ├── footer-management/
+│   │   │   ├── homepage-management/
+│   │   │   ├── import-export/
+│   │   │   ├── layout/            AdminLayout, Sidebar, Navbar, ThemeToggle
+│   │   │   ├── maintenance/
+│   │   │   ├── media-management/
+│   │   │   ├── navigation-management/
+│   │   │   ├── notifications/
+│   │   │   ├── profile-management/
+│   │   │   ├── projects-management/
+│   │   │   ├── routes/            AdminRoutes.jsx
+│   │   │   ├── security-management/
+│   │   │   ├── settings-management/
+│   │   │   ├── shared/            PageHeader, Toast, DataTable, ConfirmModal, ...
+│   │   │   ├── skills-management/
+│   │   │   ├── system-config/
+│   │   │   └── user-management/
+│   │   ├── ai/                    AI chatbot (ChatWindow, AIButton, useChat)
+│   │   ├── locales/               i18n translations (en.json, am.json)
+│   │   ├── public-portfolio/      Public portfolio pages & 3D engine
+│   │   │   ├── 3d/                3D scrollable portfolio engine
+│   │   │   ├── layout/            Navbar, Footer
+│   │   │   ├── pages/             HomePage, DynamicCustomPage
+│   │   │   └── shared/            Shared hooks, data, context
+│   │   ├── shared/                Shared code across app
+│   │   │   ├── components/        ErrorBoundary, Logo
+│   │   │   ├── context/           SiteSettingsContext, SocketContext
+│   │   │   ├── hooks/             7 custom hooks (useUnreadMessages, etc.)
+│   │   │   ├── services/          22 API service files
+│   │   │   └── utils/             Utility functions
+│   │   ├── test/                  Test setup
+│   │   ├── App.jsx
+│   │   ├── i18n.js
+│   │   └── main.jsx
+│   └── dist/                      Production build
+├── backend/                     Express + Mongoose + MongoDB Atlas
 │   ├── src/
-│   │   ├── shared/models/    Mongoose schemas (Admin, Visit, Project, CustomPage, ...)
-│   │   ├── admin/            Admin API routes & controllers
-│   │   │   ├── custom-pages/     Custom pages CRUD
-│   │   │   ├── home-content/     Home/Hero content
-│   │   │   ├── about-content/    About section content
-│   │   │   └── ...               Other admin modules
-│   │   ├── public/           Public API routes
-│   │   │   └── custom-pages/     Public slug lookup
-│   │   ├── middleware/       JWT authentication
-│   │   ├── config/           DB connection, env-based config
-│   │   └── utils/            IP geolocation, user-agent parsing
+│   │   ├── admin/                 Admin API (12 modules)
+│   │   │   ├── activity-logs/     Activity log CRUD + export
+│   │   │   ├── analytics/         Visit tracking + dashboard data
+│   │   │   ├── auth/              JWT auth, 2FA (TOTP), Google OAuth
+│   │   │   ├── backups/           Backup CRUD + restore
+│   │   │   ├── custom-pages/      Custom pages CRUD
+│   │   │   ├── import-export/     Data import/export
+│   │   │   ├── maintenance/       DB health, storage, indexes
+│   │   │   ├── media/             Cloudinary media upload
+│   │   │   ├── notifications/     System notifications
+│   │   │   ├── security/          Security settings, sessions, audit
+│   │   │   ├── system/            System-wide config
+│   │   │   └── users/             User CRUD (super_admin)
+│   │   ├── ai/                    AI chatbot (Google Generative AI)
+│   │   │   ├── controllers/
+│   │   │   ├── prompts/
+│   │   │   ├── routes/
+│   │   │   ├── services/
+│   │   │   └── validations/
+│   │   ├── infrastructure/        Core infrastructure
+│   │   │   ├── config/            Environment-based config
+│   │   │   ├── database/          MongoDB connection
+│   │   │   ├── socket/            Socket.IO setup
+│   │   │   └── storage/           Cloudinary + S3 upload
+│   │   ├── public/                Public API (10 modules)
+│   │   │   ├── about/
+│   │   │   ├── contact/
+│   │   │   ├── custom-pages/
+│   │   │   ├── footer/
+│   │   │   ├── homepage/
+│   │   │   ├── navigation/
+│   │   │   ├── projects/
+│   │   │   ├── settings/
+│   │   │   ├── site-settings/
+│   │   │   └── skills/
+│   │   ├── shared/                Shared backend code
+│   │   │   ├── middleware/        auth, csrf, rateLimiter, sanitize, validate
+│   │   │   ├── models/           23 Mongoose schemas
+│   │   │   ├── services/         backupScheduler, healthMonitor, s3Uploader, ...
+│   │   │   └── utilities/        9 utility modules
+│   │   └── server.js
 │   └── package.json
+├── docs/
+├── docker-compose.yml
+├── Dockerfile
 └── README.md
 ```
 
@@ -79,6 +136,11 @@ JWT_SECRET=a_random_64_char_string
 JWT_EXPIRES_IN=7d
 CORS_ORIGINS=http://localhost:5173
 FRONTEND_URL=http://localhost:5173
+GOOGLE_CLIENT_ID=your_google_client_id
+CLOUDINARY_CLOUD_NAME=your_cloud_name
+CLOUDINARY_API_KEY=your_api_key
+CLOUDINARY_API_SECRET=your_api_secret
+GOOGLE_AI_API_KEY=your_google_ai_key
 ```
 
 **Frontend** — `frontend/.env`:
@@ -125,71 +187,301 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 
 ## API Endpoints
 
-### Auth & Analytics
+### Health Check
 
-| Method | Path                                 | Auth | Description                                                                        |
-| ------ | ------------------------------------ | ---- | ---------------------------------------------------------------------------------- |
-| GET    | `/api/health`                        | No   | Server health check                                                                |
-| POST   | `/api/analytics/log-visit`           | No   | Log a portfolio visit (enriched with page, referrer, visitorId)                    |
-| GET    | `/api/analytics/metrics`             | JWT  | Paginated visit log with search, date/country/device/browser/source filters        |
-| GET    | `/api/analytics/stats`               | JWT  | Dashboard aggregate stats (total, unique, today, week, month, recent)              |
-| GET    | `/api/analytics/analytics-dashboard` | JWT  | Full analytics dashboard data (trends, device/browser/country/source distribution) |
-| POST   | `/api/auth/register-admin`           | No   | One-time admin registration                                                        |
-| GET    | `/api/auth/setup-2fa`                | No   | Generate TOTP secret + QR code                                                     |
-| POST   | `/api/auth/admin-login`              | No   | Two-phase login (password → 2FA → JWT)                                             |
+| Method | Path              | Auth | Description         |
+| ------ | ----------------- | ---- | ------------------- |
+| GET    | `/api/health`     | No   | Server health check |
+
+### Auth
+
+| Method | Path                        | Auth                     | Description                                  |
+| ------ | --------------------------- | ------------------------ | -------------------------------------------- |
+| POST   | `/api/auth/login`           | No (rate-limited: 10/15m) | Step 1: password verification               |
+| POST   | `/api/auth/verify-2fa`      | No (rate-limited: 20/15m) | Step 2: TOTP verification → JWT             |
+| POST   | `/api/auth/google`          | No (rate-limited: 5/15m)  | Google OAuth login                           |
+| POST   | `/api/auth/logout`          | JWT                      | Logout, clear cookie                         |
+| POST   | `/api/auth/refresh`         | No                       | Refresh access + refresh tokens              |
+| GET    | `/api/auth/me`              | JWT                      | Get current user profile                     |
+| PATCH  | `/api/auth/me`              | JWT                      | Update current user profile                  |
+| POST   | `/api/auth/setup-2fa`       | JWT                      | Generate TOTP secret + QR code               |
+| POST   | `/api/auth/verify-2fa-setup`| JWT                      | Verify TOTP and enable 2FA                   |
+| POST   | `/api/auth/disable-2fa`     | JWT                      | Disable 2FA                                  |
+
+### Users (super_admin only)
+
+| Method | Path              | Auth                | Description      |
+| ------ | ----------------- | ------------------- | ---------------- |
+| GET    | `/api/users`      | JWT + super_admin   | List all users   |
+| GET    | `/api/users/:id`  | JWT + super_admin   | Get user by ID   |
+| POST   | `/api/users`      | JWT + super_admin   | Create user      |
+| PUT    | `/api/users/:id`  | JWT + super_admin   | Update user      |
+| DELETE | `/api/users/:id`  | JWT + super_admin   | Delete user      |
+
+### Analytics
+
+| Method | Path                                | Auth                     | Description                              |
+| ------ | ----------------------------------- | ------------------------ | ---------------------------------------- |
+| POST   | `/api/analytics/log-visit`          | No (rate-limited: 60/m)  | Log a portfolio visit                    |
+| POST   | `/api/analytics/log-engagement`     | No (rate-limited: 60/m)  | Log user engagement event                |
+| GET    | `/api/analytics/metrics`            | JWT                      | Paginated visit log with filters         |
+| GET    | `/api/analytics/stats`              | JWT                      | Dashboard aggregate stats                |
+| GET    | `/api/analytics/analytics-dashboard`| JWT                      | Full analytics dashboard data            |
+| DELETE | `/api/analytics/clear`              | JWT                      | Clear all analytics data                 |
+
+### Projects
+
+| Method | Path                          | Auth                | Description              |
+| ------ | ----------------------------- | ------------------- | ------------------------ |
+| GET    | `/api/projects`               | No                  | List all projects        |
+| GET    | `/api/projects/slug/:slug`    | No                  | Get project by slug      |
+| GET    | `/api/projects/:id`           | No                  | Get project by ID        |
+| POST   | `/api/projects`               | JWT + super_admin   | Create project           |
+| PUT    | `/api/projects/reorder`       | JWT + super_admin   | Reorder projects         |
+| PUT    | `/api/projects/:id`           | JWT + super_admin   | Update project           |
+| DELETE | `/api/projects/:id`           | JWT + super_admin   | Delete project           |
+| POST   | `/api/projects/:id/duplicate` | JWT + super_admin   | Duplicate project        |
+| PATCH  | `/api/projects/:id/featured`  | JWT + super_admin   | Toggle featured          |
+| PATCH  | `/api/projects/:id/publish`   | JWT + super_admin   | Toggle publish           |
+| PATCH  | `/api/projects/:id/archive`   | JWT + super_admin   | Toggle archive           |
+| PATCH  | `/api/projects/:id/images`    | JWT + super_admin   | Update images            |
+
+### Skills
+
+| Method | Path              | Auth | Description        |
+| ------ | ----------------- | ---- | ------------------ |
+| GET    | `/api/skills`     | No   | List all skills    |
+| GET    | `/api/skills/:id` | No   | Get skill by ID    |
+| POST   | `/api/skills`     | JWT  | Create skill       |
+| PUT    | `/api/skills/:id` | JWT  | Update skill       |
+| DELETE | `/api/skills/:id` | JWT  | Delete skill       |
+
+### Categories
+
+| Method | Path                    | Auth | Description          |
+| ------ | ----------------------- | ---- | -------------------- |
+| GET    | `/api/categories`       | No   | List all categories  |
+| GET    | `/api/categories/:id`   | No   | Get category by ID   |
+| POST   | `/api/categories`       | JWT  | Create category      |
+| PUT    | `/api/categories/reorder`| JWT  | Reorder categories   |
+| PUT    | `/api/categories/:id`   | JWT  | Update category      |
+| DELETE | `/api/categories/:id`   | JWT  | Delete category      |
+
+### Homepage Content
+
+| Method | Path                | Auth | Description              |
+| ------ | ------------------- | ---- | ------------------------ |
+| GET    | `/api/home-content` | No   | Get homepage/hero content|
+| PUT    | `/api/home-content` | JWT  | Update homepage content  |
+
+### About Content
+
+| Method | Path           | Auth | Description                    |
+| ------ | -------------- | ---- | ------------------------------ |
+| GET    | `/api/about`   | No   | Get about content              |
+| PUT    | `/api/about`   | JWT  | Update about content           |
+
+### Contact
+
+| Method | Path              | Auth | Description              |
+| ------ | ----------------- | ---- | ------------------------ |
+| GET    | `/api/contact`    | No   | Get contact info         |
+| PUT    | `/api/contact`    | JWT  | Update contact info      |
+
+### Contact Messages
+
+| Method | Path                                    | Auth                     | Description            |
+| ------ | --------------------------------------- | ------------------------ | ---------------------- |
+| POST   | `/api/contact-messages`                 | No (rate-limited: 10/15m)| Submit contact message |
+| GET    | `/api/contact-messages`                 | JWT                      | List all messages      |
+| GET    | `/api/contact-messages/unread-count`    | JWT                      | Get unread count       |
+| GET    | `/api/contact-messages/:id`             | JWT                      | Get message by ID      |
+| PATCH  | `/api/contact-messages/:id/read`        | JWT                      | Mark as read           |
+| PATCH  | `/api/contact-messages/:id/unread`      | JWT                      | Mark as unread         |
+| DELETE | `/api/contact-messages/:id`             | JWT                      | Delete message         |
+
+### Footer Content
+
+| Method | Path             | Auth | Description           |
+| ------ | ---------------- | ---- | --------------------- |
+| GET    | `/api/footer`    | No   | Get footer content    |
+| PUT    | `/api/footer`    | JWT  | Update footer content |
+
+### Navigation
+
+| Method | Path                      | Auth | Description                |
+| ------ | ------------------------- | ---- | -------------------------- |
+| GET    | `/api/navigation`         | No   | Get navigation items       |
+| GET    | `/api/navbar-settings`    | No   | Get navbar settings        |
+| POST   | `/api/navigation`         | JWT  | Create navigation item     |
+| PUT    | `/api/navigation/:id`     | JWT  | Update navigation item     |
+| DELETE | `/api/navigation/:id`     | JWT  | Delete navigation item     |
+| PUT    | `/api/navigation-reorder` | JWT  | Reorder navigation items   |
+| PUT    | `/api/navbar-settings`    | JWT  | Update navbar settings     |
+
+### Site Settings
+
+| Method | Path                  | Auth | Description           |
+| ------ | --------------------- | ---- | --------------------- |
+| GET    | `/api/site-settings`  | No   | Get site settings     |
+| PUT    | `/api/site-settings`  | JWT  | Update site settings  |
+
+### Settings
+
+| Method | Path                        | Auth | Description             |
+| ------ | --------------------------- | ---- | ----------------------- |
+| GET    | `/api/settings`             | No   | Get settings            |
+| PUT    | `/api/settings`             | JWT  | Update settings         |
+| GET    | `/api/settings/appearance`  | No   | Get appearance config   |
+| PATCH  | `/api/settings/appearance`  | JWT  | Update appearance       |
+
+### Media
+
+| Method | Path                      | Auth                | Description              |
+| ------ | ------------------------- | ------------------- | ------------------------ |
+| POST   | `/api/media/upload`        | JWT + super_admin   | Upload image (Cloudinary)|
+| POST   | `/api/media/upload-document`| JWT + super_admin  | Upload document          |
+| GET    | `/api/media`              | No                  | List all media           |
+| GET    | `/api/media/:id`          | No                  | Get media by ID          |
+| PUT    | `/api/media/:id`          | JWT + super_admin   | Update media item        |
+| DELETE | `/api/media/:id`          | JWT + super_admin   | Delete media item        |
 
 ### Custom Pages (Admin)
 
-| Method | Path                                      | Auth | Description                          |
-| ------ | ----------------------------------------- | ---- | ------------------------------------ |
-| GET    | `/api/admin/custom-pages`                 | JWT  | List all custom pages                |
-| POST   | `/api/admin/custom-pages`                 | JWT  | Create a new custom page             |
-| GET    | `/api/admin/custom-pages/:id`             | JWT  | Get custom page by ID                |
-| PUT    | `/api/admin/custom-pages/:id`             | JWT  | Update custom page                   |
-| DELETE | `/api/admin/custom-pages/:id`             | JWT  | Delete custom page                   |
-| PATCH  | `/api/admin/custom-pages/:id/toggle-status` | JWT | Toggle page active/inactive status |
+| Method | Path                              | Auth                | Description              |
+| ------ | --------------------------------- | ------------------- | ------------------------ |
+| GET    | `/api/custom-pages`               | JWT + super_admin   | List all custom pages    |
+| POST   | `/api/custom-pages`               | JWT + super_admin   | Create custom page       |
+| GET    | `/api/custom-pages/:id`           | JWT + super_admin   | Get custom page by ID    |
+| PUT    | `/api/custom-pages/:id`           | JWT + super_admin   | Update custom page       |
+| DELETE | `/api/custom-pages/:id`           | JWT + super_admin   | Delete custom page       |
+| PATCH  | `/api/custom-pages/:id/status`    | JWT + super_admin   | Toggle page status       |
 
 ### Custom Pages (Public)
 
-| Method | Path                        | Auth | Description                              |
-| ------ | --------------------------- | ---- | ---------------------------------------- |
-| GET    | `/api/public/custom-pages/slug/:slug` | No | Get published custom page by slug    |
+| Method | Path                                  | Auth | Description                    |
+| ------ | ------------------------------------- | ---- | ------------------------------ |
+| GET    | `/api/custom-pages/public`            | No   | List published pages           |
+| GET    | `/api/custom-pages/public/:slug`      | No   | Get published page by slug     |
+
+### Backups
+
+| Method | Path                      | Auth | Description              |
+| ------ | ------------------------- | ---- | ------------------------ |
+| GET    | `/api/backups`            | JWT  | List all backups         |
+| POST   | `/api/backups`            | JWT  | Create backup            |
+| POST   | `/api/backups/upload`     | JWT  | Upload backup file       |
+| GET    | `/api/backups/:id`        | JWT  | Get backup details       |
+| GET    | `/api/backups/:id/download`| JWT | Download backup          |
+| POST   | `/api/backups/:id/restore`| JWT  | Restore from backup      |
+| DELETE | `/api/backups/:id`        | JWT  | Delete backup            |
+
+### Activity Logs
+
+| Method | Path                      | Auth | Description              |
+| ------ | ------------------------- | ---- | ------------------------ |
+| GET    | `/api/activity-logs`      | JWT  | List activity logs       |
+| GET    | `/api/activity-logs/actions`| JWT| Get available action types|
+| GET    | `/api/activity-logs/export`| JWT | Export logs              |
+| GET    | `/api/activity-logs/:id`  | JWT  | Get log by ID            |
+| DELETE | `/api/activity-logs`      | JWT  | Clear all logs           |
+
+### Import/Export
+
+| Method | Path                          | Auth | Description              |
+| ------ | ----------------------------- | ---- | ------------------------ |
+| GET    | `/api/import-export/export`   | JWT  | Export all data          |
+| POST   | `/api/import-export/preview`  | JWT  | Preview import file      |
+| POST   | `/api/import-export/import`   | JWT  | Execute data import      |
+| POST   | `/api/import-export/import-ups`| JWT| Import UPS snapshot     |
+
+### System Config
+
+| Method | Path                                  | Auth | Description              |
+| ------ | ------------------------------------- | ---- | ------------------------ |
+| GET    | `/api/system-config`                  | JWT  | Get system config        |
+| PUT    | `/api/system-config`                  | JWT  | Update system config     |
+| POST   | `/api/system-config/trigger-backup`   | JWT  | Manually trigger backup  |
+| POST   | `/api/system-config/trigger-health-check`| JWT| Manually trigger health check|
+
+### Maintenance
+
+| Method | Path                          | Auth | Description              |
+| ------ | ----------------------------- | ---- | ------------------------ |
+| GET    | `/api/maintenance/health`     | JWT  | DB health check          |
+| GET    | `/api/maintenance/storage`    | JWT  | Storage usage stats      |
+| GET    | `/api/maintenance/collections`| JWT  | Collection statistics    |
+| GET    | `/api/maintenance/indexes`    | JWT  | Index status             |
+| GET    | `/api/maintenance/orphan-files`| JWT | Find orphan files       |
+
+### Security
+
+| Method | Path                              | Auth                | Description              |
+| ------ | --------------------------------- | ------------------- | ------------------------ |
+| GET    | `/api/security/settings`          | JWT + super_admin   | Get security settings    |
+| PUT    | `/api/security/settings`          | JWT + super_admin   | Update security settings |
+| GET    | `/api/security/sessions`          | JWT                 | Get active sessions      |
+| DELETE | `/api/security/sessions/:index`   | JWT                 | Revoke specific session  |
+| DELETE | `/api/security/sessions`          | JWT                 | Revoke all sessions      |
+| GET    | `/api/security/audit`             | JWT + super_admin   | Run security audit       |
+
+### Notifications
+
+| Method | Path                              | Auth | Description              |
+| ------ | --------------------------------- | ---- | ------------------------ |
+| GET    | `/api/notifications`              | JWT  | List notifications       |
+| GET    | `/api/notifications/unread-count` | JWT  | Get unread count         |
+| PATCH  | `/api/notifications/:id/read`     | JWT  | Mark notification read   |
+| POST   | `/api/notifications/mark-all-read`| JWT  | Mark all read            |
+| DELETE | `/api/notifications/:id`          | JWT  | Delete notification      |
+
+### AI Chat
+
+| Method | Path        | Auth                     | Description                    |
+| ------ | ----------- | ------------------------ | ------------------------------ |
+| POST   | `/api/chat` | No (rate-limited: 30/m)  | Send chat message to AI bot    |
 
 ## Frontend Routes
 
 ### Public Portfolio
 
-| Path                   | Component          | Description                                        |
-| ---------------------- | ------------------ | -------------------------------------------------- |
-| `/`                    | Home               | Portfolio landing page with all 2D sections        |
-| `/3d`                  | ThreeDPortfolio    | Immersive 3D scrollable portfolio                  |
-| `/:customSlug`         | DynamicCustomPage  | Admin-managed custom pages rendered by slug        |
-| `*`                    | NotFound           | 404 page                                           |
+| Path           | Component         | Description                                  |
+| -------------- | ----------------- | -------------------------------------------- |
+| `/`            | Home              | Portfolio landing page with all 2D sections  |
+| `/3d`          | ThreeDPortfolio   | Immersive 3D scrollable portfolio            |
+| `/:customSlug` | DynamicCustomPage | Admin-managed custom pages rendered by slug  |
 
 ### Admin Dashboard
 
-| Path                   | Component     | Description                                                   |
-| ---------------------- | ------------- | ------------------------------------------------------------- |
-| `/admin/dashboard`     | Dashboard     | Overview with stat cards, recent activity, traffic bars       |
-| `/admin/analytics`     | Analytics     | Full visitor analytics with 6 charts, filters, enriched table |
-| `/admin/projects`      | Projects      | Portfolio project CRUD                                        |
-| `/admin/skills`        | Skills        | Technology skill management                                   |
-| `/admin/certificates`  | Certificates  | Certificate CRUD                                              |
-| `/admin/home`          | Home CMS      | Hero section content editor                                   |
-| `/admin/about`         | About CMS     | Biography, experience, education editor                       |
-| `/admin/contact`       | Contact CMS   | Contact info & social links editor                            |
-| `/admin/media`         | Media Library | File/image upload management                                  |
-| `/admin/footer`        | Footer CMS    | Footer content editor                                         |
-| `/admin/custom-pages`  | Custom Pages  | Create/edit/delete custom pages with section builder          |
-| `/admin/notifications` | Notifications | System notification list                                      |
-| `/admin/activity-logs` | Activity Logs | Admin action audit trail                                      |
-| `/admin/settings`      | Settings      | Portfolio configuration                                       |
-| `/admin/backup`        | Backup        | Database backup & restore                                     |
-| `/admin/import-export` | Import/Export | Data import/export tools                                      |
-| `/admin/maintenance`   | Maintenance   | DB health, indexes, orphan files                              |
-| `/admin/system-config` | System Config | System-wide settings                                          |
-| `/admin/profile`       | Profile       | Admin account profile                                         |
-| `/admin/theme`         | Appearance    | Light/dark/system theme configuration                         |
+| Path                     | Component             | Roles               | Description                                        |
+| ------------------------ | --------------------- | ------------------- | -------------------------------------------------- |
+| `/admin/dashboard`       | Dashboard             | All                 | Overview with stat cards, recent activity          |
+| `/admin/analytics`       | Analytics             | super_admin, admin  | Full visitor analytics with 6 charts, filters      |
+| `/admin/activity-logs`   | ActivityLogs          | super_admin, admin  | Admin action audit trail                           |
+| `/admin/messages`        | MessageCenter         | super_admin, admin  | Contact message management                         |
+| `/admin/projects`        | Projects              | All                 | Portfolio project list                             |
+| `/admin/projects/new`    | ProjectForm           | All                 | Create new project                                 |
+| `/admin/projects/:id`    | ProjectForm           | All                 | Edit project                                       |
+| `/admin/skills`          | Skills                | All                 | Technology skill list                              |
+| `/admin/skills/new`      | SkillForm             | All                 | Create new skill                                   |
+| `/admin/skills/:id`      | SkillForm             | All                 | Edit skill                                         |
+| `/admin/custom-pages`    | CustomPagesList       | All                 | Custom pages list                                  |
+| `/admin/custom-pages/new`| CustomPageForm        | All                 | Create custom page                                 |
+| `/admin/custom-pages/:id`| CustomPageForm        | All                 | Edit custom page                                   |
+| `/admin/media`           | MediaLibrary          | All                 | File/image upload management                       |
+| `/admin/navigation`      | NavigationManagement  | All                 | Navigation menu editor                             |
+| `/admin/home`            | HomeContent           | All                 | Hero section content editor                        |
+| `/admin/about`           | AboutContent          | All                 | Biography, experience, education editor            |
+| `/admin/contact`         | ContactContent        | All                 | Contact info & social links editor                 |
+| `/admin/footer`          | FooterContent         | All                 | Footer content editor                              |
+| `/admin/import-export`   | ImportExport          | super_admin, admin  | Data import/export tools                           |
+| `/admin/maintenance`     | Maintenance           | super_admin only    | DB health, indexes, orphan files                   |
+| `/admin/system-config`   | SystemConfig          | super_admin only    | System-wide settings                               |
+| `/admin/backup`          | Backup                | super_admin, admin  | Database backup & restore                          |
+| `/admin/security`        | Security              | super_admin, admin  | Security settings, sessions, audit                 |
+| `/admin/users`           | UserManagement        | super_admin only    | Admin user CRUD                                    |
+| `/admin/profile`         | Profile               | All                 | Admin account profile                              |
+| `/admin/theme`           | ThemeSettings         | super_admin, admin  | Light/dark/system theme configuration              |
 
 ## Features
 
@@ -199,54 +491,27 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 - **Dark mode**: Persistent theme toggle with system preference support
 - **Responsive**: Mobile-first with animated navbar drawer
 - **Framer Motion**: Entrance animations, scroll-triggered reveals
-- **i18n**: English and Amharic language support
+- **i18n**: English and Amharic language support via i18next
 
 ### 3D Portfolio (`/#/3d`)
 
 An immersive scrollable 3D experience built with Three.js / React Three Fiber:
 
 - **Scroll-driven navigation**: HTML scroll maps to 3D scene transitions via `useScrollManager`
-- **Hero Scene**: Floating 3D photo frame with glowing neon borders, orbiting rings, parallax particles, cinematic lighting, and admin-managed data (name, badge, stats, social links)
-- **About Scene**: Story pillar cards, IDE-style code block with developer config, highlight metrics, certifications — all from admin content
-- **Skills Scene**: (placeholder, in progress)
-- **Projects Scene**: (placeholder, in progress)
-- **Contact Scene**: (placeholder, in progress)
-- **Footer Scene**: (placeholder, in progress)
+- **Hero Scene**: Floating 3D photo frame with glowing neon borders, orbiting rings, parallax particles, cinematic lighting
+- **About Scene**: Story pillar cards, IDE-style code block with developer config, highlight metrics, certifications
+- **Skills/Projects/Contact/Footer Scenes**: In progress
 - **SceneEnvironment**: Dynamic starfield, fog, ambient lighting
 - **ScrollIndicator**: Fixed dot navigation sidebar
 - **Responsive**: Adapts particle count, text scale, camera position, and model scale by viewport
 - **Performance**: `useMemo` for colors, `useRef` for mouse tracking (zero rerenders), `instancedMesh` for particles, lazy-loaded scenes
 
-#### 3D Architecture
+### AI Chatbot
 
-```
-3d/
-├── config/portfolioMode.js         Section definitions (hero 0-18%, about 18-36%, ...)
-├── hooks/
-│   ├── useScrollManager.js         Maps scroll position → section index + local progress
-│   ├── useHeroData.js              Fetches same data as 2D Hero (greeting, name, stats, ...)
-│   ├── useAboutData.js             Fetches same data as 2D About (pillars, metrics, skills, ...)
-│   ├── useMousePosition.js         Normalized mouse position for parallax (useRef, no rerender)
-│   └── useResponsive.js            Viewport breakpoints → particle count, text scale, camera Z
-├── components/
-│   ├── SceneRouter.jsx             Lazy-loads correct scene by section index
-│   ├── SceneEnvironment.jsx        Stars, fog, ambient lights
-│   └── ScrollIndicator.jsx         Fixed dot nav with section labels
-└── scenes/
-    ├── HeroScene.jsx               Main Hero controller composing sub-components
-    ├── Hero/
-    │   ├── HeroModel.jsx           3D photo frame with neon borders + profile texture
-    │   ├── HeroText.jsx            Greeting, name, badge, intro (2-3 line wrap), stats, socials
-    │   ├── HeroLights.jsx          4-light cinematic rig with scroll fade
-    │   ├── HeroParticles.jsx       300 instanced spheres with scroll parallax
-    │   ├── HeroEffects.jsx         Wireframe background shapes with mouse parallax
-    │   └── HeroAnimation.jsx       Camera controller + mouse tracking
-    ├── AboutScene.jsx              Story pillars, code block, metrics, certifications
-    ├── SkillsScene.jsx             (placeholder)
-    ├── ProjectsScene.jsx           (placeholder)
-    ├── ContactScene.jsx            (placeholder)
-    └── FooterScene.jsx             (placeholder)
-```
+- **Backend**: Google Generative AI integration with custom prompts
+- **Frontend**: ChatWindow component with typing indicators, message history
+- **Rate limiting**: 30 requests per minute per IP
+- **Context-aware**: Uses portfolio data for relevant responses
 
 ### Custom Pages System
 
@@ -258,14 +523,6 @@ Admin-managed dynamic pages with a section-based builder:
 - **Public rendering**: Slug-based routing (`/:customSlug`), responsive section layout
 - **SEO**: Meta title/description support per page
 
-#### Section Builder
-
-Each custom page contains an ordered array of sections, each with:
-- **Type**: text, image, gallery, video, button, or html
-- **Content**: Type-specific fields (title, body, URL, alt text, button text/link)
-- **Layout**: Full-width or contained
-- **Visibility**: Toggle individual sections on/off
-
 ### Visit Tracking
 
 - **Automatic**: IP geolocation (country/city/region via ipapi.co)
@@ -274,10 +531,11 @@ Each custom page contains an ordered array of sections, each with:
 - **Referrer parsing**: Google, LinkedIn, GitHub, Direct, etc.
 - **Returning visitors**: Anonymous visitorId persisted in localStorage
 - **Admin exclusion**: `/admin` routes, `/login`, and local IPs are never tracked
+- **Engagement tracking**: Scroll depth, time on page, clicks
 
 ### Admin Dashboard (2FA-protected)
 
-- **Sidebar**: 5 navigation groups with accordion, Cmd+K search, collapse mode, mobile drawer
+- **Sidebar**: 5 navigation groups (Dashboard, Portfolio CMS, System, Account) with accordion, Cmd+K search, collapse mode, mobile drawer
 - **Navbar**: Dynamic breadcrumbs, global search modal, account dropdown, notification bell
 - **Dashboard**: Welcome hero, 5 animated stat cards, traffic bar chart, recent activity feed, quick actions
 - **Analytics** (`/admin/analytics`):
@@ -290,6 +548,14 @@ Each custom page contains an ordered array of sections, each with:
 - **NotificationBell**: Tabbed (all/unread), categorized icons, mark read/delete actions
 - **Theme**: Light, dark, system modes with smooth CSS transitions
 
+### Security Management
+
+- **Password Policy**: Configurable min length, character requirements, max age, reuse prevention
+- **Session Management**: View active sessions with device/browser/IP info, revoke individual or all sessions
+- **Two-Factor Auth**: Enforce 2FA for all users, allow authenticator app or SMS methods
+- **Security Audit**: Real-time security score with 10 automated checks (password policy, 2FA, lockout, CSRF, rate limiting, etc.)
+- **Login Security**: Configurable max failed attempts, lockout duration
+
 ## Deployment
 
 ### Backend (Render)
@@ -299,7 +565,7 @@ Each custom page contains an ordered array of sections, each with:
 3. Settings:
    - **Root Directory**: `backend`
    - **Build Command**: `npm install`
-   - **Start Command**: `node server.js`
+   - **Start Command**: `node src/server.js`
 4. Add environment variables (`MONGO_URI`, `JWT_SECRET`, etc.)
 5. Deploy
 
@@ -313,15 +579,33 @@ Each custom page contains an ordered array of sections, each with:
 4. Add environment variable `VITE_API_URL` pointing to your Render backend URL
 5. Deploy
 
+### Docker
+
+```bash
+docker-compose up --build
+```
+
 ## Security
 
-- Passwords hashed with bcryptjs (12 salt rounds)
-- TOTP-based two-factor authentication via speakeasy + Google Authenticator
-- JWT tokens for session management (configurable expiry, httpOnly cookies)
-- All admin API endpoints protected by JWT middleware with super_admin role check
-- Account lockout after repeated failed login attempts
-- Admin password and 2FA secret are never exposed in API responses
-- Admin routes (`/admin/*`) excluded from visitor analytics tracking
+- **Password hashing**: bcryptjs with 12 salt rounds
+- **Two-factor authentication**: TOTP-based via speakeasy + Google Authenticator
+- **JWT tokens**: httpOnly cookies with Bearer header fallback, configurable expiry
+- **Refresh token rotation**: Rotating refresh tokens, max 10 stored per user
+- **Account lockout**: Automatic lock after 5 failed attempts (15-minute duration)
+- **CSRF protection**: HMAC-based double-submit token pattern
+- **Rate limiting**: Global (200 req/15min) + per-route (login: 10/15min, 2FA: 20/15min, chat: 30/min)
+- **Security headers**: Helmet.js with CSP, HSTS (1 year), XSS filter, noSniff, referrer policy
+- **CORS**: Origin whitelist with credentials support
+- **NoSQL injection prevention**: mongo-sanitize on all request inputs
+- **Input validation**: express-validator with centralized error handling
+- **Request size limits**: 10MB max for JSON and URL-encoded bodies
+- **Sensitive data exclusion**: Passwords, 2FA secrets, refresh tokens stripped from API responses
+- **Admin route exclusion**: `/admin/*` routes excluded from visitor analytics tracking
+- **Security settings management**: Dedicated admin panel for password policy, session config, 2FA enforcement
+- **Session tracking**: Active session monitoring with device/browser/IP identification
+- **Security audit**: Real-time security score with automated checks
+- **Graceful shutdown**: SIGTERM/SIGINT handlers for clean connection teardown
+- **Port fallback**: Auto-retry next port on EADDRINUSE
 
 ## Scripts
 
@@ -329,9 +613,54 @@ Each custom page contains an ordered array of sections, each with:
 
 - `npm run dev` — Start with nodemon (auto-restart)
 - `npm start` — Start for production
+- `npm test` — Run Jest tests
+- `npm run test:coverage` — Run tests with coverage
+- `npm run seed` — Seed database with sample data
 
 ### Frontend
 
 - `npm run dev` — Vite dev server
 - `npm run build` — Production build
 - `npm run preview` — Preview production build
+- `npm test` — Run Vitest tests
+- `npm run test:watch` — Run tests in watch mode
+- `npm run test:coverage` — Run tests with coverage
+
+## Tech Stack
+
+### Frontend
+
+- React 18 + Vite
+- Tailwind CSS v4
+- React Router DOM v7
+- Framer Motion (animations)
+- Three.js + React Three Fiber (3D portfolio)
+- Recharts (analytics charts)
+- Lucide React (icons)
+- i18next + react-i18next (i18n)
+- Socket.IO Client (real-time)
+- Axios (HTTP client)
+- React Quill (rich text editor)
+
+### Backend
+
+- Express v5
+- Mongoose (MongoDB ODM)
+- JSON Web Tokens (JWT)
+- speakeasy + qrcode (TOTP 2FA)
+- bcryptjs (password hashing)
+- Helmet (security headers)
+- Cloudinary (media storage)
+- Socket.IO (real-time)
+- Google Generative AI (chatbot)
+- node-cron (scheduled tasks)
+- express-validator (input validation)
+- mongo-sanitize (NoSQL injection prevention)
+
+### DevTools
+
+- Vitest + @testing-library/react (frontend tests)
+- Jest (backend tests)
+- nodemon (backend hot reload)
+- ESLint (linting)
+- Docker + Docker Compose (containerization)
