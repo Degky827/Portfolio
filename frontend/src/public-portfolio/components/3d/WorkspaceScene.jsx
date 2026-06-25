@@ -8,7 +8,6 @@ const Monitor = lazy(() => import('./Monitor'))
 const Keyboard = lazy(() => import('./Keyboard'))
 const PC = lazy(() => import('./PC'))
 const Speaker = lazy(() => import('./Speaker'))
-const ProfileCard3D = lazy(() => import('./ProfileCard3D'))
 
 /**
  * WorkspaceScene
@@ -27,7 +26,7 @@ export default function WorkspaceScene() {
   return (
     <div className="w-full h-screen bg-[#0a0a1a]">
       <Canvas
-        camera={{ position: [0, 2, 5], fov: 50, near: 0.1, far: 100 }}
+        camera={{ position: [0, 2.2, 8], fov: 40, near: 0.1, far: 100 }}
         dpr={[1, 1.5]}
         gl={{
           antialias: true,
@@ -197,9 +196,6 @@ export default function WorkspaceScene() {
           {/* Speakers */}
           <Speaker position={[-1.8, 0.78, 0.1]} side="left" />
           <Speaker position={[1.8, 0.78, 0.1]} side="right" />
-
-          {/* Floating Profile Card - above monitor */}
-          <ProfileCard3D position={[0, 2.6, 0.3]} />
         </Suspense>
 
         <Preload all />
