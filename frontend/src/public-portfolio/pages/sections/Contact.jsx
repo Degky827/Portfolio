@@ -10,6 +10,8 @@ import { getSettings } from '../../../shared/services/settingsService'
 const ContactScene = lazy(() => import('../../../components/contact3d/ContactScene'))
 const FuturisticPanel = lazy(() => import('../../../components/contact3d/FuturisticPanel'))
 const InteractiveIcon3D = lazy(() => import('../../../components/contact3d/InteractiveIcon3D'))
+const FuturisticInput = lazy(() => import('../../../components/contact3d/FuturisticInput'))
+const FuturisticTextarea = lazy(() => import('../../../components/contact3d/FuturisticTextarea'))
 
 function SocialIcon({ iconVector, size = 18, className = '' }) {
   if (!iconVector) return null
@@ -107,11 +109,6 @@ export default function Contact() {
     if (!touched[field]) return ''
     return errors[field] || validationErrors[field] || ''
   }
-
-  const inputClass = (field) =>
-    `w-full pl-12 sm:pl-14 pr-4 sm:pr-6 py-4 sm:py-5 bg-gray-50 dark:bg-black/30 border-2 ${
-      fieldError(field) ? 'border-red-400 dark:border-red-500' : 'border-transparent focus:border-primary'
-    } focus:bg-white dark:focus:bg-slate-800 rounded-xl sm:rounded-2xl lg:rounded-[1.5rem] xl:rounded-[2rem] outline-none transition-all duration-300 text-gray-900 dark:text-white font-medium text-sm sm:text-base shadow-sm`
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -506,146 +503,171 @@ export default function Contact() {
               </Suspense>
             </motion.div>
 
-            {/* Contact Form */}
+            {/* Contact Form - AI Communication Terminal */}
             {contactFormEnabled && (
               <motion.div variants={itemVariants} className="lg:col-span-3 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
-                <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} noValidate aria-label={t('contact.formAriaLabel')}>
-                  {/* Full Name */}
-                  <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="from_name" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">
-                      Full Name <span className="text-red-400">*</span>
-                    </label>
-                    <div className="relative group">
-                      <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                        <User size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </span>
-                      <input
-                        id="from_name"
-                        name="from_name"
-                        type="text"
-                        value={values.from_name}
-                        onChange={handleChange('from_name')}
-                        onBlur={handleBlur('from_name')}
-                        placeholder="e.g. John Doe"
-                        className={inputClass('from_name')}
-                      />
+                <Suspense fallback={null}>
+                  <FuturisticPanel>
+                    <div className="p-8 sm:p-10 md:p-12 lg:p-10 xl:p-12">
+                      {/* Terminal header */}
+                      <div className="flex items-center gap-3 mb-8 sm:mb-10">
+                        <div className="flex gap-2">
+                          <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                          <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                        </div>
+                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/30">
+                          AI Communication Terminal v2.0
+                        </span>
+                        <motion.div
+                          className="ml-auto w-2 h-2 rounded-full bg-green-500"
+                          animate={{ opacity: [0.4, 1, 0.4] }}
+                          transition={{ duration: 2, repeat: Infinity }}
+                          style={{ boxShadow: '0 0 8px rgba(34,197,94,0.5)' }}
+                        />
+                      </div>
+
+                      <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} noValidate aria-label={t('contact.formAriaLabel')}>
+                        {/* Full Name */}
+                        <FuturisticInput
+                          id="from_name"
+                          name="from_name"
+                          type="text"
+                          value={values.from_name}
+                          onChange={handleChange('from_name')}
+                          onBlur={handleBlur('from_name')}
+                          placeholder="e.g. John Doe"
+                          icon={User}
+                          error={fieldError('from_name')}
+                          label="Full Name"
+                          required
+                        />
+
+                        {/* Email */}
+                        <FuturisticInput
+                          id="reply_to"
+                          name="reply_to"
+                          type="email"
+                          value={values.reply_to}
+                          onChange={handleChange('reply_to')}
+                          onBlur={handleBlur('reply_to')}
+                          placeholder="e.g. john@example.com"
+                          icon={Mail}
+                          error={fieldError('reply_to')}
+                          label="Email Address"
+                          required
+                        />
+
+                        {/* Phone (optional) */}
+                        <FuturisticInput
+                          id="phone"
+                          name="phone"
+                          type="tel"
+                          value={values.phone}
+                          onChange={handleChange('phone')}
+                          onBlur={handleBlur('phone')}
+                          placeholder="e.g. +1 (555) 123-4567"
+                          icon={Phone}
+                          error={fieldError('phone')}
+                          label={
+                            <>Phone Number <span className="text-gray-400 dark:text-gray-500 text-[10px]">(optional)</span></>
+                          }
+                        />
+
+                        {/* Message */}
+                        <FuturisticTextarea
+                          id="message"
+                          name="message"
+                          value={values.message}
+                          onChange={handleChange('message')}
+                          onBlur={handleBlur('message')}
+                          placeholder="Write your message here..."
+                          icon={MessageSquare}
+                          error={fieldError('message')}
+                          label="Message"
+                          required
+                          rows={5}
+                        />
+
+                        {/* Result Message */}
+                        <AnimatePresence>
+                          {result && (
+                            <motion.div
+                              id="form-message"
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: 'auto' }}
+                              exit={{ opacity: 0, height: 0 }}
+                              className="p-4 sm:p-5 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold text-center"
+                              style={{
+                                background: resultType === 'success'
+                                  ? 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.05))'
+                                  : 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05))',
+                                border: `1px solid ${resultType === 'success' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                                color: resultType === 'success' ? '#4ade80' : '#f87171',
+                                boxShadow: resultType === 'success'
+                                  ? '0 0 20px rgba(34,197,94,0.1)'
+                                  : '0 0 20px rgba(239,68,68,0.1)',
+                              }}
+                              role="alert"
+                              aria-live="polite"
+                            >
+                              {result}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        {/* Submit Button */}
+                        <motion.button
+                          type="submit"
+                          disabled={isSubmitting || !isValid}
+                          whileHover={isValid ? { scale: 1.02, translateY: -2 } : {}}
+                          whileTap={isValid ? { scale: 0.98 } : {}}
+                          className="relative w-full py-4 sm:py-5 font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 group focus:outline-none overflow-hidden"
+                          style={{
+                            background: isValid && !isSubmitting
+                              ? 'linear-gradient(135deg, rgba(99,102,241,0.9), rgba(99,102,241,0.7))'
+                              : 'rgba(255,255,255,0.05)',
+                            color: isValid && !isSubmitting ? 'white' : 'rgba(255,255,255,0.3)',
+                            border: `1px solid ${isValid && !isSubmitting ? 'rgba(99,102,241,0.4)' : 'rgba(255,255,255,0.06)'}`,
+                            cursor: isValid && !isSubmitting ? 'pointer' : 'not-allowed',
+                            boxShadow: isValid && !isSubmitting
+                              ? '0 8px 32px rgba(99,102,241,0.3), inset 0 1px 0 rgba(255,255,255,0.15)'
+                              : '0 4px 16px rgba(0,0,0,0.2)',
+                          }}
+                          aria-label={isSubmitting ? t('contact.submitAriaSubmitting') : t('contact.submitAriaNormal')}
+                        >
+                          {/* Button glow */}
+                          {isValid && !isSubmitting && (
+                            <motion.div
+                              className="absolute inset-0 pointer-events-none"
+                              animate={{
+                                background: [
+                                  'linear-gradient(135deg, rgba(99,102,241,0) 0%, rgba(99,102,241,0.1) 50%, rgba(99,102,241,0) 100%)',
+                                  'linear-gradient(135deg, rgba(99,102,241,0) 0%, rgba(6,182,212,0.1) 50%, rgba(99,102,241,0) 100%)',
+                                  'linear-gradient(135deg, rgba(99,102,241,0) 0%, rgba(99,102,241,0.1) 50%, rgba(99,102,241,0) 100%)',
+                                ],
+                              }}
+                              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                            />
+                          )}
+
+                          <span className="relative z-10 flex items-center gap-2 sm:gap-3">
+                            {isSubmitting ? (
+                              <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 sm:border-4 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></div>
+                            ) : (
+                              <>
+                                {t('contact.submitText')}
+                                <motion.span animate={isValid ? { x: [0, 5, 0] } : {}} transition={{ duration: 1.5, repeat: Infinity }} aria-hidden="true">
+                                  <Send size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
+                                </motion.span>
+                              </>
+                            )}
+                          </span>
+                        </motion.button>
+                      </form>
                     </div>
-                    {fieldError('from_name') && <p className="text-xs text-red-500 dark:text-red-400 ml-1">{fieldError('from_name')}</p>}
-                  </div>
-
-                  {/* Email */}
-                  <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="reply_to" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">
-                      Email Address <span className="text-red-400">*</span>
-                    </label>
-                    <div className="relative group">
-                      <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                        <Mail size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </span>
-                      <input
-                        id="reply_to"
-                        name="reply_to"
-                        type="email"
-                        value={values.reply_to}
-                        onChange={handleChange('reply_to')}
-                        onBlur={handleBlur('reply_to')}
-                        placeholder="e.g. john@example.com"
-                        className={inputClass('reply_to')}
-                      />
-                    </div>
-                    {fieldError('reply_to') && <p className="text-xs text-red-500 dark:text-red-400 ml-1">{fieldError('reply_to')}</p>}
-                  </div>
-
-                  {/* Phone (optional) */}
-                  <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="phone" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">
-                      Phone Number <span className="text-gray-400 dark:text-gray-500 text-[10px]">(optional)</span>
-                    </label>
-                    <div className="relative group">
-                      <span className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                        <Phone size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </span>
-                      <input
-                        id="phone"
-                        name="phone"
-                        type="tel"
-                        value={values.phone}
-                        onChange={handleChange('phone')}
-                        onBlur={handleBlur('phone')}
-                        placeholder="e.g. +1 (555) 123-4567"
-                        className={inputClass('phone')}
-                      />
-                    </div>
-                    {fieldError('phone') && <p className="text-xs text-red-500 dark:text-red-400 ml-1">{fieldError('phone')}</p>}
-                  </div>
-
-                  {/* Message */}
-                  <div className="space-y-2 sm:space-y-3">
-                    <label htmlFor="message" className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-primary/70 dark:text-primary/60 ml-1">
-                      Message <span className="text-red-400">*</span>
-                    </label>
-                    <div className="relative group">
-                      <span className="absolute left-4 sm:left-5 top-5 sm:top-6 opacity-40 group-focus-within:opacity-100 transition-opacity text-primary" aria-hidden="true">
-                        <MessageSquare size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </span>
-                      <textarea
-                        id="message"
-                        name="message"
-                        value={values.message}
-                        onChange={handleChange('message')}
-                        onBlur={handleBlur('message')}
-                        rows="5"
-                        placeholder="Write your message here..."
-                        className={`${inputClass('message')} resize-none`}
-                      />
-                    </div>
-                    {fieldError('message') && <p className="text-xs text-red-500 dark:text-red-400 ml-1">{fieldError('message')}</p>}
-                  </div>
-
-                  {/* Result Message */}
-                  <AnimatePresence>
-                    {result && (
-                      <motion.div
-                        id="form-message"
-                        initial={{ opacity: 0, height: 0 }}
-                        animate={{ opacity: 1, height: 'auto' }}
-                        exit={{ opacity: 0, height: 0 }}
-                        className={`p-4 sm:p-5 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold text-center ${resultType === 'success' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'}`}
-                        role="alert"
-                        aria-live="polite"
-                      >
-                        {result}
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Submit Button */}
-                  <motion.button
-                    type="submit"
-                    disabled={isSubmitting || !isValid}
-                    whileHover={isValid ? { scale: 1.02, translateY: -2 } : {}}
-                    whileTap={isValid ? { scale: 0.98 } : {}}
-                    className={`w-full py-4 sm:py-5 font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl shadow-lg transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 group focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 ${
-                      isValid && !isSubmitting
-                        ? 'bg-primary hover:bg-[#4F46E5] text-white cursor-pointer'
-                        : 'bg-gray-300 dark:bg-slate-700 text-gray-500 dark:text-slate-400 cursor-not-allowed opacity-60'
-                    }`}
-                    aria-label={isSubmitting ? t('contact.submitAriaSubmitting') : t('contact.submitAriaNormal')}
-                  >
-                    <span className="relative z-10 flex items-center gap-2 sm:gap-3">
-                      {isSubmitting ? (
-                        <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 sm:border-4 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></div>
-                      ) : (
-                        <>
-                          {t('contact.submitText')}
-                          <motion.span animate={isValid ? { x: [0, 5, 0] } : {}} transition={{ duration: 1.5, repeat: Infinity }} aria-hidden="true">
-                            <Send size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
-                          </motion.span>
-                        </>
-                      )}
-                    </span>
-                  </motion.button>
-                </form>
+                  </FuturisticPanel>
+                </Suspense>
               </motion.div>
             )}
           </div>
