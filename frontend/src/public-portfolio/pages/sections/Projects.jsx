@@ -10,6 +10,7 @@ import { ProjectsScene } from '../../../components/projects3d'
 import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 import HolographicSearch from '../../../components/projects3d/HolographicSearch'
 import AppShowcaseCard from '../../../components/projects3d/AppShowcaseCard'
+import ProjectMonitorCard from '../../../components/projects3d/ProjectMonitorCard'
 
 const iconMap = {
   Globe,
@@ -186,127 +187,15 @@ export default function Projects() {
           role="tabpanel"
         >
           {filteredProjects.length > 0 ? (
-            filteredProjects.map((project, index) => {
-              const color = project.color || statusColors[project.status] || '#6366f1'
-              const title = project.title || ''
-              const desc = project.shortDescription || project.description || ''
-              const techs = project.technologies || project.tags || []
-              const liveUrl = project.liveDemoUrl || project.liveUrl || '#'
-              const repoUrl = project.githubUrl || project.repoUrl || ''
-              const thumbUrl = project.thumbnail || (project.images && project.images[0]) || ''
-
-              return (
-              <motion.div
+            filteredProjects.map((project, index) => (
+              <ProjectMonitorCard
                 key={project._id || index}
-                variants={itemVariants}
-                whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                className="group bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 hover:border-cyan-500/20"
-              >
-                {/* Thumbnail Image */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-black/30">
-                  <img
-                    src={thumbUrl ? getMediaUrl(thumbUrl) : DEFAULT_THUMBNAIL}
-                    alt={title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                    onError={(e) => { e.target.src = DEFAULT_THUMBNAIL }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  <div className="absolute bottom-3 right-3 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    {repoUrl && repoUrl !== '#' && (
-                      <a
-                        href={repoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="p-2 bg-white/10 backdrop-blur-xl rounded-lg text-slate-300 hover:text-cyan-400 transition-colors shadow-lg border border-white/10"
-                        title={t('projects.viewSourceCode', { title })}
-                        aria-label={t('projects.viewSourceCodeAria', { title })}
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <GithubIcon size={16} />
-                      </a>
-                    )}
-                    {liveUrl !== '#' && (
-                      <a
-                          href={liveUrl}
-                          target="_blank"
-                          rel="noopener noreferrer nofollow"
-                          className="p-2 bg-white/10 backdrop-blur-xl rounded-lg text-slate-300 hover:text-cyan-400 transition-colors shadow-lg border border-white/10"
-                        title={t('projects.viewLiveSite', { title })}
-                        aria-label={t('projects.viewLiveDemoAria', { title })}
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <ExternalLink size={16} />
-                      </a>
-                    )}
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="p-4">
-                  <div className="flex items-start justify-between gap-2 mb-1.5">
-                    <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors leading-tight font-display">
-                      {title}
-                    </h3>
-                    {project.status && (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full whitespace-nowrap shrink-0"
-                        style={{ color: statusColors[project.status], backgroundColor: `${statusColors[project.status]}20` }}
-                      >
-                        {t(`projects.status${project.status}`)}
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-slate-400 mb-2 leading-relaxed line-clamp-2">
-                    {desc}
-                  </p>
-                  {project.fullDescription && (
-                    <div
-                      className="text-xs text-slate-400 mb-2 leading-relaxed prose prose-sm dark:prose-invert max-w-none line-clamp-2"
-                      dangerouslySetInnerHTML={{ __html: project.fullDescription }}
-                    />
-                  )}
-
-                  <div className="flex flex-wrap gap-1 mb-3" role="list" aria-label={t('projects.projectTechnologies')}>
-                    {techs.slice(0, 5).map((tag, i) => (
-                      <span
-                        key={i}
-                        role="listitem"
-                        className="px-2.5 py-1 text-[10px] font-medium rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
-                      >
-                        {tag}
-                      </span>
-                    ))}
-                  </div>
-
-                  <div className="flex items-center gap-3 pt-2 border-t border-white/10">
-                    {repoUrl && repoUrl !== '#' && (
-                      <a
-                        href={repoUrl}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-cyan-400 transition-colors"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <GithubIcon size={14} />
-                        {t('projects.github')}
-                      </a>
-                    )}
-                    {liveUrl !== '#' && (
-                      <a
-                        href={liveUrl}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-cyan-400 transition-colors"
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <ExternalLink size={14} />
-                        {t('projects.liveDemo')}
-                      </a>
-                    )}
-                  </div>
-                </div>
-              </motion.div>
-              )
-            })
+                project={project}
+                index={index}
+                shouldReduceMotion={shouldReduceMotion}
+                getMediaUrl={getMediaUrl}
+              />
+            ))
           ) : (
             <div className="col-span-full text-center py-16">
               <div className="w-20 h-20 mx-auto mb-6 bg-white/5 rounded-full flex items-center justify-center border border-white/10">

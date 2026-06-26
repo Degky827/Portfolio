@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion'
 import { Code, Smartphone } from 'lucide-react'
 
 const SPRING = { stiffness: 300, damping: 30, mass: 0.5 }
@@ -97,15 +97,14 @@ function AnimatedBorder({ color, isActive }) {
 }
 
 function ReflectionOverlay({ mouseX, mouseY }) {
-  const x = useSpring(useTransform(mouseX, [-0.5, 0.5], [0, 100]), SPRING)
-  const y = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, 100]), SPRING)
+  const xPct = useSpring(useTransform(mouseX, [-0.5, 0.5], [0, 100]), SPRING)
+  const yPct = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, 100]), SPRING)
+  const bg = useMotionTemplate`radial-gradient(circle at ${xPct}% ${yPct}%, rgba(255,255,255,0.12) 0%, transparent 60%)`
 
   return (
     <motion.div
       className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"
-      style={{
-        background: `radial-gradient(circle at ${x.get()}% ${y.get()}%, rgba(255,255,255,0.12) 0%, transparent 60%)`,
-      }}
+      style={{ background: bg }}
     />
   )
 }
