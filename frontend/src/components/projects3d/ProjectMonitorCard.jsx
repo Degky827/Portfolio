@@ -21,34 +21,46 @@ const statusColorMap = {
 }
 
 function MonitorFrame({ children, color, isHovered, mouseX, mouseY }) {
-  const reflectionX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-20, 20]), SPRING)
-  const reflectionY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-15, 15]), SPRING)
-  const reflectionBg = useMotionTemplate`radial-gradient(ellipse at calc(50% + ${reflectionX}px) calc(30% + ${reflectionY}px), rgba(255,255,255,0.12) 0%, transparent 50%)`
+  const reflectionX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-25, 25]), SPRING)
+  const reflectionY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-18, 18]), SPRING)
+  const reflectionBg = useMotionTemplate`radial-gradient(ellipse at calc(50% + ${reflectionX}px) calc(30% + ${reflectionY}px), rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.04) 30%, transparent 60%)`
+  const edgeGlow = useMotionTemplate`radial-gradient(ellipse at calc(50% + ${reflectionX}px) calc(50% + ${reflectionY}px), ${color}18 0%, transparent 50%)`
 
   return (
     <div className="relative" style={{ perspective: '1200px' }}>
       {/* Monitor shadow on surface */}
       <motion.div
-        className="absolute -bottom-4 left-[10%] right-[10%] h-6 rounded-[50%] blur-xl"
-        style={{ background: `radial-gradient(ellipse, ${color}30 0%, transparent 70%)` }}
+        className="absolute -bottom-6 left-[8%] right-[8%] h-8 rounded-[50%] blur-2xl"
+        style={{ background: `radial-gradient(ellipse, ${color}35 0%, transparent 70%)` }}
         animate={{
-          opacity: isHovered ? 0.8 : 0.3,
-          scaleX: isHovered ? 1.1 : 0.9,
-          y: isHovered ? 4 : 0,
+          opacity: isHovered ? 0.9 : 0.35,
+          scaleX: isHovered ? 1.15 : 0.85,
+          y: isHovered ? 6 : 0,
         }}
-        transition={{ duration: 0.4 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      />
+
+      {/* Ambient glow behind monitor */}
+      <motion.div
+        className="absolute -inset-8 rounded-3xl pointer-events-none"
+        style={{
+          background: `radial-gradient(ellipse, ${color}10 0%, transparent 70%)`,
+        }}
+        animate={{ opacity: isHovered ? 1 : 0.3 }}
+        transition={{ duration: 0.6 }}
       />
 
       {/* Monitor body */}
       <motion.div
-        className="relative rounded-xl overflow-hidden"
+        className="relative rounded-2xl overflow-hidden"
         style={{
-          background: 'linear-gradient(145deg, #1a1a2e 0%, #0d0d1a 50%, #1a1a2e 100%)',
-          border: '2px solid rgba(255,255,255,0.08)',
+          background: 'linear-gradient(165deg, #1c1c34 0%, #0e0e1c 40%, #141428 70%, #1a1a30 100%)',
+          border: `1.5px solid ${isHovered ? `${color}30` : 'rgba(255,255,255,0.07)'}`,
           boxShadow: isHovered
-            ? `0 30px 80px rgba(0,0,0,0.6), 0 0 40px ${color}20, inset 0 1px 0 rgba(255,255,255,0.05)`
-            : '0 10px 40px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
+            ? `0 35px 90px rgba(0,0,0,0.65), 0 0 50px ${color}18, 0 0 100px ${color}08, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.3)`
+            : '0 12px 45px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.2)',
         }}
+        transition={{ duration: 0.4 }}
       >
         {/* Top bezel with camera dot */}
         <div className="relative h-4 sm:h-5 bg-gradient-to-b from-[#1e1e32] to-[#14142a] flex items-center justify-center border-b border-white/5">
@@ -66,7 +78,7 @@ function MonitorFrame({ children, color, isHovered, mouseX, mouseY }) {
         </div>
 
         {/* Screen area */}
-        <div className="relative bg-black aspect-[16/10] overflow-hidden">
+        <div className="relative bg-[#050510] aspect-[16/10] overflow-hidden">
           {/* Screen content */}
           <div className="absolute inset-0">
             {children}
@@ -78,54 +90,78 @@ function MonitorFrame({ children, color, isHovered, mouseX, mouseY }) {
             style={{
               background: isHovered
                 ? reflectionBg
-                : 'linear-gradient(135deg, rgba(255,255,255,0.04) 0%, transparent 40%)',
+                : 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 35%)',
+            }}
+          />
+
+          {/* Edge glow */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none z-20"
+            animate={{
+              boxShadow: isHovered
+                ? `inset 0 0 40px ${color}12, inset 0 0 80px ${color}06, inset 0 1px 0 rgba(255,255,255,0.08)`
+                : 'inset 0 0 0px transparent',
+            }}
+            transition={{ duration: 0.5 }}
+          />
+
+          {/* Holographic color shift on hover */}
+          <motion.div
+            className="absolute inset-0 pointer-events-none z-20 mix-blend-overlay"
+            style={{ background: edgeGlow }}
+            animate={{ opacity: isHovered ? 0.6 : 0 }}
+            transition={{ duration: 0.4 }}
+          />
+
+          {/* Fine scanlines */}
+          <div
+            className="absolute inset-0 pointer-events-none z-20 opacity-[0.02]"
+            style={{
+              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.4) 1px, rgba(0,0,0,0.4) 2px)',
             }}
           />
 
           {/* Screen glare line */}
           <motion.div
             className="absolute inset-0 pointer-events-none z-20"
-            animate={{
-              opacity: isHovered ? 0.15 : 0.05,
-            }}
+            animate={{ opacity: isHovered ? 0.12 : 0.04 }}
             style={{
-              background: 'linear-gradient(115deg, transparent 30%, rgba(255,255,255,0.08) 45%, transparent 50%)',
+              background: 'linear-gradient(120deg, transparent 25%, rgba(255,255,255,0.06) 42%, rgba(255,255,255,0.1) 44%, rgba(255,255,255,0.06) 46%, transparent 65%)',
             }}
-          />
-
-          {/* Edge glow */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none z-20 rounded-sm"
-            animate={{
-              boxShadow: isHovered
-                ? `inset 0 0 30px ${color}15, inset 0 0 60px ${color}08`
-                : 'inset 0 0 0px transparent',
-            }}
-            transition={{ duration: 0.4 }}
           />
         </div>
 
         {/* Bottom bezel with status LED */}
-        <div className="relative h-5 sm:h-6 bg-gradient-to-t from-[#1e1e32] to-[#14142a] flex items-center justify-center border-t border-white/5">
-          <motion.div
-            className="w-2 h-2 rounded-full"
-            animate={{
-              backgroundColor: isHovered ? color : '#3a3a5a',
-              boxShadow: isHovered ? `0 0 10px ${color}80` : '0 0 0px transparent',
-            }}
-            transition={{ duration: 0.3 }}
-          />
+        <div className="relative h-5 sm:h-6 bg-gradient-to-t from-[#1a1a30] to-[#141428] flex items-center justify-center border-t border-white/[0.04]">
+          <div className="flex items-center gap-2">
+            <motion.div
+              className="w-1.5 h-1.5 rounded-full"
+              animate={{
+                backgroundColor: isHovered ? color : '#3a3a5a',
+                boxShadow: isHovered ? `0 0 8px ${color}80, 0 0 16px ${color}40` : '0 0 0px transparent',
+              }}
+              transition={{ duration: 0.3 }}
+            />
+            <motion.div
+              className="w-1 h-1 rounded-full"
+              animate={{
+                backgroundColor: isHovered ? '#4ade80' : '#2a2a3a',
+                boxShadow: isHovered ? '0 0 6px #4ade8060' : 'none',
+              }}
+              transition={{ duration: 0.3, delay: 0.1 }}
+            />
+          </div>
         </div>
       </motion.div>
 
       {/* Monitor stand neck */}
       <div className="flex justify-center">
         <div
-          className="w-10 h-6"
+          className="w-10 h-7"
           style={{
-            background: 'linear-gradient(180deg, #1a1a2e 0%, #0f0f1e 100%)',
-            borderLeft: '1px solid rgba(255,255,255,0.05)',
-            borderRight: '1px solid rgba(255,255,255,0.05)',
+            background: 'linear-gradient(180deg, #1a1a30 0%, #10101e 100%)',
+            borderLeft: '1px solid rgba(255,255,255,0.04)',
+            borderRight: '1px solid rgba(255,255,255,0.04)',
           }}
         />
       </div>
@@ -133,15 +169,15 @@ function MonitorFrame({ children, color, isHovered, mouseX, mouseY }) {
       {/* Monitor stand base */}
       <div className="flex justify-center">
         <motion.div
-          className="h-2 rounded-b-xl"
+          className="h-2.5 rounded-b-xl"
           style={{
-            width: '60%',
-            background: 'linear-gradient(180deg, #1a1a2e 0%, #0d0d1a 100%)',
-            border: '1px solid rgba(255,255,255,0.05)',
+            width: '55%',
+            background: 'linear-gradient(180deg, #1a1a30 0%, #0e0e1c 100%)',
+            border: '1px solid rgba(255,255,255,0.04)',
             borderTop: 'none',
           }}
           animate={{
-            boxShadow: isHovered ? `0 4px 20px ${color}15` : '0 2px 8px rgba(0,0,0,0.3)',
+            boxShadow: isHovered ? `0 6px 25px ${color}12, 0 2px 8px rgba(0,0,0,0.4)` : '0 3px 10px rgba(0,0,0,0.35)',
           }}
         />
       </div>
@@ -151,24 +187,42 @@ function MonitorFrame({ children, color, isHovered, mouseX, mouseY }) {
 
 function ScreenContent({ thumbUrl, title, isHovered, getMediaUrl }) {
   return (
-    <div className="relative w-full h-full bg-[#0a0a14]">
+    <div className="relative w-full h-full bg-[#060612]">
       {/* Project screenshot */}
       <img
         src={thumbUrl ? getMediaUrl(thumbUrl) : DEFAULT_THUMBNAIL}
         alt={title}
-        className="w-full h-full object-cover transition-transform duration-700"
-        style={{ transform: isHovered ? 'scale(1.05)' : 'scale(1)' }}
+        className="w-full h-full object-cover transition-all duration-700"
+        style={{
+          transform: isHovered ? 'scale(1.06)' : 'scale(1)',
+          filter: isHovered ? 'brightness(1.1) contrast(1.05)' : 'brightness(0.95)',
+        }}
         onError={(e) => { e.target.src = DEFAULT_THUMBNAIL }}
       />
 
-      {/* Dark overlay on load */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-black/20" />
+      {/* Dark gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25" />
 
-      {/* Scanline effect */}
+      {/* Color tint overlay on hover */}
+      <motion.div
+        className="absolute inset-0 mix-blend-overlay"
+        animate={{ opacity: isHovered ? 0.08 : 0 }}
+        transition={{ duration: 0.5 }}
+      />
+
+      {/* CRT scanlines */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        className="absolute inset-0 pointer-events-none opacity-[0.025]"
         style={{
           backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)',
+        }}
+      />
+
+      {/* Vignette */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)',
         }}
       />
     </div>
@@ -252,10 +306,13 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
         className="relative rounded-2xl overflow-hidden p-4 sm:p-5 transition-all duration-500"
         style={{
           background: isHovered
-            ? `linear-gradient(145deg, ${color}08 0%, rgba(255,255,255,0.06) 50%, ${color}05 100%)`
-            : 'linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
-          backdropFilter: 'blur(20px)',
-          border: `1px solid ${isHovered ? `${color}35` : 'rgba(255,255,255,0.06)'}`,
+            ? `linear-gradient(165deg, ${color}06 0%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.03) 60%, ${color}04 100%)`
+            : 'linear-gradient(165deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.01) 100%)',
+          backdropFilter: 'blur(24px)',
+          border: `1px solid ${isHovered ? `${color}28` : 'rgba(255,255,255,0.05)'}`,
+          boxShadow: isHovered
+            ? `0 20px 60px rgba(0,0,0,0.3), 0 0 30px ${color}08`
+            : '0 8px 32px rgba(0,0,0,0.2)',
         }}
       >
         {/* Ambient glow */}
@@ -273,20 +330,20 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
         <motion.div
           className="absolute inset-0 rounded-2xl pointer-events-none z-10"
           style={{ padding: '1px' }}
-          animate={{ opacity: isHovered ? 1 : 0.15 }}
-          transition={{ duration: 0.3 }}
+          animate={{ opacity: isHovered ? 1 : 0.1 }}
+          transition={{ duration: 0.4 }}
         >
           <motion.div
             className="absolute inset-0 rounded-2xl"
             animate={isHovered ? {
               background: [
-                `conic-gradient(from 0deg, ${color}50, transparent 25%, #8b5cf630 50%, transparent 75%, ${color}50)`,
-                `conic-gradient(from 360deg, ${color}50, transparent 25%, #8b5cf630 50%, transparent 75%, ${color}50)`,
+                `conic-gradient(from 0deg, ${color}60, transparent 20%, #8b5cf640 40%, transparent 60%, ${color}60)`,
+                `conic-gradient(from 360deg, ${color}60, transparent 20%, #8b5cf640 40%, transparent 60%, ${color}60)`,
               ],
             } : {
-              background: `conic-gradient(from 0deg, ${color}15, transparent 25%, #8b5cf608 50%, transparent 75%, ${color}15)`,
+              background: `conic-gradient(from 0deg, ${color}12, transparent 25%, #8b5cf606 50%, transparent 75%, ${color}12)`,
             }}
-            transition={{ duration: isHovered ? 4 : 0, repeat: Infinity, ease: 'linear' }}
+            transition={{ duration: isHovered ? 3 : 0, repeat: Infinity, ease: 'linear' }}
             style={{
               padding: '1px',
               mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
