@@ -9,6 +9,7 @@ import { getMediaUrl } from '../../../shared/services/api'
 import { ProjectsScene } from '../../../components/projects3d'
 import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 import HolographicSearch from '../../../components/projects3d/HolographicSearch'
+import AppShowcaseCard from '../../../components/projects3d/AppShowcaseCard'
 
 const iconMap = {
   Globe,
@@ -348,83 +349,13 @@ export default function Projects() {
           >
             {filteredMobileApps.length > 0 ? (
               filteredMobileApps.map((app, index) => (
-                <motion.div
+                <AppShowcaseCard
                   key={index}
-                  variants={itemVariants}
-                  whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                  className="group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:border-cyan-500/20 flex flex-col cursor-pointer"
-                  role="button"
-                  tabIndex={0}
-                  aria-label={t('projects.openAppAria', { title: app.title })}
-                  onClick={() => window.open(app.appUrl, '_blank', 'noopener noreferrer')}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); window.open(app.appUrl, '_blank', 'noopener noreferrer') } }}
-                >
-                  <div className="p-5 sm:p-6 flex flex-col flex-1">
-                    <div className="flex items-start gap-4 mb-4">
-                      <motion.div
-                        whileHover={shouldReduceMotion ? {} : { rotate: 3, scale: 1.05 }}
-                        className="w-14 h-14 flex-shrink-0 rounded-[18px] flex items-center justify-center shadow-lg border border-white/10"
-                        style={{ backgroundColor: app.color }}
-                      >
-                        {renderMobileIcon(app.icon, app.color)}
-                      </motion.div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-white truncate font-display">
-                          {app.title}
-                        </h3>
-                        <p className="text-sm text-slate-400 line-clamp-2 mt-1">
-                          {app.description}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-1.5 mb-3">
-                      {[1,2,3,4,5].map(star => (
-                        <Star
-                          key={star}
-                          size={14}
-                          className={star <= Math.floor(app.rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-600'}
-                        />
-                      ))}
-                      <span className="text-xs font-bold text-slate-400 ml-1">{app.rating}</span>
-                    </div>
-
-                    <div className="flex flex-wrap gap-1.5 mb-4" role="list" aria-label={t('projects.appFeatures')}>
-                      {app.features.map((feature, i) => (
-                        <span
-                          key={i}
-                          role="listitem"
-                          className="px-2.5 py-1 text-[10px] font-medium rounded-md bg-white/5 text-slate-400 border border-white/10"
-                        >
-                          {feature}
-                        </span>
-                      ))}
-                    </div>
-
-                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-white/10">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
-                        {app.platform === 'iOS' ? (
-                          <><Apple size={14} /> iOS</>
-                        ) : app.platform === 'Android' ? (
-                          <><Play size={14} /> Android</>
-                        ) : (
-                          <><Globe size={14} /> Web</>
-                        )}
-                      </div>
-                      <a
-                        href={app.appUrl}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-cyan-500 text-white hover:bg-cyan-400 transition-colors"
-                        aria-label={t('projects.openAppAria', { title: app.title })}
-                        onClick={e => e.stopPropagation()}
-                      >
-                        <Download size={14} />
-                        {t('projects.openApp')}
-                      </a>
-                    </div>
-                  </div>
-                </motion.div>
+                  app={app}
+                  index={index}
+                  shouldReduceMotion={shouldReduceMotion}
+                  onOpen={() => window.open(app.appUrl, '_blank', 'noopener noreferrer')}
+                />
               ))
             ) : (
               <div className="col-span-full text-center py-16">
