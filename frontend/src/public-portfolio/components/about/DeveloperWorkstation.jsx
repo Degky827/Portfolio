@@ -1,5 +1,5 @@
 import { useRef, useCallback, useState, memo, useEffect } from 'react'
-import { motion, useMotionValue, useSpring, useTransform, animate } from 'framer-motion'
+import { motion, useMotionValue, useSpring } from 'framer-motion'
 import MonitorFrame from './MonitorFrame'
 import MonitorScreen from './MonitorScreen'
 import ScreenEffects from './ScreenEffects'
@@ -8,26 +8,17 @@ import CodeEditor from './CodeEditor'
 /**
  * DeveloperWorkstation
  *
- * Premium futuristic developer workstation with interactive 3D rotation.
- * Can show front, face, and side views like a desktop object.
+ * Premium futuristic developer workstation with true drag-to-rotate.
+ * Click and drag anywhere on the monitor to rotate it freely in 3D.
  *
  * Features:
- * - Interactive 3D rotation (drag or buttons)
- * - Preset views: Front, Face, Side
- * - Subtle floating animation (1-2px, slow)
- * - Mouse-reactive rotation when in default mode
+ * - True drag-to-rotate (click + move = rotate)
+ * - Smooth spring physics
+ * - Returns to center when released
+ * - Subtle floating animation
  * - Layered shadows
  * - GPU-accelerated transforms
  */
-
-// Preset view angles (rotateX, rotateY, rotateZ)
-const VIEWS = {
-  front: { rotateX: 0, rotateY: 0, rotateZ: 0, label: 'Front' },
-  face: { rotateX: -15, rotateY: 5, rotateZ: 0, label: 'Face' },
-  side: { rotateX: -5, rotateY: 35, rotateZ: 2, label: 'Side' },
-}
-
-const VIEW_KEYS = ['front', 'face', 'side']
 
 const DeveloperWorkstation = memo(function DeveloperWorkstation({
   fullName,
@@ -37,164 +28,89 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
   available,
 }) {
   const containerRef = useRef(null)
-  const [activeView, setActiveView] = useState('front')
   const [isDragging, setIsDragging] = useState(false)
+  const dragStartRef = useRef({ x: 0, y: 0, rotateX: 0, rotateY: 0 })
 
-  // Base rotation values (controlled by buttons or dragging)
-  const baseRotateX = useMotionValue(VIEWS.front.rotateX)
-  const baseRotateY = useMotionValue(VIEWS.front.rotateY)
-  const baseRotateZ = useMotionValue(VIEWS.front.rotateZ)
+  // Rotation values
+  const rotateX = useMotionValue(0)
+  const rotateY = useMotionValue(0)
 
-  // Smooth springs for base rotation
-  const smoothRotateX = useSpring(baseRotateX, { stiffness: 80, damping: 15 })
-  const smoothRotateY = useSpring(baseRotateY, { stiffness: 80, damping: 15 })
-  const smoothRotateZ = useSpring(baseRotateZ, { stiffness: 80, damping: 15 })
+  // Smooth springs for rotation
+  const smoothRotateX = useSpring(rotateX, { stiffness: 60, damping: 12 })
+  const smoothRotateY = useSpring(rotateY, { stiffness: 60, damping: 12 })
 
-  // Mouse-tracking for subtle 3D rotation (only when in 'front' view and not dragging)
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const mouseRotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [3, -3]), {
-    stiffness: 100,
-    damping: 18,
-  })
-  const mouseRotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [-2, 2]), {
-    stiffness: 100,
-    damping: 18,
-  })
-
-  // Combined rotations (base + mouse)
-  const combinedRotateX = useTransform([smoothRotateX, mouseRotateX], ([base, mouse]) => {
-    return activeView === 'front' && !isDragging ? base + mouse : base
-  })
-  const combinedRotateY = useTransform([smoothRotateY, mouseRotateY], ([base, mouse]) => {
-    return activeView === 'front' && !isDragging ? base + mouse : base
-  })
-
-  // Handle mouse movement for subtle rotation
-  const handleMouseMove = useCallback((e) => {
-    if (!containerRef.current || isDragging) return
-    const rect = containerRef.current.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-    mouseX.set(x)
-    mouseY.set(y)
-  }, [mouseX, mouseY, isDragging])
-
-  const handleMouseLeave = useCallback(() => {
-    mouseX.set(0)
-    mouseY.set(0)
-  }, [mouseX, mouseY])
-
-  // Switch to a preset view
-  const switchView = useCallback((viewKey) => {
-    const view = VIEWS[viewKey]
-    if (!view) return
-    setActiveView(viewKey)
-    animate(baseRotateX, view.rotateX, { duration: 0.8, ease: [0.16, 1, 0.3, 1] })
-    animate(baseRotateY, view.rotateY, { duration: 0.8, ease: [0.16, 1, 0.3, 1] })
-    animate(baseRotateZ, view.rotateZ, { duration: 0.8, ease: [0.16, 1, 0.3, 1] })
-  }, [baseRotateX, baseRotateY, baseRotateZ])
-
-  // Drag-to-rotate functionality
+  // Handle pointer down - start dragging
   const handlePointerDown = useCallback((e) => {
-    if (activeView !== 'front') return
+    if (!containerRef.current) return
     setIsDragging(true)
-    e.target.setPointerCapture(e.pointerId)
-  }, [activeView])
+    dragStartRef.current = {
+      x: e.clientX,
+      y: e.clientY,
+      rotateX: rotateX.get(),
+      rotateY: rotateY.get(),
+    }
+    containerRef.current.setPointerCapture(e.pointerId)
+  }, [rotateX, rotateY])
 
+  // Handle pointer move - rotate based on drag distance
   const handlePointerMove = useCallback((e) => {
-    if (!isDragging || !containerRef.current) return
-    const rect = containerRef.current.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-
-    // Scale the drag movement (max ~30° rotation)
-    const newY = x * 60
-    const newX = -y * 30
-
-    baseRotateY.set(newY)
-    baseRotateX.set(newX)
-  }, [isDragging, baseRotateX, baseRotateY])
-
-  const handlePointerUp = useCallback(() => {
     if (!isDragging) return
+
+    const deltaX = e.clientX - dragStartRef.current.x
+    const deltaY = e.clientY - dragStartRef.current.y
+
+    // Scale factors for rotation (degrees per pixel)
+    const scaleX = 0.3 // horizontal mouse = Y rotation
+    const scaleY = 0.2 // vertical mouse = X rotation
+
+    const newRotateY = dragStartRef.current.rotateY + deltaX * scaleX
+    const newRotateX = dragStartRef.current.rotateX - deltaY * scaleY
+
+    // Clamp X rotation to prevent flipping
+    const clampedX = Math.max(-45, Math.min(45, newRotateX))
+
+    rotateY.set(newRotateY)
+    rotateX.set(clampedX)
+  }, [isDragging, rotateX, rotateY])
+
+  // Handle pointer up - stop dragging, spring back to center
+  const handlePointerUp = useCallback(() => {
     setIsDragging(false)
-    // Snap back to front view
-    switchView('front')
-  }, [isDragging, switchView])
+    // Spring back to center position
+    rotateX.set(0)
+    rotateY.set(0)
+  }, [rotateX, rotateY])
 
   // Cleanup on unmount
   useEffect(() => {
     return () => {
-      mouseX.destroy()
-      mouseY.destroy()
-      baseRotateX.destroy()
-      baseRotateY.destroy()
-      baseRotateZ.destroy()
+      rotateX.destroy()
+      rotateY.destroy()
     }
   }, [])
 
   return (
     <div className="relative">
-      {/* ── View Controls ── */}
-      <div className="flex items-center justify-center gap-1.5 sm:gap-2 mb-4 sm:mb-5">
-        {VIEW_KEYS.map((key) => (
-          <button
-            key={key}
-            onClick={() => switchView(key)}
-            className="relative px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.15em] transition-all duration-300 outline-none focus:ring-2 focus:ring-purple-500/50"
-            style={{
-              color: activeView === key ? '#f8fafc' : '#94a3b8',
-              background: activeView === key
-                ? 'linear-gradient(135deg, rgba(139,92,246,0.25), rgba(99,102,241,0.15))'
-                : 'rgba(30,30,50,0.5)',
-              border: `1px solid ${activeView === key ? 'rgba(139,92,246,0.4)' : 'rgba(139,92,246,0.1)'}`,
-              boxShadow: activeView === key
-                ? '0 0 12px rgba(139,92,246,0.2), inset 0 1px 0 rgba(255,255,255,0.05)'
-                : 'none',
-            }}
-          >
-            {VIEWS[key].label}
-            {activeView === key && (
-              <motion.div
-                layoutId="activeViewIndicator"
-                className="absolute inset-0 rounded-full border border-purple-500/30"
-                transition={{ type: 'spring', stiffness: 300, damping: 30 }}
-              />
-            )}
-          </button>
-        ))}
-
-        {/* Drag hint */}
-        <div className="hidden sm:flex items-center gap-1.5 ml-2 text-[9px] text-slate-500 uppercase tracking-wider">
-          <svg className="w-3 h-3" viewBox="0 0 16 16" fill="currentColor">
-            <path d="M8 0a8 8 0 110 16A8 8 0 018 0zm-.5 3.5a.5.5 0 00-1 0v4.793L5.354 6.146a.5.5 0 10-.708.708l2 2a.5.5 0 00.708 0l2-2a.5.5 0 00-.708-.708L8.5 8.293V3.5z" />
-          </svg>
-          <span>Drag to rotate</span>
-        </div>
-      </div>
-
       {/* ── Monitor with 3D Rotation ── */}
       <motion.div
         ref={containerRef}
-        onMouseMove={handleMouseMove}
-        onMouseLeave={handleMouseLeave}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, margin: '-50px' }}
         transition={{ duration: 0.8, delay: 0.2 }}
         className="relative"
         style={{
-          rotateX: combinedRotateX,
-          rotateY: combinedRotateY,
-          rotateZ: smoothRotateZ,
+          rotateX: smoothRotateX,
+          rotateY: smoothRotateY,
           transformStyle: 'preserve-3d',
           perspective: '1200px',
-          cursor: isDragging ? 'grabbing' : activeView === 'front' ? 'grab' : 'default',
+          cursor: isDragging ? 'grabbing' : 'grab',
+          touchAction: 'none', // Prevent scroll on touch devices
+          userSelect: 'none', // Prevent text selection while dragging
         }}
       >
         {/* Floating animation wrapper */}
@@ -216,6 +132,8 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
               style={{
                 background: 'radial-gradient(ellipse at center, rgba(0,0,0,0.3) 0%, transparent 70%)',
                 filter: 'blur(20px)',
+                opacity: isDragging ? 0.4 : 0.3,
+                transition: 'opacity 0.3s ease',
               }}
               aria-hidden="true"
             />
