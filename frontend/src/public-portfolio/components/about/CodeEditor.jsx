@@ -82,6 +82,34 @@ function CodeEditor({ fullName, roleTitle, locationText, skills, available }) {
   const timerRef = useRef(null)
   const pauseTimerRef = useRef(null)
   const scrollRef = useRef(null)
+  const containerRef = useRef(null)
+
+  // ── Mouse-interactive tilt ──
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
+
+  const mouseRotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [15, -15]), {
+    stiffness: 100,
+    damping: 15,
+  })
+  const mouseRotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), {
+    stiffness: 100,
+    damping: 15,
+  })
+
+  const handleMouseMove = useCallback((e) => {
+    if (!containerRef.current) return
+    const rect = containerRef.current.getBoundingClientRect()
+    const x = (e.clientX - rect.left) / rect.width - 0.5
+    const y = (e.clientY - rect.top) / rect.height - 0.5
+    mouseX.set(x)
+    mouseY.set(y)
+  }, [mouseX, mouseY])
+
+  const handleMouseLeave = useCallback(() => {
+    mouseX.set(0)
+    mouseY.set(0)
+  }, [mouseX, mouseY])
 
   const totalLines = codeLines.length
 
@@ -122,16 +150,23 @@ function CodeEditor({ fullName, roleTitle, locationText, skills, available }) {
 
   return (
     <motion.div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
       className="flex flex-col h-full w-full rounded-lg overflow-hidden"
-      style={{ background: COLORS.editorBg }}
+      style={{
+        background: COLORS.editorBg,
+        transformStyle: 'preserve-3d',
+      }}
       animate={{
-        rotateX: [0, 5, 0, -5, 0],
-        rotateY: [0, -5, 0, 5, 0],
+        rotateY: [0, 360],
       }}
       transition={{
-        duration: 10,
-        repeat: Infinity,
-        ease: 'easeInOut',
+        rotateY: {
+          duration: 14,
+          repeat: Infinity,
+          ease: 'linear',
+        },
       }}
     >
       {/* ── Title Bar ── */}
