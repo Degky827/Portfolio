@@ -8,6 +8,7 @@ const Monitor = lazy(() => import('./Monitor'))
 const Keyboard = lazy(() => import('./Keyboard'))
 const PC = lazy(() => import('./PC'))
 const Speaker = lazy(() => import('./Speaker'))
+const NeonBackground = lazy(() => import('./NeonBackground'))
 
 /**
  * WorkspaceScene
@@ -89,6 +90,11 @@ export default function WorkspaceScene() {
           color={purpleColor}
           distance={3}
         />
+
+        {/* Animated neon background - behind all objects */}
+        <Suspense fallback={null}>
+          <NeonBackground />
+        </Suspense>
 
         {/* Ground plane with shadow reception */}
         <mesh
