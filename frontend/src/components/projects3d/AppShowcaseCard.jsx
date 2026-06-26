@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion'
 import { Star, Download, Globe, Play, Apple, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet } from 'lucide-react'
 
 const SPRING = { stiffness: 300, damping: 30, mass: 0.5 }
@@ -56,17 +56,16 @@ function HolographicBorder({ color, isHovered }) {
 }
 
 function ReflectionLayer({ mouseX, mouseY, isHovered }) {
-  const x = useSpring(useTransform(mouseX, [-0.5, 0.5], [0, 100]), SPRING)
-  const y = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, 100]), SPRING)
+  const xPct = useSpring(useTransform(mouseX, [-0.5, 0.5], [0, 100]), SPRING)
+  const yPct = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, 100]), SPRING)
+  const bg = useMotionTemplate`radial-gradient(circle at ${xPct}% ${yPct}%, rgba(255,255,255,0.15) 0%, transparent 50%)`
 
   return (
     <motion.div
       className="absolute inset-0 rounded-2xl pointer-events-none z-10"
       animate={{ opacity: isHovered ? 0.4 : 0 }}
       transition={{ duration: 0.3 }}
-      style={{
-        background: `radial-gradient(circle at ${x.get()}% ${y.get()}%, rgba(255,255,255,0.15) 0%, transparent 50%)`,
-      }}
+      style={{ background: bg }}
     />
   )
 }

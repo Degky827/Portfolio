@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, AnimatePresence } from 'framer-motion'
+import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion'
 import { Code2, Award } from 'lucide-react'
 import AnimatedSkillIcon from './AnimatedSkillIcon'
 import CertificateCard3D from './CertificateCard3D'
@@ -27,6 +27,7 @@ export default function GlassCard({
   const translateZ = useSpring(isHovered ? 30 : 0, SPRING_CONFIG)
   const glareX = useSpring(useTransform(mouseX, [-0.5, 0.5], [0, 100]), SPRING_CONFIG)
   const glareY = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, 100]), SPRING_CONFIG)
+  const glareBg = useMotionTemplate`radial-gradient(circle at ${glareX}% ${glareY}%, rgba(255,255,255,0.15) 0%, transparent 60%)`
 
   const handleMouseMove = useCallback((e) => {
     if (!cardRef.current) return
@@ -114,9 +115,7 @@ export default function GlassCard({
         {/* Glare effect */}
         <motion.div
           className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-30 transition-opacity duration-300 pointer-events-none"
-          style={{
-            background: `radial-gradient(circle at ${glareX.get()}% ${glareY.get()}%, rgba(255,255,255,0.15) 0%, transparent 60%)`,
-          }}
+          style={{ background: glareBg }}
         />
 
         {/* Breathing glow */}
