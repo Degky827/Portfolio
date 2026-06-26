@@ -2,15 +2,20 @@ import { lazy, Suspense } from 'react'
 import { PORTFOLIO_SECTIONS } from '../config/portfolioMode'
 
 const HeroScene = lazy(() => import('../scenes/HeroScene'))
-const AboutScene = lazy(() => import('../scenes/AboutScene'))
 const SkillsScene = lazy(() => import('../scenes/SkillsScene'))
 const ProjectsScene = lazy(() => import('../scenes/ProjectsScene'))
 const ContactScene = lazy(() => import('../scenes/ContactScene'))
 const FooterScene = lazy(() => import('../scenes/FooterScene'))
 
+/**
+ * About section is now a standalone 2D cyberpunk page.
+ * The 3D scroll portfolio shows a blank/transition for the about slot.
+ */
+const AboutFallback = () => null
+
 const SCENE_COMPONENTS = {
   hero: HeroScene,
-  about: AboutScene,
+  about: AboutFallback,
   skills: SkillsScene,
   projects: ProjectsScene,
   contact: ContactScene,

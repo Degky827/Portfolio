@@ -1,7 +1,13 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
-import { Code, Award, Users, TrendingUp } from 'lucide-react'
+import { Award, GraduationCap, Briefcase, Cpu, Target } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import AboutGlassCard from '../../components/about/AboutGlassCard'
+import DeveloperWorkstation from '../../components/about/DeveloperWorkstation'
+import StatisticsDashboard from '../../components/about/StatisticsDashboard'
+import CertificateGallery from '../../components/about/CertificateGallery'
+import CinematicLighting from '../../components/about/CinematicLighting'
+import GlobalAtmosphere from '../../components/about/GlobalAtmosphere'
 
 const hardcodedSections = (t) => [
   { title: t('about.sectionEducation'), content: t('about.sectionEducationContent') },
@@ -17,142 +23,72 @@ const hardcodedAchievements = [
   { title: 'Hackathon Computation in 24h' },
 ]
 
-const iconMap = { Award, Users, TrendingUp }
+// Icons for each card section (matching the 4 story pillars)
+const sectionIcons = [GraduationCap, Briefcase, Cpu, Target]
+const sectionAccents = ['#8b5cf6', '#22d3ee', '#6366f1', '#a78bfa']
 
-function TypingCodeBlock({ fullName, roleTitle, locationText, skills, available }) {
-  const lines = useRef([
-    [
-      { text: 'const ', className: 'text-purple-400' },
-      { text: 'developer', className: 'text-blue-400' },
-      { text: ' = {', className: '' },
-    ],
-    [
-      { text: '  name: ', className: 'text-slate-400' },
-      { text: `"${fullName}"`, className: 'text-green-400' },
-      { text: ',', className: '' },
-    ],
-    [
-      { text: '  role: ', className: 'text-slate-400' },
-      { text: `"${roleTitle}"`, className: 'text-green-400' },
-      { text: ',', className: '' },
-    ],
-    [
-      { text: '  location: ', className: 'text-slate-400' },
-      { text: `"${locationText}"`, className: 'text-green-400' },
-      { text: ',', className: '' },
-    ],
-    [
-      { text: '  skills: [', className: 'text-slate-400' },
-      { text: `"${skills.join('", "')}"`, className: 'text-green-400' },
-      { text: '],', className: '' },
-    ],
-    [
-      { text: '  available: ', className: 'text-slate-400' },
-      { text: available ? 'true' : 'false', className: 'text-orange-400' },
-      { text: ',', className: '' },
-    ],
-    [
-      { text: '}', className: '' },
-      { text: ';', className: '' },
-    ],
-  ])
-
-  const flatLines = useRef(
-    lines.current.map((tokens) => tokens.map((t) => t.text).join(''))
-  )
-
-  const [lineIdx, setLineIdx] = useState(0)
-  const [charIdx, setCharIdx] = useState(0)
-  const [paused, setPaused] = useState(false)
-  const timerRef = useRef(null)
-  const pauseTimerRef = useRef(null)
-
-  const totalLines = lines.current.length
-
-  const tick = useCallback(() => {
-    setCharIdx((prev) => {
-      const currentLineLen = flatLines.current[lineIdx].length
-      if (prev < currentLineLen) {
-        return prev + 1
-      }
-      if (lineIdx + 1 < totalLines) {
-        setLineIdx((l) => l + 1)
-        return 0
-      }
-      setPaused(true)
-      return prev
-    })
-  }, [lineIdx, totalLines])
-
-  useEffect(() => {
-    if (paused) {
-      pauseTimerRef.current = setTimeout(() => {
-        setLineIdx(0)
-        setCharIdx(0)
-        setPaused(false)
-      }, 3000)
-      return () => clearTimeout(pauseTimerRef.current)
-    }
-    timerRef.current = setTimeout(tick, 35)
-    return () => clearTimeout(timerRef.current)
-  }, [lineIdx, charIdx, paused, tick])
+/* ─── Floating Particles Background ─── */
+function CyberParticles() {
+  const particles = useMemo(() =>
+    Array.from({ length: 40 }, (_, i) => ({
+      id: i,
+      x: Math.random() * 100,
+      y: Math.random() * 100,
+      size: 1 + Math.random() * 3,
+      duration: 15 + Math.random() * 25,
+      delay: Math.random() * 10,
+      opacity: 0.1 + Math.random() * 0.25,
+    })), [])
 
   return (
-    <div className="p-4 sm:p-6 md:p-8 lg:p-10 font-mono text-xs sm:text-sm md:text-base lg:text-lg leading-relaxed overflow-x-auto">
-      <pre className="text-slate-300">
-        <code>
-          {lines.current.map((tokens, i) => {
-            const isCurrent = i === lineIdx
-            const isPast = i < lineIdx
-            const isFuture = i > lineIdx
-            const lineText = flatLines.current[i]
-
-            let display
-            if (isFuture) {
-              display = <span className="opacity-0">{lineText}</span>
-            } else if (isCurrent) {
-              const shown = lineText.slice(0, charIdx)
-              const segments = []
-              let pos = 0
-              tokens.forEach((tok) => {
-                if (pos >= shown.length) return
-                const end = pos + tok.text.length
-                const slice = shown.slice(Math.max(pos, 0), end)
-                if (slice) {
-                  segments.push(
-                    <span key={pos} className={tok.className}>{slice}</span>
-                  )
-                }
-                pos = end
-              })
-              display = (
-                <>
-                  {segments}
-                  <span className="inline-block w-[2px] h-[1em] bg-slate-300 align-text-bottom ml-0.5 cursor-blink" />
-                </>
-              )
-            } else {
-              display = tokens.map((tok, ti) => (
-                <span key={ti} className={tok.className}>{tok.text}</span>
-              ))
-            }
-
-            return (
-              <span key={i} className="block">
-                {display}
-              </span>
-            )
-          })}
-          <span id="typing-scroll-anchor" />
-        </code>
-      </pre>
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="absolute rounded-full bg-purple-400/20"
+          style={{
+            left: `${p.x}%`,
+            top: `${p.y}%`,
+            width: `${p.size}px`,
+            height: `${p.size}px`,
+            opacity: p.opacity,
+            animation: `cyberFloat ${p.duration}s ease-in-out ${p.delay}s infinite`,
+          }}
+        />
+      ))}
     </div>
   )
 }
 
+/* ─── Neon Grid Lines ─── */
+function NeonGrid() {
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+      {/* Horizontal lines */}
+      {[20, 40, 60, 80].map((top) => (
+        <div
+          key={`h-${top}`}
+          className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500/10 to-transparent"
+          style={{ top: `${top}%` }}
+        />
+      ))}
+      {/* Vertical lines */}
+      {[25, 50, 75].map((left) => (
+        <div
+          key={`v-${left}`}
+          className="absolute top-0 bottom-0 w-px bg-gradient-to-b from-transparent via-blue-500/10 to-transparent"
+          style={{ left: `${left}%` }}
+        />
+      ))}
+    </div>
+  )
+}
+
+/* ─── Main About Component ─── */
 export default function About({ content, hero, aboutContent }) {
   const { t, i18n } = useTranslation()
   const isAm = i18n.language === 'am'
+
   const title = isAm
     ? (aboutContent?.titleAm || aboutContent?.title || content?.title || t('about.title'))
     : (aboutContent?.title || content?.title || t('about.title'))
@@ -200,172 +136,142 @@ export default function About({ content, hero, aboutContent }) {
 
   const achievementsList = certifications.length > 0 ? certifications : hardcodedAchievements
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: { type: 'spring', stiffness: 100, damping: 15 },
-    },
-  }
-
-  function MetricIcon({ name, ...props }) {
-    const Icon = iconMap[name] || Award
-    return <Icon {...props} />
-  }
-
   return (
-    <section id="about" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden">
-      <div className="container mx-auto px-4 sm:px-6">
+    <section
+      id="about"
+      className="relative min-h-screen py-16 sm:py-20 md:py-24 overflow-hidden"
+      style={{
+        background: 'linear-gradient(180deg, #050210 0%, #0a0620 30%, #0d0828 60%, #080418 100%)',
+      }}
+    >
+      {/* ── Global Background Effects ── */}
+      <CinematicLighting />
+      <GlobalAtmosphere />
+      <NeonGrid />
+      <CyberParticles />
+
+      {/* Ambient glow orbs */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-600/6 rounded-full blur-[100px] pointer-events-none" aria-hidden="true" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[140px] pointer-events-none" aria-hidden="true" />
+
+      {/* Metallic floor reflection */}
+      <div
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        style={{
+          background: 'linear-gradient(to top, rgba(139,92,246,0.04), transparent)',
+        }}
+        aria-hidden="true"
+      />
+
+      <div className="relative z-10 container mx-auto px-4 sm:px-6">
+        {/* ── Hero Section ── */}
         <motion.div
-          initial={{ opacity: 0, y: 20 }}
+          initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-100px' }}
           transition={{ duration: 0.8 }}
           className="text-center mb-12 sm:mb-16 md:mb-20"
         >
-          <motion.span
+          <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full"
+            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 mb-6 sm:mb-8 text-xs sm:text-sm font-bold tracking-[0.2em] text-purple-300 uppercase rounded-full border border-purple-500/30 backdrop-blur-sm"
+            style={{
+              background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.08))',
+              boxShadow: '0 0 20px rgba(139,92,246,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
+            }}
           >
+            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
             {t('about.badge')}
-            </motion.span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-[#F8FAFC] mb-4 sm:mb-6 tracking-tight">
+          </motion.div>
+
+          <h2
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 tracking-tight"
+            style={{
+              background: 'linear-gradient(135deg, #f8fafc 0%, #c7d2fe 40%, #a78bfa 70%, #818cf8 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}
+          >
             {title}
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-[#94A3B8] max-w-2xl mx-auto leading-relaxed px-4">
+
+          <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed px-4">
             {subtitle}
           </p>
+
+          {/* Decorative line */}
+          <div className="mt-8 sm:mt-10 flex items-center justify-center gap-3">
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-purple-500/50" />
+            <div className="w-2 h-2 rotate-45 border border-purple-500/50" />
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-purple-500/50" />
+          </div>
         </motion.div>
 
-        <div className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 sm:p-8 md:p-12 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-sm">
-          <div className="grid lg:grid-cols-2 gap-10 sm:gap-12 lg:gap-16 items-start relative z-10">
-            {/* Left: Story Pillar Cards */}
-            <motion.div
-              variants={containerVariants}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, margin: '-50px' }}
-              className="space-y-4 sm:space-y-6"
-            >
-              {aboutSections.map((section, index) => (
-                <motion.div
-                  key={index}
-                  variants={itemVariants}
-                  whileHover={{ scale: 1.02, x: 10 }}
-                  className="group p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2rem] glass-card hover:bg-white dark:hover:bg-slate-800 transition-all duration-300"
-                >
-                  <div className="flex-1 min-w-0">
-                    <h3 className="text-lg sm:text-xl md:text-2xl mb-2 sm:mb-3 opacity-50 font-normal group-hover:opacity-100 group-hover:font-black group-hover:text-blue-500 dark:group-hover:text-blue-400 transition-all duration-300 font-display">
-                      {section.title}
-                    </h3>
-                    {section.content.startsWith('<') ? (
-                      <div
-                        className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed prose prose-sm dark:prose-invert max-w-none"
-                        dangerouslySetInnerHTML={{ __html: section.content }}
-                      />
-                    ) : (
-                      <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 leading-relaxed">
-                        {section.content}
-                      </p>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
+        {/* ── Main Content Grid ── */}
+        <div className="max-w-6xl lg:max-w-7xl mx-auto">
+          <div className="grid lg:grid-cols-2 gap-8 sm:gap-10 lg:gap-14 items-start">
 
-            {/* Right: Visual Code Block */}
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="sticky top-24"
-            >
-              <div className="bg-[#0B1120] rounded-2xl sm:rounded-[2rem] md:rounded-[3rem] overflow-hidden shadow-2xl border border-[#334155] group relative">
-                <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-6 bg-[#111827] border-b border-[#334155]">
-                  <div className="flex gap-1.5 sm:gap-2">
-                    <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#ff5f56]"></div>
-                    <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#ffbd2e]"></div>
-                    <div className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5 rounded-full bg-[#27c93f]"></div>
-                  </div>
-                  <span className="ml-2 sm:ml-4 text-[10px] sm:text-xs text-slate-400 font-mono tracking-[0.2em] sm:tracking-[0.3em] uppercase flex items-center gap-1 sm:gap-2">
-                    <Code size={12} className="w-3 h-3 sm:w-4 sm:h-4" /> {t('about.codeFilename')}
-                  </span>
-                </div>
-                <TypingCodeBlock
-                  fullName={fullName}
-                  roleTitle={roleTitle}
-                  locationText={locationText}
-                  skills={skills}
-                  available={available}
-                />
+            {/* ── Left: Story Pillar Cards ── */}
+            <div className="space-y-5 sm:space-y-6">
+              {aboutSections.map((section, index) => {
+                const Icon = sectionIcons[index] || Award
+                return (
+                  <AboutGlassCard
+                    key={index}
+                    icon={<Icon size={22} />}
+                    title={section.title}
+                    description={section.content}
+                    accentColor={sectionAccents[index]}
+                    animationDelay={index * 0.12}
+                    index={index}
+                  />
+                )
+              })}
+            </div>
 
-                {/* Highlight Metrics Below Code */}
-                <div className="grid grid-cols-3 gap-2 sm:gap-4 p-4 sm:p-6 border-t border-slate-700/50 bg-slate-800/30">
-                    {highlightMetrics.map((metric, idx) => {
-                      const val = metric.value || (idx === 0 ? '' : idx === 1 ? '50+' : '5+')
-                      const defaultLabel = idx === 0 ? t('about.metricNetworkDesigner') : idx === 1 ? t('about.metricHappyClients') : t('about.metricYearsExperience')
-                      const lbl = isAm
-                        ? (metric.titleAm || metric.title || defaultLabel)
-                        : (metric.title || defaultLabel)
-                    return (
-                      <div key={idx} className="text-center p-2 sm:p-3 rounded-xl bg-slate-800/50">
-                        <MetricIcon name={metric.icon} className="w-4 h-4 sm:w-5 sm:h-5 mx-auto mb-1"
-                          style={{ color: idx === 0 ? '#f59e0b' : idx === 1 ? '#60a5fa' : '#34d399' }}
-                        />
-                        <span className="text-[10px] sm:text-xs font-bold text-slate-400">{val}</span>
-                        <span className="block text-[8px] sm:text-[10px] text-slate-500 mt-0.5">{lbl}</span>
-                      </div>
-                    )
-                  })}
-                </div>
-              </div>
-            </motion.div>
+            {/* ── Right: Developer Workstation ── */}
+            <div className="sticky top-24">
+              <DeveloperWorkstation
+                fullName={fullName}
+                roleTitle={roleTitle}
+                locationText={locationText}
+                skills={skills}
+                available={available}
+              />
+            </div>
           </div>
 
-          {/* Certifications / Achievements Footer */}
-          {(achievementsList.length > 0) && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true, margin: '-50px' }}
-              className="mt-10 sm:mt-12 pt-6 sm:pt-8 border-t border-gray-200 dark:border-slate-700"
-            >
-              <p className="text-base sm:text-lg text-gray-600 dark:text-gray-400 leading-relaxed">
-                {t('about.certificationsPrefix')}{' '}
-                {achievementsList.map((a, i) => (
-                  <span key={i}>
-                    {i > 0 && <span>, </span>}
-                    {a.verificationUrl ? (
-                      <a
-                        href={a.verificationUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="font-bold text-gray-900 dark:text-white hover:text-primary dark:hover:text-primary transition-colors underline underline-offset-2"
-                      >
-                        {a.title}
-                      </a>
-                    ) : (
-                      <span className="font-bold text-gray-900 dark:text-white">{a.title}</span>
-                    )}
-                  </span>
-                ))}
-                .
-              </p>
-            </motion.div>
-          )}
+          {/* ── Statistics Dashboard ── */}
+          <div className="mt-12 sm:mt-16">
+            <StatisticsDashboard
+              metrics={highlightMetrics}
+              t={t}
+              isAm={isAm}
+            />
+          </div>
+
+          {/* ── Certificate Gallery (3D Wall) ── */}
+          <div className="mt-12 sm:mt-16">
+            <CertificateGallery
+              certificates={achievementsList}
+              t={t}
+            />
+          </div>
         </div>
       </div>
+
+      {/* CSS animation for particles */}
+      <style>{`
+        @keyframes cyberFloat {
+          0%, 100% { transform: translateY(0) translateX(0); opacity: var(--tw-opacity, 0.2); }
+          25% { transform: translateY(-20px) translateX(10px); }
+          50% { transform: translateY(-40px) translateX(-5px); opacity: calc(var(--tw-opacity, 0.2) * 1.5); }
+          75% { transform: translateY(-20px) translateX(-10px); }
+        }
+      `}</style>
     </section>
   )
 }
