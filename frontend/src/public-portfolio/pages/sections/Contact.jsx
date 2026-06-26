@@ -8,6 +8,8 @@ import { getContactContent, createMessage } from '../../../shared/services/conta
 import { getSettings } from '../../../shared/services/settingsService'
 
 const ContactScene = lazy(() => import('../../../components/contact3d/ContactScene'))
+const FuturisticPanel = lazy(() => import('../../../components/contact3d/FuturisticPanel'))
+const InteractiveIcon3D = lazy(() => import('../../../components/contact3d/InteractiveIcon3D'))
 
 function SocialIcon({ iconVector, size = 18, className = '' }) {
   if (!iconVector) return null
@@ -414,81 +416,94 @@ export default function Contact() {
           className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
         >
           <div className={`grid relative z-10 ${contactFormEnabled ? 'lg:grid-cols-5' : 'lg:grid-cols-1'}`}>
-            {/* Contact Info Sidebar */}
+            {/* Contact Info Sidebar - Futuristic Control Station */}
             <motion.div
               variants={itemVariants}
-              className={`${contactFormEnabled ? 'lg:col-span-2' : 'lg:col-span-1'} bg-transparent dark:bg-transparent p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16 text-gray-900 dark:text-white relative overflow-hidden`}
+              className={`${contactFormEnabled ? 'lg:col-span-2' : 'lg:col-span-1'} p-4 sm:p-5 md:p-6 relative`}
             >
-              <div className="relative z-10">
-                <h3 className="text-2xl sm:text-3xl md:text-4xl font-black mb-6 sm:mb-8 md:mb-10 leading-tight font-display tracking-tight text-gray-900 dark:text-white">{t('contact.connectTitle')}</h3>
-                <p className="text-base sm:text-lg md:text-xl text-gray-600 dark:text-white/80 mb-8 sm:mb-10 md:mb-14 leading-relaxed">
-                  {t('contact.connectDescription')}
-                </p>
+              <Suspense fallback={null}>
+                <FuturisticPanel className="h-full">
+                  <div className="p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16">
+                    <div className="relative z-10">
+                      {/* Title with glow */}
+                      <motion.h3
+                        className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 sm:mb-4 leading-tight font-display tracking-tight text-white"
+                        animate={{
+                          textShadow: [
+                            '0 0 20px rgba(99,102,241,0.3)',
+                            '0 0 40px rgba(99,102,241,0.5)',
+                            '0 0 20px rgba(99,102,241,0.3)',
+                          ],
+                        }}
+                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                      >
+                        {t('contact.connectTitle')}
+                      </motion.h3>
 
-                <div className="space-y-6 sm:space-y-8 md:space-y-10 mb-8 sm:mb-10 md:mb-14">
-                  {contactInfo.map((info, index) => {
-                    const hoverBg = index === 0 ? '#3b82f6' : index === 1 ? '#22c55e' : '#f59e0b'
-                    return (
+                      {/* Decorative line */}
                       <motion.div
-                        key={index}
-                        whileHover={{ x: 10 }}
-                        className="flex items-center gap-4 sm:gap-5 md:gap-6 group"
-                      >
-                        <div
-                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-900 dark:text-white transition-all duration-300 flex-shrink-0"
-                          style={{ '--hover-bg': hoverBg }}
-                          onMouseEnter={e => { e.currentTarget.style.background = hoverBg; e.currentTarget.style.borderColor = 'transparent' }}
-                          onMouseLeave={e => { e.currentTarget.style.background = ''; e.currentTarget.style.borderColor = '' }}
-                          aria-hidden="true"
-                        >
-                          {info.icon}
-                        </div>
-                        <div className="min-w-0">
-                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-500 dark:text-white/50 mb-1">{info.label}</span>
-                          {info.href ? (
-                            <a
-                              href={info.href}
-                              className="text-sm sm:text-base md:text-lg lg:text-xl font-bold transition-colors font-display tracking-tight break-all text-gray-900 dark:text-white"
-                              onMouseEnter={e => { e.currentTarget.style.color = hoverBg }}
-                              onMouseLeave={e => { e.currentTarget.style.color = '' }}
-                            >{info.value}</a>
-                          ) : (
-                            <span className="text-sm sm:text-base md:text-lg lg:text-xl font-bold font-display tracking-tight text-gray-900 dark:text-white">{info.value}</span>
-                          )}
-                        </div>
-                      </motion.div>
-                    )
-                  })}
-                </div>
+                        className="w-16 h-0.5 mb-6 sm:mb-8"
+                        animate={{
+                          width: ['4rem', '6rem', '4rem'],
+                          background: [
+                            'linear-gradient(90deg, rgba(99,102,241,0.6), rgba(6,182,212,0.3))',
+                            'linear-gradient(90deg, rgba(6,182,212,0.6), rgba(139,92,246,0.3))',
+                            'linear-gradient(90deg, rgba(99,102,241,0.6), rgba(6,182,212,0.3))',
+                          ],
+                        }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                      />
 
-                {socialChannels.length > 0 && (
-                  <div className="flex gap-3 sm:gap-4 md:gap-5 flex-wrap" role="list" aria-label={t('contact.socialAriaLabel')}>
-                    {socialChannels.map((ch) => (
-                      <motion.a
-                        key={ch._id || ch.channelName}
-                        role="listitem"
-                        whileHover={{ scale: 1.1, y: -3 }}
-                        whileTap={{ scale: 0.9 }}
-                        href={ch.linkUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-gray-100 dark:bg-white/10 flex items-center justify-center text-gray-600 dark:text-white hover:bg-primary hover:text-white transition-all duration-300"
-                        title={ch.channelName}
-                        aria-label={ch.channelName}
-                      >
-                        {ch.iconVector ? (
-                          <SocialIcon iconVector={ch.iconVector} size={20} className="text-current" />
-                        ) : (
-                          <span className="text-xs font-bold uppercase">{ch.channelName?.charAt(0)}</span>
-                        )}
-                      </motion.a>
-                    ))}
+                      <p className="text-base sm:text-lg md:text-xl text-white/60 mb-10 sm:mb-12 md:mb-14 leading-relaxed">
+                        {t('contact.connectDescription')}
+                      </p>
+
+                      {/* Contact info - Interactive 3D icons */}
+                      <div className="space-y-6 sm:space-y-8 md:space-y-10 mb-10 sm:mb-12 md:mb-14">
+                        {contactInfo.map((info, index) => (
+                          <InteractiveIcon3D
+                            key={index}
+                            icon={info.icon}
+                            label={info.label}
+                            value={info.value}
+                            href={info.href}
+                            color={info.color}
+                          />
+                        ))}
+                      </div>
+
+                      {/* Social channels - Interactive 3D icons */}
+                      {socialChannels.length > 0 && (
+                        <div>
+                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/30 mb-4 sm:mb-5">
+                            Social Channels
+                          </span>
+                          <div className="space-y-4 sm:space-y-5" role="list" aria-label={t('contact.socialAriaLabel')}>
+                            {socialChannels.map((ch) => (
+                              <InteractiveIcon3D
+                                key={ch._id || ch.channelName}
+                                icon={null}
+                                label={ch.channelName}
+                                value={ch.channelName}
+                                href={ch.linkUrl}
+                                color="#a78bfa"
+                                channelName={ch.channelName}
+                                socialIconComponent={
+                                  ch.iconVector ? (
+                                    <SocialIcon iconVector={ch.iconVector} size={20} className="text-current" />
+                                  ) : (
+                                    <span className="text-xs font-bold uppercase">{ch.channelName?.charAt(0)}</span>
+                                  )
+                                }
+                              />
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                )}
-              </div>
-
-              {/* Decorative background element */}
-              <div className="absolute top-[-20%] left-[-20%] w-[150%] h-[150%] bg-primary/5 dark:bg-white/5 rounded-full blur-[100px] -z-0 pointer-events-none" aria-hidden="true" />
+                </FuturisticPanel>
+              </Suspense>
             </motion.div>
 
             {/* Contact Form */}
