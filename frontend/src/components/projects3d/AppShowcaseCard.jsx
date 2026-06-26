@@ -1,127 +1,17 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion'
 import { Star, Download, Globe, Play, Apple, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet } from 'lucide-react'
+import SmartphoneDevice from './SmartphoneDevice'
+import RotatingShowcasePlatform from './RotatingShowcasePlatform'
+import HolographicLighting from './HolographicLighting'
 
 const SPRING = { stiffness: 300, damping: 30, mass: 0.5 }
 
 const mobileIconMap = { Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet }
 
-function GlowBorder({ color, isHovered }) {
-  return (
-    <motion.div
-      className="absolute inset-0 rounded-2xl pointer-events-none z-10"
-      animate={isHovered ? {
-        boxShadow: [
-          `0 0 20px ${color}40, 0 0 40px ${color}20, inset 0 0 20px ${color}10`,
-          `0 0 35px ${color}60, 0 0 70px ${color}30, inset 0 0 35px ${color}15`,
-          `0 0 20px ${color}40, 0 0 40px ${color}20, inset 0 0 20px ${color}10`,
-        ],
-      } : {
-        boxShadow: `0 0 0px transparent`,
-      }}
-      transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-    />
-  )
-}
-
-function HolographicBorder({ color, isHovered }) {
-  return (
-    <motion.div
-      className="absolute inset-0 rounded-2xl pointer-events-none z-10"
-      style={{ padding: '1px' }}
-      animate={{ opacity: isHovered ? 1 : 0.2 }}
-      transition={{ duration: 0.3 }}
-    >
-      <motion.div
-        className="absolute inset-0 rounded-2xl"
-        animate={isHovered ? {
-          background: [
-            `conic-gradient(from 0deg, ${color}60, transparent 25%, #8b5cf640 50%, transparent 75%, ${color}60)`,
-            `conic-gradient(from 360deg, ${color}60, transparent 25%, #8b5cf640 50%, transparent 75%, ${color}60)`,
-          ],
-        } : {
-          background: `conic-gradient(from 0deg, ${color}20, transparent 25%, #8b5cf610 50%, transparent 75%, ${color}20)`,
-        }}
-        transition={{ duration: isHovered ? 3 : 0, repeat: Infinity, ease: 'linear' }}
-        style={{
-          padding: '1px',
-          mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-          maskComposite: 'exclude',
-          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-          WebkitMaskComposite: 'xor',
-        }}
-      />
-    </motion.div>
-  )
-}
-
-function ReflectionLayer({ mouseX, mouseY, isHovered }) {
-  const xPct = useSpring(useTransform(mouseX, [-0.5, 0.5], [0, 100]), SPRING)
-  const yPct = useSpring(useTransform(mouseY, [-0.5, 0.5], [0, 100]), SPRING)
-  const bg = useMotionTemplate`radial-gradient(circle at ${xPct}% ${yPct}%, rgba(255,255,255,0.15) 0%, transparent 50%)`
-
-  return (
-    <motion.div
-      className="absolute inset-0 rounded-2xl pointer-events-none z-10"
-      animate={{ opacity: isHovered ? 0.4 : 0 }}
-      transition={{ duration: 0.3 }}
-      style={{ background: bg }}
-    />
-  )
-}
-
-function ScanLine({ color, isHovered }) {
-  if (!isHovered) return null
-  return (
-    <motion.div
-      className="absolute left-0 right-0 h-px pointer-events-none z-20"
-      initial={{ top: '-5%', opacity: 0 }}
-      animate={{ top: ['0%', '105%'], opacity: [0, 0.6, 0] }}
-      transition={{ duration: 1.5, repeat: Infinity, ease: 'linear', delay: 0.3 }}
-      style={{
-        background: `linear-gradient(90deg, transparent, ${color}80, transparent)`,
-        boxShadow: `0 0 10px ${color}50`,
-      }}
-    />
-  )
-}
-
-function FloatingParticles({ color, isHovered }) {
-  if (!isHovered) return null
-  return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl z-10">
-      {[...Array(10)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: 1.5 + Math.random() * 2.5,
-            height: 1.5 + Math.random() * 2.5,
-            backgroundColor: i % 3 === 0 ? color : i % 3 === 1 ? '#8b5cf6' : '#06b6d4',
-            left: `${5 + Math.random() * 90}%`,
-            top: `${5 + Math.random() * 90}%`,
-          }}
-          animate={{
-            y: [-20, 20, -20],
-            x: [-12, 12, -12],
-            opacity: [0, 0.7, 0],
-            scale: [0.4, 1.4, 0.4],
-          }}
-          transition={{
-            duration: 2 + Math.random() * 1.5,
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: i * 0.12,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
 function RatingStars({ rating, color }) {
   return (
-    <div className="flex items-center gap-1.5 mb-3">
+    <div className="flex items-center justify-center gap-1.5">
       {[1, 2, 3, 4, 5].map((star) => (
         <motion.div
           key={star}
@@ -129,12 +19,36 @@ function RatingStars({ rating, color }) {
           transition={{ type: 'spring', stiffness: 400, damping: 15 }}
         >
           <Star
-            size={14}
+            size={12}
             className={star <= Math.floor(rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-600'}
           />
         </motion.div>
       ))}
-      <span className="text-xs font-bold text-slate-400 ml-1">{rating}</span>
+      <span className="text-[10px] font-bold text-slate-400 ml-1">{rating}</span>
+    </div>
+  )
+}
+
+function FeaturePills({ features, color, isHovered }) {
+  return (
+    <div className="flex flex-wrap justify-center gap-1.5" role="list" aria-label="App features">
+      {features.map((feature, i) => (
+        <motion.span
+          key={i}
+          role="listitem"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: i * 0.05 }}
+          className="px-2 py-0.5 text-[9px] font-medium rounded-full border transition-all duration-200"
+          style={{
+            background: isHovered ? `${color}12` : 'rgba(255,255,255,0.05)',
+            color: isHovered ? `${color}cc` : '#94a3b8',
+            borderColor: isHovered ? `${color}25` : 'rgba(255,255,255,0.08)',
+          }}
+        >
+          {feature}
+        </motion.span>
+      ))}
     </div>
   )
 }
@@ -146,10 +60,10 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [12, -12]), SPRING)
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-12, 12]), SPRING)
-  const scale = useSpring(isHovered ? 1.04 : 1, SPRING)
-  const translateZ = useSpring(isHovered ? 40 : 0, SPRING)
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), SPRING)
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), SPRING)
+  const scale = useSpring(isHovered ? 1.02 : 1, SPRING)
+  const translateZ = useSpring(isHovered ? 30 : 0, SPRING)
 
   const handleMouseMove = useCallback((e) => {
     if (!cardRef.current) return
@@ -168,7 +82,6 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
   }, [mouseX, mouseY])
 
   const color = app.color || '#06b6d4'
-  const IconComponent = mobileIconMap[app.icon] || Smartphone
   const floatDelay = useMemo(() => index * 0.4, [index])
 
   const platformIcon = app.platform === 'iOS' ? Apple : app.platform === 'Android' ? Play : Globe
@@ -178,15 +91,16 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
     <motion.div
       ref={cardRef}
       variants={{
-        hidden: { y: shouldReduceMotion ? 0 : 30, opacity: 0 },
+        hidden: { y: shouldReduceMotion ? 0 : 40, opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 },
         visible: {
           y: 0,
           opacity: 1,
+          scale: 1,
           transition: {
             type: shouldReduceMotion ? 'tween' : 'spring',
-            stiffness: 100,
+            stiffness: 80,
             damping: 15,
-            delay: index * 0.08,
+            delay: index * 0.1,
           },
         },
       }}
@@ -200,139 +114,119 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
         scale,
         translateZ,
         transformStyle: 'preserve-3d',
-        perspective: '1000px',
+        perspective: '1200px',
       }}
-      animate={{ y: [0, -5, 0] }}
+      animate={{ y: [0, -6, 0] }}
       transition={{
-        y: { duration: 4 + index * 0.5, repeat: Infinity, ease: 'easeInOut', delay: floatDelay },
+        y: { duration: 5 + index * 0.5, repeat: Infinity, ease: 'easeInOut', delay: floatDelay },
       }}
-      className="relative group cursor-pointer flex flex-col"
+      className="relative group cursor-pointer flex flex-col items-center"
       role="button"
       tabIndex={0}
       aria-label={app.title}
       onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen() } }}
     >
-      {/* Main card container */}
+      {/* Card container */}
       <div
-        className="relative rounded-2xl overflow-hidden transition-all duration-300 flex flex-col flex-1"
+        className="relative rounded-3xl overflow-hidden transition-all duration-500 w-full max-w-[280px]"
         style={{
           background: isHovered
-            ? `linear-gradient(145deg, ${color}12 0%, rgba(255,255,255,0.08) 40%, rgba(255,255,255,0.04) 60%, ${color}08 100%)`
-            : 'linear-gradient(145deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 100%)',
+            ? `linear-gradient(145deg, ${color}08 0%, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.03) 70%, ${color}05 100%)`
+            : 'linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
           backdropFilter: 'blur(20px)',
-          border: `1px solid ${isHovered ? `${color}40` : 'rgba(255,255,255,0.08)'}`,
-          boxShadow: isHovered
-            ? `0 20px 60px rgba(0,0,0,0.4), 0 0 30px ${color}15`
-            : '0 4px 20px rgba(0,0,0,0.2)',
+          border: `1px solid ${isHovered ? `${color}30` : 'rgba(255,255,255,0.06)'}`,
         }}
       >
-        {/* Effects */}
-        <HolographicBorder color={color} isHovered={isHovered} />
-        <GlowBorder color={color} isHovered={isHovered} />
-        <ScanLine color={color} isHovered={isHovered} />
-        <FloatingParticles color={color} isHovered={isHovered} />
-        <ReflectionLayer mouseX={mouseX} mouseY={mouseY} isHovered={isHovered} />
-
-        {/* Ambient glow */}
-        <motion.div
-          className="absolute -top-20 -right-20 w-40 h-40 rounded-full pointer-events-none z-0"
-          style={{
-            background: `radial-gradient(circle, ${color}20 0%, transparent 70%)`,
-            filter: 'blur(30px)',
-          }}
-          animate={{ opacity: isHovered ? [0.4, 0.7, 0.4] : 0.15 }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-        />
+        {/* Holographic lighting */}
+        <HolographicLighting color={color} isHovered={isHovered} />
 
         {/* Content */}
-        <div className="relative z-10 p-5 sm:p-6 flex flex-col flex-1">
-          {/* Header */}
-          <div className="flex items-start gap-4 mb-4">
-            <motion.div
-              whileHover={shouldReduceMotion ? {} : { rotate: [0, 5, -5, 0], scale: 1.08 }}
-              transition={{ duration: 0.5 }}
-              className="w-14 h-14 flex-shrink-0 rounded-[18px] flex items-center justify-center shadow-lg border border-white/10 relative overflow-hidden"
-              style={{ backgroundColor: color }}
+        <div className="relative z-10 pt-8 pb-6 px-4 flex flex-col items-center">
+          {/* Smartphone device */}
+          <div className="relative mb-6">
+            <SmartphoneDevice
+              app={app}
+              isHovered={isHovered}
+              mouseX={mouseX}
+              mouseY={mouseY}
+              color={color}
+            />
+          </div>
+
+          {/* Rotating platform */}
+          <div className="relative -mt-4 mb-4">
+            <RotatingShowcasePlatform color={color} isHovered={isHovered} />
+          </div>
+
+          {/* App info */}
+          <div className="text-center space-y-3 w-full">
+            {/* Title */}
+            <motion.h3
+              className="text-sm sm:text-base font-bold leading-tight font-display line-clamp-2"
+              animate={{ color: isHovered ? color : '#f1f5f9' }}
+              transition={{ duration: 0.3 }}
             >
-              {/* Icon shimmer */}
-              <motion.div
-                className="absolute inset-0"
+              {app.title}
+            </motion.h3>
+
+            {/* Platform badge */}
+            <div className="flex items-center justify-center gap-2">
+              <div
+                className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider"
                 style={{
-                  background: 'linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.2) 50%, transparent 70%)',
-                }}
-                animate={{ x: ['-100%', '200%'] }}
-                transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: index * 0.3 }}
-              />
-              <IconComponent size={26} className="text-white relative z-10 drop-shadow-lg" />
-            </motion.div>
-
-            <div className="flex-1 min-w-0">
-              <motion.h3
-                className="text-lg font-bold text-white truncate font-display leading-tight"
-                animate={{ color: isHovered ? color : '#f1f5f9' }}
-                transition={{ duration: 0.3 }}
-              >
-                {app.title}
-              </motion.h3>
-              <p className="text-sm text-slate-400 line-clamp-2 mt-1 leading-relaxed">
-                {app.description}
-              </p>
-            </div>
-          </div>
-
-          {/* Rating */}
-          <RatingStars rating={app.rating} color={color} />
-
-          {/* Features */}
-          <div className="flex flex-wrap gap-1.5 mb-4" role="list" aria-label="App features">
-            {app.features.map((feature, i) => (
-              <motion.span
-                key={i}
-                role="listitem"
-                whileHover={{ scale: 1.05, y: -1 }}
-                className="px-2.5 py-1 text-[10px] font-medium rounded-md border transition-all duration-200"
-                style={{
-                  background: isHovered ? `${color}12` : 'rgba(255,255,255,0.05)',
-                  color: isHovered ? `${color}cc` : '#94a3b8',
-                  borderColor: isHovered ? `${color}25` : 'rgba(255,255,255,0.08)',
+                  background: `${color}15`,
+                  color: color,
+                  border: `1px solid ${color}25`,
                 }}
               >
-                {feature}
-              </motion.span>
-            ))}
-          </div>
-
-          {/* Footer */}
-          <div className="mt-auto pt-3 border-t border-white/10">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
                 {(() => {
                   const PlatformIcon = platformIcon
-                  return <><PlatformIcon size={14} /> {platformLabel}</>
+                  return <><PlatformIcon size={10} /> {platformLabel}</>
                 })()}
               </div>
-
-              <motion.a
-                href={app.appUrl}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-                whileHover={{ scale: 1.05, x: 2 }}
-                whileTap={{ scale: 0.95 }}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg transition-all duration-200"
-                style={{
-                  background: `linear-gradient(135deg, ${color} 0%, ${color}cc 100%)`,
-                  color: 'white',
-                  boxShadow: isHovered ? `0 4px 20px ${color}40` : `0 2px 8px ${color}20`,
-                }}
-                aria-label={`Open ${app.title}`}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <Download size={14} />
-                Open App
-              </motion.a>
             </div>
+
+            {/* Rating */}
+            <RatingStars rating={app.rating} color={color} />
+
+            {/* Features */}
+            <FeaturePills features={app.features} color={color} isHovered={isHovered} />
+
+            {/* CTA button */}
+            <motion.a
+              href={app.appUrl}
+              target="_blank"
+              rel="noopener noreferrer nofollow"
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.97 }}
+              className="inline-flex items-center gap-1.5 px-5 py-2 text-[11px] font-bold rounded-full transition-all duration-200 mt-2"
+              style={{
+                background: `linear-gradient(135deg, ${color} 0%, ${color}cc 100%)`,
+                color: 'white',
+                boxShadow: isHovered ? `0 8px 24px ${color}40` : `0 4px 12px ${color}25`,
+              }}
+              aria-label={`Open ${app.title}`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <Download size={12} />
+              Open App
+            </motion.a>
           </div>
         </div>
+
+        {/* Bottom ambient glow */}
+        <motion.div
+          className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-32 h-20 rounded-full pointer-events-none z-0"
+          style={{
+            background: `radial-gradient(ellipse, ${color}15 0%, transparent 70%)`,
+            filter: 'blur(20px)',
+          }}
+          animate={{
+            opacity: isHovered ? [0.3, 0.6, 0.3] : 0.1,
+            scaleX: isHovered ? [1, 1.2, 1] : 1,
+          }}
+          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+        />
       </div>
     </motion.div>
   )

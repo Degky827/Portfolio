@@ -243,9 +243,9 @@ export default function ProjectsScene({ children }) {
   const particleCount = isMobile ? 80 : 200
 
   return (
-    <ProjectsErrorBoundary>
-      <div className="relative w-full min-h-screen" style={{ perspective: '1200px' }}>
-        <div className="fixed inset-0 z-0">
+    <div className="relative w-full min-h-screen" style={{ perspective: '1200px' }}>
+      <div className="fixed inset-0 z-0">
+        <ProjectsErrorBoundary>
           <Canvas
             camera={{ position: [0, 2, 10], fov: 50, near: 0.1, far: 100 }}
             dpr={isMobile ? [1, 1] : [1, 1.5]}
@@ -290,18 +290,18 @@ export default function ProjectsScene({ children }) {
               <Preload all />
             </Suspense>
           </Canvas>
-        </div>
-
-        <div
-          className="relative z-10"
-          style={{
-            transformStyle: 'preserve-3d',
-            transform: 'translateZ(0)',
-          }}
-        >
-          {children}
-        </div>
+        </ProjectsErrorBoundary>
       </div>
-    </ProjectsErrorBoundary>
+
+      <div
+        className="relative z-10"
+        style={{
+          transformStyle: 'preserve-3d',
+          transform: 'translateZ(0)',
+        }}
+      >
+        {children}
+      </div>
+    </div>
   )
 }

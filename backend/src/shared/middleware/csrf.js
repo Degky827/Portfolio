@@ -8,6 +8,8 @@ const CSRF_SKIP_PATHS = [
   '/api/auth/verify-2fa',
   '/api/auth/google',
   '/api/auth/refresh',
+  '/api/analytics/log-visit',
+  '/api/analytics/log-engagement',
 ]
 
 function getSecret() {

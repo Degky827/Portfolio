@@ -2,15 +2,10 @@ import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   X, ExternalLink, ChevronLeft, ChevronRight,
-  CheckCircle, Clock, AlertCircle, Star,
+  Star,
 } from 'lucide-react'
 import { getMediaUrl } from '../../shared/services/api'
-
-const statusConfig = {
-  completed: { label: 'Completed', classes: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
-  in_progress: { label: 'In Progress', classes: 'bg-amber-100 text-amber-700', icon: Clock },
-  planned: { label: 'Planned', classes: 'bg-blue-100 text-blue-700', icon: AlertCircle },
-}
+import HolographicBadge from '../../components/HolographicBadge'
 
 function GithubIcon({ size = 24 }) {
   return (
@@ -33,8 +28,7 @@ export default function ProjectPreview({ project, onClose }) {
   }
 
   const currentImage = allImages[currentImageIndex] || null
-  const statusInfo = statusConfig[project.status] || statusConfig.completed
-  const StatusIcon = statusInfo.icon
+  const status = project.status || 'completed'
 
   return (
     <AnimatePresence>
@@ -112,10 +106,7 @@ export default function ProjectPreview({ project, onClose }) {
               <div>
                 <div className="flex items-start justify-between gap-3 mb-2">
                   <h3 className="text-xl font-black text-gray-900 dark:text-white">{project.title}</h3>
-                  <span className={`inline-flex items-center gap-1 px-3 py-1 text-xs font-bold uppercase tracking-wider rounded-full shrink-0 ${statusInfo.classes}`}>
-                    <StatusIcon size={14} />
-                    {statusInfo.label}
-                  </span>
+                  <HolographicBadge status={status} size="md" />
                 </div>
                 <p className="text-sm text-gray-400">{project.category}</p>
               </div>
