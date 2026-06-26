@@ -1,0 +1,5 @@
+export { default as ProjectsScene } from './ProjectsScene'
+export { default as FloatingParticles } from './FloatingParticles'
+export { default as EnvironmentLights } from './EnvironmentLights'
+export { default as HolographicBackground } from './HolographicBackground'
+export { default as HolographicTabs } from './HolographicTabs'
