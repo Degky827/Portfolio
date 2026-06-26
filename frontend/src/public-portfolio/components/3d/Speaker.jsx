@@ -1,5 +1,6 @@
 import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { useWorkspace } from './WorkspaceContext'
 import * as THREE from 'three'
 
 /**
@@ -8,6 +9,7 @@ import * as THREE from 'three'
  * Desktop speaker with pulsing RGB ring light.
  */
 export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
+  const { openByObject } = useWorkspace()
   const ringRef = useRef()
   const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
   const cyanColor = useMemo(() => new THREE.Color('#22d3ee'), [])
@@ -101,6 +103,25 @@ export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
           roughness={0.2}
           metalness={0.8}
         />
+      </mesh>
+
+      {/* Clickable hitbox */}
+      <mesh
+        position={[0, 0.45, 0]}
+        onClick={(e) => {
+          e.stopPropagation()
+          openByObject('speaker')
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          document.body.style.cursor = 'pointer'
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = 'auto'
+        }}
+      >
+        <boxGeometry args={[0.25, 1, 0.25]} />
+        <meshStandardMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
     </group>
   )

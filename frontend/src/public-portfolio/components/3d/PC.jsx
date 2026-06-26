@@ -1,5 +1,6 @@
 import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
+import { useWorkspace } from './WorkspaceContext'
 import * as THREE from 'three'
 
 /**
@@ -8,6 +9,7 @@ import * as THREE from 'three'
  * PC tower case with RGB fans and glowing accents.
  */
 export default function PC({ position = [0, 0, 0] }) {
+  const { openByObject } = useWorkspace()
   const fanRef1 = useRef()
   const fanRef2 = useRef()
   const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
@@ -135,6 +137,25 @@ export default function PC({ position = [0, 0, 0] }) {
           transparent
           opacity={0.6}
         />
+      </mesh>
+
+      {/* Clickable hitbox */}
+      <mesh
+        position={[0, 0.75, 0]}
+        onClick={(e) => {
+          e.stopPropagation()
+          openByObject('pc')
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          document.body.style.cursor = 'pointer'
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = 'auto'
+        }}
+      >
+        <boxGeometry args={[0.55, 1.55, 0.55]} />
+        <meshStandardMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
     </group>
   )

@@ -1,4 +1,5 @@
 import { useMemo } from 'react'
+import { useWorkspace } from './WorkspaceContext'
 import * as THREE from 'three'
 
 /**
@@ -7,6 +8,7 @@ import * as THREE from 'three'
  * Mechanical keyboard with per-key RGB glow effect.
  */
 export default function Keyboard({ position = [0, 0, 0] }) {
+  const { openByObject } = useWorkspace()
   const keyColor = useMemo(() => new THREE.Color('#1a1035'), [])
   const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
   const cyanColor = useMemo(() => new THREE.Color('#22d3ee'), [])
@@ -90,6 +92,25 @@ export default function Keyboard({ position = [0, 0, 0] }) {
           transparent
           opacity={0.6}
         />
+      </mesh>
+
+      {/* Clickable hitbox */}
+      <mesh
+        position={[0, 0.05, 0]}
+        onClick={(e) => {
+          e.stopPropagation()
+          openByObject('keyboard')
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          document.body.style.cursor = 'pointer'
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = 'auto'
+        }}
+      >
+        <boxGeometry args={[1.5, 0.1, 0.6]} />
+        <meshStandardMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
     </group>
   )

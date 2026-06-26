@@ -149,5 +149,15 @@
   },
   "scrollProgress": {
     "ariaLabel": "Page scroll progress"
+  },
+  "workspace": {
+    "sectionAbout": "About Me",
+    "sectionSkills": "Skills & Expertise",
+    "sectionProjects": "Projects",
+    "sectionContact": "Get In Touch",
+    "hintMonitor": "Click to view About",
+    "hintKeyboard": "Click to view Skills",
+    "hintPC": "Click to view Projects",
+    "hintSpeaker": "Click to view Contact"
   }
 }
