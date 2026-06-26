@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react'
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
 
 /**
  * CodeEditor
@@ -12,6 +13,7 @@ import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react'
  * - Minimap
  * - Status bar
  * - Typing animation
+ * - 3D interactive tilt on mouse hover
  */
 
 // VS Code Dark+ syntax colors
@@ -119,7 +121,19 @@ function CodeEditor({ fullName, roleTitle, locationText, skills, available }) {
   }, [lineIdx])
 
   return (
-    <div className="flex flex-col h-full w-full" style={{ background: COLORS.editorBg }}>
+    <motion.div
+      className="flex flex-col h-full w-full rounded-lg overflow-hidden"
+      style={{ background: COLORS.editorBg }}
+      animate={{
+        rotateX: [0, 5, 0, -5, 0],
+        rotateY: [0, -5, 0, 5, 0],
+      }}
+      transition={{
+        duration: 10,
+        repeat: Infinity,
+        ease: 'easeInOut',
+      }}
+    >
       {/* ── Title Bar ── */}
       <div
         className="flex items-center px-3 py-2 border-b"
@@ -308,7 +322,7 @@ function CodeEditor({ fullName, roleTitle, locationText, skills, available }) {
           50% { opacity: 0; }
         }
       `}</style>
-    </div>
+    </motion.div>
   )
 }
 
