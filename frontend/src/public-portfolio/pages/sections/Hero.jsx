@@ -1,8 +1,12 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { ArrowRight, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, GraduationCap, Heart, Briefcase, Coffee, Smile, Download, MapPin, ExternalLink } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
+
+const TechChipsScene = lazy(() =>
+  import('../../../components/techchips3d/TechChipsScene')
+)
 
 const iconMap = {
   Award, BookOpen, Cpu, Users, Trophy, Shield,
@@ -324,6 +328,19 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
               </motion.div>
             </motion.div>
           </motion.div>
+        </motion.div>
+      </div>
+
+      {/* 3D Tech Chips */}
+      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 mt-4 mb-8">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 1.2 }}
+        >
+          <Suspense fallback={null}>
+            <TechChipsScene height="350px" />
+          </Suspense>
         </motion.div>
       </div>
 
