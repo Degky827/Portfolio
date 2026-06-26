@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
@@ -6,6 +6,8 @@ import emailjs from '@emailjs/browser'
 import { logPortfolioVisit, logPortfolioEngagement } from '../../../shared/services/api'
 import { getContactContent, createMessage } from '../../../shared/services/contactService'
 import { getSettings } from '../../../shared/services/settingsService'
+
+const ContactScene = lazy(() => import('../../../components/contact3d/ContactScene'))
 
 function SocialIcon({ iconVector, size = 18, className = '' }) {
   if (!iconVector) return null
@@ -209,31 +211,200 @@ export default function Contact() {
     },
   }
 
+  const heroRef = useRef(null)
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!heroRef.current) return
+      const rect = heroRef.current.getBoundingClientRect()
+      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2
+      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2
+      setMousePos({ x, y })
+    }
+    const el = heroRef.current
+    if (el) el.addEventListener('mousemove', handleMouseMove)
+    return () => { if (el) el.removeEventListener('mousemove', handleMouseMove) }
+  }, [])
+
   return (
     <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 relative overflow-hidden" aria-label={t('contact.ariaLabel')}>
 
       <div className="container mx-auto px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.8 }}
-          className="text-center mb-12 sm:mb-16 md:mb-20"
-        >
-          <motion.span
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full"
-          >
-            {t('contact.badge')}
-          </motion.span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
-            {t('contact.title')}
-          </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-gray-400 max-w-2xl mx-auto leading-relaxed px-4">
-            {t('contact.description')}
-          </p>
-        </motion.div>
+        {/* 3D Hero Section */}
+        <div ref={heroRef} className="relative mb-16 sm:mb-20 md:mb-28">
+          <Suspense fallback={null}>
+            <ContactScene>
+              <div className="relative min-h-[420px] sm:min-h-[480px] md:min-h-[540px] flex flex-col items-center justify-center py-12 sm:py-16">
+                {/* Floating glass badge */}
+                <motion.div
+                  initial={{ opacity: 0, y: 20, scale: 0.8 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative mb-6 sm:mb-8"
+                  style={{
+                    transform: `perspective(800px) rotateY(${mousePos.x * 3}deg) rotateX(${-mousePos.y * 3}deg)`,
+                  }}
+                >
+                  <motion.div
+                    animate={{ y: [0, -6, 0] }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    className="relative"
+                  >
+                    {/* Glow behind badge */}
+                    <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl scale-150" />
+
+                    {/* Badge body */}
+                    <div className="relative px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border border-primary/30 backdrop-blur-xl bg-white/[0.06] shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+                      <motion.div
+                        className="absolute inset-0 rounded-full"
+                        animate={{ opacity: [0.3, 0.6, 0.3] }}
+                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{
+                          background: 'linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(6,182,212,0.08) 50%, rgba(139,92,246,0.1) 100%)',
+                        }}
+                      />
+                      {/* Neon ring */}
+                      <motion.div
+                        className="absolute inset-[-1px] rounded-full"
+                        animate={{ opacity: [0.4, 0.8, 0.4] }}
+                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+                        style={{
+                          background: 'conic-gradient(from 0deg, rgba(99,102,241,0.4), rgba(6,182,212,0.3), rgba(139,92,246,0.4), rgba(99,102,241,0.4))',
+                          mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                          maskComposite: 'exclude',
+                          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                          WebkitMaskComposite: 'xor',
+                          padding: '1px',
+                        }}
+                      />
+                      <span className="relative z-10 text-xs sm:text-sm font-bold tracking-[0.25em] text-primary/90 uppercase">
+                        {t('contact.badge')}
+                      </span>
+                    </div>
+                  </motion.div>
+                </motion.div>
+
+                {/* Layered 3D Title */}
+                <motion.div
+                  initial={{ opacity: 0, y: 30 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  className="relative text-center mb-4 sm:mb-6"
+                  style={{
+                    transform: `perspective(1000px) rotateY(${mousePos.x * 2}deg) rotateX(${-mousePos.y * 2}deg)`,
+                  }}
+                >
+                  {/* Depth shadow layers */}
+                  <h2
+                    className="absolute inset-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight select-none pointer-events-none"
+                    style={{
+                      color: 'transparent',
+                      WebkitTextStroke: '1px rgba(99,102,241,0.08)',
+                      transform: 'translateZ(-20px) scale(1.02)',
+                      filter: 'blur(2px)',
+                    }}
+                    aria-hidden="true"
+                  >
+                    {t('contact.title')}
+                  </h2>
+                  <h2
+                    className="absolute inset-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight select-none pointer-events-none"
+                    style={{
+                      color: 'transparent',
+                      WebkitTextStroke: '1px rgba(6,182,212,0.12)',
+                      transform: 'translateZ(-10px) scale(1.01)',
+                      filter: 'blur(1px)',
+                    }}
+                    aria-hidden="true"
+                  >
+                    {t('contact.title')}
+                  </h2>
+
+                  {/* Main title */}
+                  <motion.h2
+                    className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-transparent bg-clip-text"
+                    animate={{
+                      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                    }}
+                    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
+                    style={{
+                      backgroundImage: 'linear-gradient(135deg, #818cf8 0%, #06b6d4 30%, #a78bfa 60%, #22d3ee 100%)',
+                      backgroundSize: '200% 200%',
+                      textShadow: '0 0 60px rgba(99,102,241,0.3), 0 0 120px rgba(6,182,212,0.15)',
+                    }}
+                  >
+                    {t('contact.title')}
+                  </motion.h2>
+
+                  {/* Animated glow behind text */}
+                  <motion.div
+                    className="absolute inset-0 pointer-events-none"
+                    animate={{
+                      opacity: [0.3, 0.6, 0.3],
+                    }}
+                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
+                    style={{
+                      background: 'radial-gradient(ellipse at center, rgba(99,102,241,0.15) 0%, transparent 70%)',
+                      filter: 'blur(30px)',
+                    }}
+                  />
+                </motion.div>
+
+                {/* Holographic subtitle */}
+                <motion.p
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                  className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed px-4 text-center"
+                  style={{
+                    transform: `perspective(800px) rotateY(${mousePos.x * 1}deg)`,
+                  }}
+                >
+                  <motion.span
+                    className="text-gray-500/90 dark:text-white/60"
+                    animate={{ opacity: [0.7, 1, 0.7] }}
+                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    {t('contact.description')}
+                  </motion.span>
+                </motion.p>
+
+                {/* Floating light rays */}
+                <div className="absolute inset-0 pointer-events-none overflow-hidden">
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute"
+                      animate={{
+                        y: [-20, 20, -20],
+                        opacity: [0.03, 0.06, 0.03],
+                        rotate: [15 + i * 10, 20 + i * 10, 15 + i * 10],
+                      }}
+                      transition={{
+                        duration: 6 + i * 2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                        delay: i * 1.5,
+                      }}
+                      style={{
+                        left: `${20 + i * 25}%`,
+                        top: '10%',
+                        width: '2px',
+                        height: '80%',
+                        background: `linear-gradient(to bottom, transparent, ${i === 0 ? 'rgba(99,102,241,0.15)' : i === 1 ? 'rgba(6,182,212,0.12)' : 'rgba(139,92,246,0.1)'}, transparent)`,
+                        filter: 'blur(4px)',
+                      }}
+                    />
+                  ))}
+                </div>
+              </div>
+            </ContactScene>
+          </Suspense>
+        </div>
 
         <motion.div
           variants={containerVariants}
