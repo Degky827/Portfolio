@@ -8,6 +8,7 @@ import { getProjects } from '../../../shared/services/projectService'
 import { getMediaUrl } from '../../../shared/services/api'
 import { ProjectsScene } from '../../../components/projects3d'
 import HolographicTabs from '../../../components/projects3d/HolographicTabs'
+import HolographicSearch from '../../../components/projects3d/HolographicSearch'
 
 const iconMap = {
   Globe,
@@ -167,6 +168,14 @@ export default function Projects() {
         />
 
         {activeTab === 'web' ? (
+        <>
+        <HolographicSearch
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onClear={() => setSearchTerm('')}
+          placeholder="Search projects, technologies, stacks..."
+          ariaLabel="Search web projects"
+        />
         <motion.div
           variants={containerVariants}
           initial="hidden"
@@ -313,30 +322,18 @@ export default function Projects() {
             </div>
           )}
         </motion.div>
+        </>
       ) : (
         /* Mobile Apps Section */
         <div className="max-w-5xl lg:max-w-7xl mx-auto">
           {/* Mobile Apps Search */}
-            <div className="relative max-w-md mx-auto mb-8">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" aria-hidden="true" />
-            <input
-              type="text"
-              placeholder={t('projects.searchMobileApps')}
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-10 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
-              aria-label={t('projects.searchMobileAppsAria')}
-            />
-            {searchTerm && (
-              <button
-                onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white transition-colors"
-                aria-label={t('projects.clearSearch')}
-              >
-                <X size={16} />
-              </button>
-            )}
-          </div>
+          <HolographicSearch
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            onClear={() => setSearchTerm('')}
+            placeholder="Search mobile apps, features, platforms..."
+            ariaLabel="Search mobile apps"
+          />
 
           <p className="text-center text-sm text-slate-400 mb-6">
             {t('projects.showingApps', { count: filteredMobileApps.length, total: mobileAppsData.length })}
