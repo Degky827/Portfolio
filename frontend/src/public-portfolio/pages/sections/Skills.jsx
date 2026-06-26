@@ -42,6 +42,7 @@ import { getSkills } from '../../../shared/services/skillService'
 import { getMediaUrl } from '../../../shared/services/api'
 import { SkillsScene } from '../../../components/skills3d'
 import GlassCard from '../../../components/skills3d/GlassCard'
+import StatsDashboard3D from '../../../components/skills3d/StatsDashboard3D'
 
 const skillIconMap = {
   SiHtml5, HTML5: SiHtml5, HTML: SiHtml5,
@@ -381,37 +382,12 @@ export default function Skills() {
                 </div>
               )}
 
-              <motion.div
-                initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.5, duration: shouldReduceMotion ? 0.1 : 0.8 }}
-                className="mt-10 sm:mt-14 md:mt-18 pt-8 sm:pt-10 md:pt-14 border-t border-slate-700/50 grid grid-cols-3 gap-4 sm:gap-6 md:gap-8 lg:gap-16 relative z-10"
-              >
-                {[
-                  { label: t('skills.statTechnologies'), value: `${skills.filter((s) => s.category?.toLowerCase() !== 'certificates').length}+` },
-                  { label: t('skills.statCertificates'), value: `${certificatesCard?.skills.length || 0}+` },
-                  { label: t('skills.statCategories'), value: `${skillCards.length}+` },
-                ].map((stat, i) => (
-                  <motion.div
-                    key={i}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="text-center flex flex-col items-center"
-                  >
-                    <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-cyan-500/10 text-cyan-400 mb-2 sm:mb-3 md:mb-4">
-                      <Award size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </div>
-                    <span className="block text-2xl sm:text-3xl md:text-4xl font-black text-white mb-1 font-display">
-                      {stat.value}
-                    </span>
-                    <span className="text-[10px] sm:text-xs md:text-sm font-black uppercase tracking-[0.1em] sm:tracking-[0.2em] text-slate-500">
-                      {stat.label}
-                    </span>
-                  </motion.div>
-                ))}
-              </motion.div>
+              <StatsDashboard3D
+                technologies={skills.filter((s) => s.category?.toLowerCase() !== 'certificates').length}
+                certificates={certificatesCard?.skills.length || 0}
+                categories={skillCards.length}
+                t={t}
+              />
             </motion.div>
           )}
         </div>
