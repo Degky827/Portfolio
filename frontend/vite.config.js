@@ -13,6 +13,7 @@ export default defineConfig({
         manualChunks: {
           'three-vendor': ['three', '@react-three/fiber', '@react-three/drei'],
           'framer': ['framer-motion'],
+          'gsap': ['gsap'],
           'react-icons': ['react-icons'],
         },
       },

@@ -149,5 +149,15 @@
   },
   "scrollProgress": {
     "ariaLabel": "የገጽ ማንሸራተቻ እድገት"
+  },
+  "workspace": {
+    "sectionAbout": "ስለ እኔ",
+    "sectionSkills": "ክህሎቶች እና ችሎታ",
+    "sectionProjects": "ፕሮጀክቶች",
+    "sectionContact": "ያግኙኝ",
+    "hintMonitor": "መረጥ ለ About",
+    "hintKeyboard": "መረጥ ለ Skills",
+    "hintPC": "መረጥ ለ Projects",
+    "hintSpeaker": "መረጥ ለ Contact"
   }
 }
