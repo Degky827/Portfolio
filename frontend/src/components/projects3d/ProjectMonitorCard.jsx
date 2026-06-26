@@ -1,6 +1,7 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion'
-import { ExternalLink, CheckCircle, Clock, AlertCircle } from 'lucide-react'
+import { ExternalLink } from 'lucide-react'
+import HolographicBadge from '../HolographicBadge'
 
 const SPRING = { stiffness: 300, damping: 30, mass: 0.5 }
 
@@ -12,10 +13,10 @@ const GithubIcon = ({ size = 16, className = '' }) => (
 
 const DEFAULT_THUMBNAIL = 'https://placehold.co/600x400/0f172a/475569?text=Project'
 
-const statusConfig = {
-  completed: { icon: CheckCircle, color: '#10b981', label: 'Completed' },
-  in_progress: { icon: Clock, color: '#f59e0b', label: 'In Progress' },
-  planned: { icon: AlertCircle, color: '#3b82f6', label: 'Planned' },
+const statusColorMap = {
+  completed: '#10b981',
+  in_progress: '#f59e0b',
+  planned: '#3b82f6',
 }
 
 function MonitorFrame({ children, color, isHovered, mouseX, mouseY }) {
@@ -201,14 +202,14 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
     mouseY.set(0)
   }, [mouseX, mouseY])
 
-  const color = project.color || statusConfig[project.status]?.color || '#6366f1'
+  const color = project.color || statusColorMap[project.status] || '#6366f1'
   const title = project.title || ''
   const desc = project.shortDescription || project.description || ''
   const techs = project.technologies || project.tags || []
   const liveUrl = project.liveDemoUrl || project.liveUrl || '#'
   const repoUrl = project.githubUrl || project.repoUrl || ''
   const thumbUrl = project.thumbnail || (project.images && project.images[0]) || ''
-  const status = project.status ? statusConfig[project.status] : null
+  const status = project.status || null
   const floatDelay = useMemo(() => index * 0.5, [index])
 
   return (
@@ -314,21 +315,7 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
               {title}
             </motion.h3>
             {status && (
-              <motion.span
-                className="inline-flex items-center gap-1 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full whitespace-nowrap shrink-0"
-                style={{
-                  color: status.color,
-                  backgroundColor: `${status.color}15`,
-                  border: `1px solid ${status.color}25`,
-                }}
-                animate={isHovered ? {
-                  boxShadow: [`0 0 8px ${status.color}20`, `0 0 16px ${status.color}35`, `0 0 8px ${status.color}20`],
-                } : {}}
-                transition={{ duration: 2, repeat: Infinity }}
-              >
-                <status.icon size={10} />
-                {status.label}
-              </motion.span>
+              <HolographicBadge status={status} size="sm" />
             )}
           </div>
 

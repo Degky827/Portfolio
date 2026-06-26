@@ -21,28 +21,7 @@ export default class ProjectsErrorBoundary extends Component {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="min-h-screen flex items-center justify-center bg-[#070B14] px-4">
-          <div className="text-center max-w-md">
-            <div className="w-16 h-16 mx-auto mb-6 rounded-2xl bg-red-500/10 flex items-center justify-center">
-              <AlertTriangle size={32} className="text-red-400" />
-            </div>
-            <h2 className="text-xl font-bold text-white mb-2">
-              Something went wrong
-            </h2>
-            <p className="text-slate-400 mb-6">
-              The projects section encountered an error. Please try again.
-            </p>
-            <button
-              onClick={this.handleRetry}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-white/10 hover:bg-white/20 text-white rounded-lg transition-colors"
-            >
-              <RefreshCw size={16} />
-              Try again
-            </button>
-          </div>
-        </div>
-      )
+      return null
     }
 
     return this.props.children

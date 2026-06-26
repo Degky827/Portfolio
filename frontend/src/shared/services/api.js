@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 const localHosts = ['localhost', '127.0.0.1', '[::1]']
-const isProduction = import.meta.env.PROD || !localHosts.includes(window.location.hostname)
+const isProduction = import.meta.env.PROD && !localHosts.includes(window.location.hostname)
 
 const api = axios.create({
   baseURL: isProduction
