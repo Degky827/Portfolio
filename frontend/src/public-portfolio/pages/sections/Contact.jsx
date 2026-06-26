@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, lazy, Suspense } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Phone, MapPin, Send, User, MessageSquare } from 'lucide-react'
+import { Mail, Phone, MapPin, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 import { logPortfolioVisit, logPortfolioEngagement } from '../../../shared/services/api'
 import { getContactContent, createMessage } from '../../../shared/services/contactService'
@@ -12,6 +12,8 @@ const FuturisticPanel = lazy(() => import('../../../components/contact3d/Futuris
 const InteractiveIcon3D = lazy(() => import('../../../components/contact3d/InteractiveIcon3D'))
 const FuturisticInput = lazy(() => import('../../../components/contact3d/FuturisticInput'))
 const FuturisticTextarea = lazy(() => import('../../../components/contact3d/FuturisticTextarea'))
+const LaunchButton = lazy(() => import('../../../components/contact3d/LaunchButton'))
+const FloatingHologram = lazy(() => import('../../../components/contact3d/FloatingHologram'))
 
 function SocialIcon({ iconVector, size = 18, className = '' }) {
   if (!iconVector) return null
@@ -469,29 +471,24 @@ export default function Contact() {
                         ))}
                       </div>
 
-                      {/* Social channels - Interactive 3D icons */}
+                      {/* Social channels - Floating Holograms */}
                       {socialChannels.length > 0 && (
                         <div>
-                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/30 mb-4 sm:mb-5">
+                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/30 mb-5 sm:mb-6">
                             Social Channels
                           </span>
-                          <div className="space-y-4 sm:space-y-5" role="list" aria-label={t('contact.socialAriaLabel')}>
+                          <div className="flex gap-4 sm:gap-5 flex-wrap" role="list" aria-label={t('contact.socialAriaLabel')}>
                             {socialChannels.map((ch) => (
-                              <InteractiveIcon3D
+                              <FloatingHologram
                                 key={ch._id || ch.channelName}
-                                icon={null}
-                                label={ch.channelName}
-                                value={ch.channelName}
-                                href={ch.linkUrl}
-                                color="#a78bfa"
                                 channelName={ch.channelName}
-                                socialIconComponent={
+                                href={ch.linkUrl}
+                                iconComponent={
                                   ch.iconVector ? (
-                                    <SocialIcon iconVector={ch.iconVector} size={20} className="text-current" />
-                                  ) : (
-                                    <span className="text-xs font-bold uppercase">{ch.channelName?.charAt(0)}</span>
-                                  )
+                                    <SocialIcon iconVector={ch.iconVector} size={22} className="text-current" />
+                                  ) : null
                                 }
+                                iconVector={ch.iconVector}
                               />
                             ))}
                           </div>
@@ -616,54 +613,14 @@ export default function Contact() {
                           )}
                         </AnimatePresence>
 
-                        {/* Submit Button */}
-                        <motion.button
-                          type="submit"
+                        {/* Launch Control Button */}
+                        <LaunchButton
                           disabled={isSubmitting || !isValid}
-                          whileHover={isValid ? { scale: 1.02, translateY: -2 } : {}}
-                          whileTap={isValid ? { scale: 0.98 } : {}}
-                          className="relative w-full py-4 sm:py-5 font-bold sm:font-black text-base sm:text-lg lg:text-xl rounded-xl sm:rounded-2xl transition-all duration-300 flex items-center justify-center gap-3 sm:gap-4 group focus:outline-none overflow-hidden"
-                          style={{
-                            background: isValid && !isSubmitting
-                              ? 'linear-gradient(135deg, rgba(99,102,241,0.9), rgba(99,102,241,0.7))'
-                              : 'rgba(255,255,255,0.05)',
-                            color: isValid && !isSubmitting ? 'white' : 'rgba(255,255,255,0.3)',
-                            border: `1px solid ${isValid && !isSubmitting ? 'rgba(99,102,241,0.4)' : 'rgba(255,255,255,0.06)'}`,
-                            cursor: isValid && !isSubmitting ? 'pointer' : 'not-allowed',
-                            boxShadow: isValid && !isSubmitting
-                              ? '0 8px 32px rgba(99,102,241,0.3), inset 0 1px 0 rgba(255,255,255,0.15)'
-                              : '0 4px 16px rgba(0,0,0,0.2)',
-                          }}
-                          aria-label={isSubmitting ? t('contact.submitAriaSubmitting') : t('contact.submitAriaNormal')}
-                        >
-                          {/* Button glow */}
-                          {isValid && !isSubmitting && (
-                            <motion.div
-                              className="absolute inset-0 pointer-events-none"
-                              animate={{
-                                background: [
-                                  'linear-gradient(135deg, rgba(99,102,241,0) 0%, rgba(99,102,241,0.1) 50%, rgba(99,102,241,0) 100%)',
-                                  'linear-gradient(135deg, rgba(99,102,241,0) 0%, rgba(6,182,212,0.1) 50%, rgba(99,102,241,0) 100%)',
-                                  'linear-gradient(135deg, rgba(99,102,241,0) 0%, rgba(99,102,241,0.1) 50%, rgba(99,102,241,0) 100%)',
-                                ],
-                              }}
-                              transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
-                            />
-                          )}
-
-                          <span className="relative z-10 flex items-center gap-2 sm:gap-3">
-                            {isSubmitting ? (
-                              <div className="w-5 h-5 sm:w-6 sm:h-6 border-2 sm:border-4 border-white/30 border-t-white rounded-full animate-spin" aria-hidden="true"></div>
-                            ) : (
-                              <>
-                                {t('contact.submitText')}
-                                <motion.span animate={isValid ? { x: [0, 5, 0] } : {}} transition={{ duration: 1.5, repeat: Infinity }} aria-hidden="true">
-                                  <Send size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
-                                </motion.span>
-                              </>
-                            )}
-                          </span>
-                        </motion.button>
+                          isSubmitting={isSubmitting}
+                          isValid={isValid}
+                          label={t('contact.submitText')}
+                          ariaLabel={isSubmitting ? t('contact.submitAriaSubmitting') : t('contact.submitAriaNormal')}
+                        />
                       </form>
                     </div>
                   </FuturisticPanel>
