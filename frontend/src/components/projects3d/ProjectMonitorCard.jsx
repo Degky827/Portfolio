@@ -2,6 +2,7 @@ import { useRef, useState, useCallback, useMemo } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion'
 import { ExternalLink } from 'lucide-react'
 import HolographicBadge from '../HolographicBadge'
+import FuturisticButton from './FuturisticButton'
 
 const SPRING = { stiffness: 300, damping: 30, mass: 0.5 }
 
@@ -346,42 +347,22 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
           {/* Action buttons */}
           <div className="flex items-center gap-2 pt-3 border-t border-white/8">
             {repoUrl && repoUrl !== '#' && (
-              <motion.a
+              <FuturisticButton
                 href={repoUrl}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-                whileHover={{ scale: 1.03, x: 1 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all duration-200"
-                style={{
-                  background: 'rgba(255,255,255,0.05)',
-                  color: '#94a3b8',
-                  border: '1px solid rgba(255,255,255,0.08)',
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <GithubIcon size={12} />
-                Source
-              </motion.a>
+                icon={GithubIcon}
+                label="Source"
+                color={color}
+                variant="ghost"
+              />
             )}
             {liveUrl !== '#' && (
-              <motion.a
+              <FuturisticButton
                 href={liveUrl}
-                target="_blank"
-                rel="noopener noreferrer nofollow"
-                whileHover={{ scale: 1.03, x: 1 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all duration-200"
-                style={{
-                  background: `linear-gradient(135deg, ${color} 0%, ${color}cc 100%)`,
-                  color: 'white',
-                  boxShadow: isHovered ? `0 4px 16px ${color}35` : `0 2px 8px ${color}20`,
-                }}
-                onClick={(e) => e.stopPropagation()}
-              >
-                <ExternalLink size={12} />
-                Live Demo
-              </motion.a>
+                icon={ExternalLink}
+                label="Live Demo"
+                color={color}
+                variant="primary"
+              />
             )}
           </div>
         </div>
