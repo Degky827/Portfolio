@@ -157,18 +157,16 @@ function CodeEditor({ fullName, roleTitle, locationText, skills, available }) {
       style={{
         background: COLORS.editorBg,
         transformStyle: 'preserve-3d',
-      }}
-      animate={{
-        rotateY: [0, 360],
-      }}
-      transition={{
-        rotateY: {
-          duration: 14,
-          repeat: Infinity,
-          ease: 'linear',
-        },
+        rotateX: mouseRotateX,
+        rotateZ: 0,
       }}
     >
+      <motion.div
+        className="flex flex-col h-full w-full"
+        animate={{ rotateY: [0, 360] }}
+        transition={{ duration: 14, repeat: Infinity, ease: 'linear' }}
+        style={{ transformStyle: 'preserve-3d' }}
+      >
       {/* ── Title Bar ── */}
       <div
         className="flex items-center px-3 py-2 border-b"
@@ -357,6 +355,7 @@ function CodeEditor({ fullName, roleTitle, locationText, skills, available }) {
           50% { opacity: 0; }
         }
       `}</style>
+      </motion.div>
     </motion.div>
   )
 }

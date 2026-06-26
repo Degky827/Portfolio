@@ -12,7 +12,6 @@ import ChatWindow from './ai/components/ChatWindow'
 
 const LoginPage = lazy(() => import('./admin-manager/authentication/LoginPage'))
 const AdminRoutes = lazy(() => import('./admin-manager/routes/AdminRoutes'))
-const ThreeDPortfolio = lazy(() => import('./public-portfolio/3d/ThreeDPortfolio'))
 const WorkspaceScene = lazy(() => import('./public-portfolio/components/3d/WorkspaceScene'))
 
 function ScrollToTop() {
@@ -56,11 +55,6 @@ function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/:customSlug" element={<DynamicCustomPage />} />
           </Route>
-          <Route path="/3d" element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#0a0a1a]"><div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" /></div>}>
-              <ThreeDPortfolio />
-            </Suspense>
-          } />
           <Route path="/workspace" element={
             <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#0a0a1a]"><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
               <WorkspaceScene />
