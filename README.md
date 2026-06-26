@@ -448,7 +448,6 @@ curl -X POST http://localhost:5000/api/auth/register-admin \
 | Path           | Component         | Description                                 |
 | -------------- | ----------------- | ------------------------------------------- |
 | `/`            | Home              | Portfolio landing page with all 2D sections |
-| `/3d`          | ThreeDPortfolio   | Immersive 3D scrollable portfolio           |
 | `/:customSlug` | DynamicCustomPage | Admin-managed custom pages rendered by slug |
 
 ### Admin Dashboard
