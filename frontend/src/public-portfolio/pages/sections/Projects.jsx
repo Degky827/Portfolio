@@ -6,6 +6,8 @@ import projectsData from '../../../shared/data/projects.json'
 import mobileAppsData from '../../../shared/data/mobileApps.json'
 import { getProjects } from '../../../shared/services/projectService'
 import { getMediaUrl } from '../../../shared/services/api'
+import { ProjectsScene } from '../../../components/projects3d'
+import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 
 const iconMap = {
   Globe,
@@ -131,7 +133,8 @@ export default function Projects() {
   }, [searchTerm])
 
   return (
-    <section id="projects" className="py-16 sm:py-20 md:py-24 bg-white dark:bg-black transition-colors duration-500 overflow-hidden" aria-label={t('projects.ariaLabel')}>
+    <ProjectsScene>
+    <section id="projects" className="py-16 sm:py-20 md:py-24 min-h-screen" aria-label={t('projects.ariaLabel')}>
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -143,46 +146,25 @@ export default function Projects() {
           <motion.span
             initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-primary uppercase bg-primary/10 rounded-full"
+            className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-cyan-400 uppercase bg-cyan-500/10 rounded-full border border-cyan-500/20"
           >
             {t('projects.badge')}
           </motion.span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-gray-900 dark:text-white mb-4 sm:mb-6 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 tracking-tight">
             {t('projects.title')}
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-gray-500 dark:text-[#94A3B8] max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed px-4">
             {t('projects.description')}
           </p>
         </motion.div>
 
         {/* Tab Navigation */}
-        <div className="flex justify-center mb-8 sm:mb-10">
-          <div className="inline-flex bg-gray-100 dark:bg-neutral-900 rounded-2xl p-1.5 shadow-inner">
-            <button
-              onClick={() => setActiveTab('web')}
-                className={`px-6 sm:px-8 py-2.5 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 ${
-                activeTab === 'web'
-                  ? 'bg-white dark:bg-neutral-900 text-primary shadow-lg'
-                  : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-gray-200'
-              }`}
-            >
-              <Code size={16} className="inline mr-2 -mt-0.5" />
-              {t('projects.tabWeb')}
-            </button>
-            <button
-              onClick={() => setActiveTab('mobile')}
-                className={`px-6 sm:px-8 py-2.5 rounded-xl text-sm sm:text-base font-bold transition-all duration-300 ${
-                activeTab === 'mobile'
-                  ? 'bg-white dark:bg-neutral-900 text-primary shadow-lg'
-                  : 'text-gray-500 dark:text-slate-400 hover:text-gray-700 dark:hover:text-gray-200'
-              }`}
-            >
-              <Smartphone size={16} className="inline mr-2 -mt-0.5" />
-              {t('projects.tabApps')}
-              <span className="ml-2 px-1.5 py-0.5 text-[10px] bg-primary/10 text-primary rounded-full">{mobileAppsData.length}</span>
-            </button>
-          </div>
-        </div>
+        <HolographicTabs
+          activeTab={activeTab}
+          setActiveTab={setActiveTab}
+          webCount={filteredProjects.length}
+          mobileCount={filteredMobileApps.length}
+        />
 
         {activeTab === 'web' ? (
         <motion.div
@@ -208,10 +190,10 @@ export default function Projects() {
                 key={project._id || index}
                 variants={itemVariants}
                 whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                className="group bg-white dark:bg-neutral-900 rounded-xl border border-gray-200 dark:border-neutral-800 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20"
+                className="group bg-white/5 backdrop-blur-xl rounded-xl border border-white/10 overflow-hidden transition-all duration-300 hover:shadow-lg hover:shadow-cyan-500/10 hover:border-cyan-500/20"
               >
                 {/* Thumbnail Image */}
-                <div className="relative aspect-[4/3] overflow-hidden bg-gray-100 dark:bg-neutral-900">
+                <div className="relative aspect-[4/3] overflow-hidden bg-black/30">
                   <img
                     src={thumbUrl ? getMediaUrl(thumbUrl) : DEFAULT_THUMBNAIL}
                     alt={title}
@@ -225,7 +207,7 @@ export default function Projects() {
                         href={repoUrl}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="p-2 bg-white dark:bg-neutral-900 rounded-lg text-gray-700 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors shadow-lg"
+                        className="p-2 bg-white/10 backdrop-blur-xl rounded-lg text-slate-300 hover:text-cyan-400 transition-colors shadow-lg border border-white/10"
                         title={t('projects.viewSourceCode', { title })}
                         aria-label={t('projects.viewSourceCodeAria', { title })}
                         onClick={e => e.stopPropagation()}
@@ -238,7 +220,7 @@ export default function Projects() {
                           href={liveUrl}
                           target="_blank"
                           rel="noopener noreferrer nofollow"
-                          className="p-2 bg-white dark:bg-neutral-900 rounded-lg text-gray-700 dark:text-slate-400 hover:text-primary dark:hover:text-primary transition-colors shadow-lg"
+                          className="p-2 bg-white/10 backdrop-blur-xl rounded-lg text-slate-300 hover:text-cyan-400 transition-colors shadow-lg border border-white/10"
                         title={t('projects.viewLiveSite', { title })}
                         aria-label={t('projects.viewLiveDemoAria', { title })}
                         onClick={e => e.stopPropagation()}
@@ -252,7 +234,7 @@ export default function Projects() {
                 {/* Content */}
                 <div className="p-4">
                   <div className="flex items-start justify-between gap-2 mb-1.5">
-                    <h3 className="text-base font-bold text-gray-900 dark:text-[#F8FAFC] group-hover:text-primary transition-colors leading-tight font-display">
+                    <h3 className="text-base font-bold text-white group-hover:text-cyan-400 transition-colors leading-tight font-display">
                       {title}
                     </h3>
                     {project.status && (
@@ -263,12 +245,12 @@ export default function Projects() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-500 dark:text-[#94A3B8] mb-2 leading-relaxed line-clamp-2">
+                  <p className="text-xs text-slate-400 mb-2 leading-relaxed line-clamp-2">
                     {desc}
                   </p>
                   {project.fullDescription && (
                     <div
-                      className="text-xs text-gray-600 dark:text-[#94A3B8] mb-2 leading-relaxed prose prose-sm dark:prose-invert max-w-none line-clamp-2"
+                      className="text-xs text-slate-400 mb-2 leading-relaxed prose prose-sm dark:prose-invert max-w-none line-clamp-2"
                       dangerouslySetInnerHTML={{ __html: project.fullDescription }}
                     />
                   )}
@@ -278,20 +260,20 @@ export default function Projects() {
                       <span
                         key={i}
                         role="listitem"
-                        className="px-2.5 py-1 text-[10px] font-medium rounded-md bg-primary/5 text-primary dark:text-primary/90 border border-primary/10"
+                        className="px-2.5 py-1 text-[10px] font-medium rounded-md bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
                       >
                         {tag}
                       </span>
                     ))}
                   </div>
 
-                  <div className="flex items-center gap-3 pt-2 border-t border-gray-100 dark:border-[#334155]">
+                  <div className="flex items-center gap-3 pt-2 border-t border-white/10">
                     {repoUrl && repoUrl !== '#' && (
                       <a
                         href={repoUrl}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-[#94A3B8] hover:text-primary dark:hover:text-primary transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-cyan-400 transition-colors"
                         onClick={e => e.stopPropagation()}
                       >
                         <GithubIcon size={14} />
@@ -303,7 +285,7 @@ export default function Projects() {
                         href={liveUrl}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-gray-500 dark:text-[#94A3B8] hover:text-primary dark:hover:text-primary transition-colors"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-cyan-400 transition-colors"
                         onClick={e => e.stopPropagation()}
                       >
                         <ExternalLink size={14} />
@@ -317,14 +299,14 @@ export default function Projects() {
             })
           ) : (
             <div className="col-span-full text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-neutral-900 rounded-full flex items-center justify-center">
-                <Search className="w-10 h-10 text-gray-400" />
+              <div className="w-20 h-20 mx-auto mb-6 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
+                <Search className="w-10 h-10 text-slate-400" />
               </div>
-              <p className="text-xl font-bold text-gray-900 dark:text-[#F8FAFC] mb-2">{t('projects.noProjectsFound')}</p>
-              <p className="text-gray-500 dark:text-[#94A3B8] mb-6">{t('projects.noProjectsHint')}</p>
+              <p className="text-xl font-bold text-white mb-2">{t('projects.noProjectsFound')}</p>
+              <p className="text-slate-400 mb-6">{t('projects.noProjectsHint')}</p>
               <button
                 onClick={() => { setSearchTerm('') }}
-                className="px-6 py-3 bg-primary text-white font-bold rounded-full hover:bg-[#4F46E5] transition-colors"
+                className="px-6 py-3 bg-cyan-500 text-white font-bold rounded-full hover:bg-cyan-400 transition-colors"
               >
                 {t('projects.clearFilters')}
               </button>
@@ -336,19 +318,19 @@ export default function Projects() {
         <div className="max-w-5xl lg:max-w-7xl mx-auto">
           {/* Mobile Apps Search */}
             <div className="relative max-w-md mx-auto mb-8">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" aria-hidden="true" />
             <input
               type="text"
               placeholder={t('projects.searchMobileApps')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full pl-12 pr-10 py-3 bg-gray-50 dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-full text-gray-900 dark:text-[#F8FAFC] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+              className="w-full pl-12 pr-10 py-3 bg-white/5 backdrop-blur-xl border border-white/10 rounded-full text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-cyan-500/50 focus:border-cyan-500/50 transition-all"
               aria-label={t('projects.searchMobileAppsAria')}
             />
             {searchTerm && (
               <button
                 onClick={() => setSearchTerm('')}
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-white transition-colors"
                 aria-label={t('projects.clearSearch')}
               >
                 <X size={16} />
@@ -356,7 +338,7 @@ export default function Projects() {
             )}
           </div>
 
-          <p className="text-center text-sm text-gray-500 dark:text-[#94A3B8] mb-6">
+          <p className="text-center text-sm text-slate-400 mb-6">
             {t('projects.showingApps', { count: filteredMobileApps.length, total: mobileAppsData.length })}
           </p>
 
@@ -373,7 +355,7 @@ export default function Projects() {
                   key={index}
                   variants={itemVariants}
                   whileHover={shouldReduceMotion ? {} : { y: -4 }}
-                  className="group bg-white dark:bg-neutral-900 rounded-2xl border border-gray-200 dark:border-neutral-800 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-black/5 dark:hover:shadow-black/20 flex flex-col cursor-pointer"
+                  className="group bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden transition-all duration-300 hover:shadow-xl hover:shadow-cyan-500/10 hover:border-cyan-500/20 flex flex-col cursor-pointer"
                   role="button"
                   tabIndex={0}
                   aria-label={t('projects.openAppAria', { title: app.title })}
@@ -384,16 +366,16 @@ export default function Projects() {
                     <div className="flex items-start gap-4 mb-4">
                       <motion.div
                         whileHover={shouldReduceMotion ? {} : { rotate: 3, scale: 1.05 }}
-                        className="w-14 h-14 flex-shrink-0 rounded-[18px] flex items-center justify-center shadow-lg"
+                        className="w-14 h-14 flex-shrink-0 rounded-[18px] flex items-center justify-center shadow-lg border border-white/10"
                         style={{ backgroundColor: app.color }}
                       >
                         {renderMobileIcon(app.icon, app.color)}
                       </motion.div>
                       <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-bold text-gray-900 dark:text-[#F8FAFC] truncate font-display">
+                        <h3 className="text-lg font-bold text-white truncate font-display">
                           {app.title}
                         </h3>
-                        <p className="text-sm text-gray-500 dark:text-[#94A3B8] line-clamp-2 mt-1">
+                        <p className="text-sm text-slate-400 line-clamp-2 mt-1">
                           {app.description}
                         </p>
                       </div>
@@ -404,10 +386,10 @@ export default function Projects() {
                         <Star
                           key={star}
                           size={14}
-                          className={star <= Math.floor(app.rating) ? 'fill-amber-400 text-amber-400' : 'text-gray-300 dark:text-gray-600'}
+                          className={star <= Math.floor(app.rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-600'}
                         />
                       ))}
-                      <span className="text-xs font-bold text-gray-500 dark:text-[#94A3B8] ml-1">{app.rating}</span>
+                      <span className="text-xs font-bold text-slate-400 ml-1">{app.rating}</span>
                     </div>
 
                     <div className="flex flex-wrap gap-1.5 mb-4" role="list" aria-label={t('projects.appFeatures')}>
@@ -415,15 +397,15 @@ export default function Projects() {
                         <span
                           key={i}
                           role="listitem"
-                          className="px-2.5 py-1 text-[10px] font-medium rounded-md bg-gray-100 dark:bg-neutral-900 text-gray-500 dark:text-slate-400"
+                          className="px-2.5 py-1 text-[10px] font-medium rounded-md bg-white/5 text-slate-400 border border-white/10"
                         >
                           {feature}
                         </span>
                       ))}
                     </div>
 
-                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-gray-100 dark:border-neutral-800">
-                      <div className="flex items-center gap-1.5 text-xs font-bold text-gray-400 dark:text-gray-500">
+                    <div className="mt-auto flex items-center justify-between pt-3 border-t border-white/10">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-slate-400">
                         {app.platform === 'iOS' ? (
                           <><Apple size={14} /> iOS</>
                         ) : app.platform === 'Android' ? (
@@ -436,7 +418,7 @@ export default function Projects() {
                         href={app.appUrl}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-primary text-white hover:bg-[#4F46E5] transition-colors"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold rounded-lg bg-cyan-500 text-white hover:bg-cyan-400 transition-colors"
                         aria-label={t('projects.openAppAria', { title: app.title })}
                         onClick={e => e.stopPropagation()}
                       >
@@ -449,14 +431,14 @@ export default function Projects() {
               ))
             ) : (
               <div className="col-span-full text-center py-16">
-                <div className="w-20 h-20 mx-auto mb-6 bg-gray-100 dark:bg-neutral-900 rounded-full flex items-center justify-center">
-                  <Smartphone className="w-10 h-10 text-gray-400" />
+                <div className="w-20 h-20 mx-auto mb-6 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
+                  <Smartphone className="w-10 h-10 text-slate-400" />
                 </div>
-                <p className="text-xl font-bold text-gray-900 dark:text-[#F8FAFC] mb-2">{t('projects.noAppsFound')}</p>
-                <p className="text-gray-500 dark:text-[#94A3B8] mb-6">{t('projects.noAppsHint')}</p>
+                <p className="text-xl font-bold text-white mb-2">{t('projects.noAppsFound')}</p>
+                <p className="text-slate-400 mb-6">{t('projects.noAppsHint')}</p>
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="px-6 py-3 bg-primary text-white font-bold rounded-full hover:bg-[#4F46E5] transition-colors"
+                  className="px-6 py-3 bg-cyan-500 text-white font-bold rounded-full hover:bg-cyan-400 transition-colors"
                 >
                   {t('projects.clearSearchBtn')}
                 </button>
@@ -467,5 +449,6 @@ export default function Projects() {
       )}
       </div>
     </section>
+    </ProjectsScene>
   )
 }
