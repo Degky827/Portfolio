@@ -9,7 +9,7 @@ import * as THREE from 'three'
  * Desktop speaker with pulsing RGB ring light.
  */
 export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
-  const { openByObject } = useWorkspace()
+  const workspace = useWorkspace()
   const ringRef = useRef()
   const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
   const cyanColor = useMemo(() => new THREE.Color('#22d3ee'), [])
@@ -108,10 +108,10 @@ export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
       {/* Clickable hitbox */}
       <mesh
         position={[0, 0.45, 0]}
-        onClick={(e) => {
-          e.stopPropagation()
-          openByObject('speaker')
-        }}
+          onClick={(e) => {
+            e.stopPropagation()
+            workspace?.openByObject?.('speaker')
+          }}
         onPointerOver={(e) => {
           e.stopPropagation()
           document.body.style.cursor = 'pointer'

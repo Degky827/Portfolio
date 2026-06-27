@@ -16,7 +16,7 @@ import MonitorStand from './MonitorStand'
  * Everything (profile, text, skills, icons) renders INSIDE the monitor screen.
  */
 export default function Monitor({ position = [0, 0, 0] }) {
-  const { openByObject } = useWorkspace()
+  const workspace = useWorkspace()
   const monitorHeight = 1.5
   const standHeight = 0.44
   const baseOffset = 0.03
@@ -45,7 +45,7 @@ export default function Monitor({ position = [0, 0, 0] }) {
           position={[0, 0, 0.05]}
           onClick={(e) => {
             e.stopPropagation()
-            openByObject('monitor')
+            workspace?.openByObject?.('monitor')
           }}
           onPointerOver={(e) => {
             e.stopPropagation()

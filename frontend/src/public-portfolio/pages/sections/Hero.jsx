@@ -4,8 +4,8 @@ import { motion } from 'framer-motion'
 import { ArrowRight, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, GraduationCap, Heart, Briefcase, Coffee, Smile, Download, MapPin, ExternalLink } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
 
-const TechChipsScene = lazy(() =>
-  import('../../../components/techchips3d/TechChipsScene')
+const HeroDesktopScene = lazy(() =>
+  import('../../components/3d/HeroDesktopScene')
 )
 
 const iconMap = {
@@ -168,179 +168,183 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
         >
           <motion.div 
             variants={itemVariants}
-            className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 sm:p-8 md:p-14 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] flex flex-col lg:flex-row items-center gap-8 md:gap-12 lg:gap-16 max-w-5xl lg:max-w-6xl xl:max-w-7xl relative overflow-hidden w-full shadow-sm"
+            className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 sm:p-8 md:p-10 lg:p-12 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] grid grid-cols-1 lg:grid-cols-[45%_55%] items-stretch gap-8 md:gap-10 lg:gap-0 max-w-5xl lg:max-w-6xl xl:max-w-7xl relative overflow-hidden w-full shadow-sm"
           >
-            {/* Image Wrapper */}
+            {/* Left Column - 2D Content */}
+            <div className="flex flex-col items-center lg:items-start">
+              {/* Image Wrapper */}
               <motion.div 
-              whileHover={{ scale: 1.05 }}
-              transition={{ type: 'spring', stiffness: 300 }}
-              className="relative flex-shrink-0 flex flex-col items-center"
-            >
-              <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-64 md:h-64 lg:w-72 lg:h-72 relative">
-                {/* Decorative animated progress rings (SVG) */}
-                <svg viewBox="0 0 200 200" className="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)] z-0 pointer-events-none" aria-hidden="true">
-                  <defs>
-                    <linearGradient id="g1" x1="0%" x2="100%">
-                      <stop offset="0%" stopColor="#34d399" />
-                      <stop offset="50%" stopColor="#06b6d4" />
-                      <stop offset="100%" stopColor="#6366f1" />
-                    </linearGradient>
-                    <linearGradient id="g2" x1="0%" x2="100%">
-                      <stop offset="0%" stopColor="#f97316" />
-                      <stop offset="100%" stopColor="#f43f5e" />
-                    </linearGradient>
-                  </defs>
-                  <g transform="translate(100,100)">
-                    <circle r="92" fill="none" stroke="url(#g1)" strokeWidth="6" strokeLinecap="round" strokeDasharray="40 260" opacity="0.95">
-                      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite" />
-                    </circle>
-                    <circle r="74" fill="none" stroke="url(#g2)" strokeWidth="4" strokeLinecap="round" strokeDasharray="20 180" opacity="0.9">
-                      <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="6s" repeatCount="indefinite" />
-                    </circle>
-                    <circle r="96" fill="none" stroke="#06b6d480" strokeWidth="8" />
-                  </g>
-                </svg>
+                whileHover={{ scale: 1.05 }}
+                transition={{ type: 'spring', stiffness: 300 }}
+                className="relative flex-shrink-0 flex flex-col items-center"
+              >
+                <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-56 md:h-56 lg:w-64 lg:h-64 relative">
+                  {/* Decorative animated progress rings (SVG) */}
+                  <svg viewBox="0 0 200 200" className="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)] z-0 pointer-events-none" aria-hidden="true">
+                    <defs>
+                      <linearGradient id="g1" x1="0%" x2="100%">
+                        <stop offset="0%" stopColor="#34d399" />
+                        <stop offset="50%" stopColor="#06b6d4" />
+                        <stop offset="100%" stopColor="#6366f1" />
+                      </linearGradient>
+                      <linearGradient id="g2" x1="0%" x2="100%">
+                        <stop offset="0%" stopColor="#f97316" />
+                        <stop offset="100%" stopColor="#f43f5e" />
+                      </linearGradient>
+                    </defs>
+                    <g transform="translate(100,100)">
+                      <circle r="92" fill="none" stroke="url(#g1)" strokeWidth="6" strokeLinecap="round" strokeDasharray="40 260" opacity="0.95">
+                        <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="8s" repeatCount="indefinite" />
+                      </circle>
+                      <circle r="74" fill="none" stroke="url(#g2)" strokeWidth="4" strokeLinecap="round" strokeDasharray="20 180" opacity="0.9">
+                        <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="6s" repeatCount="indefinite" />
+                      </circle>
+                      <circle r="96" fill="none" stroke="#06b6d480" strokeWidth="8" />
+                    </g>
+                  </svg>
 
-                {/* Simple ring border */}
-                <div className="absolute inset-0 rounded-full border-2 border-primary/20 z-10" />
-                
-                {/* Portrait (animated) */}
-                <motion.div
-                  className="absolute inset-[6px] rounded-full overflow-hidden z-20 bg-[#dce5f0] shadow-sm pt-[14px]"
-                  animate={{ y: [0, -8, 0] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                >
-                  <motion.img
-                    src={profilePhotoUrl}
-                    alt={profilePhotoAlt}
-                    className="w-full h-full object-cover object-[center_18%]"
-                    initial={{ scale: 1 }}
-                    whileHover={{ scale: 1.06 }}
-                    transition={{ duration: 0.45 }}
-                  />
+                  {/* Simple ring border */}
+                  <div className="absolute inset-0 rounded-full border-2 border-primary/20 z-10" />
+                  
+                  {/* Portrait (animated) */}
+                  <motion.div
+                    className="absolute inset-[6px] rounded-full overflow-hidden z-20 bg-[#dce5f0] shadow-sm pt-[14px]"
+                    animate={{ y: [0, -8, 0] }}
+                    transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                  >
+                    <motion.img
+                      src={profilePhotoUrl}
+                      alt={profilePhotoAlt}
+                      className="w-full h-full object-cover object-[center_18%]"
+                      initial={{ scale: 1 }}
+                      whileHover={{ scale: 1.06 }}
+                      transition={{ duration: 0.45 }}
+                    />
+                  </motion.div>
+                </div>
+                {/* Social Links */}
+                <motion.div variants={itemVariants} className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
+                  {Object.entries(settings?.socialLinks || {}).map(([platform, url]) => {
+                    if (!url) return null
+                    const Icon = socialIconMap[platform]
+                    if (!Icon) return null
+                    return (
+                      <motion.a
+                        key={platform}
+                        href={url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        whileHover={{ scale: 1.15, y: -2 }}
+                        whileTap={{ scale: 0.9 }}
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-white hover:bg-primary hover:text-white transition-all shadow-sm"
+                        title={platform}
+                      >
+                        <Icon size={16} />
+                      </motion.a>
+                    )
+                  })}
                 </motion.div>
-              </div>
-              {/* Social Links */}
-              <motion.div variants={itemVariants} className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
-                {Object.entries(settings?.socialLinks || {}).map(([platform, url]) => {
-                  if (!url) return null
-                  const Icon = socialIconMap[platform]
-                  if (!Icon) return null
-                  return (
-                    <motion.a
-                      key={platform}
-                      href={url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      whileHover={{ scale: 1.15, y: -2 }}
-                      whileTap={{ scale: 0.9 }}
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-white hover:bg-primary hover:text-white transition-all shadow-sm"
-                      title={platform}
-                    >
-                      <Icon size={16} />
-                    </motion.a>
-                  )
-                })}
               </motion.div>
-            </motion.div>
 
-            {/* Content */}
+              {/* Content */}
+              <motion.div 
+                variants={itemVariants}
+                className="flex-1 text-center lg:text-left space-y-4 sm:space-y-6 md:space-y-8 mt-8 lg:mt-10"
+              >
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl xl:text-6xl font-black text-gray-900 dark:text-[#F8FAFC] leading-tight">
+                  {greeting}{' '}
+                  <span className="text-primary">
+                    <span className="inline-flex items-center justify-center h-8 sm:h-10 px-1.5 rounded-xl bg-[#6366f1] text-white text-[9px] sm:text-[11px] font-black mr-1.5 -mt-1 align-middle shadow-lg">
+                      {nameAmharic}
+                    </span>{' '}
+                    {fullName}
+                  </span>
+                  <br />
+                  <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl text-gray-600 dark:text-[#94A3B8]">
+                    {typedText}
+                    <motion.span 
+                      animate={{ opacity: [1, 0] }} 
+                      transition={{ duration: 0.5, repeat: Infinity }}
+                      className="inline-block w-0.5 h-6 sm:h-8 ml-1 bg-primary"
+                    />
+                  </span>
+                </h1>
+
+                <motion.p 
+                  variants={itemVariants}
+                  className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-[#94A3B8] max-w-2xl lg:max-w-none leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: introduction }}
+                />
+
+                <motion.div 
+                  variants={itemVariants}
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
+                >
+                  {/* Primary button */}
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => handleCtaClick({ text: contactBtnText, link: contactBtnLink })}
+                    className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-[#4F46E5] text-white font-bold rounded-full transition-all shadow-lg"
+                  >
+                    {contactBtnText}
+                    <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+                  </motion.button>
+                  {/* Secondary buttons */}
+                  {ctaButtons.map((btn, i) => {
+                    if (!btn.text && !btn.link) return null
+                    return (
+                      <motion.button
+                        key={i}
+                        whileHover={{ scale: 1.05 }}
+                        whileTap={{ scale: 0.95 }}
+                        onClick={() => handleCtaClick(btn)}
+                        className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold rounded-full transition-all"
+                      >
+                        {btn.text}
+                        <ExternalLink size={16} className="group-hover:translate-x-1 transition-transform" />
+                      </motion.button>
+                    )
+                  })}
+                </motion.div>
+
+                {/* Stats */}
+                <motion.div variants={itemVariants} className="flex gap-6 sm:gap-10 lg:gap-12 justify-center lg:justify-start pt-6 sm:pt-8 border-t border-gray-100 dark:border-neutral-800">
+                  {stats.map((stat, i) => {
+                    const StatIcon = getIcon(stat.icon)
+                    return (
+                      <div key={i} className="flex items-center gap-2 sm:gap-4">
+                        <div
+                          className="p-2 sm:p-3 rounded-lg sm:rounded-xl"
+                          style={{ backgroundColor: `${stat.color}1A`, color: stat.color }}
+                        >
+                          <StatIcon size={18} className="w-5 h-5 sm:w-6 sm:h-6" />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-[#F8FAFC] leading-none">{stat.value}</span>
+                          <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">{stat.label}</span>
+                        </div>
+                      </div>
+                    )
+                  })}
+                </motion.div>
+              </motion.div>
+            </div>
+
+            {/* Right Column - 3D Desktop Scene */}
             <motion.div 
               variants={itemVariants}
-              className="flex-1 text-center lg:text-left space-y-4 sm:space-y-6 md:space-y-8"
+              className="hidden lg:flex items-stretch justify-center relative p-4 xl:p-6"
             >
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-black text-gray-900 dark:text-[#F8FAFC] leading-tight">
-                {greeting}{' '}
-                <span className="text-primary">
-                  <span className="inline-flex items-center justify-center h-8 sm:h-10 px-1.5 rounded-xl bg-[#6366f1] text-white text-[9px] sm:text-[11px] font-black mr-1.5 -mt-1 align-middle shadow-lg">
-                    {nameAmharic}
-                  </span>{' '}
-                  {fullName}
-                </span>
-                <br />
-                <span className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl text-gray-600 dark:text-[#94A3B8]">
-                  {typedText}
-                  <motion.span 
-                    animate={{ opacity: [1, 0] }} 
-                    transition={{ duration: 0.5, repeat: Infinity }}
-                    className="inline-block w-0.5 h-6 sm:h-8 ml-1 bg-primary"
-                  />
-                </span>
-              </h1>
-
-              <motion.p 
-                variants={itemVariants}
-                className="text-sm sm:text-base md:text-lg lg:text-xl text-gray-500 dark:text-[#94A3B8] max-w-2xl lg:max-w-none leading-relaxed"
-                dangerouslySetInnerHTML={{ __html: introduction }}
-              />
-
-              <motion.div 
-                variants={itemVariants}
-                className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
-              >
-                {/* Primary button */}
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={() => handleCtaClick({ text: contactBtnText, link: contactBtnLink })}
-                  className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 bg-primary hover:bg-[#4F46E5] text-white font-bold rounded-full transition-all shadow-lg"
-                >
-                  {contactBtnText}
-                  <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
-                </motion.button>
-                {/* Secondary buttons */}
-                {ctaButtons.map((btn, i) => {
-                  if (!btn.text && !btn.link) return null
-                  return (
-                    <motion.button
-                      key={i}
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                      onClick={() => handleCtaClick(btn)}
-                      className="group flex items-center justify-center gap-2 px-6 sm:px-8 py-3 sm:py-4 border-2 border-primary text-primary hover:bg-primary hover:text-white font-bold rounded-full transition-all"
-                    >
-                      {btn.text}
-                      <ExternalLink size={16} className="group-hover:translate-x-1 transition-transform" />
-                    </motion.button>
-                  )
-                })}
-              </motion.div>
-
-              {/* Stats */}
-              <motion.div variants={itemVariants} className="flex gap-6 sm:gap-10 lg:gap-12 justify-center lg:justify-start pt-6 sm:pt-10 border-t border-gray-100 dark:border-neutral-800">
-                {stats.map((stat, i) => {
-                  const StatIcon = getIcon(stat.icon)
-                  return (
-                    <div key={i} className="flex items-center gap-2 sm:gap-4">
-                      <div
-                        className="p-2 sm:p-3 rounded-lg sm:rounded-xl"
-                        style={{ backgroundColor: `${stat.color}1A`, color: stat.color }}
-                      >
-                        <StatIcon size={18} className="w-5 h-5 sm:w-6 sm:h-6" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-xl sm:text-2xl lg:text-3xl font-black text-gray-900 dark:text-[#F8FAFC] leading-none">{stat.value}</span>
-                        <span className="text-[8px] sm:text-[10px] font-black uppercase tracking-widest text-gray-400">{stat.label}</span>
-                      </div>
-                    </div>
-                  )
-                })}
-              </motion.div>
+              <Suspense fallback={
+                <div className="w-full h-full flex items-center justify-center">
+                  <div className="w-8 h-8 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+                </div>
+              }>
+                <HeroDesktopScene className="flex-1" />
+              </Suspense>
             </motion.div>
           </motion.div>
-        </motion.div>
-      </div>
-
-      {/* 3D Tech Chips */}
-      <div className="relative z-10 w-full max-w-6xl mx-auto px-4 sm:px-6 mt-4 mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, delay: 1.2 }}
-        >
-          <Suspense fallback={null}>
-            <TechChipsScene height="350px" />
-          </Suspense>
         </motion.div>
       </div>
 
