@@ -1,6 +1,7 @@
-import { useRef, useState, useCallback, useMemo } from 'react'
+import { useRef, useState, useCallback, useMemo, useEffect } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin } from 'lucide-react'
+import { useMouseParallaxSubscribe } from './MouseParallaxProvider'
 
 const ICON_CONFIGS = {
   email: {
@@ -50,7 +51,6 @@ function getIconType(iconComponent, channelName) {
 function EmailShape({ color, isHovered }) {
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      {/* Envelope body */}
       <motion.div
         className="relative w-7 h-5 sm:w-8 sm:h-6 rounded-sm"
         animate={{
@@ -64,7 +64,6 @@ function EmailShape({ color, isHovered }) {
           boxShadow: isHovered ? `0 0 20px ${color}40, inset 0 0 10px ${color}20` : 'none',
         }}
       >
-        {/* Envelope flap */}
         <div
           className="absolute top-0 left-0 w-full h-0"
           style={{
@@ -73,7 +72,6 @@ function EmailShape({ color, isHovered }) {
             borderTop: `5px solid ${color}50`,
           }}
         />
-        {/* Holographic shimmer */}
         <motion.div
           className="absolute inset-0 rounded-sm"
           animate={isHovered ? {
@@ -105,17 +103,14 @@ function PhoneShape({ color, isHovered }) {
           boxShadow: isHovered ? `0 0 20px ${color}40, inset 0 0 8px ${color}20` : 'none',
         }}
       >
-        {/* Screen */}
         <div
           className="absolute top-1 left-0.5 right-0.5 bottom-2 rounded-[2px]"
           style={{ background: `${color}10` }}
         />
-        {/* Home button */}
         <div
           className="absolute bottom-1 left-1/2 -translate-x-1/2 w-1.5 h-1.5 rounded-full"
           style={{ background: `${color}40` }}
         />
-        {/* Neon glow pulse */}
         <motion.div
           className="absolute -inset-1 rounded-md pointer-events-none"
           animate={isHovered ? { opacity: [0.3, 0.6, 0.3] } : { opacity: 0 }}
@@ -141,7 +136,6 @@ function LocationShape({ color, isHovered }) {
         }}
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
       >
-        {/* Beacon pin */}
         <div className="relative">
           <div
             className="w-5 h-5 sm:w-6 sm:h-6 rounded-full"
@@ -150,7 +144,6 @@ function LocationShape({ color, isHovered }) {
               boxShadow: isHovered ? `0 0 25px ${color}50, 0 0 50px ${color}20` : `0 0 10px ${color}20`,
             }}
           />
-          {/* Beacon rings */}
           {[1, 2, 3].map((ring) => (
             <motion.div
               key={ring}
@@ -191,7 +184,6 @@ function LinkedInShape({ color, isHovered }) {
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         style={{ transformStyle: 'preserve-3d' }}
       >
-        {/* Front face */}
         <div
           className="absolute inset-0 rounded-md"
           style={{
@@ -201,7 +193,6 @@ function LinkedInShape({ color, isHovered }) {
             transform: 'translateZ(4px)',
           }}
         />
-        {/* Side face */}
         <div
           className="absolute inset-0 rounded-md"
           style={{
@@ -210,7 +201,6 @@ function LinkedInShape({ color, isHovered }) {
             transform: 'rotateY(90deg) translateZ(4px)',
           }}
         />
-        {/* Top face */}
         <div
           className="absolute inset-0 rounded-md"
           style={{
@@ -242,7 +232,6 @@ function GithubShape({ color, isHovered }) {
             : `inset 0 -2px 4px ${color}10`,
         }}
       >
-        {/* Chrome reflection */}
         <motion.div
           className="absolute inset-0 rounded-full"
           animate={isHovered ? {
@@ -272,7 +261,16 @@ const ShapeMap = {
 export default function InteractiveIcon3D({ icon, label, value, href, color, channelName, iconVector, socialIconComponent }) {
   const containerRef = useRef(null)
   const [rotate, setRotate] = useState({ x: 0, y: 0 })
+  const [globalTilt, setGlobalTilt] = useState({ x: 0, y: 0, z: 0 })
   const [isHovered, setIsHovered] = useState(false)
+
+  useMouseParallaxSubscribe(useCallback((x, y) => {
+    setGlobalTilt({
+      x: y * -1,
+      y: x * 1,
+      z: Math.abs(x * y) * 3,
+    })
+  }, []))
 
   const iconType = useMemo(() => {
     if (channelName) {
@@ -303,6 +301,9 @@ export default function InteractiveIcon3D({ icon, label, value, href, color, cha
     setRotate({ x: 0, y: 0 })
   }, [])
 
+  const combinedRotateX = rotate.x + globalTilt.x
+  const combinedRotateY = rotate.y + globalTilt.y
+
   const Tag = href ? 'a' : 'div'
   const linkProps = href ? { href, target: '_blank', rel: 'noopener noreferrer' } : {}
 
@@ -319,12 +320,12 @@ export default function InteractiveIcon3D({ icon, label, value, href, color, cha
         className="flex items-center gap-4 sm:gap-5"
         animate={{
           x: isHovered ? 8 : 0,
-          rotateX: rotate.x,
-          rotateY: rotate.y,
-          translateZ: isHovered ? 15 : 0,
+          rotateX: combinedRotateX,
+          rotateY: combinedRotateY,
+          translateZ: isHovered ? 15 : globalTilt.z,
         }}
         transition={{ type: 'spring', stiffness: 250, damping: 20 }}
-        style={{ transformStyle: 'preserve-3d' }}
+        style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
         {/* 3D Icon container */}
         <div className="relative flex-shrink-0" style={{ perspective: '400px' }}>

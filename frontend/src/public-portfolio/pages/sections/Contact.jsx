@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, lazy, Suspense } from 'react'
+import { useState, useRef, useEffect, lazy, Suspense, useCallback, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MapPin, User, MessageSquare } from 'lucide-react'
@@ -6,6 +6,7 @@ import emailjs from '@emailjs/browser'
 import { logPortfolioVisit, logPortfolioEngagement } from '../../../shared/services/api'
 import { getContactContent, createMessage } from '../../../shared/services/contactService'
 import { getSettings } from '../../../shared/services/settingsService'
+import { MouseParallaxProvider, useMouseParallaxSubscribe } from '../../../components/contact3d/MouseParallaxProvider'
 
 const ContactScene = lazy(() => import('../../../components/contact3d/ContactScene'))
 const FuturisticPanel = lazy(() => import('../../../components/contact3d/FuturisticPanel'))
@@ -56,136 +57,31 @@ function validate(values) {
   return errors
 }
 
-export default function Contact() {
-  const form = useRef()
-  const [result, setResult] = useState('')
-  const [resultType, setResultType] = useState('')
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [content, setContent] = useState(null)
+function HeroParallaxElements() {
+  const [transforms, setTransforms] = useState({ badge: { rx: 0, ry: 0 }, title: { rx: 0, ry: 0 }, subtitle: { ry: 0 } })
+
+  useMouseParallaxSubscribe(useCallback((x, y) => {
+    setTransforms({
+      badge: { rx: y * -3, ry: x * 3 },
+      title: { rx: y * -2, ry: x * 2 },
+      subtitle: { ry: x * 1 },
+    })
+  }, []))
+
+  return { transforms }
+}
+
+function ContactContent({ content, contactFormEnabled, values, errors, touched, fieldError, handleChange, handleBlur, handleSubmit, isSubmitting, isValid, result, resultType, form }) {
   const { t } = useTranslation()
+  const [heroTransforms, setHeroTransforms] = useState({ badge: { rx: 0, ry: 0 }, title: { rx: 0, ry: 0 }, subtitle: { ry: 0 } })
 
-  const [values, setValues] = useState({ from_name: '', reply_to: '', phone: '', message: '' })
-  const [errors, setErrors] = useState({})
-  const [touched, setTouched] = useState({})
-  const [contactFormEnabled, setContactFormEnabled] = useState(true)
-
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const { content } = await getContactContent()
-        setContent(content)
-      } catch {
-        // fall back to hardcoded
-      }
-    })()
-    ;(async () => {
-      try {
-        const { settings } = await getSettings()
-        if (settings?.enableContactForm !== undefined) {
-          setContactFormEnabled(settings.enableContactForm)
-        }
-      } catch {
-        // default to enabled
-      }
-    })()
-  }, [])
-
-  const validationErrors = validate(values)
-  const isValid = Object.keys(validationErrors).length === 0
-
-  const handleChange = (field) => (e) => {
-    const val = e.target.value
-    setValues((prev) => ({ ...prev, [field]: val }))
-    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
-  }
-
-  const handleBlur = (field) => () => {
-    setTouched((prev) => ({ ...prev, [field]: true }))
-    const fieldErrors = validate({ ...values, [field]: values[field] })
-    if (fieldErrors[field]) {
-      setErrors((prev) => ({ ...prev, [field]: fieldErrors[field] }))
-    }
-  }
-
-  const fieldError = (field) => {
-    if (!touched[field]) return ''
-    return errors[field] || validationErrors[field] || ''
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    setTouched({ from_name: true, reply_to: true, phone: true, message: true })
-    const errs = validate(values)
-    setErrors(errs)
-    if (Object.keys(errs).length > 0) return
-
-    setIsSubmitting(true)
-    setResult('')
-
-    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
-    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
-    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
-
-    const name = values.from_name.trim()
-    const email = values.reply_to.trim()
-    const phone = values.phone.trim()
-    const message = values.message.trim()
-
-    const emailTo = content?.email || 'desalegnky827@gmail.com'
-
-    let saved = false
-    try {
-      await createMessage({ name, email, phone, message })
-      setResult(t('contact.successMessage'))
-      setResultType('success')
-      saved = true
-    } catch {
-      saved = false
-    }
-
-    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
-      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      logPortfolioVisit({ viewerName: name, page: window.location.pathname })
-      if (!saved) {
-        const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
-        window.location.href = mailtoLink
-        setResult(t('contact.mailtoFallback'))
-        setResultType('success')
-      }
-      setIsSubmitting(false)
-      return
-    }
-
-    try {
-      await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
-      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      setResult(t('contact.successMessage'))
-      setResultType('success')
-      setValues({ from_name: '', reply_to: '', phone: '', message: '' })
-      setTouched({})
-      setErrors({})
-      e.target.reset()
-    } catch (error) {
-      console.error('EmailJS error:', error)
-      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      if (saved) {
-        setResult(t('contact.successMessage'))
-        setResultType('success')
-        setValues({ from_name: '', reply_to: '', phone: '', message: '' })
-        setTouched({})
-        setErrors({})
-        e.target.reset()
-      } else {
-        const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
-        window.location.href = mailtoLink
-        setResult(t('contact.mailtoFallback'))
-        setResultType('success')
-      }
-    }
-
-    setIsSubmitting(false)
-  }
+  useMouseParallaxSubscribe(useCallback((x, y) => {
+    setHeroTransforms({
+      badge: { rx: y * -3, ry: x * 3 },
+      title: { rx: y * -2, ry: x * 2 },
+      subtitle: { ry: x * 1 },
+    })
+  }, []))
 
   const contactInfo = [
     { icon: <Mail size={20} aria-hidden="true" />, label: t('contact.labelEmail'), value: content?.email || 'desalegnky827@gmail.com', href: `mailto:${content?.email || 'desalegnky827@gmail.com'}`, color: '#3b82f6' },
@@ -212,28 +108,11 @@ export default function Contact() {
     },
   }
 
-  const heroRef = useRef(null)
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      if (!heroRef.current) return
-      const rect = heroRef.current.getBoundingClientRect()
-      const x = ((e.clientX - rect.left) / rect.width - 0.5) * 2
-      const y = ((e.clientY - rect.top) / rect.height - 0.5) * 2
-      setMousePos({ x, y })
-    }
-    const el = heroRef.current
-    if (el) el.addEventListener('mousemove', handleMouseMove)
-    return () => { if (el) el.removeEventListener('mousemove', handleMouseMove) }
-  }, [])
-
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 relative overflow-hidden" aria-label={t('contact.ariaLabel')}>
-
+    <>
       <div className="container mx-auto px-4 sm:px-6">
         {/* 3D Hero Section */}
-        <div ref={heroRef} className="relative mb-16 sm:mb-20 md:mb-28">
+        <div className="relative mb-16 sm:mb-20 md:mb-28">
           <Suspense fallback={null}>
             <ContactScene>
               <div className="relative min-h-[420px] sm:min-h-[480px] md:min-h-[540px] flex flex-col items-center justify-center py-12 sm:py-16">
@@ -245,7 +124,9 @@ export default function Contact() {
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
                   className="relative mb-6 sm:mb-8"
                   style={{
-                    transform: `perspective(800px) rotateY(${mousePos.x * 3}deg) rotateX(${-mousePos.y * 3}deg)`,
+                    transform: `perspective(800px) rotateY(${heroTransforms.badge.ry}deg) rotateX(${heroTransforms.badge.rx}deg) translateZ(${Math.abs(heroTransforms.badge.rx * heroTransforms.badge.ry) * 0.3}px)`,
+                    transformStyle: 'preserve-3d',
+                    willChange: 'transform',
                   }}
                 >
                   <motion.div
@@ -295,7 +176,9 @@ export default function Contact() {
                   transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
                   className="relative text-center mb-4 sm:mb-6"
                   style={{
-                    transform: `perspective(1000px) rotateY(${mousePos.x * 2}deg) rotateX(${-mousePos.y * 2}deg)`,
+                    transform: `perspective(1000px) rotateY(${heroTransforms.title.ry}deg) rotateX(${heroTransforms.title.rx}deg)`,
+                    transformStyle: 'preserve-3d',
+                    willChange: 'transform',
                   }}
                 >
                   {/* Depth shadow layers */}
@@ -362,7 +245,8 @@ export default function Contact() {
                   transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
                   className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed px-4 text-center"
                   style={{
-                    transform: `perspective(800px) rotateY(${mousePos.x * 1}deg)`,
+                    transform: `perspective(800px) rotateY(${heroTransforms.subtitle.ry}deg)`,
+                    willChange: 'transform',
                   }}
                 >
                   <motion.span
@@ -374,34 +258,86 @@ export default function Contact() {
                   </motion.span>
                 </motion.p>
 
-                {/* Floating light rays */}
+                {/* Floating light rays - Premium enhanced */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  {[...Array(3)].map((_, i) => (
+                  {[...Array(5)].map((_, i) => (
                     <motion.div
                       key={i}
                       className="absolute"
                       animate={{
                         y: [-20, 20, -20],
-                        opacity: [0.03, 0.06, 0.03],
-                        rotate: [15 + i * 10, 20 + i * 10, 15 + i * 10],
+                        opacity: [0.03, 0.08, 0.03],
+                        rotate: [15 + i * 8, 20 + i * 8, 15 + i * 8],
                       }}
                       transition={{
                         duration: 6 + i * 2,
                         repeat: Infinity,
                         ease: 'easeInOut',
-                        delay: i * 1.5,
+                        delay: i * 1.2,
                       }}
                       style={{
-                        left: `${20 + i * 25}%`,
-                        top: '10%',
-                        width: '2px',
-                        height: '80%',
-                        background: `linear-gradient(to bottom, transparent, ${i === 0 ? 'rgba(99,102,241,0.15)' : i === 1 ? 'rgba(6,182,212,0.12)' : 'rgba(139,92,246,0.1)'}, transparent)`,
-                        filter: 'blur(4px)',
+                        left: `${15 + i * 18}%`,
+                        top: '5%',
+                        width: i % 2 === 0 ? '2px' : '1px',
+                        height: '90%',
+                        background: `linear-gradient(to bottom, transparent, ${i % 3 === 0 ? 'rgba(99,102,241,0.18)' : i % 3 === 1 ? 'rgba(6,182,212,0.15)' : 'rgba(139,92,246,0.12)'}, transparent)`,
+                        filter: `blur(${i % 2 === 0 ? 4 : 3}px)`,
                       }}
                     />
                   ))}
                 </div>
+
+                {/* Holographic scan lines overlay */}
+                <div
+                  className="absolute inset-0 pointer-events-none opacity-[0.015]"
+                  style={{
+                    backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(99,102,241,0.15) 2px, rgba(99,102,241,0.15) 4px)',
+                  }}
+                />
+
+                {/* Volumetric fog effect */}
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  style={{
+                    background: 'radial-gradient(ellipse at 30% 60%, rgba(99,102,241,0.04) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(6,182,212,0.03) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(139,92,246,0.025) 0%, transparent 40%)',
+                  }}
+                />
+
+                {/* Lens flare */}
+                <motion.div
+                  className="absolute pointer-events-none"
+                  animate={{
+                    opacity: [0.15, 0.35, 0.15],
+                    scale: [0.9, 1.1, 0.9],
+                  }}
+                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+                  style={{
+                    top: '15%',
+                    right: '20%',
+                    width: '120px',
+                    height: '120px',
+                    background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(6,182,212,0.1) 30%, transparent 70%)',
+                    filter: 'blur(20px)',
+                    borderRadius: '50%',
+                  }}
+                />
+                <motion.div
+                  className="absolute pointer-events-none"
+                  animate={{
+                    opacity: [0.1, 0.25, 0.1],
+                    scale: [1, 1.2, 1],
+                  }}
+                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
+                  style={{
+                    top: '25%',
+                    left: '15%',
+                    width: '80px',
+                    height: '80px',
+                    background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(99,102,241,0.08) 40%, transparent 70%)',
+                    filter: 'blur(15px)',
+                    borderRadius: '50%',
+                  }}
+                />
               </div>
             </ContactScene>
           </Suspense>
@@ -630,6 +566,171 @@ export default function Contact() {
           </div>
         </motion.div>
       </div>
+
+      {/* Premium volumetric fog background */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+        <div
+          className="absolute w-full h-full"
+          style={{
+            background: 'radial-gradient(ellipse at 20% 80%, rgba(99,102,241,0.03) 0%, transparent 40%), radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.025) 0%, transparent 40%)',
+          }}
+        />
+      </div>
+    </>
+  )
+}
+
+export default function Contact() {
+  const form = useRef()
+  const [result, setResult] = useState('')
+  const [resultType, setResultType] = useState('')
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [content, setContent] = useState(null)
+  const { t } = useTranslation()
+
+  const [values, setValues] = useState({ from_name: '', reply_to: '', phone: '', message: '' })
+  const [errors, setErrors] = useState({})
+  const [touched, setTouched] = useState({})
+  const [contactFormEnabled, setContactFormEnabled] = useState(true)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const { content } = await getContactContent()
+        setContent(content)
+      } catch {
+        // fall back to hardcoded
+      }
+    })()
+    ;(async () => {
+      try {
+        const { settings } = await getSettings()
+        if (settings?.enableContactForm !== undefined) {
+          setContactFormEnabled(settings.enableContactForm)
+        }
+      } catch {
+        // default to enabled
+      }
+    })()
+  }, [])
+
+  const validationErrors = validate(values)
+  const isValid = Object.keys(validationErrors).length === 0
+
+  const handleChange = (field) => (e) => {
+    const val = e.target.value
+    setValues((prev) => ({ ...prev, [field]: val }))
+    if (errors[field]) setErrors((prev) => ({ ...prev, [field]: '' }))
+  }
+
+  const handleBlur = (field) => () => {
+    setTouched((prev) => ({ ...prev, [field]: true }))
+    const fieldErrors = validate({ ...values, [field]: values[field] })
+    if (fieldErrors[field]) {
+      setErrors((prev) => ({ ...prev, [field]: fieldErrors[field] }))
+    }
+  }
+
+  const fieldError = (field) => {
+    if (!touched[field]) return ''
+    return errors[field] || validationErrors[field] || ''
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+
+    setTouched({ from_name: true, reply_to: true, phone: true, message: true })
+    const errs = validate(values)
+    setErrors(errs)
+    if (Object.keys(errs).length > 0) return
+
+    setIsSubmitting(true)
+    setResult('')
+
+    const SERVICE_ID = import.meta.env.VITE_EMAILJS_SERVICE_ID
+    const TEMPLATE_ID = import.meta.env.VITE_EMAILJS_TEMPLATE_ID
+    const PUBLIC_KEY = import.meta.env.VITE_EMAILJS_PUBLIC_KEY
+
+    const name = values.from_name.trim()
+    const email = values.reply_to.trim()
+    const phone = values.phone.trim()
+    const message = values.message.trim()
+
+    const emailTo = content?.email || 'desalegnky827@gmail.com'
+
+    let saved = false
+    try {
+      await createMessage({ name, email, phone, message })
+      setResult(t('contact.successMessage'))
+      setResultType('success')
+      saved = true
+    } catch {
+      saved = false
+    }
+
+    if (!SERVICE_ID || !TEMPLATE_ID || !PUBLIC_KEY) {
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+      logPortfolioVisit({ viewerName: name, page: window.location.pathname })
+      if (!saved) {
+        const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
+        window.location.href = mailtoLink
+        setResult(t('contact.mailtoFallback'))
+        setResultType('success')
+      }
+      setIsSubmitting(false)
+      return
+    }
+
+    try {
+      await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+      setResult(t('contact.successMessage'))
+      setResultType('success')
+      setValues({ from_name: '', reply_to: '', phone: '', message: '' })
+      setTouched({})
+      setErrors({})
+      e.target.reset()
+    } catch (error) {
+      console.error('EmailJS error:', error)
+      logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
+      if (saved) {
+        setResult(t('contact.successMessage'))
+        setResultType('success')
+        setValues({ from_name: '', reply_to: '', phone: '', message: '' })
+        setTouched({})
+        setErrors({})
+        e.target.reset()
+      } else {
+        const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
+        window.location.href = mailtoLink
+        setResult(t('contact.mailtoFallback'))
+        setResultType('success')
+      }
+    }
+
+    setIsSubmitting(false)
+  }
+
+  return (
+    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 relative overflow-hidden" aria-label={t('contact.ariaLabel')}>
+      <MouseParallaxProvider>
+        <ContactContent
+          content={content}
+          contactFormEnabled={contactFormEnabled}
+          values={values}
+          errors={errors}
+          touched={touched}
+          fieldError={fieldError}
+          handleChange={handleChange}
+          handleBlur={handleBlur}
+          handleSubmit={handleSubmit}
+          isSubmitting={isSubmitting}
+          isValid={isValid}
+          result={result}
+          resultType={resultType}
+          form={form}
+        />
+      </MouseParallaxProvider>
     </section>
   )
 }

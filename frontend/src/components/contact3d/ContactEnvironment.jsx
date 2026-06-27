@@ -2,7 +2,7 @@ import { useRef, useMemo } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-function HoloGrid() {
+function HoloGrid({ isMobile }) {
   const meshRef = useRef()
 
   useFrame((state) => {
@@ -52,7 +52,7 @@ function HoloGrid() {
             float fade = 1.0 - smoothstep(0.2, 1.0, dist);
 
             float pulse = 0.5 + 0.5 * sin(uTime * 0.4 + dist * 4.0);
-            float alpha = grid * fade * 0.15 * pulse;
+            float alpha = grid * fade * 0.18 * pulse;
 
             float depthFade = 1.0 - smoothstep(3.0, 30.0, vDist);
             alpha *= depthFade;
@@ -71,21 +71,22 @@ function HoloGrid() {
   )
 }
 
-function NeonStreaks() {
+function NeonStreaks({ isMobile }) {
   const groupRef = useRef()
+  const count = isMobile ? 3 : 8
 
   const streaks = useMemo(
     () =>
-      Array.from({ length: 6 }, (_, i) => ({
+      Array.from({ length: count }, (_, i) => ({
         x: (Math.random() - 0.5) * 24,
         z: -4 - Math.random() * 14,
         speed: 0.3 + Math.random() * 1.2,
-        length: 3 + Math.random() * 5,
+        length: 3 + Math.random() * 6,
         phase: Math.random() * Math.PI * 2,
         color: i % 3 === 0 ? '#6366f1' : i % 3 === 1 ? '#06b6d4' : '#8b5cf6',
-        width: 0.01 + Math.random() * 0.015,
+        width: 0.01 + Math.random() * 0.02,
       })),
-    []
+    [count]
   )
 
   useFrame((state) => {
@@ -96,7 +97,7 @@ function NeonStreaks() {
       if (!s || !child.material) return
       const y = ((time * s.speed + s.phase) % 16) - 5
       child.position.y = y
-      child.material.opacity = 0.04 + Math.sin(time * 2 + s.phase) * 0.025
+      child.material.opacity = 0.05 + Math.sin(time * 2 + s.phase) * 0.03
     })
   })
 
@@ -108,7 +109,7 @@ function NeonStreaks() {
           <meshBasicMaterial
             color={s.color}
             transparent
-            opacity={0.05}
+            opacity={0.06}
             blending={THREE.AdditiveBlending}
           />
         </mesh>
@@ -123,7 +124,7 @@ function AmbientGlow() {
   useFrame((state) => {
     if (!meshRef.current) return
     const t = state.clock.getElapsedTime()
-    meshRef.current.material.opacity = 0.03 + Math.sin(t * 0.3) * 0.01
+    meshRef.current.material.opacity = 0.035 + Math.sin(t * 0.3) * 0.012
     meshRef.current.scale.x = 1 + Math.sin(t * 0.2) * 0.1
     meshRef.current.scale.y = 1 + Math.cos(t * 0.25) * 0.08
   })
@@ -134,7 +135,7 @@ function AmbientGlow() {
       <meshBasicMaterial
         color="#6366f1"
         transparent
-        opacity={0.03}
+        opacity={0.035}
         side={THREE.BackSide}
         blending={THREE.AdditiveBlending}
       />
@@ -142,7 +143,8 @@ function AmbientGlow() {
   )
 }
 
-function VolumetricWalls() {
+function VolumetricWalls({ isMobile }) {
+  if (isMobile) return null
   return (
     <group>
       {[-14, 14].map((x) => (
@@ -171,13 +173,59 @@ function VolumetricWalls() {
   )
 }
 
-export default function ContactEnvironment() {
+function HolographicLines({ isMobile }) {
+  const groupRef = useRef()
+  const lineCount = isMobile ? 2 : 5
+
+  const lines = useMemo(
+    () =>
+      Array.from({ length: lineCount }, (_, i) => ({
+        y: (Math.random() - 0.5) * 12,
+        z: -3 - Math.random() * 10,
+        speed: 0.15 + Math.random() * 0.5,
+        length: 8 + Math.random() * 12,
+        phase: Math.random() * Math.PI * 2,
+        color: i % 2 === 0 ? '#6366f1' : '#06b6d4',
+      })),
+    [lineCount]
+  )
+
+  useFrame((state) => {
+    if (!groupRef.current) return
+    const time = state.clock.getElapsedTime()
+    groupRef.current.children.forEach((child, i) => {
+      const s = lines[i]
+      if (!s || !child.material) return
+      child.material.opacity = 0.02 + Math.sin(time * s.speed + s.phase) * 0.015
+      child.position.x = Math.sin(time * s.speed * 0.3 + s.phase) * 2
+    })
+  })
+
+  return (
+    <group ref={groupRef}>
+      {lines.map((s, i) => (
+        <mesh key={i} position={[0, s.y, s.z]}>
+          <planeGeometry args={[s.length, 0.005]} />
+          <meshBasicMaterial
+            color={s.color}
+            transparent
+            opacity={0.02}
+            blending={THREE.AdditiveBlending}
+          />
+        </mesh>
+      ))}
+    </group>
+  )
+}
+
+export default function ContactEnvironment({ isMobile = false }) {
   return (
     <group>
-      <HoloGrid />
-      <NeonStreaks />
+      <HoloGrid isMobile={isMobile} />
+      <NeonStreaks isMobile={isMobile} />
       <AmbientGlow />
-      <VolumetricWalls />
+      <VolumetricWalls isMobile={isMobile} />
+      <HolographicLines isMobile={isMobile} />
     </group>
   )
 }

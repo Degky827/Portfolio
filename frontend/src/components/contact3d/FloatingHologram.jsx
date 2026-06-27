@@ -1,5 +1,6 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
 import { motion } from 'framer-motion'
+import { useMouseParallaxSubscribe } from './MouseParallaxProvider'
 
 const HOLOGRAM_CONFIGS = {
   linkedin: {
@@ -68,7 +69,16 @@ function HoloParticles({ color, isHovered, count = 6 }) {
 export default function FloatingHologram({ channelName, href, iconComponent, iconVector }) {
   const containerRef = useRef(null)
   const [rotate, setRotate] = useState({ x: 0, y: 0 })
+  const [globalTilt, setGlobalTilt] = useState({ x: 0, y: 0, z: 0 })
   const [isHovered, setIsHovered] = useState(false)
+
+  useMouseParallaxSubscribe(useCallback((x, y) => {
+    setGlobalTilt({
+      x: y * -1.2,
+      y: x * 1.2,
+      z: Math.abs(x * y) * 2,
+    })
+  }, []))
 
   const config = useMemo(() => {
     const name = (channelName || '').toLowerCase()
@@ -90,6 +100,9 @@ export default function FloatingHologram({ channelName, href, iconComponent, ico
     setRotate({ x: 0, y: 0 })
   }, [])
 
+  const combinedRotateX = rotate.x + globalTilt.x
+  const combinedRotateY = rotate.y + globalTilt.y
+
   return (
     <motion.a
       ref={containerRef}
@@ -109,12 +122,13 @@ export default function FloatingHologram({ channelName, href, iconComponent, ico
       <motion.div
         className="relative"
         animate={{
-          rotateX: rotate.x,
-          rotateY: rotate.y,
+          rotateX: combinedRotateX,
+          rotateY: combinedRotateY,
           y: isHovered ? -8 : 0,
+          translateZ: isHovered ? 10 : globalTilt.z,
         }}
         transition={{ type: 'spring', stiffness: 200, damping: 20 }}
-        style={{ transformStyle: 'preserve-3d' }}
+        style={{ transformStyle: 'preserve-3d', willChange: 'transform' }}
       >
         {/* Outer glow */}
         <motion.div

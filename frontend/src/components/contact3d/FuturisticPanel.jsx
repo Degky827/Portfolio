@@ -1,10 +1,20 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { motion } from 'framer-motion'
+import { useMouseParallaxSubscribe } from './MouseParallaxProvider'
 
 export default function FuturisticPanel({ children, className = '' }) {
   const panelRef = useRef(null)
   const [rotate, setRotate] = useState({ x: 0, y: 0 })
+  const [globalTilt, setGlobalTilt] = useState({ x: 0, y: 0, z: 0 })
   const [isHovered, setIsHovered] = useState(false)
+
+  useMouseParallaxSubscribe(useCallback((x, y) => {
+    setGlobalTilt({
+      x: y * -1.5,
+      y: x * 1.5,
+      z: Math.abs(x * y) * 2,
+    })
+  }, []))
 
   const handleMouseMove = useCallback((e) => {
     if (!panelRef.current) return
@@ -20,6 +30,9 @@ export default function FuturisticPanel({ children, className = '' }) {
     setRotate({ x: 0, y: 0 })
   }, [])
 
+  const combinedRotateX = rotate.x + globalTilt.x
+  const combinedRotateY = rotate.y + globalTilt.y
+
   return (
     <motion.div
       ref={panelRef}
@@ -32,9 +45,9 @@ export default function FuturisticPanel({ children, className = '' }) {
         perspective: '1500px',
       }}
       animate={{
-        rotateX: rotate.x,
-        rotateY: rotate.y,
-        translateZ: isHovered ? 20 : 0,
+        rotateX: combinedRotateX,
+        rotateY: combinedRotateY,
+        translateZ: isHovered ? 20 : globalTilt.z,
       }}
       transition={{
         type: 'spring',
@@ -109,7 +122,7 @@ export default function FuturisticPanel({ children, className = '' }) {
           }}
           transition={{ duration: 0.4 }}
           style={{
-            transform: `translateX(${rotate.y * 2}px) translateY(${rotate.x * -2}px)`,
+            transform: `translateX(${combinedRotateY * 2}px) translateY(${combinedRotateX * -2}px)`,
             transformStyle: 'preserve-3d',
           }}
         />
