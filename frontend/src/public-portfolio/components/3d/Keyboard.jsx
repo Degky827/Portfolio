@@ -8,7 +8,7 @@ import * as THREE from 'three'
  * Mechanical keyboard with per-key RGB glow effect.
  */
 export default function Keyboard({ position = [0, 0, 0] }) {
-  const { openByObject } = useWorkspace()
+  const workspace = useWorkspace()
   const keyColor = useMemo(() => new THREE.Color('#1a1035'), [])
   const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
   const cyanColor = useMemo(() => new THREE.Color('#22d3ee'), [])
@@ -97,10 +97,10 @@ export default function Keyboard({ position = [0, 0, 0] }) {
       {/* Clickable hitbox */}
       <mesh
         position={[0, 0.05, 0]}
-        onClick={(e) => {
-          e.stopPropagation()
-          openByObject('keyboard')
-        }}
+          onClick={(e) => {
+            e.stopPropagation()
+            workspace?.openByObject?.('keyboard')
+          }}
         onPointerOver={(e) => {
           e.stopPropagation()
           document.body.style.cursor = 'pointer'

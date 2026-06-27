@@ -9,7 +9,7 @@ import * as THREE from 'three'
  * PC tower case with RGB fans and glowing accents.
  */
 export default function PC({ position = [0, 0, 0] }) {
-  const { openByObject } = useWorkspace()
+  const workspace = useWorkspace()
   const fanRef1 = useRef()
   const fanRef2 = useRef()
   const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
@@ -142,10 +142,10 @@ export default function PC({ position = [0, 0, 0] }) {
       {/* Clickable hitbox */}
       <mesh
         position={[0, 0.75, 0]}
-        onClick={(e) => {
-          e.stopPropagation()
-          openByObject('pc')
-        }}
+          onClick={(e) => {
+            e.stopPropagation()
+            workspace?.openByObject?.('pc')
+          }}
         onPointerOver={(e) => {
           e.stopPropagation()
           document.body.style.cursor = 'pointer'
