@@ -15,7 +15,7 @@ import MonitorStand from './MonitorStand'
  *
  * Everything (profile, text, skills, icons) renders INSIDE the monitor screen.
  */
-export default function Monitor({ position = [0, 0, 0] }) {
+export default function Monitor({ position = [0, 0, 0], screenMode = 'portfolio' }) {
   const workspace = useWorkspace()
   const monitorHeight = 1.5
   const standHeight = 0.44
@@ -37,7 +37,7 @@ export default function Monitor({ position = [0, 0, 0] }) {
 
         {/* Screen with Html content */}
         <Suspense fallback={null}>
-          <MonitorScreen position={[0, 0, 0.01]} />
+          <MonitorScreen position={[0, 0, 0.01]} mode={screenMode} />
         </Suspense>
 
         {/* Clickable hitbox */}
