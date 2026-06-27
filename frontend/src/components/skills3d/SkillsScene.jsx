@@ -238,9 +238,29 @@ function GlassReflections({ isMobile }) {
   )
 }
 
+function useDarkMode() {
+  const [dark, setDark] = useState(() =>
+    typeof document !== 'undefined'
+      ? document.documentElement.classList.contains('dark')
+      : true
+  )
+  useEffect(() => {
+    const el = document.documentElement
+    const obs = new MutationObserver(() => {
+      setDark(el.classList.contains('dark'))
+    })
+    obs.observe(el, { attributes: true, attributeFilter: ['class'] })
+    return () => obs.disconnect()
+  }, [])
+  return dark
+}
+
 export default function SkillsScene({ children }) {
   const isMobile = useIsMobile()
+  const darkMode = useDarkMode()
   const particleCount = isMobile ? 80 : 200
+  const bgColor = darkMode ? '#070B14' : '#ffffff'
+  const fogColor = darkMode ? '#070B14' : '#ffffff'
 
   return (
     <div className="relative w-full min-h-screen" style={{ perspective: '1200px' }}>
@@ -256,12 +276,12 @@ export default function SkillsScene({ children }) {
               stencil: false,
               depth: true,
             }}
-            style={{ background: '#070B14' }}
+            style={{ background: bgColor }}
           >
             <Suspense fallback={null}>
               <MouseParallaxCamera isMobile={isMobile} />
 
-              <fog attach="fog" args={['#070B14', 8, 25]} />
+              <fog attach="fog" args={[fogColor, 8, 25]} />
 
               <SkillsBackground />
               <EnvironmentLights />

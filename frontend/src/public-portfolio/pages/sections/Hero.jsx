@@ -236,7 +236,7 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
                         rel="noopener noreferrer"
                         whileHover={{ scale: 1.15, y: -2 }}
                         whileTap={{ scale: 0.9 }}
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-600 dark:text-white hover:bg-primary hover:text-white transition-all shadow-sm"
+                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[var(--surface)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-primary hover:text-white transition-all shadow-sm"
                         title={platform}
                       >
                         <Icon size={16} />
@@ -260,7 +260,7 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
                     {fullName}
                   </span>
                   <br />
-                  <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl text-gray-600 dark:text-[#94A3B8]">
+                  <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl text-[var(--text-secondary)]">
                     {typedText}
                     <motion.span 
                       animate={{ opacity: [1, 0] }} 
@@ -272,7 +272,7 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
 
                 <motion.p 
                   variants={itemVariants}
-                  className="text-sm sm:text-base md:text-lg text-gray-500 dark:text-[#94A3B8] max-w-2xl lg:max-w-none leading-relaxed"
+                  className="text-sm sm:text-base md:text-lg text-[var(--text-secondary)] max-w-2xl lg:max-w-none leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: introduction }}
                 />
 

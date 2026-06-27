@@ -76,15 +76,15 @@
 
 /* ── Semantic Theme Tokens ───────────────────────────── */
 :root {
-  --bg-primary: #FFFFFF;
-  --bg-secondary: #F8FAFC;
-  --surface: #F8FAFC;
-  --surface-elevated: #FFFFFF;
-  --text-primary: #111827;
-  --text-secondary: #4B5563;
-  --text-tertiary: #9CA3AF;
-  --border-default: #E5E7EB;
-  --border-subtle: #F3F4F6;
+  --bg-primary: #ffffff;
+  --bg-secondary: #f9fafb;
+  --surface: #ffffff;
+  --surface-elevated: #ffffff;
+  --text-primary: #111111;
+  --text-secondary: #4b5563;
+  --text-tertiary: #9ca3af;
+  --border-default: #e5e7eb;
+  --border-subtle: #f3f4f6;
 
   --accent-home: #3B82F6;
   --accent-about: #6366F1;
@@ -94,15 +94,15 @@
 }
 
 .dark {
-  --bg-primary: #0B0D10;
-  --bg-secondary: #111318;
-  --surface: #13161B;
-  --surface-elevated: #1C2028;
-  --text-primary: #F3F4F6;
-  --text-secondary: #A1A7B3;
-  --text-tertiary: #6B7280;
-  --border-default: #1E2330;
-  --border-subtle: #161A22;
+  --bg-primary: #000000;
+  --bg-secondary: #111111;
+  --surface: #161616;
+  --surface-elevated: #1a1a1a;
+  --text-primary: #ffffff;
+  --text-secondary: #d1d5db;
+  --text-tertiary: #6b7280;
+  --border-default: #2a2a2a;
+  --border-subtle: #1f1f1f;
 
   --accent-home: #3B82F6;
   --accent-about: #6366F1;
@@ -500,4 +500,41 @@ h1, h2, h3, h4, h5, h6 {
 .parallax-smooth {
   transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
+}
+
+/* ── Form Input Utilities ───────────────────────────── */
+.form-input {
+  background: var(--surface);
+  color: var(--text-primary);
+  border: 1px solid var(--border-default);
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.form-input:focus {
+  outline: none;
+  border-color: var(--accent-contact);
+  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
+}
+
+.dark .form-input {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border-default);
+}
+
+/* ── Icon Visibility Fix ───────────────────────────── */
+.icon-themed {
+  color: var(--text-primary);
+}
+
+.icon-secondary {
+  color: var(--text-secondary);
+}
+
+.icon-accent {
+  color: var(--accent-contact);
 }
