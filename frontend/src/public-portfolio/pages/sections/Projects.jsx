@@ -149,14 +149,14 @@ export default function Projects() {
           <motion.span
             initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-cyan-400 uppercase bg-cyan-500/10 rounded-full border border-cyan-500/20"
+            className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-[var(--accent-projects)] uppercase bg-[var(--accent-projects)]/10 rounded-full border border-[var(--accent-projects)]/20"
           >
             {t('projects.badge')}
           </motion.span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-4 sm:mb-6 tracking-tight">
             {t('projects.title')}
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
             {t('projects.description')}
           </p>
         </motion.div>
@@ -198,11 +198,11 @@ export default function Projects() {
             ))
           ) : (
             <div className="col-span-full text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-6 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
-                <Search className="w-10 h-10 text-slate-400" />
+              <div className="w-20 h-20 mx-auto mb-6 bg-[var(--surface)] rounded-full flex items-center justify-center border border-[var(--border-default)]">
+                <Search className="w-10 h-10 text-[var(--text-secondary)]" />
               </div>
-              <p className="text-xl font-bold text-white mb-2">{t('projects.noProjectsFound')}</p>
-              <p className="text-slate-400 mb-6">{t('projects.noProjectsHint')}</p>
+              <p className="text-xl font-bold text-[var(--text-primary)] mb-2">{t('projects.noProjectsFound')}</p>
+              <p className="text-[var(--text-secondary)] mb-6">{t('projects.noProjectsHint')}</p>
               <button
                 onClick={() => { setSearchTerm('') }}
                 className="px-6 py-3 bg-cyan-500 text-white font-bold rounded-full hover:bg-cyan-400 transition-colors"
@@ -225,7 +225,7 @@ export default function Projects() {
             ariaLabel="Search mobile apps"
           />
 
-          <p className="text-center text-sm text-slate-400 mb-6">
+          <p className="text-center text-sm text-[var(--text-secondary)] mb-6">
             {t('projects.showingApps', { count: filteredMobileApps.length, total: mobileAppsData.length })}
           </p>
 
@@ -248,11 +248,11 @@ export default function Projects() {
               ))
             ) : (
               <div className="col-span-full text-center py-16">
-                <div className="w-20 h-20 mx-auto mb-6 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
-                  <Smartphone className="w-10 h-10 text-slate-400" />
+                <div className="w-20 h-20 mx-auto mb-6 bg-[var(--surface)] rounded-full flex items-center justify-center border border-[var(--border-default)]">
+                  <Smartphone className="w-10 h-10 text-[var(--text-secondary)]" />
                 </div>
-                <p className="text-xl font-bold text-white mb-2">{t('projects.noAppsFound')}</p>
-                <p className="text-slate-400 mb-6">{t('projects.noAppsHint')}</p>
+                <p className="text-xl font-bold text-[var(--text-primary)] mb-2">{t('projects.noAppsFound')}</p>
+                <p className="text-[var(--text-secondary)] mb-6">{t('projects.noAppsHint')}</p>
                 <button
                   onClick={() => setSearchTerm('')}
                   className="px-6 py-3 bg-cyan-500 text-white font-bold rounded-full hover:bg-cyan-400 transition-colors"

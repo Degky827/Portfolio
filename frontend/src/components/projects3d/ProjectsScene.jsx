@@ -20,12 +20,29 @@ function useIsMobile() {
   return isMobile
 }
 
-function SceneEnvironment({ isMobile }) {
+function useDarkMode() {
+  const [dark, setDark] = useState(() =>
+    typeof document !== 'undefined'
+      ? document.documentElement.classList.contains('dark')
+      : true
+  )
+  useEffect(() => {
+    const el = document.documentElement
+    const obs = new MutationObserver(() => {
+      setDark(el.classList.contains('dark'))
+    })
+    obs.observe(el, { attributes: true, attributeFilter: ['class'] })
+    return () => obs.disconnect()
+  }, [])
+  return dark
+}
+
+function SceneEnvironment({ isMobile, fogColor }) {
   return (
     <>
       <SmoothCamera isMobile={isMobile} />
 
-      <fog attach="fog" args={['#070B14', 6, 28]} />
+      <fog attach="fog" args={[fogColor, 6, 28]} />
 
       <CinematicLighting isMobile={isMobile} />
       <HolographicLines />
@@ -49,6 +66,9 @@ function SceneEnvironment({ isMobile }) {
 
 export default function ProjectsScene({ children }) {
   const isMobile = useIsMobile()
+  const darkMode = useDarkMode()
+  const bgColor = darkMode ? '#070B14' : '#ffffff'
+  const fogColor = darkMode ? '#070B14' : '#ffffff'
 
   return (
     <div className="relative w-full min-h-screen" style={{ perspective: '1200px' }}>
@@ -66,10 +86,10 @@ export default function ProjectsScene({ children }) {
               toneMapping: 4,
               toneMappingExposure: 1.1,
             }}
-            style={{ background: '#070B14' }}
+            style={{ background: bgColor }}
           >
             <Suspense fallback={null}>
-              <SceneEnvironment isMobile={isMobile} />
+              <SceneEnvironment isMobile={isMobile} fogColor={fogColor} />
               <Preload all />
             </Suspense>
           </Canvas>

@@ -41,7 +41,7 @@ function CyberParticles() {
     })), [])
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none dark:block hidden" aria-hidden="true">
       {particles.map((p) => (
         <div
           key={p.id}
@@ -63,7 +63,7 @@ function CyberParticles() {
 /* ─── Neon Grid Lines ─── */
 function NeonGrid() {
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none" aria-hidden="true">
+    <div className="absolute inset-0 overflow-hidden pointer-events-none dark:block hidden" aria-hidden="true">
       {/* Horizontal lines */}
       {[20, 40, 60, 80].map((top) => (
         <div
@@ -139,25 +139,24 @@ export default function About({ content, hero, aboutContent }) {
   return (
     <section
       id="about"
-      className="relative min-h-screen py-16 sm:py-20 md:py-24 overflow-hidden"
-      style={{
-        background: 'linear-gradient(180deg, #050210 0%, #0a0620 30%, #0d0828 60%, #080418 100%)',
-      }}
+      className="relative min-h-screen py-16 sm:py-20 md:py-24 overflow-hidden bg-[var(--bg-primary)] transition-colors duration-500"
     >
-      {/* ── Global Background Effects ── */}
-      <CinematicLighting />
-      <GlobalAtmosphere />
+      {/* ── Global Background Effects - dark mode only ── */}
+      <div className="dark:block hidden">
+        <CinematicLighting />
+        <GlobalAtmosphere />
+      </div>
       <NeonGrid />
       <CyberParticles />
 
-      {/* Ambient glow orbs */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none" aria-hidden="true" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-600/6 rounded-full blur-[100px] pointer-events-none" aria-hidden="true" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[140px] pointer-events-none" aria-hidden="true" />
+      {/* Ambient glow orbs - only visible in dark mode */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none dark:block hidden" aria-hidden="true" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-600/6 rounded-full blur-[100px] pointer-events-none dark:block hidden" aria-hidden="true" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[140px] pointer-events-none dark:block hidden" aria-hidden="true" />
 
-      {/* Metallic floor reflection */}
+      {/* Metallic floor reflection - dark mode only */}
       <div
-        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none"
+        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none dark:block hidden"
         style={{
           background: 'linear-gradient(to top, rgba(139,92,246,0.04), transparent)',
         }}
@@ -176,37 +175,27 @@ export default function About({ content, hero, aboutContent }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 mb-6 sm:mb-8 text-xs sm:text-sm font-bold tracking-[0.2em] text-purple-300 uppercase rounded-full border border-purple-500/30 backdrop-blur-sm"
-            style={{
-              background: 'linear-gradient(135deg, rgba(139,92,246,0.15), rgba(99,102,241,0.08))',
-              boxShadow: '0 0 20px rgba(139,92,246,0.15), inset 0 1px 0 rgba(255,255,255,0.05)',
-            }}
+            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 mb-6 sm:mb-8 text-xs sm:text-sm font-bold tracking-[0.2em] text-[var(--accent-about)] uppercase rounded-full border border-[var(--accent-about)]/30 bg-[var(--accent-about)]/10"
           >
-            <span className="w-2 h-2 rounded-full bg-purple-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-[var(--accent-about)] animate-pulse" />
             {t('about.badge')}
           </motion.div>
 
           <h2
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 tracking-tight"
-            style={{
-              background: 'linear-gradient(135deg, #f8fafc 0%, #c7d2fe 40%, #a78bfa 70%, #818cf8 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-            }}
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 tracking-tight text-[var(--text-primary)]"
           >
             {title}
           </h2>
 
-          <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
             {subtitle}
           </p>
 
           {/* Decorative line */}
           <div className="mt-8 sm:mt-10 flex items-center justify-center gap-3">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-purple-500/50" />
-            <div className="w-2 h-2 rotate-45 border border-purple-500/50" />
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-purple-500/50" />
+            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--accent-about)]/50" />
+            <div className="w-2 h-2 rotate-45 border border-[var(--accent-about)]/50" />
+            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[var(--accent-about)]/50" />
           </div>
         </motion.div>
 

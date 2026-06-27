@@ -250,7 +250,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                   }}
                 >
                   <motion.span
-                    className="text-gray-500/90 dark:text-white/60"
+                    className="text-[var(--text-secondary)]"
                     animate={{ opacity: [0.7, 1, 0.7] }}
                     transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
                   >
@@ -567,8 +567,8 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
         </motion.div>
       </div>
 
-      {/* Premium volumetric fog background */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden" aria-hidden="true">
+      {/* Premium volumetric fog background - dark mode only */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden dark:block hidden" aria-hidden="true">
         <div
           className="absolute w-full h-full"
           style={{
@@ -712,7 +712,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-gray-50 dark:bg-gray-900 transition-colors duration-500 relative overflow-hidden" aria-label={t('contact.ariaLabel')}>
+    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-[var(--bg-primary)] transition-colors duration-500 relative overflow-hidden" aria-label={t('contact.ariaLabel')}>
       <MouseParallaxProvider>
         <ContactContent
           content={content}

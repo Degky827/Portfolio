@@ -323,22 +323,22 @@ export default function Skills() {
             <motion.span
               initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 }}
               whileInView={{ opacity: 1, scale: 1 }}
-              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-cyan-400 uppercase bg-cyan-500/10 rounded-full border border-cyan-500/20"
+              className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-[var(--accent-skills)] uppercase bg-[var(--accent-skills)]/10 rounded-full border border-[var(--accent-skills)]/20"
             >
               <Code2 className="w-3 h-3 sm:w-4 sm:h-4" />
               {t('skills.badge')}
             </motion.span>
-            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-white mb-4 sm:mb-6 tracking-tight">
+            <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-4 sm:mb-6 tracking-tight">
               {t('skills.title')}
             </h2>
-            <p className="text-base sm:text-lg md:text-xl text-slate-400 max-w-2xl mx-auto leading-relaxed px-4">
+            <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
               {t('skills.description')}
             </p>
           </motion.div>
 
           {allCards.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-slate-500">{t('skills.empty')}</p>
+              <p className="text-[var(--text-secondary)]">{t('skills.empty')}</p>
             </div>
           ) : (
             <motion.div
@@ -346,7 +346,7 @@ export default function Skills() {
               initial="hidden"
               whileInView="visible"
               viewport={{ once: true, margin: '-50px' }}
-              className="bg-slate-900/60 backdrop-blur-xl border border-slate-700/50 p-6 sm:p-8 md:p-10 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-2xl shadow-cyan-500/5"
+              className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border-default)] p-6 sm:p-8 md:p-10 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-2xl"
             >
               {topRow.length > 0 && (
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 lg:gap-6 mb-6 lg:mb-8 relative z-10">
@@ -433,18 +433,18 @@ function CertModal({ cert, onClose }) {
         exit={{ opacity: 0, scale: 0.95, y: 20 }}
         transition={{ type: 'spring', stiffness: 300, damping: 25 }}
         onClick={(e) => e.stopPropagation()}
-        className="relative bg-slate-900 rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-700/50"
+        className="relative bg-[var(--surface)] rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-[var(--border-default)]"
       >
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors z-10"
+          className="absolute top-4 right-4 p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-default)] transition-colors z-10"
           aria-label={t('skills.close')}
         >
           <X size={18} />
         </button>
 
         {cert.icon && (
-          <div className="h-36 bg-slate-800 overflow-hidden">
+          <div className="h-36 bg-[var(--bg-secondary)] overflow-hidden">
             <img
               src={getMediaUrl(cert.icon)}
               alt={cert.name}
@@ -458,19 +458,19 @@ function CertModal({ cert, onClose }) {
             <Award size={18} className="text-cyan-400" />
             <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">{t('skills.certificateLabel')}</span>
           </div>
-          <h3 className="text-xl font-bold text-white mb-4">
+          <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">
             {cert.name}
           </h3>
 
           <div className="space-y-3 text-sm">
             {cert.issuer && (
-              <div className="flex items-center gap-2.5 text-slate-400">
+              <div className="flex items-center gap-2.5 text-[var(--text-secondary)]">
                 <Building2 size={16} className="shrink-0" />
                 <span>{cert.issuer}</span>
               </div>
             )}
             {cert.issueDate && (
-              <div className="flex items-center gap-2.5 text-slate-400">
+              <div className="flex items-center gap-2.5 text-[var(--text-secondary)]">
                 <Calendar size={16} className="shrink-0" />
                 <span>{cert.issueDate}</span>
               </div>
@@ -478,7 +478,7 @@ function CertModal({ cert, onClose }) {
           </div>
 
           {cert.description && (
-            <p className="mt-4 text-sm text-slate-300 leading-relaxed">
+            <p className="mt-4 text-sm text-[var(--text-secondary)] leading-relaxed">
               {cert.description}
             </p>
           )}
