@@ -4,15 +4,15 @@ import { useMouseParallaxSubscribe } from './MouseParallaxProvider'
 
 const HOLOGRAM_CONFIGS = {
   linkedin: {
-    color: '#0077b5',
-    glowColor: 'rgba(0,119,181,0.5)',
-    bgGlow: 'rgba(0,119,181,0.12)',
+    color: '#06b6d4',
+    glowColor: 'rgba(6,182,212,0.5)',
+    bgGlow: 'rgba(6,182,212,0.12)',
     label: 'LinkedIn',
   },
   github: {
-    color: '#a78bfa',
-    glowColor: 'rgba(167,139,250,0.5)',
-    bgGlow: 'rgba(167,139,250,0.12)',
+    color: '#06b6d4',
+    glowColor: 'rgba(6,182,212,0.5)',
+    bgGlow: 'rgba(6,182,212,0.12)',
     label: 'Github',
   },
 }

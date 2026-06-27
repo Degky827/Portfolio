@@ -21,8 +21,8 @@ function Particle({ x, y, angle, distance, delay }) {
       style={{
         left: x,
         top: y,
-        background: `radial-gradient(circle, rgba(99,102,241,0.9), rgba(6,182,212,0.6))`,
-        boxShadow: '0 0 6px rgba(99,102,241,0.6)',
+        background: `radial-gradient(circle, rgba(6,182,212,0.9), rgba(34,211,238,0.6))`,
+        boxShadow: '0 0 6px rgba(6,182,212,0.6)',
       }}
     />
   )
@@ -45,9 +45,9 @@ function EnergyRing({ isActive }) {
             transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
             style={{
               border: '2px solid transparent',
-              borderTopColor: 'rgba(99,102,241,0.8)',
-              borderRightColor: 'rgba(6,182,212,0.4)',
-              filter: 'drop-shadow(0 0 6px rgba(99,102,241,0.5))',
+              borderTopColor: 'rgba(6,182,212,0.8)',
+              borderRightColor: 'rgba(34,211,238,0.4)',
+              filter: 'drop-shadow(0 0 6px rgba(6,182,212,0.5))',
             }}
           />
           {/* Inner ring */}
@@ -58,7 +58,7 @@ function EnergyRing({ isActive }) {
             style={{
               border: '1.5px solid transparent',
               borderTopColor: 'rgba(6,182,212,0.7)',
-              borderLeftColor: 'rgba(139,92,246,0.4)',
+              borderLeftColor: 'rgba(34,211,238,0.4)',
               filter: 'drop-shadow(0 0 4px rgba(6,182,212,0.4))',
             }}
           />
@@ -71,7 +71,7 @@ function EnergyRing({ isActive }) {
             }}
             transition={{ duration: 1, repeat: Infinity, ease: 'easeInOut' }}
             style={{
-              background: 'radial-gradient(circle, rgba(99,102,241,0.4), rgba(6,182,212,0.2), transparent)',
+              background: 'radial-gradient(circle, rgba(6,182,212,0.4), rgba(34,211,238,0.2), transparent)',
               filter: 'blur(4px)',
             }}
           />
@@ -140,17 +140,17 @@ export default function LaunchButton({ disabled, isSubmitting, isValid, label, a
         perspective: '800px',
         transformStyle: 'preserve-3d',
         background: canLaunch
-          ? 'linear-gradient(165deg, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.08) 50%, rgba(6,182,212,0.06) 100%)'
+          ? 'linear-gradient(165deg, rgba(6,182,212,0.15) 0%, rgba(6,182,212,0.08) 50%, rgba(34,211,238,0.06) 100%)'
           : 'rgba(255,255,255,0.03)',
-        border: `1px solid ${canLaunch ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.06)'}`,
+        border: `1px solid ${canLaunch ? 'rgba(6,182,212,0.3)' : 'rgba(255,255,255,0.06)'}`,
         color: canLaunch ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.25)',
         cursor: canLaunch ? 'pointer' : 'not-allowed',
         backdropFilter: 'blur(20px)',
         WebkitBackdropFilter: 'blur(20px)',
         boxShadow: canLaunch
           ? isHovered
-            ? '0 12px 40px rgba(99,102,241,0.35), 0 0 30px rgba(99,102,241,0.15), inset 0 1px 0 rgba(255,255,255,0.12)'
-            : '0 8px 30px rgba(99,102,241,0.25), inset 0 1px 0 rgba(255,255,255,0.08)'
+            ? '0 12px 40px rgba(6,182,212,0.35), 0 0 30px rgba(6,182,212,0.15), inset 0 1px 0 rgba(255,255,255,0.12)'
+            : '0 8px 30px rgba(6,182,212,0.25), inset 0 1px 0 rgba(255,255,255,0.08)'
           : '0 4px 16px rgba(0,0,0,0.15)',
       }}
       aria-label={ariaLabel}
@@ -164,12 +164,12 @@ export default function LaunchButton({ disabled, isSubmitting, isValid, label, a
         transition={{ duration: 0.3 }}
         style={{
           padding: '1px',
-          background: 'conic-gradient(from 0deg, rgba(99,102,241,0.5), rgba(6,182,212,0.4), rgba(139,92,246,0.5), rgba(99,102,241,0.5))',
+          background: 'conic-gradient(from 0deg, rgba(6,182,212,0.55), rgba(34,211,238,0.25), rgba(6,182,212,0.55))',
           mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           maskComposite: 'exclude',
           WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
           WebkitMaskComposite: 'xor',
-          filter: canLaunch && isHovered ? 'drop-shadow(0 0 8px rgba(99,102,241,0.4))' : 'none',
+          filter: canLaunch && isHovered ? 'drop-shadow(0 0 8px rgba(6,182,212,0.4))' : 'none',
         }}
       />
 
@@ -190,8 +190,8 @@ export default function LaunchButton({ disabled, isSubmitting, isValid, label, a
           className="absolute inset-0 pointer-events-none rounded-xl sm:rounded-2xl"
           animate={{
             background: [
-              'linear-gradient(90deg, transparent 0%, rgba(99,102,241,0.06) 50%, transparent 100%)',
-              'linear-gradient(90deg, transparent -50%, rgba(6,182,212,0.06) 0%, transparent 50%)',
+              'linear-gradient(90deg, transparent 0%, rgba(6,182,212,0.06) 50%, transparent 100%)',
+              'linear-gradient(90deg, transparent -50%, rgba(34,211,238,0.06) 0%, transparent 50%)',
             ],
           }}
           transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
@@ -211,7 +211,7 @@ export default function LaunchButton({ disabled, isSubmitting, isValid, label, a
             style={{
               left: ripple.x - 100,
               top: ripple.y - 100,
-              background: 'radial-gradient(circle, rgba(99,102,241,0.3), rgba(6,182,212,0.15), transparent)',
+              background: 'radial-gradient(circle, rgba(6,182,212,0.3), rgba(34,211,238,0.15), transparent)',
             }}
           />
         ))}
@@ -234,8 +234,8 @@ export default function LaunchButton({ disabled, isSubmitting, isValid, label, a
             exit={{ opacity: 0 }}
             transition={{ duration: 0.4 }}
             style={{
-              background: 'linear-gradient(135deg, rgba(99,102,241,0.3), rgba(6,182,212,0.2), rgba(139,92,246,0.3))',
-              boxShadow: '0 0 40px rgba(99,102,241,0.4)',
+              background: 'linear-gradient(135deg, rgba(6,182,212,0.3), rgba(34,211,238,0.2), rgba(6,182,212,0.3))',
+              boxShadow: '0 0 40px rgba(6,182,212,0.4)',
             }}
           />
         )}
@@ -265,7 +265,7 @@ export default function LaunchButton({ disabled, isSubmitting, isValid, label, a
               aria-hidden="true"
               className="relative"
               style={{
-                filter: canLaunch ? 'drop-shadow(0 0 4px rgba(99,102,241,0.5))' : 'none',
+                filter: canLaunch ? 'drop-shadow(0 0 4px rgba(6,182,212,0.5))' : 'none',
               }}
             >
               <Send size={20} className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -283,8 +283,8 @@ export default function LaunchButton({ disabled, isSubmitting, isValid, label, a
         }}
         transition={{ duration: 0.4 }}
         style={{
-          background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.7), rgba(6,182,212,0.5), transparent)',
-          boxShadow: canLaunch ? '0 0 12px rgba(99,102,241,0.4)' : 'none',
+          background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.7), rgba(34,211,238,0.5), transparent)',
+          boxShadow: canLaunch ? '0 0 12px rgba(6,182,212,0.4)' : 'none',
         }}
       />
     </motion.button>

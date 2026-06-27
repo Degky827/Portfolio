@@ -138,13 +138,13 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                     <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl scale-150" />
 
                     {/* Badge body */}
-                    <div className="relative px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border border-primary/30 backdrop-blur-xl bg-white/[0.06] shadow-[0_0_30px_rgba(99,102,241,0.15)]">
+                    <div className="relative px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border border-primary/30 backdrop-blur-xl bg-white/[0.06] shadow-[0_0_30px_rgba(6,182,212,0.15)]">
                       <motion.div
                         className="absolute inset-0 rounded-full"
                         animate={{ opacity: [0.3, 0.6, 0.3] }}
                         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                         style={{
-                          background: 'linear-gradient(135deg, rgba(99,102,241,0.1) 0%, rgba(6,182,212,0.08) 50%, rgba(139,92,246,0.1) 100%)',
+                          background: 'linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(34,211,238,0.08) 50%, rgba(6,182,212,0.1) 100%)',
                         }}
                       />
                       {/* Neon ring */}
@@ -153,7 +153,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                         animate={{ opacity: [0.4, 0.8, 0.4] }}
                         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                         style={{
-                          background: 'conic-gradient(from 0deg, rgba(99,102,241,0.4), rgba(6,182,212,0.3), rgba(139,92,246,0.4), rgba(99,102,241,0.4))',
+                          background: 'conic-gradient(from 0deg, rgba(6,182,212,0.45), rgba(34,211,238,0.2), rgba(6,182,212,0.45))',
                           mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
                           maskComposite: 'exclude',
                           WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
@@ -186,7 +186,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                     className="absolute inset-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight select-none pointer-events-none"
                     style={{
                       color: 'transparent',
-                      WebkitTextStroke: '1px rgba(99,102,241,0.08)',
+                      WebkitTextStroke: '1px rgba(6,182,212,0.08)',
                       transform: 'translateZ(-20px) scale(1.02)',
                       filter: 'blur(2px)',
                     }}
@@ -198,7 +198,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                     className="absolute inset-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight select-none pointer-events-none"
                     style={{
                       color: 'transparent',
-                      WebkitTextStroke: '1px rgba(6,182,212,0.12)',
+                      WebkitTextStroke: '1px rgba(34,211,238,0.12)',
                       transform: 'translateZ(-10px) scale(1.01)',
                       filter: 'blur(1px)',
                     }}
@@ -215,9 +215,9 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                     }}
                     transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
                     style={{
-                      backgroundImage: 'linear-gradient(135deg, #818cf8 0%, #06b6d4 30%, #a78bfa 60%, #22d3ee 100%)',
+                      backgroundImage: 'linear-gradient(135deg, #06b6d4 0%, #22d3ee 40%, #06b6d4 70%, #67e8f9 100%)',
                       backgroundSize: '200% 200%',
-                      textShadow: '0 0 60px rgba(99,102,241,0.3), 0 0 120px rgba(6,182,212,0.15)',
+                      textShadow: '0 0 60px rgba(6,182,212,0.3), 0 0 120px rgba(6,182,212,0.15)',
                     }}
                   >
                     {t('contact.title')}
@@ -231,7 +231,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                     }}
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     style={{
-                      background: 'radial-gradient(ellipse at center, rgba(99,102,241,0.15) 0%, transparent 70%)',
+                      background: 'radial-gradient(ellipse at center, rgba(6,182,212,0.15) 0%, transparent 70%)',
                       filter: 'blur(30px)',
                     }}
                   />
@@ -280,7 +280,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                         top: '5%',
                         width: i % 2 === 0 ? '2px' : '1px',
                         height: '90%',
-                        background: `linear-gradient(to bottom, transparent, ${i % 3 === 0 ? 'rgba(99,102,241,0.18)' : i % 3 === 1 ? 'rgba(6,182,212,0.15)' : 'rgba(139,92,246,0.12)'}, transparent)`,
+                        background: `linear-gradient(to bottom, transparent, ${i % 2 === 0 ? 'rgba(6,182,212,0.18)' : 'rgba(34,211,238,0.12)'}, transparent)`,
                         filter: `blur(${i % 2 === 0 ? 4 : 3}px)`,
                       }}
                     />
@@ -291,7 +291,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                 <div
                   className="absolute inset-0 pointer-events-none opacity-[0.015]"
                   style={{
-                    backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(99,102,241,0.15) 2px, rgba(99,102,241,0.15) 4px)',
+                    backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(6,182,212,0.15) 2px, rgba(6,182,212,0.15) 4px)',
                   }}
                 />
 
@@ -299,7 +299,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                 <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    background: 'radial-gradient(ellipse at 30% 60%, rgba(99,102,241,0.04) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(6,182,212,0.03) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(139,92,246,0.025) 0%, transparent 40%)',
+                    background: 'radial-gradient(ellipse at 30% 60%, rgba(6,182,212,0.04) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(34,211,238,0.03) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(6,182,212,0.025) 0%, transparent 40%)',
                   }}
                 />
 
@@ -316,7 +316,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                     right: '20%',
                     width: '120px',
                     height: '120px',
-                    background: 'radial-gradient(circle, rgba(99,102,241,0.2) 0%, rgba(6,182,212,0.1) 30%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(6,182,212,0.2) 0%, rgba(34,211,238,0.1) 30%, transparent 70%)',
                     filter: 'blur(20px)',
                     borderRadius: '50%',
                   }}
@@ -333,7 +333,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                     left: '15%',
                     width: '80px',
                     height: '80px',
-                    background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, rgba(99,102,241,0.08) 40%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(34,211,238,0.15) 0%, rgba(6,182,212,0.08) 40%, transparent 70%)',
                     filter: 'blur(15px)',
                     borderRadius: '50%',
                   }}
@@ -348,7 +348,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-50px" }}
-          className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
+          className="bg-[var(--surface)] border border-[var(--border-default)] rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
         >
           <div className={`grid relative z-10 ${contactFormEnabled ? 'lg:grid-cols-5' : 'lg:grid-cols-1'}`}>
             {/* Contact Info Sidebar - Futuristic Control Station */}
@@ -361,15 +361,15 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                   <div className="p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16">
                     <div className="relative z-10">
                       {/* Title with glow */}
-                      <motion.h3
-                        className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 sm:mb-4 leading-tight font-display tracking-tight text-white"
-                        animate={{
-                          textShadow: [
-                            '0 0 20px rgba(99,102,241,0.3)',
-                            '0 0 40px rgba(99,102,241,0.5)',
-                            '0 0 20px rgba(99,102,241,0.3)',
-                          ],
-                        }}
+                        <motion.h3
+                          className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 sm:mb-4 leading-tight font-display tracking-tight text-[var(--text-primary)]"
+                          animate={{
+                            textShadow: [
+                              '0 0 20px rgba(6,182,212,0.3)',
+                              '0 0 40px rgba(6,182,212,0.5)',
+                              '0 0 20px rgba(6,182,212,0.3)',
+                            ],
+                          }}
                         transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                       >
                         {t('contact.connectTitle')}
@@ -381,15 +381,15 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                         animate={{
                           width: ['4rem', '6rem', '4rem'],
                           background: [
-                            'linear-gradient(90deg, rgba(99,102,241,0.6), rgba(6,182,212,0.3))',
-                            'linear-gradient(90deg, rgba(6,182,212,0.6), rgba(139,92,246,0.3))',
-                            'linear-gradient(90deg, rgba(99,102,241,0.6), rgba(6,182,212,0.3))',
+                            'linear-gradient(90deg, rgba(6,182,212,0.6), rgba(34,211,238,0.3))',
+                            'linear-gradient(90deg, rgba(34,211,238,0.6), rgba(6,182,212,0.3))',
+                            'linear-gradient(90deg, rgba(6,182,212,0.6), rgba(34,211,238,0.3))',
                           ],
                         }}
                         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                       />
 
-                      <p className="text-base sm:text-lg md:text-xl text-white/60 mb-10 sm:mb-12 md:mb-14 leading-relaxed">
+                      <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] mb-10 sm:mb-12 md:mb-14 leading-relaxed">
                         {t('contact.connectDescription')}
                       </p>
 
@@ -410,7 +410,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                       {/* Social channels - Floating Holograms */}
                       {socialChannels.length > 0 && (
                         <div>
-                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/30 mb-5 sm:mb-6">
+                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[var(--text-tertiary)] mb-5 sm:mb-6">
                             Social Channels
                           </span>
                           <div className="flex gap-4 sm:gap-5 flex-wrap" role="list" aria-label={t('contact.socialAriaLabel')}>
@@ -449,7 +449,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                           <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
                           <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
                         </div>
-                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-white/30">
+                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-[var(--text-tertiary)]">
                           AI Communication Terminal v2.0
                         </span>
                         <motion.div
@@ -503,7 +503,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
                           icon={Phone}
                           error={fieldError('phone')}
                           label={
-                            <>Phone Number <span className="text-gray-400 dark:text-gray-500 text-[10px]">(optional)</span></>
+                            <>Phone Number <span className="text-[var(--text-tertiary)] text-[10px]">(optional)</span></>
                           }
                         />
 
@@ -572,7 +572,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
         <div
           className="absolute w-full h-full"
           style={{
-            background: 'radial-gradient(ellipse at 20% 80%, rgba(99,102,241,0.03) 0%, transparent 40%), radial-gradient(ellipse at 80% 20%, rgba(6,182,212,0.025) 0%, transparent 40%)',
+            background: 'radial-gradient(ellipse at 20% 80%, rgba(6,182,212,0.03) 0%, transparent 40%), radial-gradient(ellipse at 80% 20%, rgba(34,211,238,0.025) 0%, transparent 40%)',
           }}
         />
       </div>
