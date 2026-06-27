@@ -12,55 +12,36 @@ import { useState, useEffect, useRef, useMemo } from 'react'
 
 const CODE_LINES = [
   '/**',
-  ' * About Me - Developer Portfolio',
-  ' * Auto-generated profile overview',
+  ' * Developer Profile',
+  ' * Generated from Portfolio System',
   ' */',
   '',
-  'const aboutMe = {',
-  '    name: "Desalegn Abreha",',
-  '    title: "Full Stack Developer",',
-  '    location: "Ethiopia",',
-  '    education: "Software Engineering Student",',
+  'const developer = {',
+  '    name: "Desalegn",',
+  '    role: "Full Stack Developer",',
   '',
-  '    bio:',
-  '        "I build modern, scalable web applications.",',
-  '',
-  '    skills: {',
-  '        frontend: ["React", "Next.js", "TypeScript", "Tailwind"],',
-  '        backend:  ["Node.js", "Express", "Python", "Django"],',
-  '        database: ["MongoDB", "PostgreSQL", "Redis"],',
-  '        devops:   ["Docker", "AWS", "GitHub Actions"]',
-  '    },',
-  '',
-  '    experience: {',
-  '        projects: 42,',
-  '        commits: "2,500+",',
-  '        contributions: "Open Source Enthusiast"',
-  '    },',
-  '',
-  '    interests: [',
-  '        "Building futuristic UIs",',
-  '        "3D Web Experiences",',
-  '        "AI and Machine Learning",',
-  '        "System Architecture"',
+  '    expertise: [',
+  '        "React",',
+  '        "Node.js",',
+  '        "Express.js",',
+  '        "MongoDB"',
   '    ],',
   '',
-  '    status: "Open To Work",',
+  '    description:',
+  '        "I build modern, scalable, and secure web applications.",',
+  '',
+  '    status: "I am Open To Work !!! Let\'s work together!",',
   '',
   '    contact: {',
-  '        github: "github.com/desalegn",',
-  '        email:  "hello@desalegn.dev"',
+  '        github: "github.com/Degky827",',
+  '        email: "desalegnky827@gmail.com"',
   '    }',
   '};',
   '',
-  'function getGreeting() {',
-  '    const { name, title, skills } = aboutMe;',
-  '    return `Hi, I am ${name}`;',
-  '}',
-  '',
-  'console.log(getGreeting());',
-  'console.log(`${aboutMe.title}`);',
-  'console.log(`Skills: ${Object.keys(aboutMe.skills).join(", ")}`);',
+  'console.log(`Hello, I am ${developer.name}`);',
+  'console.log(`Role: ${developer.role}`);',
+  'console.log(`Skills: ${developer.expertise.join(", ")}`);',
+  'console.log(`${developer.status}`);',
 ]
 
 const FULL_CODE = CODE_LINES.join('\n')
@@ -90,8 +71,8 @@ function highlightLine(text) {
   addMatch(/(\/\/.*$|\/\*[\s\S]*?\*\/)/gm, '#6a9955')
   addMatch(/(["'`])(?:(?!\1|\\).|\\.)*\1/g, '#ce9178')
   addMatch(/\$\{[^}]+\}/g, '#ce9178')
-  addMatch(/\b(const|let|var|function|return|console|log|join|keys|object)\b/g, '#569cd6')
-  addMatch(/\b(name|title|location|education|bio|skills|frontend|backend|database|devops|experience|projects|commits|contributions|interests|status|contact|github|email)\b(?=\s*[:\]])/g, '#9cdcfe')
+  addMatch(/\b(const|let|var|function|return|console|log|join)\b/g, '#569cd6')
+  addMatch(/\b(name|role|expertise|description|status|contact|github|email)\b(?=\s*[:\]])/g, '#9cdcfe')
   addMatch(/\b(true|false|null|undefined|NaN|Infinity)\b/g, '#569cd6')
   addMatch(/\b(\d+\.?\d*)\b/g, '#b5cea8')
 
@@ -133,7 +114,7 @@ function TitleBar() {
         color: '#94a3b8',
         fontFamily: "'JetBrains Mono', monospace",
       }}>
-        aboutMe.js — Visual Studio Code
+        developer.js — Visual Studio Code
       </div>
     </div>
   )
@@ -161,7 +142,7 @@ function TabBar() {
         fontFamily: "'JetBrains Mono', monospace",
       }}>
         <span style={{ color: '#f1e05a', fontSize: '11px' }}>JS</span>
-        aboutMe.js
+        developer.js
         <span style={{ fontSize: '14px', color: '#64748b', marginLeft: '4px' }}>×</span>
       </div>
       <div style={{
@@ -206,9 +187,9 @@ function Sidebar() {
         { name: 'portfolio', indent: 0, icon: '📁', active: false },
         { name: 'src', indent: 1, icon: '📂', active: false },
         { name: 'components', indent: 2, icon: '📂', active: false },
-        { name: 'AboutMe.jsx', indent: 3, icon: '📄', active: true },
+        { name: 'Developer.jsx', indent: 3, icon: '📄', active: true },
         { name: 'Hero.jsx', indent: 3, icon: '📄', active: false },
-        { name: 'Profile.jsx', indent: 3, icon: '📄', active: false },
+        { name: 'App.jsx', indent: 3, icon: '📄', active: false },
         { name: 'styles', indent: 2, icon: '📂', active: false },
         { name: 'globals.css', indent: 3, icon: '🎨', active: false },
         { name: 'public', indent: 1, icon: '📂', active: false },

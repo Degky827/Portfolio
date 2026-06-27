@@ -1,19 +1,14 @@
 import { useMemo, useState, useEffect } from 'react'
-import { Html } from '@react-three/drei'
 import * as THREE from 'three'
-import PortfolioScreen from './PortfolioScreen'
-import CodeEditorScreen from './CodeEditorScreen'
+import CodeScreenCanvas from './CodeScreenCanvas'
 
 /**
  * MonitorScreen
  *
- * A flat plane slightly recessed inside the bezel that displays
- * either the PortfolioScreen or CodeEditorScreen using drei Html transform.
- *
- * Props:
- *   mode: "portfolio" | "code" — which screen to render (default: "code")
+ * Renders the code editor as a CanvasTexture on a plane.
+ * No Html component — pure Three.js mesh with canvas texture.
  */
-export default function MonitorScreen({ position = [0, 0, 0], mode = 'code' }) {
+export default function MonitorScreen({ position = [0, 0, 0] }) {
   const screenW = 2.48
   const screenH = 1.38
 
@@ -21,7 +16,6 @@ export default function MonitorScreen({ position = [0, 0, 0], mode = 'code' }) {
   const emissiveColor = useMemo(() => new THREE.Color('#1e3a5f'), [])
   const glowColor = useMemo(() => new THREE.Color('#3b82f6'), [])
 
-  /* Subtle flicker for screen glow */
   const [glowIntensity, setGlowIntensity] = useState(0.35)
 
   useEffect(() => {
@@ -36,7 +30,7 @@ export default function MonitorScreen({ position = [0, 0, 0], mode = 'code' }) {
 
   return (
     <group position={position}>
-      {/* Screen backing plane - dark material */}
+      {/* Screen backing plane */}
       <mesh position={[0, 0, -0.005]}>
         <planeGeometry args={[screenW, screenH]} />
         <meshStandardMaterial
@@ -48,57 +42,28 @@ export default function MonitorScreen({ position = [0, 0, 0], mode = 'code' }) {
         />
       </mesh>
 
-      {/* Screen glow - soft light emitted from the screen */}
+      {/* Screen glow light */}
       <pointLight
         position={[0, 0, 0.4]}
-        intensity={0.2}
+        intensity={0.25}
         color={glowColor}
         distance={2.5}
         decay={2}
       />
 
-      {/* Screen reflection - semi-transparent glossy overlay */}
-      <mesh position={[0, 0, 0.008]}>
+      {/* Code editor canvas texture */}
+      <CodeScreenCanvas screenW={screenW} screenH={screenH} />
+
+      {/* Glass reflection overlay */}
+      <mesh position={[0, 0, 0.035]}>
         <planeGeometry args={[screenW, screenH]} />
-        <meshPhysicalMaterial
-          transparent
-          opacity={0.03}
-          roughness={0.05}
-          metalness={0.9}
+        <meshBasicMaterial
           color="#ffffff"
-          envMapIntensity={0.5}
-          clearcoat={1}
-          clearcoatRoughness={0.1}
+          transparent
+          opacity={0.025}
+          blending={THREE.AdditiveBlending}
         />
       </mesh>
-
-      {/* Screen edge highlight - top */}
-      <mesh position={[0, screenH / 2 - 0.005, 0.007]}>
-        <boxGeometry args={[screenW, 0.004, 0.001]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.06} />
-      </mesh>
-
-      {/* Screen edge highlight - bottom */}
-      <mesh position={[0, -screenH / 2 + 0.005, 0.007]}>
-        <boxGeometry args={[screenW, 0.004, 0.001]} />
-        <meshBasicMaterial color="#ffffff" transparent opacity={0.04} />
-      </mesh>
-
-      {/* Portfolio UI or Code Editor - Html transform placed on the screen plane */}
-      <Html
-        transform
-        occlude
-        distanceFactor={1.55}
-        position={[0, 0, 0.02]}
-        rotation={[0, 0, 0]}
-        style={{
-          width: '1280px',
-          height: '720px',
-          pointerEvents: 'none',
-        }}
-      >
-        {mode === 'code' ? <CodeEditorScreen /> : <PortfolioScreen />}
-      </Html>
     </group>
   )
 }
