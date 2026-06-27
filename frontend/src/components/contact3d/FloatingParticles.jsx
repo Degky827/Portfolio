@@ -67,9 +67,9 @@ const fragmentShader = `
   }
 `
 
-const INDIGO = new THREE.Color('#6366f1')
 const CYAN = new THREE.Color('#06b6d4')
-const PURPLE = new THREE.Color('#8b5cf6')
+const CYAN_LIGHT = new THREE.Color('#22d3ee')
+const CYAN_DIM = new THREE.Color('#0891b2')
 
 export default function FloatingParticles({ count = 120 }) {
   const pointsRef = useRef()
@@ -114,9 +114,9 @@ export default function FloatingParticles({ count = 120 }) {
     () => ({
       uTime: { value: 0 },
       uMouse: { value: new THREE.Vector2(0, 0) },
-      uColorA: { value: INDIGO },
-      uColorB: { value: CYAN },
-      uColorC: { value: PURPLE },
+      uColorA: { value: CYAN },
+      uColorB: { value: CYAN_LIGHT },
+      uColorC: { value: CYAN_DIM },
     }),
     []
   )

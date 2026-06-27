@@ -2,10 +2,9 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-const INDIGO = new THREE.Color('#6366f1')
 const CYAN = new THREE.Color('#06b6d4')
-const PURPLE = new THREE.Color('#8b5cf6')
-const WARM = new THREE.Color('#f59e0b')
+const CYAN_LIGHT = new THREE.Color('#22d3ee')
+const CYAN_DIM = new THREE.Color('#0891b2')
 
 export default function ContactLighting({ isMobile }) {
   const keyLightRef = useRef()
@@ -40,13 +39,13 @@ export default function ContactLighting({ isMobile }) {
 
   return (
     <group>
-      <ambientLight intensity={0.1} color="#c7d2fe" />
+      <ambientLight intensity={0.1} color="#cffafe" />
 
       <directionalLight
         ref={keyLightRef}
         position={[5, 8, 5]}
         intensity={1.0}
-        color="#818cf8"
+        color="#22d3ee"
         castShadow={!isMobile}
         shadow-mapSize-width={isMobile ? 512 : 1024}
         shadow-mapSize-height={isMobile ? 512 : 1024}
@@ -62,7 +61,7 @@ export default function ContactLighting({ isMobile }) {
         ref={rimLightRef}
         position={[-6, 4, -4]}
         intensity={0.7}
-        color={PURPLE}
+        color={CYAN_LIGHT}
         distance={20}
         decay={2}
       />
@@ -80,7 +79,7 @@ export default function ContactLighting({ isMobile }) {
         ref={accent2Ref}
         position={[-4, 2, -4]}
         intensity={0.4}
-        color={INDIGO}
+        color={CYAN_DIM}
         distance={16}
         decay={2}
       />
@@ -91,7 +90,7 @@ export default function ContactLighting({ isMobile }) {
         angle={0.4}
         penumbra={0.8}
         intensity={1.2}
-        color="#a5b4fc"
+        color="#67e8f9"
         distance={25}
         decay={2}
         castShadow={!isMobile}
@@ -101,7 +100,7 @@ export default function ContactLighting({ isMobile }) {
         <pointLight
           position={[0, -1, 5]}
           intensity={0.15}
-          color={WARM}
+          color={CYAN}
           distance={10}
           decay={2}
         />
@@ -110,7 +109,7 @@ export default function ContactLighting({ isMobile }) {
       <pointLight
         position={[0, -3, 0]}
         intensity={0.12}
-        color={PURPLE}
+        color={CYAN_DIM}
         distance={12}
         decay={2}
       />

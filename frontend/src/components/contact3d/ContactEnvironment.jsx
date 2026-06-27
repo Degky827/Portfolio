@@ -13,8 +13,8 @@ function HoloGrid({ isMobile }) {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uColorA: { value: new THREE.Color('#6366f1') },
-      uColorB: { value: new THREE.Color('#06b6d4') },
+      uColorA: { value: new THREE.Color('#06b6d4') },
+      uColorB: { value: new THREE.Color('#22d3ee') },
     }),
     []
   )
@@ -83,7 +83,7 @@ function NeonStreaks({ isMobile }) {
         speed: 0.3 + Math.random() * 1.2,
         length: 3 + Math.random() * 6,
         phase: Math.random() * Math.PI * 2,
-        color: i % 3 === 0 ? '#6366f1' : i % 3 === 1 ? '#06b6d4' : '#8b5cf6',
+        color: i % 2 === 0 ? '#06b6d4' : '#22d3ee',
         width: 0.01 + Math.random() * 0.02,
       })),
     [count]
@@ -133,7 +133,7 @@ function AmbientGlow() {
     <mesh ref={meshRef} position={[0, 2, -8]}>
       <sphereGeometry args={[8, 32, 32]} />
       <meshBasicMaterial
-        color="#6366f1"
+        color="#06b6d4"
         transparent
         opacity={0.035}
         side={THREE.BackSide}
@@ -162,7 +162,7 @@ function VolumetricWalls({ isMobile }) {
         <mesh key={`h-${z}`} position={[0, 0, z]} rotation={[0, Math.PI / 2, 0]}>
           <planeGeometry args={[0.02, 16]} />
           <meshBasicMaterial
-            color="#8b5cf6"
+            color="#06b6d4"
             transparent
             opacity={0.02}
             blending={THREE.AdditiveBlending}
@@ -185,7 +185,7 @@ function HolographicLines({ isMobile }) {
         speed: 0.15 + Math.random() * 0.5,
         length: 8 + Math.random() * 12,
         phase: Math.random() * Math.PI * 2,
-        color: i % 2 === 0 ? '#6366f1' : '#06b6d4',
+        color: i % 2 === 0 ? '#06b6d4' : '#22d3ee',
       })),
     [lineCount]
   )

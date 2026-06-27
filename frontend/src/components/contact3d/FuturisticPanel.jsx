@@ -64,7 +64,7 @@ export default function FuturisticPanel({ children, className = '' }) {
         }}
         transition={{ duration: 0.4 }}
         style={{
-          background: 'conic-gradient(from 0deg, rgba(99,102,241,0.3), rgba(6,182,212,0.2), rgba(139,92,246,0.3), rgba(99,102,241,0.3))',
+          background: 'conic-gradient(from 0deg, rgba(6,182,212,0.35), rgba(6,182,212,0.15), rgba(6,182,212,0.35), rgba(6,182,212,0.15))',
           filter: 'blur(20px)',
         }}
       />
@@ -80,11 +80,11 @@ export default function FuturisticPanel({ children, className = '' }) {
           className="absolute inset-0 rounded-3xl"
           animate={isHovered ? {
             background: [
-              'conic-gradient(from 0deg, rgba(99,102,241,0.5), transparent 25%, rgba(6,182,212,0.4) 50%, transparent 75%, rgba(99,102,241,0.5))',
-              'conic-gradient(from 360deg, rgba(99,102,241,0.5), transparent 25%, rgba(6,182,212,0.4) 50%, transparent 75%, rgba(99,102,241,0.5))',
+              'conic-gradient(from 0deg, rgba(6,182,212,0.55), transparent 30%, rgba(6,182,212,0.2) 50%, transparent 70%, rgba(6,182,212,0.55))',
+              'conic-gradient(from 360deg, rgba(6,182,212,0.55), transparent 30%, rgba(6,182,212,0.2) 50%, transparent 70%, rgba(6,182,212,0.55))',
             ],
           } : {
-            background: 'conic-gradient(from 0deg, rgba(99,102,241,0.15), transparent 25%, rgba(6,182,212,0.1) 50%, transparent 75%, rgba(99,102,241,0.15))',
+            background: 'conic-gradient(from 0deg, rgba(6,182,212,0.2), transparent 30%, rgba(6,182,212,0.08) 50%, transparent 70%, rgba(6,182,212,0.2))',
           }}
           transition={{ duration: isHovered ? 4 : 0, repeat: Infinity, ease: 'linear' }}
           style={{
@@ -101,12 +101,12 @@ export default function FuturisticPanel({ children, className = '' }) {
       <div
         className="relative rounded-3xl overflow-hidden"
         style={{
-          background: 'linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(99,102,241,0.03) 100%)',
+          background: 'linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(6,182,212,0.04) 100%)',
           backdropFilter: 'blur(40px) saturate(1.5)',
           WebkitBackdropFilter: 'blur(40px) saturate(1.5)',
           border: '1px solid rgba(255,255,255,0.08)',
           boxShadow: isHovered
-            ? '0 30px 80px rgba(0,0,0,0.4), 0 0 40px rgba(99,102,241,0.12), inset 0 1px 0 rgba(255,255,255,0.1)'
+            ? '0 30px 80px rgba(0,0,0,0.4), 0 0 40px rgba(6,182,212,0.12), inset 0 1px 0 rgba(255,255,255,0.1)'
             : '0 15px 50px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)',
           transformStyle: 'preserve-3d',
           transform: 'translateZ(0)',
@@ -143,7 +143,7 @@ export default function FuturisticPanel({ children, className = '' }) {
           }}
           transition={{ duration: 0.6 }}
           style={{
-            background: 'radial-gradient(ellipse at center, rgba(99,102,241,0.3) 0%, transparent 70%)',
+            background: 'radial-gradient(ellipse at center, rgba(6,182,212,0.3) 0%, transparent 70%)',
             filter: 'blur(40px)',
           }}
         />

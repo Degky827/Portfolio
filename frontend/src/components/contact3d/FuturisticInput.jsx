@@ -42,8 +42,8 @@ export default function FuturisticInput({
         htmlFor={id}
         className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] ml-1 block"
         style={{
-          color: isFocused ? 'rgba(99,102,241,0.9)' : error ? 'rgba(239,68,68,0.7)' : 'rgba(99,102,241,0.5)',
-          textShadow: isFocused ? '0 0 12px rgba(99,102,241,0.3)' : 'none',
+          color: isFocused ? 'rgba(6,182,212,0.9)' : error ? 'rgba(239,68,68,0.7)' : 'rgba(6,182,212,0.5)',
+          textShadow: isFocused ? '0 0 12px rgba(6,182,212,0.3)' : 'none',
           transition: 'all 0.3s ease',
         }}
       >
@@ -80,7 +80,7 @@ export default function FuturisticInput({
             style={{
               background: error
                 ? 'radial-gradient(ellipse, rgba(239,68,68,0.3), transparent 70%)'
-                : 'radial-gradient(ellipse, rgba(99,102,241,0.3), rgba(6,182,212,0.15), transparent 70%)',
+                : 'radial-gradient(ellipse, rgba(6,182,212,0.3), rgba(34,211,238,0.15), transparent 70%)',
               filter: 'blur(12px)',
             }}
           />
@@ -96,13 +96,13 @@ export default function FuturisticInput({
               className="absolute inset-0 rounded-2xl sm:rounded-[1.5rem]"
               animate={isFocused ? {
                 background: [
-                  'conic-gradient(from 0deg, rgba(99,102,241,0.5), transparent 25%, rgba(6,182,212,0.4) 50%, transparent 75%, rgba(99,102,241,0.5))',
-                  'conic-gradient(from 360deg, rgba(99,102,241,0.5), transparent 25%, rgba(6,182,212,0.4) 50%, transparent 75%, rgba(99,102,241,0.5))',
+                  'conic-gradient(from 0deg, rgba(6,182,212,0.55), transparent 30%, rgba(6,182,212,0.2) 50%, transparent 70%, rgba(6,182,212,0.55))',
+                  'conic-gradient(from 360deg, rgba(6,182,212,0.55), transparent 30%, rgba(6,182,212,0.2) 50%, transparent 70%, rgba(6,182,212,0.55))',
                 ],
               } : error ? {
                 background: 'conic-gradient(from 0deg, rgba(239,68,68,0.4), transparent 25%, rgba(239,68,68,0.3) 50%, transparent 75%, rgba(239,68,68,0.4))',
               } : {
-                background: 'conic-gradient(from 0deg, rgba(99,102,241,0.1), transparent 25%, rgba(6,182,212,0.05) 50%, transparent 75%, rgba(99,102,241,0.1))',
+                background: 'conic-gradient(from 0deg, rgba(6,182,212,0.15), transparent 30%, rgba(6,182,212,0.06) 50%, transparent 70%, rgba(6,182,212,0.15))',
               }}
               transition={{ duration: isFocused ? 3 : 0, repeat: Infinity, ease: 'linear' }}
               style={{
@@ -120,14 +120,14 @@ export default function FuturisticInput({
             className="relative rounded-2xl sm:rounded-[1.5rem] overflow-hidden"
             style={{
               background: isFocused
-                ? 'linear-gradient(165deg, rgba(255,255,255,0.07) 0%, rgba(99,102,241,0.04) 50%, rgba(255,255,255,0.03) 100%)'
+                ? 'linear-gradient(165deg, rgba(255,255,255,0.07) 0%, rgba(6,182,212,0.04) 50%, rgba(255,255,255,0.03) 100%)'
                 : 'rgba(255,255,255,0.03)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               boxShadow: isFocused
-                ? '0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.08)'
+                ? '0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(6,182,212,0.1), inset 0 1px 0 rgba(255,255,255,0.08)'
                 : '0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)',
-              border: `1px solid ${isFocused ? 'rgba(99,102,241,0.2)' : error ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)'}`,
+              border: `1px solid ${isFocused ? 'rgba(6,182,212,0.2)' : error ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)'}`,
               transition: 'all 0.3s ease',
             }}
           >
@@ -136,8 +136,8 @@ export default function FuturisticInput({
               className="absolute inset-0 pointer-events-none z-10"
               animate={isFocused ? {
                 background: [
-                  'linear-gradient(180deg, transparent 0%, rgba(99,102,241,0.06) 50%, transparent 100%)',
-                  'linear-gradient(180deg, transparent -50%, rgba(99,102,241,0.06) 0%, transparent 50%)',
+                  'linear-gradient(180deg, transparent 0%, rgba(6,182,212,0.06) 50%, transparent 100%)',
+                  'linear-gradient(180deg, transparent -50%, rgba(6,182,212,0.06) 0%, transparent 50%)',
                 ],
               } : {
                 background: 'transparent',
@@ -151,7 +151,7 @@ export default function FuturisticInput({
               className="absolute inset-0 pointer-events-none z-10"
               animate={{
                 background: isFocused
-                  ? `linear-gradient(135deg, rgba(99,102,241,0.05) 0%, transparent 40%, rgba(6,182,212,0.03) 60%, transparent 100%)`
+                  ? `linear-gradient(135deg, rgba(6,182,212,0.05) 0%, transparent 40%, rgba(34,211,238,0.03) 60%, transparent 100%)`
                   : 'transparent',
                 backgroundPosition: `${50 + rotate.y * 10}% ${50 + rotate.x * 10}%`,
               }}
@@ -163,8 +163,8 @@ export default function FuturisticInput({
               <span
                 className="absolute left-4 sm:left-5 top-1/2 -translate-y-1/2 z-10 transition-all duration-300"
                 style={{
-                  color: isFocused ? 'rgba(99,102,241,0.9)' : error ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.35)',
-                  filter: isFocused ? 'drop-shadow(0 0 6px rgba(99,102,241,0.4))' : 'none',
+                  color: isFocused ? 'rgba(6,182,212,0.9)' : error ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.35)',
+                  filter: isFocused ? 'drop-shadow(0 0 6px rgba(6,182,212,0.4))' : 'none',
                 }}
                 aria-hidden="true"
               >
@@ -185,7 +185,7 @@ export default function FuturisticInput({
               className="w-full bg-transparent outline-none text-white font-medium text-sm sm:text-base relative z-10"
               style={{
                 padding: Icon ? '1rem 1.5rem 1rem 3rem' : '1rem 1.5rem',
-                caretColor: '#818cf8',
+                caretColor: '#06b6d4',
                 color: 'rgba(255,255,255,0.9)',
               }}
             />
@@ -202,10 +202,10 @@ export default function FuturisticInput({
                   left: Icon ? '3rem' : '1.5rem',
                   top: '50%',
                   transform: 'translateY(-50%)',
-                  color: 'rgba(129,140,248,0.5)',
+                  color: 'rgba(6,182,212,0.5)',
                   fontSize: '0.875rem',
                   fontWeight: 500,
-                  filter: isFocused ? 'drop-shadow(0 0 4px rgba(99,102,241,0.3))' : 'none',
+                  filter: isFocused ? 'drop-shadow(0 0 4px rgba(6,182,212,0.3))' : 'none',
                 }}
               >
                 {placeholder}
@@ -221,7 +221,7 @@ export default function FuturisticInput({
               }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
               style={{
-                background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6), rgba(6,182,212,0.4), transparent)',
+                background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.6), rgba(34,211,238,0.4), transparent)',
               }}
             />
           </div>
@@ -236,7 +236,7 @@ export default function FuturisticInput({
           }}
           transition={{ duration: 0.3 }}
           style={{
-            background: 'radial-gradient(ellipse, rgba(99,102,241,0.3), transparent)',
+            background: 'radial-gradient(ellipse, rgba(6,182,212,0.3), transparent)',
             filter: 'blur(4px)',
           }}
         />

@@ -5,33 +5,33 @@ import { useMouseParallaxSubscribe } from './MouseParallaxProvider'
 
 const ICON_CONFIGS = {
   email: {
-    color: '#3b82f6',
-    glowColor: 'rgba(59,130,246,0.4)',
-    bgGlow: 'rgba(59,130,246,0.15)',
+    color: '#06b6d4',
+    glowColor: 'rgba(6,182,212,0.4)',
+    bgGlow: 'rgba(6,182,212,0.15)',
     label: 'Holographic Envelope',
   },
   phone: {
-    color: '#22c55e',
-    glowColor: 'rgba(34,197,94,0.4)',
-    bgGlow: 'rgba(34,197,94,0.15)',
+    color: '#06b6d4',
+    glowColor: 'rgba(6,182,212,0.4)',
+    bgGlow: 'rgba(6,182,212,0.15)',
     label: 'Neon Phone',
   },
   location: {
-    color: '#f59e0b',
-    glowColor: 'rgba(245,158,11,0.4)',
-    bgGlow: 'rgba(245,158,11,0.15)',
+    color: '#06b6d4',
+    glowColor: 'rgba(6,182,212,0.4)',
+    bgGlow: 'rgba(6,182,212,0.15)',
     label: 'Map Beacon',
   },
   linkedin: {
-    color: '#3b82f6',
-    glowColor: 'rgba(59,130,246,0.5)',
-    bgGlow: 'rgba(59,130,246,0.15)',
+    color: '#06b6d4',
+    glowColor: 'rgba(6,182,212,0.5)',
+    bgGlow: 'rgba(6,182,212,0.15)',
     label: 'Metallic Cube',
   },
   github: {
-    color: '#a78bfa',
-    glowColor: 'rgba(167,139,250,0.5)',
-    bgGlow: 'rgba(167,139,250,0.15)',
+    color: '#06b6d4',
+    glowColor: 'rgba(6,182,212,0.5)',
+    bgGlow: 'rgba(6,182,212,0.15)',
     label: 'Chrome Sphere',
   },
 }

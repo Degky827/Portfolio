@@ -63,8 +63,8 @@ export default function FuturisticTextarea({
         htmlFor={id}
         className="text-xs sm:text-sm font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] ml-1 block"
         style={{
-          color: isFocused ? 'rgba(99,102,241,0.9)' : error ? 'rgba(239,68,68,0.7)' : 'rgba(99,102,241,0.5)',
-          textShadow: isFocused ? '0 0 12px rgba(99,102,241,0.3)' : 'none',
+          color: isFocused ? 'rgba(6,182,212,0.9)' : error ? 'rgba(239,68,68,0.7)' : 'rgba(6,182,212,0.5)',
+          textShadow: isFocused ? '0 0 12px rgba(6,182,212,0.3)' : 'none',
           transition: 'all 0.3s ease',
         }}
       >
@@ -102,8 +102,8 @@ export default function FuturisticTextarea({
               background: error
                 ? 'radial-gradient(ellipse, rgba(239,68,68,0.3), transparent 70%)'
                 : isTyping
-                  ? 'radial-gradient(ellipse, rgba(6,182,212,0.25), rgba(99,102,241,0.2), transparent 70%)'
-                  : 'radial-gradient(ellipse, rgba(99,102,241,0.25), rgba(6,182,212,0.12), transparent 70%)',
+                  ? 'radial-gradient(ellipse, rgba(6,182,212,0.3), rgba(34,211,238,0.2), transparent 70%)'
+                  : 'radial-gradient(ellipse, rgba(6,182,212,0.25), rgba(34,211,238,0.12), transparent 70%)',
               filter: isTyping ? 'blur(16px)' : 'blur(12px)',
             }}
           />
@@ -119,13 +119,13 @@ export default function FuturisticTextarea({
               className="absolute inset-0 rounded-2xl sm:rounded-[1.5rem]"
               animate={isFocused ? {
                 background: [
-                  'conic-gradient(from 0deg, rgba(99,102,241,0.5), transparent 25%, rgba(6,182,212,0.4) 50%, transparent 75%, rgba(99,102,241,0.5))',
-                  'conic-gradient(from 360deg, rgba(99,102,241,0.5), transparent 25%, rgba(6,182,212,0.4) 50%, transparent 75%, rgba(99,102,241,0.5))',
+                  'conic-gradient(from 0deg, rgba(6,182,212,0.55), transparent 30%, rgba(6,182,212,0.2) 50%, transparent 70%, rgba(6,182,212,0.55))',
+                  'conic-gradient(from 360deg, rgba(6,182,212,0.55), transparent 30%, rgba(6,182,212,0.2) 50%, transparent 70%, rgba(6,182,212,0.55))',
                 ],
               } : error ? {
                 background: 'conic-gradient(from 0deg, rgba(239,68,68,0.4), transparent 25%, rgba(239,68,68,0.3) 50%, transparent 75%, rgba(239,68,68,0.4))',
               } : {
-                background: 'conic-gradient(from 0deg, rgba(99,102,241,0.1), transparent 25%, rgba(6,182,212,0.05) 50%, transparent 75%, rgba(99,102,241,0.1))',
+                background: 'conic-gradient(from 0deg, rgba(6,182,212,0.15), transparent 30%, rgba(6,182,212,0.06) 50%, transparent 70%, rgba(6,182,212,0.15))',
               }}
               transition={{ duration: isFocused ? 3 : 0, repeat: Infinity, ease: 'linear' }}
               style={{
@@ -143,14 +143,14 @@ export default function FuturisticTextarea({
             className="relative rounded-2xl sm:rounded-[1.5rem] overflow-hidden"
             style={{
               background: isFocused
-                ? 'linear-gradient(165deg, rgba(255,255,255,0.07) 0%, rgba(99,102,241,0.04) 50%, rgba(255,255,255,0.03) 100%)'
+                ? 'linear-gradient(165deg, rgba(255,255,255,0.07) 0%, rgba(6,182,212,0.04) 50%, rgba(255,255,255,0.03) 100%)'
                 : 'rgba(255,255,255,0.03)',
               backdropFilter: 'blur(20px)',
               WebkitBackdropFilter: 'blur(20px)',
               boxShadow: isFocused
-                ? '0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(99,102,241,0.1), inset 0 1px 0 rgba(255,255,255,0.08)'
+                ? '0 8px 32px rgba(0,0,0,0.3), 0 0 20px rgba(6,182,212,0.1), inset 0 1px 0 rgba(255,255,255,0.08)'
                 : '0 4px 16px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.04)',
-              border: `1px solid ${isFocused ? 'rgba(99,102,241,0.2)' : error ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)'}`,
+              border: `1px solid ${isFocused ? 'rgba(6,182,212,0.2)' : error ? 'rgba(239,68,68,0.2)' : 'rgba(255,255,255,0.06)'}`,
               transition: 'all 0.3s ease',
             }}
           >
@@ -162,7 +162,7 @@ export default function FuturisticTextarea({
               } : { opacity: 0 }}
               transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
               style={{
-                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(99,102,241,0.08) 3px, rgba(99,102,241,0.08) 4px)',
+                backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(6,182,212,0.08) 3px, rgba(6,182,212,0.08) 4px)',
               }}
             />
 
@@ -190,11 +190,11 @@ export default function FuturisticTextarea({
                 opacity: isFocused ? [0.4, 0.8, 0.4] : 0,
                 scale: isFocused ? [0.8, 1.2, 0.8] : 0.8,
                 boxShadow: isFocused
-                  ? ['0 0 6px rgba(99,102,241,0.6)', '0 0 12px rgba(99,102,241,0.9)', '0 0 6px rgba(99,102,241,0.6)']
+                  ? ['0 0 6px rgba(6,182,212,0.6)', '0 0 12px rgba(6,182,212,0.9)', '0 0 6px rgba(6,182,212,0.6)']
                   : '0 0 0px transparent',
               }}
               transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
-              style={{ background: 'rgba(99,102,241,0.8)' }}
+              style={{ background: 'rgba(6,182,212,0.8)' }}
             />
 
             {/* Holographic reflection */}
@@ -202,7 +202,7 @@ export default function FuturisticTextarea({
               className="absolute inset-0 pointer-events-none z-10"
               animate={{
                 background: isFocused
-                  ? 'linear-gradient(135deg, rgba(99,102,241,0.05) 0%, transparent 40%, rgba(6,182,212,0.03) 60%, transparent 100%)'
+                  ? 'linear-gradient(135deg, rgba(6,182,212,0.05) 0%, transparent 40%, rgba(34,211,238,0.03) 60%, transparent 100%)'
                   : 'transparent',
                 backgroundPosition: `${50 + rotate.y * 8}% ${50 + rotate.x * 8}%`,
               }}
@@ -214,7 +214,7 @@ export default function FuturisticTextarea({
               className="absolute inset-0 pointer-events-none z-0"
               animate={{
                 boxShadow: isFocused
-                  ? 'inset 0 2px 20px rgba(99,102,241,0.06), inset 0 -2px 20px rgba(6,182,212,0.04)'
+                  ? 'inset 0 2px 20px rgba(6,182,212,0.06), inset 0 -2px 20px rgba(34,211,238,0.04)'
                   : 'inset 0 1px 10px rgba(0,0,0,0.1)',
               }}
               transition={{ duration: 0.3 }}
@@ -225,8 +225,8 @@ export default function FuturisticTextarea({
               <span
                 className="absolute left-4 sm:left-5 top-5 sm:top-6 z-10 transition-all duration-300"
                 style={{
-                  color: isFocused ? 'rgba(99,102,241,0.9)' : error ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.35)',
-                  filter: isFocused ? 'drop-shadow(0 0 6px rgba(99,102,241,0.4))' : 'none',
+                  color: isFocused ? 'rgba(6,182,212,0.9)' : error ? 'rgba(239,68,68,0.7)' : 'rgba(255,255,255,0.35)',
+                  filter: isFocused ? 'drop-shadow(0 0 6px rgba(6,182,212,0.4))' : 'none',
                 }}
                 aria-hidden="true"
               >
@@ -248,7 +248,7 @@ export default function FuturisticTextarea({
               className="w-full bg-transparent outline-none text-white font-medium text-sm sm:text-base relative z-10 resize-none"
               style={{
                 padding: Icon ? '1.25rem 1.5rem 1.25rem 3rem' : '1.25rem 1.5rem',
-                caretColor: '#818cf8',
+                caretColor: '#06b6d4',
                 color: 'rgba(255,255,255,0.9)',
                 lineHeight: '1.6',
               }}
@@ -261,8 +261,8 @@ export default function FuturisticTextarea({
                 animate={{ opacity: 1, y: 0 }}
                 className="absolute bottom-3 right-4 text-[10px] font-mono z-20"
                 style={{
-                  color: charCount > 0 ? 'rgba(99,102,241,0.6)' : 'rgba(255,255,255,0.2)',
-                  textShadow: charCount > 0 ? '0 0 6px rgba(99,102,241,0.3)' : 'none',
+                  color: charCount > 0 ? 'rgba(6,182,212,0.6)' : 'rgba(255,255,255,0.2)',
+                  textShadow: charCount > 0 ? '0 0 6px rgba(6,182,212,0.3)' : 'none',
                 }}
               >
                 {charCount} chars
@@ -278,7 +278,7 @@ export default function FuturisticTextarea({
               }}
               transition={{ duration: 0.4, ease: 'easeOut' }}
               style={{
-                background: 'linear-gradient(90deg, transparent, rgba(99,102,241,0.6), rgba(6,182,212,0.4), transparent)',
+                background: 'linear-gradient(90deg, transparent, rgba(6,182,212,0.6), rgba(34,211,238,0.4), transparent)',
               }}
             />
           </div>
@@ -293,7 +293,7 @@ export default function FuturisticTextarea({
           }}
           transition={{ duration: 0.3 }}
           style={{
-            background: 'radial-gradient(ellipse, rgba(99,102,241,0.3), transparent)',
+            background: 'radial-gradient(ellipse, rgba(6,182,212,0.3), transparent)',
             filter: 'blur(4px)',
           }}
         />
