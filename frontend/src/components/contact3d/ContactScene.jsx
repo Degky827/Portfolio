@@ -24,23 +24,23 @@ function SceneEnvironment({ isMobile }) {
     <>
       <SmoothCamera isMobile={isMobile} />
 
-      <fog attach="fog" args={['#06061a', 6, 30]} />
+      <fog attach="fog" args={['#06061a', 5, 28]} />
 
       <ContactLighting isMobile={isMobile} />
-      <ContactEnvironment />
-      <FloatingParticles count={isMobile ? 50 : 150} />
+      <ContactEnvironment isMobile={isMobile} />
+      <FloatingParticles count={isMobile ? 40 : 180} />
 
       <Stars
         radius={45}
         depth={45}
-        count={isMobile ? 200 : 1200}
+        count={isMobile ? 150 : 1500}
         factor={2.5}
-        saturation={0.1}
+        saturation={0.15}
         fade
-        speed={0.3}
+        speed={0.4}
       />
 
-      <PostProcessing isMobile={isMobile} />
+      <PostProcessing isMobile={isMobile} quality="ultra" />
     </>
   )
 }
@@ -62,7 +62,7 @@ export default function ContactScene({ children }) {
               stencil: false,
               depth: true,
               toneMapping: 4,
-              toneMappingExposure: 1.1,
+              toneMappingExposure: 1.15,
             }}
             style={{ background: '#06061a' }}
           >
