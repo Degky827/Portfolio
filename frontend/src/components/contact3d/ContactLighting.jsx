@@ -2,9 +2,9 @@ import { useRef } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
-const CYAN = new THREE.Color('#06b6d4')
-const CYAN_LIGHT = new THREE.Color('#22d3ee')
-const CYAN_DIM = new THREE.Color('#0891b2')
+const GREEN = new THREE.Color('#22c55e')
+const GREEN_LIGHT = new THREE.Color('#4ade80')
+const GREEN_DIM = new THREE.Color('#16a34a')
 
 export default function ContactLighting({ isMobile, darkMode = true }) {
   const keyLightRef = useRef()
@@ -14,9 +14,9 @@ export default function ContactLighting({ isMobile, darkMode = true }) {
   const spotRef = useRef()
 
   const ambientIntensity = darkMode ? 0.1 : 0.5
-  const ambientColor = darkMode ? '#cffafe' : '#e0f2fe'
+  const ambientColor = darkMode ? '#dcfce7' : '#f0fdf4'
   const keyIntensity = darkMode ? 1.0 : 1.4
-  const keyColor = darkMode ? '#22d3ee' : '#0891b2'
+  const keyColor = darkMode ? '#4ade80' : '#16a34a'
   const rimIntensity = darkMode ? 0.7 : 0.3
   const accentIntensity = darkMode ? 0.5 : 0.2
   const spotIntensity = darkMode ? 1.2 : 0.6
@@ -69,7 +69,7 @@ export default function ContactLighting({ isMobile, darkMode = true }) {
         ref={rimLightRef}
         position={[-6, 4, -4]}
         intensity={rimIntensity}
-        color={CYAN_LIGHT}
+        color={GREEN_LIGHT}
         distance={20}
         decay={2}
       />
@@ -78,7 +78,7 @@ export default function ContactLighting({ isMobile, darkMode = true }) {
         ref={accent1Ref}
         position={[4, 3, -3]}
         intensity={accentIntensity}
-        color={CYAN}
+        color={GREEN}
         distance={18}
         decay={2}
       />
@@ -87,7 +87,7 @@ export default function ContactLighting({ isMobile, darkMode = true }) {
         ref={accent2Ref}
         position={[-4, 2, -4]}
         intensity={darkMode ? 0.4 : 0.15}
-        color={CYAN_DIM}
+        color={GREEN_DIM}
         distance={16}
         decay={2}
       />
@@ -98,7 +98,7 @@ export default function ContactLighting({ isMobile, darkMode = true }) {
         angle={0.4}
         penumbra={0.8}
         intensity={spotIntensity}
-        color="#67e8f9"
+        color="#86efac"
         distance={25}
         decay={2}
         castShadow={!isMobile}
@@ -108,7 +108,7 @@ export default function ContactLighting({ isMobile, darkMode = true }) {
         <pointLight
           position={[0, -1, 5]}
           intensity={darkMode ? 0.15 : 0.05}
-          color={CYAN}
+          color={GREEN}
           distance={10}
           decay={2}
         />
@@ -117,7 +117,7 @@ export default function ContactLighting({ isMobile, darkMode = true }) {
       <pointLight
         position={[0, -3, 0]}
         intensity={darkMode ? 0.12 : 0.04}
-        color={CYAN_DIM}
+        color={GREEN_DIM}
         distance={12}
         decay={2}
       />
