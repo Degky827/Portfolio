@@ -23,8 +23,9 @@ export default function Message({ message }) {
         className={`max-w-[80%] px-4 py-3 rounded-2xl text-sm leading-relaxed ${
           isUser
             ? 'bg-primary text-white rounded-br-md'
-            : 'bg-gray-100 dark:bg-neutral-800 text-gray-900 dark:text-gray-100 rounded-bl-md'
+            : 'bg-gray-100 dark:bg-neutral-800 rounded-bl-md'
         }`}
+        style={!isUser ? { color: 'var(--text-primary)' } : undefined}
       >
         <p className="whitespace-pre-wrap break-words">{message.content}</p>
       </div>
