@@ -158,8 +158,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
       fullWidth: !!s.fullWidth,
       bgColor: s.bgColor || '#ffffff',
       textColor: s.textColor || '#374151',
-      hoverColor: s.hoverColor || '#6366f1',
-      activeLinkColor: s.activeLinkColor || '#6366f1',
+      hoverColor: s.hoverColor || '#22c55e',
+      activeLinkColor: s.activeLinkColor || '#22c55e',
       borderColor: s.borderColor || '#e5e7eb',
       shadowColor: s.shadowColor || 'rgba(0,0,0,0.1)',
       glassmorphism: s.glassmorphism !== false,
@@ -173,9 +173,9 @@ export default function Navbar({ darkMode, onToggleDark }) {
       resumeEnabled: s.resumeEnabled !== false,
       resumeText: s.resumeText || t('nav.downloadCv'),
       resumeFileUrl: s.resumeFileUrl || siteSettings?.resume?.url || '',
-      resumeBgColor: s.resumeBgColor || '#6366f1',
+      resumeBgColor: s.resumeBgColor || '#22c55e',
       resumeTextColor: s.resumeTextColor || '#ffffff',
-      resumeHoverColor: s.resumeHoverColor || '#4f46e5',
+      resumeHoverColor: s.resumeHoverColor || '#16a34a',
       resumeBorderRadius: s.resumeBorderRadius ?? 9999,
       resumeButtonSize: s.resumeButtonSize || 'md',
       languageEnabled: siteSettings?.languageEnabled !== false,
@@ -183,10 +183,10 @@ export default function Navbar({ darkMode, onToggleDark }) {
       themeMode: s.themeMode || 'auto',
       lightBg: s.lightTheme?.bgColor || '#ffffff',
       lightText: s.lightTheme?.textColor || '#1f2937',
-      lightHover: s.lightTheme?.hoverColor || '#6366f1',
+      lightHover: s.lightTheme?.hoverColor || '#22c55e',
       darkBg: s.darkTheme?.bgColor || '#0f172a',
       darkText: s.darkTheme?.textColor || '#e2e8f0',
-      darkHover: s.darkTheme?.hoverColor || '#818cf8',
+      darkHover: s.darkTheme?.hoverColor || '#4ade80',
       hamburgerColor: s.hamburgerColor || '#374151',
       hamburgerPosition: s.hamburgerPosition || 'right',
       hamburgerWidth: s.hamburgerWidth ?? 24,
@@ -247,24 +247,23 @@ export default function Navbar({ darkMode, onToggleDark }) {
       style.right = '0'
       style.margin = '0 auto'
     }
+    const lightBg = darkMode
+      ? (ns?.darkTheme?.bgColor || settings.bgColor)
+      : settings.bgColor
     if (scrolled) {
       if (settings.glassmorphism) {
-        // glass-nav CSS handles the translucent background + blur
+        style.backgroundColor = darkMode ? 'rgba(11,13,16,0.92)' : 'rgba(255,255,255,0.95)'
       } else if (settings.scrollEffect === 'none') {
         style.backgroundColor = 'transparent'
       } else {
-        style.backgroundColor = darkMode
-          ? (ns?.darkTheme?.bgColor || settings.bgColor)
-          : settings.bgColor
+        style.backgroundColor = lightBg
       }
       if (settings.scrollEffect === 'blur') {
         style.backdropFilter = 'blur(12px)'
         style.WebkitBackdropFilter = 'blur(12px)'
       }
-    } else if (!settings.transparent) {
-      style.backgroundColor = darkMode
-        ? (ns?.darkTheme?.bgColor || settings.bgColor)
-        : settings.bgColor
+    } else {
+      style.backgroundColor = darkMode ? 'rgba(11,13,16,0.92)' : 'rgba(255,255,255,0.95)'
     }
     style.color = darkMode
       ? (ns?.darkTheme?.textColor || settings.textColor)
@@ -439,7 +438,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       className={`${positionClass} top-0 z-[1000] transition-[background-color,box-shadow,padding] duration-500 ${
         scrolled
           ? `${scrolledClasses} ${settings.glassmorphism ? 'glass-nav' : ''}`
-          : 'bg-transparent py-5 sm:py-6'
+          : 'py-5 sm:py-6'
       }`}
     >
       <div
