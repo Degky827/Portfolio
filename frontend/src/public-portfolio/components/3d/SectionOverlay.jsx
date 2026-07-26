@@ -164,13 +164,14 @@ export default function SectionOverlay() {
             >
               {Icon && <Icon size={20} />}
             </div>
-            <h2 className="text-lg font-bold text-gray-900 dark:text-white font-display">
+            <h2 className="text-lg font-bold font-display" style={{ color: 'var(--text-primary)' }}>
               {t(config.labelKey)}
             </h2>
           </div>
           <button
             onClick={handleClose}
-            className="p-2 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+            className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+            style={{ color: 'var(--text-primary)' }}
             aria-label="Close panel"
           >
             <X size={20} />
