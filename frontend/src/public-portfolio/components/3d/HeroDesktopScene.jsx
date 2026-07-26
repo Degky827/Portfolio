@@ -225,9 +225,10 @@ function ExpandButton({ onClick, icon: Icon, label, darkMode }) {
       whileTap={{ scale: 0.9 }}
       className={`absolute top-3 right-3 z-20 p-2 rounded-xl backdrop-blur-md border transition-all shadow-lg ${
         darkMode
-          ? 'bg-black/60 border-white/10 text-white/70 hover:text-white hover:bg-black/80'
-          : 'bg-white/60 border-black/10 text-black/50 hover:text-black/80 hover:bg-white/80'
+          ? 'bg-black/60 border-white/10 hover:bg-black/80'
+          : 'bg-white/60 border-black/10 hover:bg-white/80'
       }`}
+      style={{ color: 'var(--text-primary)' }}
       title={label}
       aria-label={label}
     >
@@ -312,9 +313,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
             </Canvas>
 
             <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-4">
-              <span className={`text-xs font-bold uppercase tracking-[0.2em] ${
-                darkMode ? 'text-white/40' : 'text-black/40'
-              }`}>
+              <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-primary)' }}>
                 3D Workspace
               </span>
               <div className="flex items-center gap-2">
@@ -324,9 +323,10 @@ export default function HeroDesktopScene({ className = '', profileData }) {
                   whileTap={{ scale: 0.9 }}
                   className={`p-2.5 rounded-xl backdrop-blur-md border transition-all ${
                     darkMode
-                      ? 'bg-white/10 border-white/10 text-white/70 hover:text-white hover:bg-white/20'
-                      : 'bg-black/10 border-black/10 text-black/50 hover:text-black/80 hover:bg-black/20'
+                      ? 'bg-white/10 border-white/10 hover:bg-white/20'
+                      : 'bg-black/10 border-black/10 hover:bg-black/20'
                   }`}
+                  style={{ color: 'var(--text-primary)' }}
                   title="Reset camera"
                   aria-label="Reset camera"
                 >
@@ -338,9 +338,10 @@ export default function HeroDesktopScene({ className = '', profileData }) {
                   whileTap={{ scale: 0.9 }}
                   className={`p-2.5 rounded-xl backdrop-blur-md border transition-all ${
                     darkMode
-                      ? 'bg-white/10 border-white/10 text-white/70 hover:text-white hover:bg-white/20'
-                      : 'bg-black/10 border-black/10 text-black/50 hover:text-black/80 hover:bg-black/20'
+                      ? 'bg-white/10 border-white/10 hover:bg-white/20'
+                      : 'bg-black/10 border-black/10 hover:bg-black/20'
                   }`}
+                  style={{ color: 'var(--text-primary)' }}
                   title="Collapse"
                   aria-label="Collapse 3D workspace"
                 >
