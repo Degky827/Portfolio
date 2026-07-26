@@ -1,14 +1,17 @@
 import { useMemo, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import CodeScreenCanvas from './CodeScreenCanvas'
+import PortfolioDashboardScreen from './PortfolioDashboardScreen'
 
 /**
  * MonitorScreen
  *
- * Renders the code editor as a CanvasTexture on a plane.
- * No Html component — pure Three.js mesh with canvas texture.
+ * Renders content on the monitor screen as a CanvasTexture.
+ * Supports two modes:
+ * - 'code': VS Code-like code editor (default)
+ * - 'dashboard': Portfolio dashboard with profile info
  */
-export default function MonitorScreen({ position = [0, 0, 0] }) {
+export default function MonitorScreen({ position = [0, 0, 0], mode = 'code', profileData }) {
   const screenW = 2.48
   const screenH = 1.38
 
@@ -51,8 +54,12 @@ export default function MonitorScreen({ position = [0, 0, 0] }) {
         decay={2}
       />
 
-      {/* Code editor canvas texture */}
-      <CodeScreenCanvas screenW={screenW} screenH={screenH} />
+      {/* Screen content */}
+      {mode === 'dashboard' ? (
+        <PortfolioDashboardScreen screenW={screenW} screenH={screenH} profileData={profileData} />
+      ) : (
+        <CodeScreenCanvas screenW={screenW} screenH={screenH} />
+      )}
 
       {/* Glass reflection overlay */}
       <mesh position={[0, 0, 0.035]}>
