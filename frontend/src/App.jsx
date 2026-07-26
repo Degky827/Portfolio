@@ -3,6 +3,7 @@ import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './shared/hooks'
 import ErrorBoundary from './shared/components/ErrorBoundary'
 import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
+import IntroSystem from './public-portfolio/intro/IntroSystem'
 
 const Navbar = lazy(() => import('./public-portfolio/layout/Navbar'))
 const Footer = lazy(() => import('./public-portfolio/layout/Footer'))
@@ -15,14 +16,14 @@ const AdminRoutes = lazy(() => import('./admin-manager/routes/AdminRoutes'))
 const WorkspaceScene = lazy(() => import('./public-portfolio/components/3d/WorkspaceScene'))
 
 const layoutSpinner = (
-  <div className="min-h-screen flex items-center justify-center bg-white dark:bg-black">
-    <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+  <div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+    <div className="w-10 h-10 border-4 rounded-full animate-spin" style={{ borderColor: 'rgba(99, 102, 241, 0.3)', borderTopColor: 'var(--input-focus-border)' }} />
   </div>
 )
 
 const sectionSpinner = (
   <div className="h-64 flex items-center justify-center">
-    <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
+    <div className="w-10 h-10 border-4 rounded-full animate-spin" style={{ borderColor: 'rgba(99, 102, 241, 0.3)', borderTopColor: 'var(--input-focus-border)' }} />
   </div>
 )
 
@@ -42,7 +43,7 @@ function PublicLayout() {
   const handleChatClose = useCallback(() => setChatOpen(false), [])
 
   return (
-    <div className="min-h-screen bg-white dark:bg-black transition-colors duration-300">
+    <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
       <ScrollProgressBar />
       <Suspense fallback={null}>
         <Navbar darkMode={darkMode} onToggleDark={toggleDarkMode} />
@@ -67,6 +68,7 @@ function App() {
   return (
     <ErrorBoundary>
       <ScrollToTop />
+      <IntroSystem />
       <Suspense fallback={layoutSpinner}>
         <Routes>
           <Route element={<PublicLayout />}>
@@ -74,12 +76,12 @@ function App() {
             <Route path="/:customSlug" element={<DynamicCustomPage />} />
           </Route>
           <Route path="/workspace" element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#0a0a1a]"><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a1a' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
               <WorkspaceScene />
             </Suspense>
           } />
           <Route path="/workspace/:section" element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-[#0a0a1a]"><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a1a' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
               <WorkspaceScene />
             </Suspense>
           } />
