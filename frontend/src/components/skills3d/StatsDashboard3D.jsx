@@ -401,13 +401,13 @@ export default function StatsDashboard3D({
             animate={{ rotate: 360 }}
             transition={{ duration: 4, repeat: Infinity, ease: 'linear' }}
           >
-            <Cpu size={14} className="text-cyan-400" />
+            <Cpu size={14} style={{ color: 'var(--text-primary)' }} />
           </motion.div>
-          <span className="text-xs font-bold tracking-[0.2em] text-cyan-400 uppercase">
+          <span className="text-xs font-bold tracking-[0.2em] uppercase" style={{ color: 'var(--text-primary)' }}>
             Analytics
           </span>
         </div>
-        <h3 className="text-lg sm:text-xl font-bold text-white/80">
+        <h3 className="text-lg sm:text-xl font-bold" style={{ color: 'var(--text-primary)' }}>
           Performance Metrics
         </h3>
       </motion.div>
@@ -463,7 +463,7 @@ export default function StatsDashboard3D({
                 {stat.label}
               </motion.span>
 
-              <span className="text-[10px] text-white/30 mt-1">
+              <span className="text-[10px] mt-1" style={{ color: 'var(--text-primary)' }}>
                 {stat.value} total
               </span>
             </div>
@@ -492,7 +492,7 @@ export default function StatsDashboard3D({
             }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
-          <span className="text-[10px] font-bold tracking-[0.2em] text-cyan-400/60 uppercase">
+          <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: 'var(--text-primary)' }}>
             System Online
           </span>
           <motion.div
