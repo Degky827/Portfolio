@@ -64,11 +64,11 @@ const CertificateGallery = memo(function CertificateGallery({ certificates = [],
       {/* Section Header */}
       <div className="flex items-center gap-3 mb-6 sm:mb-8">
         <div className="w-1.5 h-1.5 rounded-full bg-cyan-400/60 animate-pulse" />
-        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-cyan-400/50">
+        <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-primary)' }}>
           {t('about.certificationsPrefix') || 'Certifications'}
         </span>
         <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/20 to-transparent" />
-        <span className="text-[10px] sm:text-[11px] font-mono text-purple-400/40">
+        <span className="text-[10px] sm:text-[11px] font-mono" style={{ color: 'var(--text-primary)' }}>
           {certificates.length} earned
         </span>
       </div>
