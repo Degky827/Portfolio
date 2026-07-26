@@ -116,7 +116,8 @@ function AnimatedPlaceholder({ text, isFocused }) {
       {!isFocused && (
         <motion.span
           key="placeholder"
-          className="absolute left-12 top-1/2 -translate-y-1/2 text-sm text-slate-500 pointer-events-none z-10"
+          className="absolute left-12 top-1/2 -translate-y-1/2 text-sm pointer-events-none z-10"
+          style={{ color: 'var(--text-primary)' }}
           initial={{ opacity: 0, x: -10 }}
           animate={{ opacity: 1, x: 0 }}
           exit={{ opacity: 0, x: 10 }}
@@ -246,7 +247,8 @@ export default function HolographicSearch({ value, onChange, onClear, placeholde
             onChange={onChange}
             onFocus={handleFocus}
             onBlur={handleBlur}
-            className="w-full pl-14 pr-12 py-4 bg-transparent text-white text-sm font-medium outline-none relative z-10"
+            className="w-full pl-14 pr-12 py-4 bg-transparent text-sm font-medium outline-none relative z-10"
+            style={{ color: 'var(--text-primary)' }}
             placeholder=" "
             aria-label={ariaLabel}
           />
@@ -312,7 +314,7 @@ export default function HolographicSearch({ value, onChange, onClear, placeholde
             </span>
           </div>
           <div className="flex items-center gap-1.5">
-            <span className="text-[10px] text-slate-600 font-mono">AI</span>
+            <span className="text-[10px] font-mono" style={{ color: 'var(--text-primary)' }}>AI</span>
             <motion.div
               className="w-1 h-1 rounded-full bg-cyan-500"
               animate={isFocused ? { opacity: [0.3, 1, 0.3] } : { opacity: 0.2 }}

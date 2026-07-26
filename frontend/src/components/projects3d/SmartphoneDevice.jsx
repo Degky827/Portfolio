@@ -35,7 +35,7 @@ function DynamicIsland({ color, isHovered }) {
             }}
             transition={{ duration: 1.5, repeat: Infinity }}
           />
-          <span className="text-[8px] font-bold text-white/60 tracking-wider uppercase">Live</span>
+          <span className="text-[8px] font-bold tracking-wider uppercase" style={{ color: 'var(--text-primary)' }}>Live</span>
         </motion.div>
       </div>
     </motion.div>
@@ -178,12 +178,12 @@ function ScreenContent({ app, color, isHovered }) {
 
       {/* Status bar */}
       <div className="relative z-10 flex items-center justify-between px-5 pt-3 pb-1">
-        <span className="text-[9px] font-semibold text-white/70">9:41</span>
+        <span className="text-[9px] font-semibold" style={{ color: 'var(--text-primary)' }}>9:41</span>
         <div className="flex items-center gap-1">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/60">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-primary)' }}>
             <path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" />
           </svg>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="text-white/60">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-primary)' }}>
             <rect x="1" y="6" width="18" height="12" rx="2" ry="2" />
             <line x1="23" y1="13" x2="23" y2="11" />
           </svg>
@@ -216,10 +216,10 @@ function ScreenContent({ app, color, isHovered }) {
           </span>
         </motion.div>
 
-        <h4 className="text-[11px] font-bold text-white text-center leading-tight mb-1 line-clamp-2">
+        <h4 className="text-[11px] font-bold text-center leading-tight mb-1 line-clamp-2" style={{ color: 'var(--text-primary)' }}>
           {app.title}
         </h4>
-        <p className="text-[9px] text-white/40 text-center line-clamp-1">
+        <p className="text-[9px] text-center line-clamp-1" style={{ color: 'var(--text-primary)' }}>
           {app.description}
         </p>
       </div>

@@ -386,7 +386,7 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
           </div>
 
           {/* Description */}
-          <p className="text-xs text-slate-400 mb-3 leading-relaxed line-clamp-2">
+          <p className="text-xs mb-3 leading-relaxed line-clamp-2" style={{ color: 'var(--text-primary)' }}>
             {desc}
           </p>
 
