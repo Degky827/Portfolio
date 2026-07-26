@@ -1,6 +1,6 @@
-import { Suspense, useMemo, useState, useEffect, useCallback } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, Preload, Float } from '@react-three/drei'
+import { Suspense, useMemo, useState, useEffect, useCallback, useRef } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Preload, Float } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Maximize2, Minimize2, RotateCcw } from 'lucide-react'
 import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
@@ -12,7 +12,94 @@ import PC from './PC'
 import Speaker from './Speaker'
 import NeonBackground from './NeonBackground'
 
-function SceneContent({ darkMode, isMobile, profileData }) {
+const MAX_DRAG_X = 12 * (Math.PI / 180)
+const MAX_DRAG_Y = 35 * (Math.PI / 180)
+const RETURN_LERP = 0.05
+const IDLE_WOBBLE_SPEED = 0.3
+const IDLE_WOBBLE_AMP = 0.02
+
+function DesktopDragController({ groupRef, canvasRef }) {
+  const isDragging = useRef(false)
+  const dragStart = useRef({ x: 0, y: 0 })
+  const rotationOffset = useRef({ x: 0, y: 0 })
+  const currentRotation = useRef({ x: 0, y: 0 })
+  const idlePhase = useRef(0)
+
+  useEffect(() => {
+    const canvas = canvasRef?.current
+    if (!canvas) return
+
+    const handlePointerDown = (e) => {
+      isDragging.current = true
+      dragStart.current.x = e.clientX
+      dragStart.current.y = e.clientY
+      canvas.setPointerCapture(e.pointerId)
+    }
+
+    const handlePointerMove = (e) => {
+      if (!isDragging.current) return
+      const dx = e.clientX - dragStart.current.x
+      const dy = e.clientY - dragStart.current.y
+      rotationOffset.current.y = THREE.MathUtils.clamp(
+        (dx / window.innerWidth) * Math.PI * 0.5,
+        -MAX_DRAG_Y,
+        MAX_DRAG_Y
+      )
+      rotationOffset.current.x = THREE.MathUtils.clamp(
+        (dy / window.innerHeight) * Math.PI * 0.3,
+        -MAX_DRAG_X,
+        MAX_DRAG_X
+      )
+    }
+
+    const handlePointerUp = (e) => {
+      isDragging.current = false
+      rotationOffset.current.x = 0
+      rotationOffset.current.y = 0
+      canvas.releasePointerCapture(e.pointerId)
+    }
+
+    canvas.addEventListener('pointerdown', handlePointerDown, { passive: true })
+    canvas.addEventListener('pointermove', handlePointerMove, { passive: true })
+    canvas.addEventListener('pointerup', handlePointerUp, { passive: true })
+    canvas.addEventListener('pointercancel', handlePointerUp, { passive: true })
+
+    return () => {
+      canvas.removeEventListener('pointerdown', handlePointerDown)
+      canvas.removeEventListener('pointermove', handlePointerMove)
+      canvas.removeEventListener('pointerup', handlePointerUp)
+      canvas.removeEventListener('pointercancel', handlePointerUp)
+    }
+  }, [canvasRef])
+
+  useFrame((state, delta) => {
+    if (!groupRef.current) return
+
+    const targetX = rotationOffset.current.x
+    const targetY = rotationOffset.current.y
+
+    if (isDragging.current) {
+      currentRotation.current.x = THREE.MathUtils.lerp(currentRotation.current.x, targetX, 0.15)
+      currentRotation.current.y = THREE.MathUtils.lerp(currentRotation.current.y, targetY, 0.15)
+    } else {
+      idlePhase.current += delta * IDLE_WOBBLE_SPEED
+      const idleX = Math.sin(idlePhase.current) * IDLE_WOBBLE_AMP
+      const idleY = Math.cos(idlePhase.current * 0.7) * IDLE_WOBBLE_AMP * 0.5
+
+      currentRotation.current.x = THREE.MathUtils.lerp(currentRotation.current.x, idleX, RETURN_LERP)
+      currentRotation.current.y = THREE.MathUtils.lerp(currentRotation.current.y, idleY, RETURN_LERP)
+    }
+
+    groupRef.current.rotation.x = currentRotation.current.x
+    groupRef.current.rotation.y = currentRotation.current.y
+  })
+
+  return null
+}
+
+function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
+  const desktopGroupRef = useRef()
+
   const bgColor = darkMode ? '#0891b2' : '#ecfeff'
   const fogColor = useMemo(() => new THREE.Color(bgColor), [bgColor])
   const cyanColor = useMemo(() => new THREE.Color('#06b6d4'), [])
@@ -90,8 +177,9 @@ function SceneContent({ darkMode, isMobile, profileData }) {
       </mesh>
 
       <Suspense fallback={null}>
-        <Float speed={1.5} rotationIntensity={0.03} floatIntensity={0.08}>
-          <group>
+        <Float speed={1.5} rotationIntensity={0} floatIntensity={0.08}>
+          <group ref={desktopGroupRef} position={[0.5, 0, 0]}>
+            <DesktopDragController groupRef={desktopGroupRef} canvasRef={canvasRef} />
             <Desk position={[0, 0, 0]} />
             <Monitor
               position={[0, 0, -0.3]}
@@ -125,18 +213,6 @@ function SceneContent({ darkMode, isMobile, profileData }) {
       </Suspense>
 
       <Preload all />
-
-      <OrbitControls
-        enablePan={false}
-        enableZoom={!isMobile}
-        minDistance={isMobile ? 4 : 3}
-        maxDistance={isMobile ? 8 : 10}
-        minPolarAngle={Math.PI / 4}
-        maxPolarAngle={Math.PI / 2.5}
-        autoRotate
-        autoRotateSpeed={isMobile ? 0.3 : 0.4}
-        target={[0, 0.8, 0]}
-      />
     </>
   )
 }
@@ -165,6 +241,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
   const darkMode = useDarkModeScene()
   const [expanded, setExpanded] = useState(false)
   const [cameraKey, setCameraKey] = useState(0)
+  const canvasRef = useRef(null)
 
   const handleToggle = useCallback(() => {
     setExpanded((prev) => !prev)
@@ -175,7 +252,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
     setCameraKey((k) => k + 1)
   }, [])
 
-  const mobileCamera = isMobile
+  const inlineCamera = isMobile
     ? { position: [2.5, 2.2, 5], fov: 45, near: 0.1, far: 100 }
     : { position: [3.5, 2.8, 5.5], fov: 35, near: 0.1, far: 100 }
 
@@ -183,8 +260,9 @@ export default function HeroDesktopScene({ className = '', profileData }) {
     <>
       <div className={`relative w-full h-full ${className}`}>
         <Canvas
+          ref={canvasRef}
           key={`inline-${cameraKey}`}
-          camera={mobileCamera}
+          camera={inlineCamera}
           dpr={isMobile ? [1, 1] : [1, 1.5]}
           gl={{
             antialias: !isMobile,
@@ -195,7 +273,12 @@ export default function HeroDesktopScene({ className = '', profileData }) {
           }}
           style={{ background: 'transparent' }}
         >
-          <SceneContent darkMode={darkMode} isMobile={isMobile} profileData={profileData} />
+          <SceneContent
+            darkMode={darkMode}
+            isMobile={isMobile}
+            profileData={profileData}
+            canvasRef={canvasRef}
+          />
         </Canvas>
 
         {!isMobile && (
@@ -225,7 +308,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
               shadows
               style={{ background: darkMode ? '#0891b2' : '#ecfeff' }}
             >
-              <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} />
+              <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} canvasRef={canvasRef} />
             </Canvas>
 
             <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-4">
