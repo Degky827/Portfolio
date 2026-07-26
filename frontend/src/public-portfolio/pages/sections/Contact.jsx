@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, lazy, Suspense, useCallback, useMemo } from 'react'
+import { useState, useRef, useEffect, lazy, Suspense, useCallback, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, MapPin, User, MessageSquare } from 'lucide-react'
@@ -7,6 +7,7 @@ import { logPortfolioVisit, logPortfolioEngagement } from '../../../shared/servi
 import { getContactContent, createMessage } from '../../../shared/services/contactService'
 import { getSettings } from '../../../shared/services/settingsService'
 import { MouseParallaxProvider, useMouseParallaxSubscribe } from '../../../components/contact3d/MouseParallaxProvider'
+import { createContainerVariants, defaultViewport } from '../../shared/animations'
 
 const ContactScene = lazy(() => import('../../../components/contact3d/ContactScene'))
 const FuturisticPanel = lazy(() => import('../../../components/contact3d/FuturisticPanel'))
@@ -71,7 +72,7 @@ function HeroParallaxElements() {
   return { transforms }
 }
 
-function ContactContent({ content, contactFormEnabled, values, errors, touched, fieldError, handleChange, handleBlur, handleSubmit, isSubmitting, isValid, result, resultType, form }) {
+const ContactContent = memo(function ContactContent({ content, contactFormEnabled, values, errors, touched, fieldError, handleChange, handleBlur, handleSubmit, isSubmitting, isValid, result, resultType, form }) {
   const { t } = useTranslation()
   const [heroTransforms, setHeroTransforms] = useState({ badge: { rx: 0, ry: 0 }, title: { rx: 0, ry: 0 }, subtitle: { ry: 0 } })
 
@@ -91,21 +92,26 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
 
   const socialChannels = (content?.socialChannels || []).slice().sort((a, b) => a.displayWeight - b.displayWeight)
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: 0.2 },
-    },
-  }
+  const containerVariants = createContainerVariants(false, 0.2)
 
+  // Left-right alternating variants for contact info cards
   const itemVariants = {
-    hidden: { y: 20, opacity: 0 },
-    visible: {
+    hidden: (index) => ({
+      opacity: 0,
+      x: index % 2 === 0 ? -60 : 60,
       y: 0,
+    }),
+    visible: (index) => ({
       opacity: 1,
-      transition: { type: 'spring', stiffness: 100, damping: 15 },
-    },
+      x: 0,
+      y: 0,
+      transition: {
+        type: 'spring',
+        stiffness: 100,
+        damping: 15,
+        delay: index * 0.2,
+      },
+    }),
   }
 
   return (
@@ -347,13 +353,14 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={defaultViewport}
           className="bg-[var(--surface)] border border-[var(--border-default)] rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
         >
           <div className={`grid relative z-10 ${contactFormEnabled ? 'lg:grid-cols-5' : 'lg:grid-cols-1'}`}>
             {/* Contact Info Sidebar - Futuristic Control Station */}
             <motion.div
               variants={itemVariants}
+              custom={0}
               className={`${contactFormEnabled ? 'lg:col-span-2' : 'lg:col-span-1'} p-4 sm:p-5 md:p-6 relative`}
             >
               <Suspense fallback={null}>
@@ -438,7 +445,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
 
             {/* Contact Form - AI Communication Terminal */}
             {contactFormEnabled && (
-              <motion.div variants={itemVariants} className="lg:col-span-3 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
+              <motion.div variants={itemVariants} custom={1} className="lg:col-span-3 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
                 <Suspense fallback={null}>
                   <FuturisticPanel>
                     <div className="p-8 sm:p-10 md:p-12 lg:p-10 xl:p-12">
@@ -578,7 +585,7 @@ function ContactContent({ content, contactFormEnabled, values, errors, touched, 
       </div>
     </>
   )
-}
+})
 
 export default function Contact() {
   const form = useRef()

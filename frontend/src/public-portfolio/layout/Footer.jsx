@@ -1,10 +1,11 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, memo } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUp, MapPin, Mail, Phone } from 'lucide-react'
 import { getFooterContent } from '../../shared/services/footerService'
 import { getNavbarSettings } from '../../shared/services/navigationService'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import Logo from '../../shared/components/Logo'
+import { createContainerVariants, defaultViewport } from '../shared/animations'
 import {
   FaGithub, FaLinkedin, FaTelegram, FaFacebook, FaInstagram, FaWhatsapp, FaYoutube, FaDiscord, FaTwitter,
 } from 'react-icons/fa6'
@@ -140,12 +141,23 @@ export default function Footer() {
       </div>
 
       <div className="container mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 md:gap-16 mb-12 sm:mb-16">
+        <motion.div
+          variants={createContainerVariants(false, 0.15)}
+          initial="hidden"
+          whileInView="visible"
+          viewport={defaultViewport}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 sm:gap-12 md:gap-16 mb-12 sm:mb-16"
+        >
           {/* Brand */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+              },
+            }}
             className="md:col-span-2"
           >
             <Logo settings={mergedSettings} showText={true} linkTo={null} className="text-2xl sm:text-3xl font-black mb-4 sm:mb-6 md:mb-8" />
@@ -177,10 +189,14 @@ export default function Footer() {
           {/* Quick Links */}
           {navigationItems.length > 0 && (
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
+              variants={{
+                hidden: { opacity: 0, y: 20 },
+                visible: {
+                  opacity: 1,
+                  y: 0,
+                  transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+                },
+              }}
             >
 <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-500 mb-6 sm:mb-8 md:mb-10">{t('footer.explore')}</h4>
                <ul className="space-y-3 sm:space-y-4 md:space-y-6">
@@ -211,10 +227,14 @@ export default function Footer() {
 
           {/* Contact */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
+            variants={{
+              hidden: { opacity: 0, y: 20 },
+              visible: {
+                opacity: 1,
+                y: 0,
+                transition: { duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] },
+              },
+            }}
           >
 <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-500 mb-6 sm:mb-8 md:mb-10">{t('footer.contact')}</h4>
              <ul className="space-y-4 sm:space-y-5 md:space-y-6 text-gray-400">
@@ -255,7 +275,7 @@ export default function Footer() {
               )}
             </ul>
           </motion.div>
-        </div>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0 }}

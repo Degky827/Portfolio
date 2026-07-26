@@ -11,6 +11,7 @@ import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 import HolographicSearch from '../../../components/projects3d/HolographicSearch'
 import AppShowcaseCard from '../../../components/projects3d/AppShowcaseCard'
 import ProjectMonitorCard from '../../../components/projects3d/ProjectMonitorCard'
+import { createContainerVariants, defaultViewport } from '../../shared/animations'
 
 const iconMap = {
   Globe,
@@ -91,27 +92,26 @@ export default function Projects() {
     })
   }, [searchTerm, displayProjects])
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: shouldReduceMotion ? 0 : 0.15,
-      },
-    },
-  }
+  const containerVariants = createContainerVariants(shouldReduceMotion, 0.15)
 
+  // Left-right alternating variants for project cards
   const itemVariants = {
-    hidden: { y: shouldReduceMotion ? 0 : 30, opacity: 0 },
-    visible: {
+    hidden: (index) => ({
+      opacity: 0,
+      x: shouldReduceMotion ? 0 : (index % 2 === 0 ? -60 : 60),
       y: 0,
+    }),
+    visible: (index) => ({
       opacity: 1,
+      x: 0,
+      y: 0,
       transition: {
-        type: shouldReduceMotion ? 'tween' : 'spring',
+        type: 'spring',
         stiffness: 100,
         damping: 15,
+        delay: shouldReduceMotion ? 0 : index * 0.15,
       },
-    },
+    }),
   }
 
   const renderIcon = (iconName, color) => {
@@ -182,7 +182,7 @@ export default function Projects() {
           variants={containerVariants}
           initial="hidden"
           whileInView="visible"
-          viewport={{ once: true, margin: "-50px" }}
+          viewport={defaultViewport}
           className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 max-w-6xl mx-auto"
           role="tabpanel"
         >
@@ -233,7 +233,7 @@ export default function Projects() {
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
-            viewport={{ once: true, margin: "-50px" }}
+            viewport={defaultViewport}
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
           >
             {filteredMobileApps.length > 0 ? (
