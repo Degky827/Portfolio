@@ -3,6 +3,7 @@ import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Preload, Float } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Maximize2, Minimize2, RotateCcw } from 'lucide-react'
+import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
 import * as THREE from 'three'
 import Desk from './Desk'
 import Monitor from './Monitor'
@@ -10,34 +11,6 @@ import Keyboard from './Keyboard'
 import PC from './PC'
 import Speaker from './Speaker'
 import NeonBackground from './NeonBackground'
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-  return isMobile
-}
-
-function useDarkMode() {
-  const [dark, setDark] = useState(() =>
-    typeof document !== 'undefined'
-      ? document.documentElement.classList.contains('dark')
-      : true
-  )
-  useEffect(() => {
-    const el = document.documentElement
-    const obs = new MutationObserver(() => {
-      setDark(el.classList.contains('dark'))
-    })
-    obs.observe(el, { attributes: true, attributeFilter: ['class'] })
-    return () => obs.disconnect()
-  }, [])
-  return dark
-}
 
 function SceneContent({ darkMode }) {
   const bgColor = darkMode ? '#0891b2' : '#ecfeff'
@@ -64,8 +37,8 @@ function SceneContent({ darkMode }) {
         intensity={dirIntensity}
         color={dirColor}
         castShadow
-        shadow-mapSize-width={1024}
-        shadow-mapSize-height={1024}
+        shadow-mapSize-width={512}
+        shadow-mapSize-height={512}
         shadow-camera-near={0.1}
         shadow-camera-far={20}
         shadow-camera-left={-5}
@@ -183,7 +156,7 @@ function ExpandButton({ onClick, icon: Icon, label, darkMode }) {
 
 export default function HeroDesktopScene({ className = '' }) {
   const isMobile = useIsMobile()
-  const darkMode = useDarkMode()
+  const darkMode = useDarkModeScene()
   const [expanded, setExpanded] = useState(false)
   const [cameraKey, setCameraKey] = useState(0)
 

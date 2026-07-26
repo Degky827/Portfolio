@@ -130,8 +130,8 @@ const nodeFragmentShader = /* glsl */ `
 
 // ─── Constants ────────────────────────────────────────────────────
 
-const PARTICLE_COUNT = 200
-const NODE_COUNT = 28
+const PARTICLE_COUNT = 120
+const NODE_COUNT = 20
 const CONNECTION_DISTANCE = 2.8
 const BG_WIDTH = 16
 const BG_HEIGHT = 8
@@ -180,7 +180,7 @@ function WaveLines() {
           position={[0, layer.y, layer.z]}
           scale={layer.scale}
         >
-          <planeGeometry args={[1, 1, 128, 32]} />
+          <planeGeometry args={[1, 1, 64, 16]} />
           <shaderMaterial
             ref={i === 0 ? materialRef : undefined}
             vertexShader={waveVertexShader}

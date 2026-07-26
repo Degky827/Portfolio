@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Preload, Stars } from '@react-three/drei'
 import FloatingParticles from './FloatingParticles'
@@ -7,17 +7,7 @@ import ContactEnvironment from './ContactEnvironment'
 import ContactErrorBoundary from './ContactErrorBoundary'
 import SmoothCamera from '../projects3d/SmoothCamera'
 import PostProcessing from '../projects3d/PostProcessing'
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-  return isMobile
-}
+import { useIsMobile } from '../../shared/hooks/useSceneHooks'
 
 function SceneEnvironment({ isMobile }) {
   return (
@@ -28,19 +18,19 @@ function SceneEnvironment({ isMobile }) {
 
       <ContactLighting isMobile={isMobile} />
       <ContactEnvironment isMobile={isMobile} />
-      <FloatingParticles count={isMobile ? 40 : 180} />
+      <FloatingParticles count={isMobile ? 30 : 120} />
 
       <Stars
         radius={45}
         depth={45}
-        count={isMobile ? 150 : 1500}
+        count={isMobile ? 100 : 1000}
         factor={2.5}
         saturation={0.15}
         fade
         speed={0.4}
       />
 
-      <PostProcessing isMobile={isMobile} quality="ultra" />
+      <PostProcessing isMobile={isMobile} quality="high" />
     </>
   )
 }
@@ -54,7 +44,7 @@ export default function ContactScene({ children }) {
         <ContactErrorBoundary>
           <Canvas
             camera={{ position: [0, 2, 10], fov: 50, near: 0.1, far: 100 }}
-            dpr={isMobile ? [1, 1] : [1, 2]}
+            dpr={isMobile ? [1, 1] : [1, 1.5]}
             gl={{
               antialias: !isMobile,
               alpha: true,

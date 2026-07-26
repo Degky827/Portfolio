@@ -1,4 +1,4 @@
-import { Suspense, useState, useEffect } from 'react'
+import { Suspense } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { Preload, Stars } from '@react-three/drei'
 import FloatingParticles from './FloatingParticles'
@@ -8,34 +8,7 @@ import CinematicLensFlare from './CinematicLensFlare'
 import SmoothCamera from './SmoothCamera'
 import PostProcessing from './PostProcessing'
 import ProjectsErrorBoundary from './ProjectsErrorBoundary'
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-  return isMobile
-}
-
-function useDarkMode() {
-  const [dark, setDark] = useState(() =>
-    typeof document !== 'undefined'
-      ? document.documentElement.classList.contains('dark')
-      : true
-  )
-  useEffect(() => {
-    const el = document.documentElement
-    const obs = new MutationObserver(() => {
-      setDark(el.classList.contains('dark'))
-    })
-    obs.observe(el, { attributes: true, attributeFilter: ['class'] })
-    return () => obs.disconnect()
-  }, [])
-  return dark
-}
+import { useIsMobile, useDarkModeScene } from '../../shared/hooks/useSceneHooks'
 
 function SceneEnvironment({ isMobile, fogColor }) {
   return (
@@ -46,13 +19,13 @@ function SceneEnvironment({ isMobile, fogColor }) {
 
       <CinematicLighting isMobile={isMobile} />
       <HolographicLines />
-      <FloatingParticles count={isMobile ? 60 : 180} />
+      <FloatingParticles count={isMobile ? 40 : 120} />
       <CinematicLensFlare isMobile={isMobile} />
 
       <Stars
         radius={40}
         depth={40}
-        count={isMobile ? 300 : 1500}
+        count={isMobile ? 200 : 1000}
         factor={2.5}
         saturation={0.1}
         fade
@@ -66,7 +39,7 @@ function SceneEnvironment({ isMobile, fogColor }) {
 
 export default function ProjectsScene({ children }) {
   const isMobile = useIsMobile()
-  const darkMode = useDarkMode()
+  const darkMode = useDarkModeScene()
   const bgColor = darkMode ? '#070B14' : '#ffffff'
   const fogColor = darkMode ? '#070B14' : '#ffffff'
 
@@ -76,7 +49,7 @@ export default function ProjectsScene({ children }) {
         <ProjectsErrorBoundary>
           <Canvas
             camera={{ position: [0, 2, 10], fov: 50, near: 0.1, far: 100 }}
-            dpr={isMobile ? [1, 1] : [1, 2]}
+            dpr={isMobile ? [1, 1] : [1, 1.5]}
             gl={{
               antialias: !isMobile,
               alpha: true,

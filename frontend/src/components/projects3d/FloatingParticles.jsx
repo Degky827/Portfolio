@@ -66,7 +66,7 @@ const TEAL = new THREE.Color('#06b6d4')
 const PURPLE = new THREE.Color('#8b5cf6')
 const CYAN = new THREE.Color('#22d3ee')
 
-export default function FloatingParticles({ count = 200 }) {
+export default function FloatingParticles({ count = 120 }) {
   const pointsRef = useRef()
   const materialRef = useRef()
   const particleCount = count

@@ -4,35 +4,35 @@ import { BlendFunction, ToneMappingMode } from 'postprocessing'
 import * as THREE from 'three'
 
 const PostProcessing = forwardRef(function PostProcessing({ isMobile, quality = 'high' }, ref) {
-  const bloomIntensity = isMobile ? 0.5 : quality === 'ultra' ? 1.4 : 1.0
-  const luminanceThreshold = isMobile ? 0.35 : 0.15
-  const luminanceSmoothing = isMobile ? 1.5 : 0.8
+  const bloomIntensity = isMobile ? 0.4 : quality === 'ultra' ? 1.2 : 0.8
+  const luminanceThreshold = isMobile ? 0.4 : 0.2
+  const luminanceSmoothing = isMobile ? 1.5 : 1.0
 
   const chromaticOffset = useMemo(
-    () => new THREE.Vector2(isMobile ? 0.0005 : 0.0012, isMobile ? 0.0005 : 0.0012),
+    () => new THREE.Vector2(isMobile ? 0.0003 : 0.0008, isMobile ? 0.0003 : 0.0008),
     [isMobile]
   )
 
   return (
-    <EffectComposer ref={ref} multisampling={isMobile ? 0 : 4}>
+    <EffectComposer ref={ref} multisampling={isMobile ? 0 : 2}>
       <Bloom
         intensity={bloomIntensity}
         luminanceThreshold={luminanceThreshold}
         luminanceSmoothing={luminanceSmoothing}
         mipmapBlur
-        radius={isMobile ? 0.4 : 0.7}
+        radius={isMobile ? 0.3 : 0.6}
       />
-      {!isMobile && (
+      {!isMobile && quality === 'ultra' && (
         <DepthOfField
           focusDistance={0.02}
           focalLength={0.05}
-          bokehScale={3}
+          bokehScale={2}
           height={480}
         />
       )}
       <Vignette
         offset={0.3}
-        darkness={isMobile ? 0.4 : 0.7}
+        darkness={isMobile ? 0.3 : 0.6}
         blendFunction={BlendFunction.NORMAL}
       />
       {!isMobile && (
@@ -45,7 +45,7 @@ const PostProcessing = forwardRef(function PostProcessing({ isMobile, quality = 
       )}
       {!isMobile && (
         <Noise
-          opacity={0.015}
+          opacity={0.01}
           blendFunction={BlendFunction.SOFT_LIGHT}
         />
       )}
