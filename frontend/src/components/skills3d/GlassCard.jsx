@@ -103,7 +103,7 @@ export default function GlassCard({
         />
 
         {/* Glass background */}
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-white/10 via-white/5 to-transparent backdrop-blur-xl" />
+        <div className="absolute inset-0 rounded-2xl backdrop-blur-xl" style={{ background: 'linear-gradient(135deg, var(--card-bg), transparent)' }} />
 
         {/* Neon edge glow */}
         <div
@@ -163,9 +163,10 @@ export default function GlassCard({
             >
               <Code2 size={20} />
             </motion.div>
-            <h3 className="text-sm sm:text-base font-bold tracking-wide text-white/70 group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300"
+            <h3 className="text-sm sm:text-base font-bold tracking-wide group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300"
               style={{
-                backgroundImage: isHovered ? `linear-gradient(135deg, ${color}, white)` : 'none',
+                color: isHovered ? 'transparent' : 'var(--text-primary)',
+                backgroundImage: isHovered ? `linear-gradient(135deg, ${color}, var(--text-primary))` : 'none',
                 WebkitBackgroundClip: isHovered ? 'text' : 'unset',
                 WebkitTextFillColor: isHovered ? 'transparent' : 'unset',
               }}
@@ -188,14 +189,14 @@ export default function GlassCard({
                     className="group-hover/skill:drop-shadow-[0_0_8px_var(--tw-shadow-color)]"
                   />
                 </div>
-                <span className="text-sm font-medium leading-tight text-white/60 group-hover/skill:text-white transition-colors duration-200">
+                <span className="text-sm font-medium leading-tight group-hover:text-[var(--text-primary)] transition-colors duration-200" style={{ color: 'var(--text-secondary)' }}>
                   {skill.name}
                 </span>
               </div>
             ))}
           </div>
 
-          <div className="flex items-center gap-1.5 mt-3 pt-3 border-t border-white/10">
+          <div className="flex items-center gap-1.5 mt-3 pt-3 border-t" style={{ borderColor: 'var(--border-default)' }}>
             <motion.div
               className="w-2 h-2 rounded-full"
               style={{ backgroundColor: color }}
@@ -212,7 +213,7 @@ export default function GlassCard({
                 ease: 'easeInOut',
               }}
             />
-            <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider">
+            <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
               {t('skills.skillCount', { count: card.skills.length })}
             </span>
           </div>

@@ -120,9 +120,11 @@ const AboutGlassCard = memo(function AboutGlassCard({
       <div
         className="relative rounded-[20px] sm:rounded-[24px] overflow-hidden"
         style={{
-          background: 'linear-gradient(145deg, rgba(18,8,48,0.85), rgba(12,5,32,0.92))',
+          background: 'var(--card-bg)',
           backdropFilter: 'blur(24px) saturate(1.2)',
           WebkitBackdropFilter: 'blur(24px) saturate(1.2)',
+          border: '1px solid var(--card-border)',
+          boxShadow: 'var(--card-shadow)',
         }}
       >
         {/* ═══════════ LAYER 3: Gradient Overlay ═══════════ */}
@@ -137,7 +139,7 @@ const AboutGlassCard = memo(function AboutGlassCard({
         <div
           className="absolute inset-0 rounded-[20px] sm:rounded-[24px] pointer-events-none"
           style={{
-            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.04), inset 0 -1px 0 rgba(0,0,0,0.2)',
+            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.1)',
           }}
         />
 
@@ -174,14 +176,14 @@ const AboutGlassCard = memo(function AboutGlassCard({
               <h3
                 className="text-lg sm:text-xl md:text-[22px] font-bold mb-2 sm:mb-3 leading-tight font-display transition-all duration-300"
                 style={{
-                  color: '#f1f5f9',
+                  color: 'var(--text-primary)',
                   textShadow: isHovered ? `0 0 20px ${accentColor}40` : 'none',
                 }}
               >
                 {title}
               </h3>
 
-              <p className="text-sm sm:text-[15px] leading-relaxed sm:leading-[1.7] text-slate-400 group-hover:text-slate-300 transition-colors duration-300">
+              <p className="text-sm sm:text-[15px] leading-relaxed sm:leading-[1.7] transition-colors duration-300" style={{ color: 'var(--text-secondary)' }}>
                 {cleanDescription}
               </p>
             </div>
