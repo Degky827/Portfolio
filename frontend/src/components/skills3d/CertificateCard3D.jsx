@@ -388,10 +388,10 @@ export default function CertificateCard3D({
                   {t('skills.certificateLabel')}
                 </span>
               </div>
-              <h3 className="text-base sm:text-lg font-bold text-white leading-tight">
+              <h3 className="text-base sm:text-lg font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>
                 {card.category}
               </h3>
-              <p className="text-xs text-white/40 mt-1">
+              <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>
                 {t('skills.certificateCount', { count: card.skills.length })}
               </p>
             </div>
@@ -444,11 +444,11 @@ export default function CertificateCard3D({
                 )}
                 
                 <div className="min-w-0 flex-1">
-                  <span className="text-sm font-semibold text-white/80 group-hover/cert:text-white transition-colors duration-200 block truncate">
+                  <span className="text-sm font-semibold transition-colors duration-200 block truncate" style={{ color: 'var(--text-primary)' }}>
                     {cert.name}
                   </span>
                   {cert.issuer && (
-                    <span className="text-[11px] text-white/40 block truncate mt-0.5">
+                    <span className="text-[11px] block truncate mt-0.5" style={{ color: 'var(--text-primary)' }}>
                       {cert.issuer}
                     </span>
                   )}
@@ -484,7 +484,7 @@ export default function CertificateCard3D({
                     ease: 'easeInOut',
                   }}
                 />
-                <span className="text-[11px] font-medium text-white/40 uppercase tracking-wider">
+                <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>
                   Certified
                 </span>
               </div>

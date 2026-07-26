@@ -163,13 +163,8 @@ export default function GlassCard({
             >
               <Code2 size={20} />
             </motion.div>
-            <h3 className="text-sm sm:text-base font-bold tracking-wide group-hover:text-transparent group-hover:bg-clip-text transition-all duration-300"
-              style={{
-                color: isHovered ? 'transparent' : 'var(--text-primary)',
-                backgroundImage: isHovered ? `linear-gradient(135deg, ${color}, var(--text-primary))` : 'none',
-                WebkitBackgroundClip: isHovered ? 'text' : 'unset',
-                WebkitTextFillColor: isHovered ? 'transparent' : 'unset',
-              }}
+            <h3 className="text-sm sm:text-base font-bold tracking-wide transition-all duration-300"
+              style={{ color: 'var(--text-primary)' }}
             >
               {card.category}
             </h3>
