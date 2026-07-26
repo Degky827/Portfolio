@@ -267,23 +267,31 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
   const status = project.status || null
   const floatDelay = useMemo(() => index * 0.5, [index])
 
+  // Calculate alternating slide direction: even indices slide from left, odd from right
+  const slideDirection = index % 2 === 0 ? -60 : 60
+
   return (
     <motion.div
       ref={cardRef}
       variants={{
-        hidden: { y: shouldReduceMotion ? 0 : 40, opacity: 0, rotateX: shouldReduceMotion ? 0 : 10 },
+        hidden: { 
+          opacity: 0, 
+          x: shouldReduceMotion ? 0 : slideDirection,
+          y: 0 
+        },
         visible: {
-          y: 0,
           opacity: 1,
-          rotateX: 0,
+          x: 0,
+          y: 0,
           transition: {
-            type: shouldReduceMotion ? 'tween' : 'spring',
-            stiffness: 80,
+            type: 'spring',
+            stiffness: 100,
             damping: 15,
-            delay: index * 0.1,
+            delay: shouldReduceMotion ? 0 : index * 0.15,
           },
         },
       }}
+      custom={index}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

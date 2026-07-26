@@ -87,23 +87,31 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
   const platformIcon = app.platform === 'iOS' ? Apple : app.platform === 'Android' ? Play : Globe
   const platformLabel = app.platform === 'iOS' ? 'iOS' : app.platform === 'Android' ? 'Android' : 'Web'
 
+  // Calculate alternating slide direction: even indices slide from left, odd from right
+  const slideDirection = index % 2 === 0 ? -60 : 60
+
   return (
     <motion.div
       ref={cardRef}
       variants={{
-        hidden: { y: shouldReduceMotion ? 0 : 40, opacity: 0, scale: shouldReduceMotion ? 1 : 0.95 },
+        hidden: { 
+          opacity: 0, 
+          x: shouldReduceMotion ? 0 : slideDirection,
+          y: 0 
+        },
         visible: {
-          y: 0,
           opacity: 1,
-          scale: 1,
+          x: 0,
+          y: 0,
           transition: {
-            type: shouldReduceMotion ? 'tween' : 'spring',
-            stiffness: 80,
+            type: 'spring',
+            stiffness: 100,
             damping: 15,
-            delay: index * 0.1,
+            delay: shouldReduceMotion ? 0 : index * 0.15,
           },
         },
       }}
+      custom={index}
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}

@@ -66,6 +66,7 @@ export default function GlassCard({
   return (
     <motion.div
       variants={itemVariants}
+      custom={index}
       style={{ perspective: '1200px' }}
     >
       <motion.div
