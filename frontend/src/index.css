@@ -80,12 +80,36 @@
   --bg-secondary: #f9fafb;
   --surface: #ffffff;
   --surface-elevated: #ffffff;
-  --text-primary: #111111;
+  --surface-glass: rgba(255, 255, 255, 0.7);
+  --surface-glass-heavy: rgba(255, 255, 255, 0.85);
+  --text-primary: #111827;
   --text-secondary: #4b5563;
   --text-tertiary: #9ca3af;
+  --text-on-accent: #ffffff;
   --border-default: #e5e7eb;
   --border-subtle: #f3f4f6;
-
+  --border-strong: #d1d5db;
+  --icon-primary: #374151;
+  --icon-secondary: #6b7280;
+  --card-bg: #ffffff;
+  --card-border: #e5e7eb;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.06);
+  --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.05);
+  --overlay-bg: rgba(0, 0, 0, 0.5);
+  --input-bg: #f9fafb;
+  --input-border: #d1d5db;
+  --input-focus-border: #6366f1;
+  --input-focus-ring: rgba(99, 102, 241, 0.15);
+  --nav-bg: rgba(255, 255, 255, 0.8);
+  --nav-bg-solid: #ffffff;
+  --footer-bg: #1f2937;
+  --footer-text: #f9fafb;
+  --footer-text-secondary: #9ca3af;
+  --footer-border: rgba(255, 255, 255, 0.1);
+  --success-color: #059669;
+  --success-bg: rgba(5, 150, 105, 0.1);
+  --error-color: #dc2626;
+  --error-bg: rgba(220, 38, 38, 0.1);
   --accent-home: #3B82F6;
   --accent-about: #6366F1;
   --accent-skills: #0EA5E9;
@@ -98,12 +122,36 @@
   --bg-secondary: #111111;
   --surface: #161616;
   --surface-elevated: #1a1a1a;
-  --text-primary: #ffffff;
+  --surface-glass: rgba(22, 22, 22, 0.7);
+  --surface-glass-heavy: rgba(11, 13, 16, 0.85);
+  --text-primary: #f3f4f6;
   --text-secondary: #d1d5db;
   --text-tertiary: #6b7280;
+  --text-on-accent: #ffffff;
   --border-default: #2a2a2a;
   --border-subtle: #1f1f1f;
-
+  --border-strong: #374151;
+  --icon-primary: #e5e7eb;
+  --icon-secondary: #9ca3af;
+  --card-bg: #161616;
+  --card-border: #2a2a2a;
+  --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  --card-shadow-hover: 0 10px 25px rgba(0, 0, 0, 0.4), 0 4px 10px rgba(0, 0, 0, 0.3);
+  --overlay-bg: rgba(0, 0, 0, 0.7);
+  --input-bg: #1a1a1a;
+  --input-border: #374151;
+  --input-focus-border: #818cf8;
+  --input-focus-ring: rgba(129, 140, 248, 0.15);
+  --nav-bg: rgba(11, 13, 16, 0.8);
+  --nav-bg-solid: #0B0D10;
+  --footer-bg: #000000;
+  --footer-text: #f3f4f6;
+  --footer-text-secondary: #9ca3af;
+  --footer-border: rgba(255, 255, 255, 0.1);
+  --success-color: #34d399;
+  --success-bg: rgba(52, 211, 153, 0.1);
+  --error-color: #f87171;
+  --error-bg: rgba(248, 113, 113, 0.1);
   --accent-home: #3B82F6;
   --accent-about: #6366F1;
   --accent-skills: #0EA5E9;
@@ -171,7 +219,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-panel {
-  background: var(--surface-elevated);
+  background: var(--surface-glass);
   border: 1px solid var(--border-default);
   box-shadow: var(--shadow-glass);
   position: relative;
@@ -184,9 +232,9 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-card {
-  background: var(--surface-elevated);
-  border: 1px solid var(--border-default);
-  box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: var(--card-shadow);
   position: relative;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -198,26 +246,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .glass-nav {
-  background: rgba(255, 255, 255, 0.8);
+  background: var(--nav-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   border-bottom: 1px solid var(--border-default);
 }
 
-.dark .glass-nav {
-  background: rgba(11, 13, 16, 0.8);
-  border-bottom: 1px solid var(--border-default);
-}
-
 .glass-sidebar {
-  background: rgba(255, 255, 255, 0.85);
+  background: var(--surface-glass-heavy);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-right: 1px solid var(--border-default);
-}
-
-.dark .glass-sidebar {
-  background: rgba(11, 13, 16, 0.85);
   border-right: 1px solid var(--border-default);
 }
 
@@ -502,6 +540,15 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 15px 50px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06);
 }
 
+.dark .glass-premium {
+  background: linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0.01) 100%);
+}
+
+:root .glass-premium {
+  background: linear-gradient(165deg, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0.6) 40%, rgba(255,255,255,0.5) 100%);
+  box-shadow: 0 15px 50px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.8);
+}
+
 .parallax-smooth {
   transition: transform 0.15s cubic-bezier(0.25, 0.46, 0.45, 0.94);
   will-change: transform;
@@ -509,9 +556,9 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ── Form Input Utilities ───────────────────────────── */
 .form-input {
-  background: var(--surface);
+  background: var(--input-bg);
   color: var(--text-primary);
-  border: 1px solid var(--border-default);
+  border: 1px solid var(--input-border);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 
@@ -521,25 +568,52 @@ h1, h2, h3, h4, h5, h6 {
 
 .form-input:focus {
   outline: none;
-  border-color: var(--accent-contact);
-  box-shadow: 0 0 0 3px rgba(6, 182, 212, 0.15);
-}
-
-.dark .form-input {
-  background: var(--surface);
-  color: var(--text-primary);
-  border-color: var(--border-default);
+  border-color: var(--input-focus-border);
+  box-shadow: 0 0 0 3px var(--input-focus-ring);
 }
 
 /* ── Icon Visibility Fix ───────────────────────────── */
 .icon-themed {
-  color: var(--text-primary);
+  color: var(--icon-primary);
 }
 
 .icon-secondary {
-  color: var(--text-secondary);
+  color: var(--icon-secondary);
 }
 
 .icon-accent {
   color: var(--accent-contact);
+}
+
+/* ── Selection Colors ───────────────────────────── */
+::selection {
+  background: rgba(99, 102, 241, 0.25);
+  color: var(--text-primary);
+}
+
+.dark ::selection {
+  background: rgba(129, 140, 248, 0.3);
+  color: var(--text-primary);
+}
+
+/* ── Focus Visible ───────────────────────────── */
+:focus-visible {
+  outline: 2px solid var(--input-focus-border);
+  outline-offset: 2px;
+}
+
+/* ── Smooth Theme Transition ───────────────────────────── */
+*,
+*::before,
+*::after {
+  transition-property: background-color, border-color, color, fill, stroke;
+  transition-timing-function: ease;
+  transition-duration: 0ms;
+}
+
+.theme-transition,
+.theme-transition *,
+.theme-transition *::before,
+.theme-transition *::after {
+  transition-duration: 300ms !important;
 }

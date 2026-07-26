@@ -133,10 +133,10 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-[#1f2937] dark:bg-black text-white pt-16 sm:pt-20 pb-8 sm:pb-12 relative overflow-hidden transition-colors duration-500">
+    <footer className="text-[var(--footer-text)] pt-16 sm:pt-20 pb-8 sm:pb-12 relative overflow-hidden transition-colors duration-500" style={{ backgroundColor: 'var(--footer-bg)' }}>
       <div className="absolute top-0 left-0 w-full overflow-hidden leading-[0] transform rotate-180">
         <svg className="relative block w-[calc(100%+1.3px)] h-[50px] sm:h-[60px]" viewBox="0 0 1200 120" preserveAspectRatio="none">
-          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21 0 0 0 321.39,56.44Z" className="fill-[#1f2937] dark:fill-black transition-colors duration-500" />
+          <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V0H0V27.35A600.21,600.21 0 0 0 321.39,56.44Z" className="fill-[var(--footer-bg)] transition-colors duration-500" />
         </svg>
       </div>
 
@@ -161,7 +161,7 @@ export default function Footer() {
             className="md:col-span-2"
           >
             <Logo settings={mergedSettings} showText={true} linkTo={null} className="text-2xl sm:text-3xl font-black mb-4 sm:mb-6 md:mb-8" />
-            <p className="text-base sm:text-lg md:text-xl text-gray-400 max-w-sm mb-6 sm:mb-8 md:mb-10 leading-relaxed">
+            <p className="text-base sm:text-lg md:text-xl max-w-sm mb-6 sm:mb-8 md:mb-10 leading-relaxed" style={{ color: 'var(--footer-text-secondary)' }}>
               {brandDescription}
             </p>
             <div className="flex gap-3 sm:gap-4 md:gap-5">
@@ -176,7 +176,8 @@ export default function Footer() {
                     rel="noopener noreferrer"
                     whileHover={{ scale: 1.1, y: -3 }}
                     whileTap={{ scale: 0.9 }}
-                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-white/10 flex items-center justify-center text-gray-400 hover:bg-primary hover:text-white transition-all duration-300 shadow-sm"
+                    className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all duration-300 shadow-sm"
+                    style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--footer-text-secondary)' }}
                     title={link.platform}
                   >
                     <Icon size={20} />
@@ -198,7 +199,7 @@ export default function Footer() {
                 },
               }}
             >
-<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-500 mb-6 sm:mb-8 md:mb-10">{t('footer.explore')}</h4>
+<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-6 sm:mb-8 md:mb-10" style={{ color: 'var(--footer-text-secondary)' }}>{t('footer.explore')}</h4>
                <ul className="space-y-3 sm:space-y-4 md:space-y-6">
                 {navigationItems.map((item, idx) => (
                   <li key={idx}>
@@ -214,7 +215,8 @@ export default function Footer() {
                           if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
                         }
                       }}
-                      className="text-sm sm:text-base md:text-lg text-gray-400 hover:text-primary transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold"
+                      className="text-sm sm:text-base md:text-lg hover:text-primary transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold"
+                      style={{ color: 'var(--footer-text-secondary)' }}
                     >
                       <span className="w-0 sm:w-0 group-hover:w-3 h-0.5 sm:h-1 bg-primary rounded-full transition-all duration-300" />
                       {item.label}
@@ -236,8 +238,8 @@ export default function Footer() {
               },
             }}
           >
-<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-gray-500 mb-6 sm:mb-8 md:mb-10">{t('footer.contact')}</h4>
-             <ul className="space-y-4 sm:space-y-5 md:space-y-6 text-gray-400">
+<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-6 sm:mb-8 md:mb-10" style={{ color: 'var(--footer-text-secondary)' }}>{t('footer.contact')}</h4>
+             <ul className="space-y-4 sm:space-y-5 md:space-y-6" style={{ color: 'var(--footer-text-secondary)' }}>
               {locationHeadline && (
                 <li className="flex items-start gap-3 sm:gap-4">
                   <MapPin className="w-5 h-5 sm:w-6 sm:h-6 text-primary mt-1 shrink-0" />
@@ -245,9 +247,9 @@ export default function Footer() {
                     <span className="text-sm sm:text-base md:text-lg font-medium leading-tight block">
                       {locationHeadline}
                     </span>
-                    {subLocation && <span className="text-xs text-gray-500">{subLocation}</span>}
+                    {subLocation && <span className="text-xs" style={{ color: 'var(--footer-text-secondary)', opacity: 0.7 }}>{subLocation}</span>}
                     {locationMapUrl && (
-                      <a href={locationMapUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:text-white transition-colors mt-0.5 block">
+                      <a href={locationMapUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:opacity-80 transition-opacity mt-0.5 block">
                         {t('footer.viewOnGoogleMaps')}
                       </a>
                     )}
@@ -257,7 +259,7 @@ export default function Footer() {
               {emailAddress && (
                 <li className="flex items-start gap-3 sm:gap-4">
                   <Mail className="w-5 h-5 sm:w-6 sm:h-6 text-primary mt-1 shrink-0" />
-                  <a href={`mailto:${emailAddress}`} className="text-sm sm:text-base md:text-lg font-medium hover:text-primary dark:hover:text-white transition-colors break-all">{emailAddress}</a>
+                  <a href={`mailto:${emailAddress}`} className="text-sm sm:text-base md:text-lg font-medium hover:text-primary transition-colors break-all">{emailAddress}</a>
                 </li>
               )}
               {phoneNumber && (
@@ -267,7 +269,7 @@ export default function Footer() {
                     href={getPhoneHref(phoneNumber, phoneProtocol, phoneCustomUrl)}
                     target={phoneProtocol !== 'tel' ? '_blank' : undefined}
                     rel={phoneProtocol !== 'tel' ? 'noopener noreferrer' : undefined}
-                    className="text-sm sm:text-base md:text-lg font-medium hover:text-primary dark:hover:text-white transition-colors"
+                    className="text-sm sm:text-base md:text-lg font-medium hover:text-primary transition-colors"
                   >
                     {phoneNumber}
                   </a>
@@ -281,7 +283,8 @@ export default function Footer() {
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
-          className="pt-6 sm:pt-10 md:pt-12 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 md:gap-8 text-gray-500 text-xs sm:text-sm font-medium sm:font-bold uppercase tracking-wider"
+          className="pt-6 sm:pt-10 md:pt-12 border-t flex flex-col md:flex-row justify-between items-center gap-4 sm:gap-6 md:gap-8 text-xs sm:text-sm font-medium sm:font-bold uppercase tracking-wider"
+          style={{ borderColor: 'var(--footer-border)', color: 'var(--footer-text-secondary)' }}
         >
           <p>{copyrightText}</p>
           {visualSeparator && <span>{visualSeparator}</span>}
@@ -292,7 +295,8 @@ export default function Footer() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={scrollToTop}
-            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white/10 hover:bg-primary flex items-center justify-center transition-colors text-gray-400 hover:text-white"
+            className="w-10 h-10 sm:w-12 sm:h-12 rounded-full hover:bg-primary flex items-center justify-center transition-colors"
+            style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--footer-text-secondary)' }}
             title={t('footer.backToTop')}
           >
             <ArrowUp size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
