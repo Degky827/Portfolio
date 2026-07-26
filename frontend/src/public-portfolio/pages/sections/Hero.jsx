@@ -77,10 +77,10 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
   }, [])
 
   return (
-    <section id="home" className="relative min-h-screen overflow-hidden bg-white dark:bg-black transition-colors duration-500">
+    <section id="home" className="relative min-h-screen overflow-hidden transition-colors duration-500" style={{ backgroundColor: 'var(--bg-primary)' }}>
       {/* Subtle background gradient */}
       <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent to-transparent dark:bg-gradient-to-b dark:from-[#0B1120] dark:to-[#111827]" />
+        <div className="absolute inset-0 dark:bg-gradient-to-b dark:from-[#0B1120] dark:to-[#111827]" style={{ background: 'linear-gradient(to bottom, transparent, transparent)' }} />
         <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]"
           style={{
             backgroundImage: 'linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px)',
@@ -109,7 +109,7 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
           transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
           className="pt-16 sm:pt-20 md:pt-24 pl-6 sm:pl-10 md:pl-14 lg:pl-20 max-w-xl"
         >
-          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black text-gray-900 dark:text-[#F8FAFC] leading-tight drop-shadow-lg">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight drop-shadow-lg" style={{ color: 'var(--text-primary)' }}>
             {greeting}{' '}
             <span className="text-primary">
               <span className="inline-flex items-center justify-center h-6 sm:h-7 md:h-8 px-1.5 rounded-lg bg-[#6366f1] text-white text-[8px] sm:text-[9px] md:text-[11px] font-black mr-1.5 -mt-0.5 align-middle shadow-lg">
@@ -118,7 +118,7 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
               {fullName}
             </span>
             <br />
-            <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl text-[var(--text-secondary)] drop-shadow-md">
+            <span className="text-lg sm:text-xl md:text-2xl lg:text-3xl xl:text-4xl drop-shadow-md" style={{ color: 'var(--text-secondary)' }}>
               {typedText}
               <motion.span
                 animate={{ opacity: [1, 0] }}
@@ -132,7 +132,8 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="mt-4 sm:mt-5 md:mt-6 text-xs sm:text-sm md:text-base text-[var(--text-secondary)] leading-relaxed drop-shadow-sm"
+            className="mt-4 sm:mt-5 md:mt-6 text-xs sm:text-sm md:text-base leading-relaxed drop-shadow-sm"
+            style={{ color: 'var(--text-secondary)' }}
             dangerouslySetInnerHTML={{ __html: introduction }}
           />
         </motion.div>
@@ -159,8 +160,8 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
                   </svg>
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-black text-gray-900 dark:text-[#F8FAFC] leading-none">{stat.value}</span>
-                  <span className="text-[7px] sm:text-[8px] md:text-[9px] font-black uppercase tracking-widest text-gray-400 dark:text-gray-500">{stat.label}</span>
+                  <span className="text-base sm:text-lg md:text-xl lg:text-2xl font-black leading-none" style={{ color: 'var(--text-primary)' }}>{stat.value}</span>
+                  <span className="text-[7px] sm:text-[8px] md:text-[9px] font-black uppercase tracking-widest" style={{ color: 'var(--text-tertiary)' }}>{stat.label}</span>
                 </div>
               </div>
             ))}
@@ -172,14 +173,16 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 2.5, duration: 1 }}
-          className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 sm:gap-3 text-gray-400 dark:text-gray-500 cursor-pointer group pointer-events-auto"
+          className="absolute bottom-6 sm:bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 sm:gap-3 cursor-pointer group pointer-events-auto"
+          style={{ color: 'var(--text-tertiary)' }}
           onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
         >
           <span className="text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] group-hover:text-primary transition-colors">{t('hero.discoverMore')}</span>
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
-            className="w-5 h-8 sm:w-6 sm:h-10 md:w-7 md:h-12 border-2 border-gray-300 dark:border-neutral-800 rounded-full flex justify-center p-1 group-hover:border-primary transition-colors"
+            className="w-5 h-8 sm:w-6 sm:h-10 md:w-7 md:h-12 border-2 rounded-full flex justify-center p-1 group-hover:border-primary transition-colors"
+            style={{ borderColor: 'var(--border-strong)' }}
           >
             <motion.div
               animate={{
