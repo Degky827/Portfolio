@@ -53,9 +53,10 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
         <span
           className={`font-black tracking-tighter ${
             onNavClick
-              ? 'text-xl sm:text-2xl text-gray-900 dark:text-[#F8FAFC]'
+              ? 'text-xl sm:text-2xl'
               : 'uppercase tracking-tight'
           }`}
+          style={{ color: 'var(--text-primary)' }}
         >
           {logoText || brandName}
         </span>
