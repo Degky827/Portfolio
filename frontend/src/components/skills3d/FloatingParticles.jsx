@@ -55,7 +55,7 @@ const particleFragmentShader = /* glsl */ `
 const CYAN = new THREE.Color('#22d3ee')
 const PURPLE = new THREE.Color('#8b5cf6')
 
-export default function FloatingParticles({ count = 300 }) {
+export default function FloatingParticles({ count = 150 }) {
   const pointsRef = useRef()
   const materialRef = useRef()
   const particleCount = count

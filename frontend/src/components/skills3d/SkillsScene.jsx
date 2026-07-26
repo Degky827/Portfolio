@@ -1,4 +1,4 @@
-import { Suspense, useRef, useMemo, useState, useEffect } from 'react'
+import { Suspense, useRef, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Preload, Stars } from '@react-three/drei'
 import * as THREE from 'three'
@@ -6,17 +6,7 @@ import FloatingParticles from './FloatingParticles'
 import EnvironmentLights from './EnvironmentLights'
 import SkillsBackground from './SkillsBackground'
 import SkillsErrorBoundary from './SkillsErrorBoundary'
-
-function useIsMobile() {
-  const [isMobile, setIsMobile] = useState(false)
-  useEffect(() => {
-    const check = () => setIsMobile(window.innerWidth < 768)
-    check()
-    window.addEventListener('resize', check)
-    return () => window.removeEventListener('resize', check)
-  }, [])
-  return isMobile
-}
+import { useIsMobile, useDarkModeScene } from '../../shared/hooks/useSceneHooks'
 
 function MouseParallaxCamera({ isMobile }) {
   const { camera } = useThree()
@@ -24,13 +14,14 @@ function MouseParallaxCamera({ isMobile }) {
   const target = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
+    if (isMobile) return
     const handleMouseMove = (e) => {
       mouse.current.x = (e.clientX / window.innerWidth) * 2 - 1
       mouse.current.y = -(e.clientY / window.innerHeight) * 2 + 1
     }
-    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
     return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
+  }, [isMobile])
 
   useFrame((state, delta) => {
     if (isMobile) return
@@ -52,8 +43,7 @@ function VolumetricFog() {
 
   useFrame((state) => {
     if (!meshRef.current) return
-    const time = state.clock.getElapsedTime()
-    meshRef.current.material.uniforms.uTime.value = time
+    meshRef.current.material.uniforms.uTime.value = state.clock.getElapsedTime()
   })
 
   const uniforms = useMemo(() => ({
@@ -73,22 +63,19 @@ function VolumetricFog() {
     uniform float uTime;
     uniform vec3 uColor;
     varying vec2 vUv;
-
     void main() {
       float noise = sin(vUv.x * 5.0 + uTime * 0.5) * cos(vUv.y * 3.0 + uTime * 0.3) * 0.5 + 0.5;
       float fog = smoothstep(0.0, 0.5, vUv.y) * smoothstep(1.0, 0.6, vUv.y);
       float alpha = noise * fog * 0.08;
-
       float pulse = 0.8 + 0.2 * sin(uTime * 0.4);
       vec3 color = uColor * pulse;
-
       gl_FragColor = vec4(color, alpha);
     }
   `
 
   return (
     <mesh ref={meshRef} position={[0, 2, -5]} scale={[20, 8, 1]}>
-      <planeGeometry args={[1, 1, 32, 32]} />
+      <planeGeometry args={[1, 1, 16, 16]} />
       <shaderMaterial
         vertexShader={vertexShader}
         fragmentShader={fragmentShader}
@@ -128,22 +115,18 @@ function AnimatedLightRays() {
     uniform float uTime;
     uniform vec3 uColor;
     varying vec2 vUv;
-
     void main() {
       float ray = 0.0;
-      for (int i = 0; i < 8; i++) {
+      for (int i = 0; i < 6; i++) {
         float fi = float(i);
         float offset = sin(uTime * 0.3 + fi * 0.8) * 0.15;
         float width = 0.01 + fi * 0.003;
         float intensity = 1.0 / (1.0 + fi * 0.4);
         ray += intensity * smoothstep(width, 0.0, abs(vUv.x - 0.5 - offset));
       }
-
       float fade = smoothstep(1.0, 0.2, vUv.y) * smoothstep(0.0, 0.1, vUv.y);
       float alpha = ray * 0.12 * fade;
-
       vec3 color = uColor * (0.8 + 0.2 * sin(uTime * 0.5));
-
       gl_FragColor = vec4(color, alpha);
     }
   `
@@ -176,7 +159,7 @@ function LensFlare() {
 
   return (
     <mesh ref={meshRef} position={[3, 4, -4]}>
-      <circleGeometry args={[0.8, 32]} />
+      <circleGeometry args={[0.8, 16]} />
       <meshBasicMaterial
         color="#8b5cf6"
         transparent
@@ -193,13 +176,12 @@ function NeonGlow() {
 
   useFrame((state) => {
     if (!meshRef.current) return
-    const time = state.clock.getElapsedTime()
-    meshRef.current.material.opacity = 0.1 + Math.sin(time * 0.8) * 0.05
+    meshRef.current.material.opacity = 0.1 + Math.sin(state.clock.getElapsedTime() * 0.8) * 0.05
   })
 
   return (
     <mesh ref={meshRef} position={[0, 3, -6]}>
-      <ringGeometry args={[2, 4, 64]} />
+      <ringGeometry args={[2, 4, 32]} />
       <meshBasicMaterial
         color="#06b6d4"
         transparent
@@ -238,27 +220,10 @@ function GlassReflections({ isMobile }) {
   )
 }
 
-function useDarkMode() {
-  const [dark, setDark] = useState(() =>
-    typeof document !== 'undefined'
-      ? document.documentElement.classList.contains('dark')
-      : true
-  )
-  useEffect(() => {
-    const el = document.documentElement
-    const obs = new MutationObserver(() => {
-      setDark(el.classList.contains('dark'))
-    })
-    obs.observe(el, { attributes: true, attributeFilter: ['class'] })
-    return () => obs.disconnect()
-  }, [])
-  return dark
-}
-
 export default function SkillsScene({ children }) {
   const isMobile = useIsMobile()
-  const darkMode = useDarkMode()
-  const particleCount = isMobile ? 80 : 200
+  const darkMode = useDarkModeScene()
+  const particleCount = isMobile ? 60 : 150
   const bgColor = darkMode ? '#070B14' : '#ffffff'
   const fogColor = darkMode ? '#070B14' : '#ffffff'
 
@@ -300,7 +265,7 @@ export default function SkillsScene({ children }) {
               <Stars
                 radius={50}
                 depth={50}
-                count={isMobile ? 500 : 2000}
+                count={isMobile ? 300 : 1200}
                 factor={2}
                 saturation={0}
                 fade
