@@ -182,11 +182,11 @@ export default function FuturisticInput({
               onFocus={handleFocus}
               onBlur={handleBlur}
               placeholder={placeholder}
-              className="w-full bg-transparent outline-none text-white font-medium text-sm sm:text-base relative z-10"
+              className="w-full bg-transparent outline-none font-medium text-sm sm:text-base relative z-10"
               style={{
                 padding: Icon ? '1rem 1.5rem 1rem 3rem' : '1rem 1.5rem',
                 caretColor: '#06b6d4',
-                color: 'rgba(255,255,255,0.9)',
+                color: 'var(--text-primary)',
               }}
             />
 
