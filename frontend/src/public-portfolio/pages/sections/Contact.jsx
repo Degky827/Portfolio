@@ -171,14 +171,8 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     {t('contact.title')}
                   </h2>
                   <motion.h2
-                    className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-transparent bg-clip-text"
-                    animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
-                    transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
-                    style={{
-                      backgroundImage: 'linear-gradient(135deg, #06b6d4 0%, #22d3ee 40%, #06b6d4 70%, #67e8f9 100%)',
-                      backgroundSize: '200% 200%',
-                      textShadow: '0 0 60px rgba(6,182,212,0.3), 0 0 120px rgba(6,182,212,0.15)',
-                    }}
+                    className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight"
+                    style={{ color: 'var(--text-primary)' }}
                   >
                     {t('contact.title')}
                   </motion.h2>

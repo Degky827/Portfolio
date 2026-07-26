@@ -43,8 +43,8 @@ export default function DynamicCustomPage() {
   if (error || !page) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center text-center px-4">
-        <h1 className="text-4xl font-bold text-gray-900 dark:text-white mb-4">404</h1>
-        <p className="text-gray-600 dark:text-gray-400">This page could not be found.</p>
+        <h1 className="text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>404</h1>
+        <p style={{ color: 'var(--text-primary)' }}>This page could not be found.</p>
       </div>
     )
   }
@@ -66,12 +66,12 @@ export default function DynamicCustomPage() {
         </div>
       )}
 
-      <h1 className="text-3xl sm:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+      <h1 className="text-3xl sm:text-4xl font-bold mb-4" style={{ color: 'var(--text-primary)' }}>
         {page.title}
       </h1>
 
       {page.description && (
-        <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">
+        <p className="text-lg mb-8" style={{ color: 'var(--text-primary)' }}>
           {page.description}
         </p>
       )}
@@ -95,18 +95,18 @@ function SectionRenderer({ section }) {
       return (
         <div className={`text-${sectionData.alignment || 'left'}`}>
           {sectionData.heading && (
-            <h2 className="text-2xl font-bold text-gray-900 dark:text-white mb-2">
+            <h2 className="text-2xl font-bold mb-2" style={{ color: 'var(--text-primary)' }}>
               {sectionData.heading}
             </h2>
           )}
           {sectionData.subheading && (
-            <h3 className="text-lg text-gray-600 dark:text-gray-400 mb-4">
+            <h3 className="text-lg mb-4" style={{ color: 'var(--text-primary)' }}>
               {sectionData.subheading}
             </h3>
           )}
           {sectionData.body && (
             <div
-              className="prose prose-lg dark:prose-invert max-w-none text-gray-700 dark:text-gray-300"
+              className="prose prose-lg dark:prose-invert max-w-none" style={{ color: 'var(--text-primary)' }}
               dangerouslySetInnerHTML={{ __html: sectionData.body }}
             />
           )}
@@ -122,7 +122,7 @@ function SectionRenderer({ section }) {
             className="w-full rounded-xl"
           />
           {sectionData.caption && (
-            <figcaption className="mt-3 text-center text-sm text-gray-500 dark:text-gray-400">
+            <figcaption className="mt-3 text-center text-sm" style={{ color: 'var(--text-primary)' }}>
               {sectionData.caption}
             </figcaption>
           )}
@@ -165,7 +165,7 @@ function SectionRenderer({ section }) {
               title="Video"
             />
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl text-gray-400">
+            <div className="w-full h-full flex items-center justify-center bg-gray-100 dark:bg-gray-800 rounded-xl" style={{ color: 'var(--text-primary)' }}>
               No video URL provided
             </div>
           )}
@@ -184,9 +184,10 @@ function SectionRenderer({ section }) {
               sectionData.variant === 'primary'
                 ? 'bg-indigo-600 hover:bg-indigo-700 text-white shadow-lg shadow-indigo-500/25'
                 : sectionData.variant === 'secondary'
-                  ? 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-900 dark:text-white'
-                  : 'border-2 border-indigo-600 text-indigo-600 dark:text-indigo-400 hover:bg-indigo-50 dark:hover:bg-indigo-500/10'
+                  ? 'bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600'
+                  : 'border-2 border-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-500/10'
             }`}
+            style={sectionData.variant !== 'primary' ? { color: 'var(--text-primary)' } : undefined}
           >
             {sectionData.label || 'Click here'}
           </a>

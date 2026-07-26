@@ -484,8 +484,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
                     item.active
                       ? activeSection === item.sectionId
                         ? 'text-primary dark:text-primary'
-                        : 'text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary'
-                      : 'text-gray-300 dark:text-gray-600 cursor-default'
+                        : 'hover:text-primary dark:hover:text-primary'
+                      : 'cursor-default'
                   }`}
                   style={{
                     color: item.active
@@ -646,8 +646,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
                         item.active
                           ? activeSection === item.sectionId
                             ? 'text-primary dark:text-primary'
-                            : 'text-gray-900 dark:text-white hover:text-primary'
-                          : 'text-gray-400 dark:text-gray-600 cursor-default'
+                            : 'hover:text-primary'
+                          : 'cursor-default'
                       }`}
                       style={{
                         color: item.active
