@@ -54,10 +54,10 @@ export default memo(function ChatWindow({ isOpen, onClose }) {
                 <Sparkles size={15} className="text-primary" />
               </div>
               <div>
-                <h3 className="text-sm font-bold text-gray-900 dark:text-white leading-tight">
+                <h3 className="text-sm font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>
                   AI Assistant
                 </h3>
-                <p className="text-[10px] text-gray-400 dark:text-gray-500">
+                <p className="text-[10px]" style={{ color: 'var(--text-primary)' }}>
                   Ask me about Desalegn
                 </p>
               </div>
@@ -66,7 +66,7 @@ export default memo(function ChatWindow({ isOpen, onClose }) {
               {messages.length > 0 && (
                 <button
                   onClick={clearMessages}
-                  className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors"
+                  className="w-8 h-8 flex items-center justify-center rounded-lg hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors" style={{ color: 'var(--text-primary)' }}
                   aria-label="Clear chat"
                 >
                   <Trash2 size={15} />
@@ -74,7 +74,7 @@ export default memo(function ChatWindow({ isOpen, onClose }) {
               )}
               <button
                 onClick={onClose}
-                className="w-8 h-8 flex items-center justify-center rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors"
+                className="w-8 h-8 flex items-center justify-center rounded-lg hover:bg-gray-100 dark:hover:bg-neutral-800 transition-colors" style={{ color: 'var(--text-primary)' }}
                 aria-label="Close chat"
               >
                 <X size={18} />
@@ -92,10 +92,10 @@ export default memo(function ChatWindow({ isOpen, onClose }) {
                 <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-4">
                   <Sparkles size={28} className="text-primary" />
                 </div>
-                <h4 className="text-sm font-bold text-gray-900 dark:text-white mb-1">
+                <h4 className="text-sm font-bold mb-1" style={{ color: 'var(--text-primary)' }}>
                   Hi, I'm Desalegn's AI Assistant
                 </h4>
-                <p className="text-xs text-gray-400 dark:text-gray-500 leading-relaxed">
+                <p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>
                   Ask me about his skills, projects, experience, education, or anything in his portfolio.
                 </p>
                 <div className="flex flex-wrap gap-2 mt-4 justify-center">
@@ -110,7 +110,7 @@ export default memo(function ChatWindow({ isOpen, onClose }) {
                       onClick={() => {
                         sendMessage(q)
                       }}
-                      className="px-3 py-1.5 text-[11px] font-semibold rounded-full border border-gray-200 dark:border-neutral-700 text-gray-500 dark:text-gray-400 hover:bg-primary hover:text-white hover:border-primary transition-colors"
+                      className="px-3 py-1.5 text-[11px] font-semibold rounded-full border border-gray-200 dark:border-neutral-700 hover:bg-primary hover:text-white hover:border-primary transition-colors" style={{ color: 'var(--text-primary)' }}
                     >
                       {q}
                     </button>
@@ -147,8 +147,8 @@ export default memo(function ChatWindow({ isOpen, onClose }) {
                 onKeyDown={handleKeyDown}
                 placeholder="Type your message..."
                 rows={1}
-                className="w-full px-4 py-2.5 pr-2 text-sm rounded-xl bg-gray-100 dark:bg-neutral-800 border border-transparent focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none resize-none text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
-                style={{ minHeight: 40, maxHeight: 120 }}
+                className="w-full px-4 py-2.5 pr-2 text-sm rounded-xl bg-gray-100 dark:bg-neutral-800 border border-transparent focus:border-primary/50 focus:ring-1 focus:ring-primary/30 outline-none resize-none placeholder-gray-400 dark:placeholder-gray-500 transition-colors"
+                style={{ minHeight: 40, maxHeight: 120, color: 'var(--text-primary)' }}
               />
             </div>
             <button

@@ -33,7 +33,7 @@ export default memo(function AIButton({ isOpen, onClick }) {
           exit={{ scale: 0, opacity: 0 }}
           transition={{ type: 'spring', stiffness: 400, damping: 25 }}
           onClick={onClick}
-          className="w-14 h-14 rounded-full bg-gray-200 dark:bg-neutral-800 text-gray-600 dark:text-gray-400 shadow-lg hover:bg-gray-300 dark:hover:bg-neutral-700 transition-all flex items-center justify-center"
+          className="w-14 h-14 rounded-full bg-gray-200 dark:bg-neutral-800 shadow-lg hover:bg-gray-300 dark:hover:bg-neutral-700 transition-all flex items-center justify-center" style={{ color: 'var(--text-primary)' }}
           aria-label="Close AI chat"
         >
           <X size={24} />
