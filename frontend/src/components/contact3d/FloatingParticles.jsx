@@ -71,7 +71,7 @@ const CYAN = new THREE.Color('#06b6d4')
 const CYAN_LIGHT = new THREE.Color('#22d3ee')
 const CYAN_DIM = new THREE.Color('#0891b2')
 
-export default function FloatingParticles({ count = 120 }) {
+export default function FloatingParticles({ count = 120, darkMode = true }) {
   const pointsRef = useRef()
   const materialRef = useRef()
   const mouseRef = useRef({ x: 0, y: 0 })
@@ -165,7 +165,7 @@ export default function FloatingParticles({ count = 120 }) {
         uniforms={uniforms}
         transparent
         depthWrite={false}
-        blending={THREE.AdditiveBlending}
+        blending={darkMode ? THREE.AdditiveBlending : THREE.NormalBlending}
       />
     </points>
   )
