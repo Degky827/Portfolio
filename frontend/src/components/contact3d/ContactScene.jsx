@@ -7,18 +7,19 @@ import ContactEnvironment from './ContactEnvironment'
 import ContactErrorBoundary from './ContactErrorBoundary'
 import SmoothCamera from '../projects3d/SmoothCamera'
 import PostProcessing from '../projects3d/PostProcessing'
-import { useIsMobile } from '../../shared/hooks/useSceneHooks'
+import { useIsMobile, useDarkModeScene } from '../../shared/hooks/useSceneHooks'
 
-function SceneEnvironment({ isMobile }) {
+function SceneEnvironment({ isMobile, darkMode }) {
+  const fogColor = darkMode ? '#06061a' : '#f0f9ff'
   return (
     <>
       <SmoothCamera isMobile={isMobile} />
 
-      <fog attach="fog" args={['#06061a', 5, 28]} />
+      <fog attach="fog" args={[fogColor, 5, 28]} />
 
-      <ContactLighting isMobile={isMobile} />
+      <ContactLighting isMobile={isMobile} darkMode={darkMode} />
       <ContactEnvironment isMobile={isMobile} />
-      <FloatingParticles count={isMobile ? 30 : 120} />
+      <FloatingParticles count={isMobile ? 30 : 120} darkMode={darkMode} />
 
       <Stars
         radius={45}
@@ -37,6 +38,8 @@ function SceneEnvironment({ isMobile }) {
 
 export default function ContactScene({ children }) {
   const isMobile = useIsMobile()
+  const darkMode = useDarkModeScene()
+  const bgColor = darkMode ? '#06061a' : '#f0f9ff'
 
   return (
     <div className="relative w-full" style={{ perspective: '1200px' }}>
@@ -52,12 +55,12 @@ export default function ContactScene({ children }) {
               stencil: false,
               depth: true,
               toneMapping: 4,
-              toneMappingExposure: 1.15,
+              toneMappingExposure: darkMode ? 1.15 : 1.3,
             }}
-            style={{ background: '#06061a' }}
+            style={{ background: bgColor }}
           >
             <Suspense fallback={null}>
-              <SceneEnvironment isMobile={isMobile} />
+              <SceneEnvironment isMobile={isMobile} darkMode={darkMode} />
               <Preload all />
             </Suspense>
           </Canvas>

@@ -294,11 +294,11 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                 <div
                   className="relative rounded-3xl overflow-hidden"
                   style={{
-                    background: 'linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(6,182,212,0.04) 100%)',
+                    background: 'var(--card-bg)',
                     backdropFilter: 'blur(40px) saturate(1.5)',
                     WebkitBackdropFilter: 'blur(40px) saturate(1.5)',
-                    border: '1px solid rgba(255,255,255,0.08)',
-                    boxShadow: '0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+                    border: '1px solid var(--card-border)',
+                    boxShadow: 'var(--card-shadow-hover)',
                   }}
                 >
                   {/* Holographic border */}
@@ -465,8 +465,8 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                       transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
                       className="w-16 h-16 rounded-full border-2 border-transparent"
                       style={{
-                        borderTopColor: 'rgba(6,182,212,0.6)',
-                        borderRightColor: 'rgba(34,211,238,0.3)',
+                        borderTopColor: 'var(--accent-contact)',
+                        borderRightColor: 'rgba(6,182,212,0.3)',
                         filter: 'drop-shadow(0 0 8px rgba(6,182,212,0.3))',
                       }}
                     />
@@ -634,7 +634,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 bg-[var(--bg-primary)] transition-colors duration-500 relative overflow-hidden" aria-label={t('contact.ariaLabel')}>
+    <section id="contact" className="py-16 sm:py-20 md:py-24 transition-colors duration-500 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }} aria-label={t('contact.ariaLabel')}>
       <MouseParallaxProvider>
         <ContactContent
           content={content}
