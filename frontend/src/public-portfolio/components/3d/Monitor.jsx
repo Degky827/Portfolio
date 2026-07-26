@@ -10,12 +10,12 @@ import MonitorStand from './MonitorStand'
  *
  * Ultra-wide monitor composed of three parts:
  * - MonitorFrame: outer bezel/frame
- * - MonitorScreen: display area with Html portfolio
+ * - MonitorScreen: display area with Canvas2D content
  * - MonitorStand: stand base and neck
  *
- * Everything (profile, text, skills, icons) renders INSIDE the monitor screen.
+ * Supports 'code' and 'dashboard' screen modes.
  */
-export default function Monitor({ position = [0, 0, 0], screenMode = 'portfolio' }) {
+export default function Monitor({ position = [0, 0, 0], screenMode = 'portfolio', profileData }) {
   const workspace = useWorkspace()
   const monitorHeight = 1.5
   const standHeight = 0.44
@@ -35,9 +35,13 @@ export default function Monitor({ position = [0, 0, 0], screenMode = 'portfolio'
         {/* Frame */}
         <MonitorFrame />
 
-        {/* Screen with Html content */}
+        {/* Screen with Canvas2D content */}
         <Suspense fallback={null}>
-          <MonitorScreen position={[0, 0, 0.01]} mode={screenMode} />
+          <MonitorScreen
+            position={[0, 0, 0.01]}
+            mode={screenMode}
+            profileData={profileData}
+          />
         </Suspense>
 
         {/* Clickable hitbox */}

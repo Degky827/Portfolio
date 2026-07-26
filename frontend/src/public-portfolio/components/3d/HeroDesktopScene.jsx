@@ -12,7 +12,7 @@ import PC from './PC'
 import Speaker from './Speaker'
 import NeonBackground from './NeonBackground'
 
-function SceneContent({ darkMode }) {
+function SceneContent({ darkMode, isMobile, profileData }) {
   const bgColor = darkMode ? '#0891b2' : '#ecfeff'
   const fogColor = useMemo(() => new THREE.Color(bgColor), [bgColor])
   const cyanColor = useMemo(() => new THREE.Color('#06b6d4'), [])
@@ -36,9 +36,9 @@ function SceneContent({ darkMode }) {
         position={[3, 5, 4]}
         intensity={dirIntensity}
         color={dirColor}
-        castShadow
-        shadow-mapSize-width={512}
-        shadow-mapSize-height={512}
+        castShadow={!isMobile}
+        shadow-mapSize-width={isMobile ? 256 : 512}
+        shadow-mapSize-height={isMobile ? 256 : 512}
         shadow-camera-near={0.1}
         shadow-camera-far={20}
         shadow-camera-left={-5}
@@ -52,7 +52,7 @@ function SceneContent({ darkMode }) {
       <pointLight position={[0, -1, 2]} intensity={darkMode ? 0.3 : 0.1} color={cyanColor} distance={8} />
       <pointLight position={[0, 0.3, 0.5]} intensity={darkMode ? 0.4 : 0.15} color={cyanColor} distance={3} />
 
-      {darkMode && (
+      {darkMode && !isMobile && (
         <Suspense fallback={null}>
           <NeonBackground />
         </Suspense>
@@ -93,27 +93,33 @@ function SceneContent({ darkMode }) {
         <Float speed={1.5} rotationIntensity={0.03} floatIntensity={0.08}>
           <group>
             <Desk position={[0, 0, 0]} />
-            <Monitor position={[0, 0, -0.3]} screenMode="code" />
+            <Monitor
+              position={[0, 0, -0.3]}
+              screenMode="dashboard"
+              profileData={profileData}
+            />
             <Keyboard position={[0, 0, 0.25]} />
 
-            <group position={[0.9, 0.78, 0.3]}>
-              <mesh castShadow>
-                <boxGeometry args={[0.12, 0.03, 0.18]} />
-                <meshStandardMaterial color="#0f0a2a" roughness={0.2} metalness={0.8} />
-              </mesh>
-              <mesh position={[0, 0.02, -0.03]}>
-                <cylinderGeometry args={[0.01, 0.01, 0.02, 8]} />
-                <meshStandardMaterial color={cyanColor} emissive={cyanColor} emissiveIntensity={2} />
-              </mesh>
-              <mesh position={[0, -0.01, 0]}>
-                <boxGeometry args={[0.1, 0.005, 0.16]} />
-                <meshStandardMaterial color={cyanColor} emissive={cyanColor} emissiveIntensity={1} transparent opacity={0.5} />
-              </mesh>
-            </group>
+            {!isMobile && (
+              <group position={[0.9, 0.78, 0.3]}>
+                <mesh castShadow>
+                  <boxGeometry args={[0.12, 0.03, 0.18]} />
+                  <meshStandardMaterial color="#0f0a2a" roughness={0.2} metalness={0.8} />
+                </mesh>
+                <mesh position={[0, 0.02, -0.03]}>
+                  <cylinderGeometry args={[0.01, 0.01, 0.02, 8]} />
+                  <meshStandardMaterial color={cyanColor} emissive={cyanColor} emissiveIntensity={2} />
+                </mesh>
+                <mesh position={[0, -0.01, 0]}>
+                  <boxGeometry args={[0.1, 0.005, 0.16]} />
+                  <meshStandardMaterial color={cyanColor} emissive={cyanColor} emissiveIntensity={1} transparent opacity={0.5} />
+                </mesh>
+              </group>
+            )}
 
-            <PC position={[-2.2, 0, 0.3]} />
+            {!isMobile && <PC position={[-2.2, 0, 0.3]} />}
             <Speaker position={[-1.8, 0.78, 0.1]} side="left" />
-            <Speaker position={[1.8, 0.78, 0.1]} side="right" />
+            {!isMobile && <Speaker position={[1.8, 0.78, 0.1]} side="right" />}
           </group>
         </Float>
       </Suspense>
@@ -122,13 +128,13 @@ function SceneContent({ darkMode }) {
 
       <OrbitControls
         enablePan={false}
-        enableZoom={true}
-        minDistance={3}
-        maxDistance={10}
+        enableZoom={!isMobile}
+        minDistance={isMobile ? 4 : 3}
+        maxDistance={isMobile ? 8 : 10}
         minPolarAngle={Math.PI / 4}
         maxPolarAngle={Math.PI / 2.5}
         autoRotate
-        autoRotateSpeed={0.4}
+        autoRotateSpeed={isMobile ? 0.3 : 0.4}
         target={[0, 0.8, 0]}
       />
     </>
@@ -154,7 +160,7 @@ function ExpandButton({ onClick, icon: Icon, label, darkMode }) {
   )
 }
 
-export default function HeroDesktopScene({ className = '' }) {
+export default function HeroDesktopScene({ className = '', profileData }) {
   const isMobile = useIsMobile()
   const darkMode = useDarkModeScene()
   const [expanded, setExpanded] = useState(false)
@@ -169,17 +175,19 @@ export default function HeroDesktopScene({ className = '' }) {
     setCameraKey((k) => k + 1)
   }, [])
 
-  if (isMobile) return null
+  const mobileCamera = isMobile
+    ? { position: [2.5, 2.2, 5], fov: 45, near: 0.1, far: 100 }
+    : { position: [3.5, 2.8, 5.5], fov: 35, near: 0.1, far: 100 }
 
   return (
     <>
       <div className={`relative w-full h-full ${className}`}>
         <Canvas
           key={`inline-${cameraKey}`}
-          camera={{ position: [3.5, 2.8, 5.5], fov: 35, near: 0.1, far: 100 }}
-          dpr={[1, 1.5]}
+          camera={mobileCamera}
+          dpr={isMobile ? [1, 1] : [1, 1.5]}
           gl={{
-            antialias: true,
+            antialias: !isMobile,
             alpha: true,
             powerPreference: 'high-performance',
             stencil: false,
@@ -187,10 +195,12 @@ export default function HeroDesktopScene({ className = '' }) {
           }}
           style={{ background: 'transparent' }}
         >
-          <SceneContent darkMode={darkMode} />
+          <SceneContent darkMode={darkMode} isMobile={isMobile} profileData={profileData} />
         </Canvas>
 
-        <ExpandButton onClick={handleToggle} icon={Maximize2} label="Expand 3D workspace" darkMode={darkMode} />
+        {!isMobile && (
+          <ExpandButton onClick={handleToggle} icon={Maximize2} label="Expand 3D workspace" darkMode={darkMode} />
+        )}
       </div>
 
       <AnimatePresence>
@@ -215,7 +225,7 @@ export default function HeroDesktopScene({ className = '' }) {
               shadows
               style={{ background: darkMode ? '#0891b2' : '#ecfeff' }}
             >
-              <SceneContent darkMode={darkMode} />
+              <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} />
             </Canvas>
 
             <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-4">
