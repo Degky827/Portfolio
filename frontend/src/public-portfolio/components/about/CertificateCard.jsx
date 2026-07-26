@@ -130,7 +130,7 @@ const CertificateCard = memo(function CertificateCard({
           <h3
             className="text-sm sm:text-base md:text-lg font-bold text-center leading-tight transition-all duration-300"
             style={{
-              color: isHovered ? '#e2e8f0' : '#cbd5e1',
+              color: 'var(--text-primary)',
               textShadow: isHovered ? '0 0 16px rgba(34,211,238,0.3)' : 'none',
             }}
           >

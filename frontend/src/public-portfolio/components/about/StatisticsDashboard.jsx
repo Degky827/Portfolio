@@ -107,7 +107,7 @@ const StatisticsDashboard = memo(function StatisticsDashboard({
           {/* Section label */}
           <div className="flex items-center gap-2 mb-5 sm:mb-6">
             <div className="w-1.5 h-1.5 rounded-full bg-purple-400/60 animate-pulse" />
-            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] text-purple-400/50">
+            <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-primary)' }}>
               Dashboard Metrics
             </span>
             <div className="flex-1 h-px bg-gradient-to-r from-purple-500/20 to-transparent" />
