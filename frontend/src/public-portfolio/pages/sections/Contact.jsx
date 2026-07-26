@@ -1,7 +1,7 @@
-import { useState, useRef, useEffect, lazy, Suspense, useCallback, useMemo, memo } from 'react'
+import { useState, useRef, useEffect, lazy, Suspense, useCallback, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Mail, Phone, MapPin, User, MessageSquare } from 'lucide-react'
+import { Mail, Phone, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
 import { logPortfolioVisit, logPortfolioEngagement } from '../../../shared/services/api'
 import { getContactContent, createMessage } from '../../../shared/services/contactService'
@@ -10,21 +10,10 @@ import { MouseParallaxProvider, useMouseParallaxSubscribe } from '../../../compo
 import { createContainerVariants, defaultViewport } from '../../shared/animations'
 
 const ContactScene = lazy(() => import('../../../components/contact3d/ContactScene'))
-const FuturisticPanel = lazy(() => import('../../../components/contact3d/FuturisticPanel'))
-const InteractiveIcon3D = lazy(() => import('../../../components/contact3d/InteractiveIcon3D'))
+const GlobeScene = lazy(() => import('../../../components/contact3d/GlobeScene'))
 const FuturisticInput = lazy(() => import('../../../components/contact3d/FuturisticInput'))
 const FuturisticTextarea = lazy(() => import('../../../components/contact3d/FuturisticTextarea'))
 const LaunchButton = lazy(() => import('../../../components/contact3d/LaunchButton'))
-const FloatingHologram = lazy(() => import('../../../components/contact3d/FloatingHologram'))
-
-function SocialIcon({ iconVector, size = 18, className = '' }) {
-  if (!iconVector) return null
-  return (
-    <span className={className} style={{ width: size, height: size }} aria-hidden="true"
-      dangerouslySetInnerHTML={{ __html: iconVector.replace(/width="[^"]*"/, `width="${size}"`).replace(/height="[^"]*"/, `height="${size}"`) }}
-    />
-  )
-}
 
 function validate(values) {
   const errors = {}
@@ -58,18 +47,22 @@ function validate(values) {
   return errors
 }
 
-function HeroParallaxElements() {
-  const [transforms, setTransforms] = useState({ badge: { rx: 0, ry: 0 }, title: { rx: 0, ry: 0 }, subtitle: { ry: 0 } })
+const formSlideVariants = {
+  hidden: { opacity: 0, x: -60 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { type: 'spring', stiffness: 80, damping: 18, delay: 0.15 },
+  },
+}
 
-  useMouseParallaxSubscribe(useCallback((x, y) => {
-    setTransforms({
-      badge: { rx: y * -3, ry: x * 3 },
-      title: { rx: y * -2, ry: x * 2 },
-      subtitle: { ry: x * 1 },
-    })
-  }, []))
-
-  return { transforms }
+const globeSlideVariants = {
+  hidden: { opacity: 0, x: 60 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: { type: 'spring', stiffness: 80, damping: 18, delay: 0.3 },
+  },
 }
 
 const ContactContent = memo(function ContactContent({ content, contactFormEnabled, values, errors, touched, fieldError, handleChange, handleBlur, handleSubmit, isSubmitting, isValid, result, resultType, form }) {
@@ -84,51 +77,21 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
     })
   }, []))
 
-  const contactInfo = [
-    { icon: <Mail size={20} aria-hidden="true" />, label: t('contact.labelEmail'), value: content?.email || 'desalegnky827@gmail.com', href: `mailto:${content?.email || 'desalegnky827@gmail.com'}`, color: '#3b82f6' },
-    { icon: <Phone size={20} aria-hidden="true" />, label: t('contact.labelPhone'), value: content?.phone || '+251 908720092', href: `tel:${content?.phone || '+251908720092'}`, color: '#22c55e' },
-    { icon: <MapPin size={20} aria-hidden="true" />, label: t('contact.labelLocation'), value: content?.address || 'Bahirdar, Ethiopia', href: content?.mapLink || null, color: '#f59e0b' }
-  ]
-
-  const socialChannels = (content?.socialChannels || []).slice().sort((a, b) => a.displayWeight - b.displayWeight)
-
-  const containerVariants = createContainerVariants(false, 0.2)
-
-  // Left-right alternating variants for contact info cards
-  const itemVariants = {
-    hidden: (index) => ({
-      opacity: 0,
-      x: index % 2 === 0 ? -60 : 60,
-      y: 0,
-    }),
-    visible: (index) => ({
-      opacity: 1,
-      x: 0,
-      y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 15,
-        delay: index * 0.2,
-      },
-    }),
-  }
-
   return (
     <>
       <div className="container mx-auto px-4 sm:px-6">
         {/* 3D Hero Section */}
-        <div className="relative mb-16 sm:mb-20 md:mb-28">
+        <div className="relative mb-12 sm:mb-16 md:mb-20">
           <Suspense fallback={null}>
             <ContactScene>
-              <div className="relative min-h-[420px] sm:min-h-[480px] md:min-h-[540px] flex flex-col items-center justify-center py-12 sm:py-16">
+              <div className="relative min-h-[320px] sm:min-h-[380px] md:min-h-[420px] flex flex-col items-center justify-center py-10 sm:py-14">
                 {/* Floating glass badge */}
                 <motion.div
                   initial={{ opacity: 0, y: 20, scale: 0.8 }}
                   whileInView={{ opacity: 1, y: 0, scale: 1 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative mb-6 sm:mb-8"
+                  className="relative mb-5 sm:mb-7"
                   style={{
                     transform: `perspective(800px) rotateY(${heroTransforms.badge.ry}deg) rotateX(${heroTransforms.badge.rx}deg) translateZ(${Math.abs(heroTransforms.badge.rx * heroTransforms.badge.ry) * 0.3}px)`,
                     transformStyle: 'preserve-3d',
@@ -140,10 +103,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     className="relative"
                   >
-                    {/* Glow behind badge */}
                     <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl scale-150" />
-
-                    {/* Badge body */}
                     <div className="relative px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border border-primary/30 backdrop-blur-xl bg-white/[0.06] shadow-[0_0_30px_rgba(6,182,212,0.15)]">
                       <motion.div
                         className="absolute inset-0 rounded-full"
@@ -153,7 +113,6 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           background: 'linear-gradient(135deg, rgba(6,182,212,0.1) 0%, rgba(34,211,238,0.08) 50%, rgba(6,182,212,0.1) 100%)',
                         }}
                       />
-                      {/* Neon ring */}
                       <motion.div
                         className="absolute inset-[-1px] rounded-full"
                         animate={{ opacity: [0.4, 0.8, 0.4] }}
@@ -180,16 +139,15 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative text-center mb-4 sm:mb-6"
+                  className="relative text-center mb-4 sm:mb-5"
                   style={{
                     transform: `perspective(1000px) rotateY(${heroTransforms.title.ry}deg) rotateX(${heroTransforms.title.rx}deg)`,
                     transformStyle: 'preserve-3d',
                     willChange: 'transform',
                   }}
                 >
-                  {/* Depth shadow layers */}
                   <h2
-                    className="absolute inset-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight select-none pointer-events-none"
+                    className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight select-none pointer-events-none"
                     style={{
                       color: 'transparent',
                       WebkitTextStroke: '1px rgba(6,182,212,0.08)',
@@ -201,7 +159,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     {t('contact.title')}
                   </h2>
                   <h2
-                    className="absolute inset-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight select-none pointer-events-none"
+                    className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight select-none pointer-events-none"
                     style={{
                       color: 'transparent',
                       WebkitTextStroke: '1px rgba(34,211,238,0.12)',
@@ -212,13 +170,9 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                   >
                     {t('contact.title')}
                   </h2>
-
-                  {/* Main title */}
                   <motion.h2
-                    className="relative text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black tracking-tight text-transparent bg-clip-text"
-                    animate={{
-                      backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
-                    }}
+                    className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight text-transparent bg-clip-text"
+                    animate={{ backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'] }}
                     transition={{ duration: 8, repeat: Infinity, ease: 'linear' }}
                     style={{
                       backgroundImage: 'linear-gradient(135deg, #06b6d4 0%, #22d3ee 40%, #06b6d4 70%, #67e8f9 100%)',
@@ -228,13 +182,9 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                   >
                     {t('contact.title')}
                   </motion.h2>
-
-                  {/* Animated glow behind text */}
                   <motion.div
                     className="absolute inset-0 pointer-events-none"
-                    animate={{
-                      opacity: [0.3, 0.6, 0.3],
-                    }}
+                    animate={{ opacity: [0.3, 0.6, 0.3] }}
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     style={{
                       background: 'radial-gradient(ellipse at center, rgba(6,182,212,0.15) 0%, transparent 70%)',
@@ -249,7 +199,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-base sm:text-lg md:text-xl max-w-2xl mx-auto leading-relaxed px-4 text-center"
+                  className="text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed px-4 text-center"
                   style={{
                     transform: `perspective(800px) rotateY(${heroTransforms.subtitle.ry}deg)`,
                     willChange: 'transform',
@@ -264,7 +214,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                   </motion.span>
                 </motion.p>
 
-                {/* Floating light rays - Premium enhanced */}
+                {/* Floating light rays */}
                 <div className="absolute inset-0 pointer-events-none overflow-hidden">
                   {[...Array(5)].map((_, i) => (
                     <motion.div
@@ -275,12 +225,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                         opacity: [0.03, 0.08, 0.03],
                         rotate: [15 + i * 8, 20 + i * 8, 15 + i * 8],
                       }}
-                      transition={{
-                        duration: 6 + i * 2,
-                        repeat: Infinity,
-                        ease: 'easeInOut',
-                        delay: i * 1.2,
-                      }}
+                      transition={{ duration: 6 + i * 2, repeat: Infinity, ease: 'easeInOut', delay: i * 1.2 }}
                       style={{
                         left: `${15 + i * 18}%`,
                         top: '5%',
@@ -305,17 +250,14 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                 <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    background: 'radial-gradient(ellipse at 30% 60%, rgba(6,182,212,0.04) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(34,211,238,0.03) 0%, transparent 50%), radial-gradient(ellipse at 50% 80%, rgba(6,182,212,0.025) 0%, transparent 40%)',
+                    background: 'radial-gradient(ellipse at 30% 60%, rgba(6,182,212,0.04) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(34,211,238,0.03) 0%, transparent 50%)',
                   }}
                 />
 
                 {/* Lens flare */}
                 <motion.div
                   className="absolute pointer-events-none"
-                  animate={{
-                    opacity: [0.15, 0.35, 0.15],
-                    scale: [0.9, 1.1, 0.9],
-                  }}
+                  animate={{ opacity: [0.15, 0.35, 0.15], scale: [0.9, 1.1, 0.9] }}
                   transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
                   style={{
                     top: '15%',
@@ -327,148 +269,89 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     borderRadius: '50%',
                   }}
                 />
-                <motion.div
-                  className="absolute pointer-events-none"
-                  animate={{
-                    opacity: [0.1, 0.25, 0.1],
-                    scale: [1, 1.2, 1],
-                  }}
-                  transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut', delay: 2 }}
-                  style={{
-                    top: '25%',
-                    left: '15%',
-                    width: '80px',
-                    height: '80px',
-                    background: 'radial-gradient(circle, rgba(34,211,238,0.15) 0%, rgba(6,182,212,0.08) 40%, transparent 70%)',
-                    filter: 'blur(15px)',
-                    borderRadius: '50%',
-                  }}
-                />
               </div>
             </ContactScene>
           </Suspense>
         </div>
 
+        {/* Main Content: Form + Globe */}
         <motion.div
-          variants={containerVariants}
+          variants={createContainerVariants(false, 0.1)}
           initial="hidden"
           whileInView="visible"
           viewport={defaultViewport}
-          className="bg-[var(--surface)] border border-[var(--border-default)] rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] lg:rounded-[3rem] shadow-sm max-w-5xl lg:max-w-6xl mx-auto overflow-hidden relative"
+          className="max-w-6xl mx-auto"
         >
-          <div className={`grid relative z-10 ${contactFormEnabled ? 'lg:grid-cols-5' : 'lg:grid-cols-1'}`}>
-            {/* Contact Info Sidebar - Futuristic Control Station */}
-            <motion.div
-              variants={itemVariants}
-              custom={0}
-              className={`${contactFormEnabled ? 'lg:col-span-2' : 'lg:col-span-1'} p-4 sm:p-5 md:p-6 relative`}
-            >
-              <Suspense fallback={null}>
-                <FuturisticPanel className="h-full">
-                  <div className="p-8 sm:p-10 md:p-12 lg:p-14 xl:p-16">
-                    <div className="relative z-10">
-                      {/* Title with glow */}
-                        <motion.h3
-                          className="text-2xl sm:text-3xl md:text-4xl font-black mb-3 sm:mb-4 leading-tight font-display tracking-tight text-[var(--text-primary)]"
-                          animate={{
-                            textShadow: [
-                              '0 0 20px rgba(6,182,212,0.3)',
-                              '0 0 40px rgba(6,182,212,0.5)',
-                              '0 0 20px rgba(6,182,212,0.3)',
-                            ],
-                          }}
-                        transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                      >
-                        {t('contact.connectTitle')}
-                      </motion.h3>
-
-                      {/* Decorative line */}
-                      <motion.div
-                        className="w-16 h-0.5 mb-6 sm:mb-8"
-                        animate={{
-                          width: ['4rem', '6rem', '4rem'],
-                          background: [
-                            'linear-gradient(90deg, rgba(6,182,212,0.6), rgba(34,211,238,0.3))',
-                            'linear-gradient(90deg, rgba(34,211,238,0.6), rgba(6,182,212,0.3))',
-                            'linear-gradient(90deg, rgba(6,182,212,0.6), rgba(34,211,238,0.3))',
-                          ],
-                        }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                      />
-
-                      <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] mb-10 sm:mb-12 md:mb-14 leading-relaxed">
-                        {t('contact.connectDescription')}
-                      </p>
-
-                      {/* Contact info - Interactive 3D icons */}
-                      <div className="space-y-6 sm:space-y-8 md:space-y-10 mb-10 sm:mb-12 md:mb-14">
-                        {contactInfo.map((info, index) => (
-                          <InteractiveIcon3D
-                            key={index}
-                            icon={info.icon}
-                            label={info.label}
-                            value={info.value}
-                            href={info.href}
-                            color={info.color}
-                          />
-                        ))}
-                      </div>
-
-                      {/* Social channels - Floating Holograms */}
-                      {socialChannels.length > 0 && (
-                        <div>
-                          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-[var(--text-tertiary)] mb-5 sm:mb-6">
-                            Social Channels
-                          </span>
-                          <div className="flex gap-4 sm:gap-5 flex-wrap" role="list" aria-label={t('contact.socialAriaLabel')}>
-                            {socialChannels.map((ch) => (
-                              <FloatingHologram
-                                key={ch._id || ch.channelName}
-                                channelName={ch.channelName}
-                                href={ch.linkUrl}
-                                iconComponent={
-                                  ch.iconVector ? (
-                                    <SocialIcon iconVector={ch.iconVector} size={22} className="text-current" />
-                                  ) : null
-                                }
-                                iconVector={ch.iconVector}
-                              />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </FuturisticPanel>
-              </Suspense>
-            </motion.div>
-
-            {/* Contact Form - AI Communication Terminal */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-10 items-center">
+            {/* Contact Form - Left Side */}
             {contactFormEnabled && (
-              <motion.div variants={itemVariants} custom={1} className="lg:col-span-3 p-6 sm:p-8 md:p-10 lg:p-12 xl:p-16">
-                <Suspense fallback={null}>
-                  <FuturisticPanel>
-                    <div className="p-8 sm:p-10 md:p-12 lg:p-10 xl:p-12">
-                      {/* Terminal header */}
-                      <div className="flex items-center gap-3 mb-8 sm:mb-10">
-                        <div className="flex gap-2">
-                          <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
-                          <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
-                          <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
-                        </div>
-                        <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-[var(--text-tertiary)]">
-                          AI Communication Terminal v2.0
-                        </span>
-                        <motion.div
-                          className="ml-auto w-2 h-2 rounded-full bg-green-500"
-                          animate={{ opacity: [0.4, 1, 0.4] }}
-                          transition={{ duration: 2, repeat: Infinity }}
-                          style={{ boxShadow: '0 0 8px rgba(34,197,94,0.5)' }}
-                        />
-                      </div>
+              <motion.div
+                variants={formSlideVariants}
+                initial="hidden"
+                whileInView="visible"
+                viewport={{ once: true, margin: '-50px' }}
+              >
+                <div
+                  className="relative rounded-3xl overflow-hidden"
+                  style={{
+                    background: 'linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(6,182,212,0.04) 100%)',
+                    backdropFilter: 'blur(40px) saturate(1.5)',
+                    WebkitBackdropFilter: 'blur(40px) saturate(1.5)',
+                    border: '1px solid rgba(255,255,255,0.08)',
+                    boxShadow: '0 20px 60px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.06)',
+                  }}
+                >
+                  {/* Holographic border */}
+                  <div
+                    className="absolute inset-0 rounded-3xl pointer-events-none z-10"
+                    style={{
+                      padding: '1px',
+                      background: 'conic-gradient(from 0deg, rgba(6,182,212,0.15), transparent 30%, rgba(6,182,212,0.06) 50%, transparent 70%, rgba(6,182,212,0.15))',
+                      mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      maskComposite: 'exclude',
+                      WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
+                      WebkitMaskComposite: 'xor',
+                    }}
+                  />
 
-                      <form ref={form} className="space-y-6 sm:space-y-8" onSubmit={handleSubmit} noValidate aria-label={t('contact.formAriaLabel')}>
-                        {/* Full Name */}
+                  {/* Ambient glow */}
+                  <div
+                    className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1/3 pointer-events-none z-0"
+                    style={{
+                      background: 'radial-gradient(ellipse at center, rgba(6,182,212,0.08) 0%, transparent 70%)',
+                      filter: 'blur(40px)',
+                    }}
+                  />
+
+                  {/* Scanlines */}
+                  <div
+                    className="absolute inset-0 pointer-events-none z-20 opacity-[0.02]"
+                    style={{
+                      backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.1) 2px, rgba(255,255,255,0.1) 4px)',
+                    }}
+                  />
+
+                  <div className="relative z-10 p-6 sm:p-8 md:p-10 lg:p-10 xl:p-12">
+                    {/* Terminal header */}
+                    <div className="flex items-center gap-3 mb-7 sm:mb-9">
+                      <div className="flex gap-2">
+                        <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+                        <div className="w-2.5 h-2.5 rounded-full bg-green-500/80" />
+                      </div>
+                      <span className="text-[10px] sm:text-xs font-mono uppercase tracking-widest text-[var(--text-tertiary)]">
+                        Communication Terminal v2.0
+                      </span>
+                      <motion.div
+                        className="ml-auto w-2 h-2 rounded-full bg-green-500"
+                        animate={{ opacity: [0.4, 1, 0.4] }}
+                        transition={{ duration: 2, repeat: Infinity }}
+                        style={{ boxShadow: '0 0 8px rgba(34,197,94,0.5)' }}
+                      />
+                    </div>
+
+                    <Suspense fallback={null}>
+                      <form ref={form} className="space-y-5 sm:space-y-6" onSubmit={handleSubmit} noValidate aria-label={t('contact.formAriaLabel')}>
                         <FuturisticInput
                           id="from_name"
                           name="from_name"
@@ -483,7 +366,6 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           required
                         />
 
-                        {/* Email */}
                         <FuturisticInput
                           id="reply_to"
                           name="reply_to"
@@ -498,7 +380,6 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           required
                         />
 
-                        {/* Phone (optional) */}
                         <FuturisticInput
                           id="phone"
                           name="phone"
@@ -514,7 +395,6 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           }
                         />
 
-                        {/* Message */}
                         <FuturisticTextarea
                           id="message"
                           name="message"
@@ -529,7 +409,6 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           rows={5}
                         />
 
-                        {/* Result Message */}
                         <AnimatePresence>
                           {result && (
                             <motion.div
@@ -556,7 +435,6 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           )}
                         </AnimatePresence>
 
-                        {/* Launch Control Button */}
                         <LaunchButton
                           disabled={isSubmitting || !isValid}
                           isSubmitting={isSubmitting}
@@ -565,11 +443,48 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           ariaLabel={isSubmitting ? t('contact.submitAriaSubmitting') : t('contact.submitAriaNormal')}
                         />
                       </form>
-                    </div>
-                  </FuturisticPanel>
-                </Suspense>
+                    </Suspense>
+                  </div>
+                </div>
               </motion.div>
             )}
+
+            {/* 3D Globe - Right Side */}
+            <motion.div
+              variants={globeSlideVariants}
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true, margin: '-50px' }}
+              className="flex items-center justify-center"
+            >
+              <div className="relative w-full aspect-square max-h-[480px] lg:max-h-[520px]">
+                <Suspense fallback={
+                  <div className="w-full h-full flex items-center justify-center">
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 3, repeat: Infinity, ease: 'linear' }}
+                      className="w-16 h-16 rounded-full border-2 border-transparent"
+                      style={{
+                        borderTopColor: 'rgba(6,182,212,0.6)',
+                        borderRightColor: 'rgba(34,211,238,0.3)',
+                        filter: 'drop-shadow(0 0 8px rgba(6,182,212,0.3))',
+                      }}
+                    />
+                  </div>
+                }>
+                  <GlobeScene />
+                </Suspense>
+
+                {/* Glow behind globe */}
+                <div
+                  className="absolute inset-0 pointer-events-none -z-10"
+                  style={{
+                    background: 'radial-gradient(circle at center, rgba(6,182,212,0.08) 0%, rgba(139,92,246,0.04) 40%, transparent 70%)',
+                    filter: 'blur(40px)',
+                  }}
+                />
+              </div>
+            </motion.div>
           </div>
         </motion.div>
       </div>
