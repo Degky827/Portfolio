@@ -1,11 +1,11 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, memo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { X, Send, Sparkles, Trash2 } from 'lucide-react'
 import useChat from '../hooks/useChat'
 import Message from './Message'
 import TypingIndicator from './TypingIndicator'
 
-export default function ChatWindow({ isOpen, onClose }) {
+export default memo(function ChatWindow({ isOpen, onClose }) {
   const { messages, isLoading, error, sendMessage, clearMessages } = useChat()
   const [input, setInput] = useState('')
   const listRef = useRef(null)
@@ -23,12 +23,12 @@ export default function ChatWindow({ isOpen, onClose }) {
     }
   }, [isOpen])
 
-  const handleSubmit = (e) => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
     sendMessage(input)
     setInput('')
-  }
+  }, [input, isLoading, sendMessage])
 
   const handleKeyDown = (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -163,4 +163,4 @@ export default function ChatWindow({ isOpen, onClose }) {
       )}
     </AnimatePresence>
   )
-}
+})

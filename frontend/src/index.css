@@ -489,6 +489,11 @@ h1, h2, h3, h4, h5, h6 {
   backface-visibility: hidden;
 }
 
+.gpu-composite {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+}
+
 .glass-premium {
   background: linear-gradient(165deg, rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.02) 40%, rgba(255,255,255,0.01) 100%);
   backdrop-filter: blur(40px) saturate(1.5);

@@ -1,7 +1,8 @@
+import { memo } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, X } from 'lucide-react'
 
-export default function AIButton({ isOpen, onClick }) {
+export default memo(function AIButton({ isOpen, onClick }) {
   return (
     <div className="fixed bottom-6 right-4 sm:right-6 z-[999]">
       <AnimatePresence>
@@ -40,4 +41,4 @@ export default function AIButton({ isOpen, onClick }) {
       )}
     </div>
   )
-}
+})
