@@ -21,6 +21,7 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
  *   accentColor  – Hex color for neon accents (default: '#8b5cf6')
  *   animationDelay – Stagger delay in seconds (default: 0)
  *   index        – Card index for numbering (default: 0)
+ *   shouldReduceMotion – Disable entrance animation (default: false)
  */
 const AboutGlassCard = memo(function AboutGlassCard({
   icon,
@@ -29,6 +30,7 @@ const AboutGlassCard = memo(function AboutGlassCard({
   accentColor = '#8b5cf6',
   animationDelay = 0,
   index = 0,
+  shouldReduceMotion = false,
 }) {
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
@@ -69,16 +71,20 @@ const AboutGlassCard = memo(function AboutGlassCard({
     return description?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || ''
   }, [description])
 
+  // Calculate alternating slide direction: even indices slide from left, odd from right
+  const slideDirection = index % 2 === 0 ? -60 : 60
+
   return (
     <motion.article
       ref={cardRef}
-      initial={{ opacity: 0, y: 50, scale: 0.95, filter: 'blur(8px)' }}
-      whileInView={{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)' }}
-      viewport={{ once: true, margin: '-40px' }}
+      initial={{ opacity: 0, x: shouldReduceMotion ? 0 : slideDirection, y: 0 }}
+      whileInView={{ opacity: 1, x: 0, y: 0 }}
+      viewport={{ once: true, amount: 0.2 }}
       transition={{
-        duration: 0.6,
+        type: 'spring',
+        stiffness: 100,
+        damping: 15,
         delay: animationDelay,
-        ease: [0.25, 0.46, 0.45, 0.94],
       }}
       whileHover={{
         y: -8,
