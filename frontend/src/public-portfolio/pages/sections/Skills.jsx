@@ -457,8 +457,8 @@ function CertModal({ cert, onClose }) {
 
         <div className="p-6">
           <div className="flex items-center gap-2 mb-3">
-            <Award size={18} className="text-cyan-400" />
-            <span className="text-xs font-bold uppercase tracking-wider text-cyan-400">{t('skills.certificateLabel')}</span>
+            <Award size={18} style={{ color: 'var(--text-primary)' }} />
+            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>{t('skills.certificateLabel')}</span>
           </div>
           <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">
             {cert.name}
@@ -490,7 +490,8 @@ function CertModal({ cert, onClose }) {
               href={cert.certificateUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold text-cyan-400 hover:text-cyan-300 transition-colors"
+              className="inline-flex items-center gap-1.5 mt-5 text-sm font-semibold transition-colors"
+              style={{ color: 'var(--text-primary)' }}
             >
               <ExternalLink size={14} />
               {t('skills.viewCertificate')}
