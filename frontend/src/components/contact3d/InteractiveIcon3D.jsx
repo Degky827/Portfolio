@@ -405,7 +405,7 @@ export default function InteractiveIcon3D({ icon, label, value, href, color, cha
           {...linkProps}
           className="min-w-0 group/text"
         >
-          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] text-white/40 mb-1">{label}</span>
+          <span className="block text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-1" style={{ color: 'var(--text-primary)' }}>{label}</span>
           <span
             className="text-sm sm:text-base md:text-lg lg:text-xl font-bold font-display tracking-tight break-all transition-colors duration-300"
             style={{ color: isHovered ? config.color : 'rgba(255,255,255,0.9)' }}
