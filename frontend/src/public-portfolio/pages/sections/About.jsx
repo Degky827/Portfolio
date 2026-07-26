@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
-import { motion } from 'framer-motion'
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { Award, GraduationCap, Briefcase, Cpu, Target } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import AboutGlassCard from '../../components/about/AboutGlassCard'
@@ -8,6 +8,7 @@ import StatisticsDashboard from '../../components/about/StatisticsDashboard'
 import CertificateGallery from '../../components/about/CertificateGallery'
 import CinematicLighting from '../../components/about/CinematicLighting'
 import GlobalAtmosphere from '../../components/about/GlobalAtmosphere'
+import { createContainerVariants, sectionHeaderVariants, defaultViewport } from '../../shared/animations'
 
 const hardcodedSections = (t) => [
   { title: t('about.sectionEducation'), content: t('about.sectionEducationContent') },
@@ -30,7 +31,7 @@ const sectionAccents = ['#8b5cf6', '#22d3ee', '#6366f1', '#a78bfa']
 /* ─── Floating Particles Background ─── */
 function CyberParticles() {
   const particles = useMemo(() =>
-    Array.from({ length: 40 }, (_, i) => ({
+    Array.from({ length: 20 }, (_, i) => ({
       id: i,
       x: Math.random() * 100,
       y: Math.random() * 100,
@@ -64,7 +65,6 @@ function CyberParticles() {
 function NeonGrid() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none dark:block hidden" aria-hidden="true">
-      {/* Horizontal lines */}
       {[20, 40, 60, 80].map((top) => (
         <div
           key={`h-${top}`}
@@ -72,7 +72,6 @@ function NeonGrid() {
           style={{ top: `${top}%` }}
         />
       ))}
-      {/* Vertical lines */}
       {[25, 50, 75].map((left) => (
         <div
           key={`v-${left}`}
@@ -84,9 +83,13 @@ function NeonGrid() {
   )
 }
 
+const MemoizedNeonGrid = memo(NeonGrid)
+const MemoizedCyberParticles = memo(CyberParticles)
+
 /* ─── Main About Component ─── */
 export default function About({ content, hero, aboutContent }) {
   const { t, i18n } = useTranslation()
+  const shouldReduceMotion = useReducedMotion()
   const isAm = i18n.language === 'am'
 
   const title = isAm
@@ -146,8 +149,8 @@ export default function About({ content, hero, aboutContent }) {
         <CinematicLighting />
         <GlobalAtmosphere />
       </div>
-      <NeonGrid />
-      <CyberParticles />
+      <MemoizedNeonGrid />
+      <MemoizedCyberParticles />
 
       {/* Ambient glow orbs - only visible in dark mode */}
       <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none dark:block hidden" aria-hidden="true" />
@@ -214,8 +217,9 @@ export default function About({ content, hero, aboutContent }) {
                     title={section.title}
                     description={section.content}
                     accentColor={sectionAccents[index]}
-                    animationDelay={index * 0.12}
+                    animationDelay={shouldReduceMotion ? 0 : index * 0.15}
                     index={index}
+                    shouldReduceMotion={shouldReduceMotion}
                   />
                 )
               })}

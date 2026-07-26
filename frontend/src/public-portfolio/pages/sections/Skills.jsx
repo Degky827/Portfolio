@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
+import { createContainerVariants, defaultViewport } from '../../shared/animations'
 import {
   Code2, Award, ExternalLink, Calendar, Building2, X,
 } from 'lucide-react'
@@ -270,25 +271,26 @@ export default function Skills() {
   const topRow = allCards.slice(0, 4)
   const bottomRow = allCards.slice(4)
 
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: { staggerChildren: shouldReduceMotion ? 0 : 0.08 },
-    },
-  }
+  const containerVariants = createContainerVariants(shouldReduceMotion, 0.08)
 
+  // Left-right alternating variants for skill cards
   const itemVariants = {
-    hidden: { y: shouldReduceMotion ? 0 : 20, opacity: 0 },
-    visible: {
+    hidden: (index) => ({
+      opacity: 0,
+      x: shouldReduceMotion ? 0 : (index % 2 === 0 ? -60 : 60),
       y: 0,
+    }),
+    visible: (index) => ({
       opacity: 1,
+      x: 0,
+      y: 0,
       transition: {
-        type: shouldReduceMotion ? 'tween' : 'spring',
-        stiffness: 80,
-        damping: 12,
+        type: 'spring',
+        stiffness: 100,
+        damping: 15,
+        delay: shouldReduceMotion ? 0 : index * 0.15,
       },
-    },
+    }),
   }
 
   if (loading) {
@@ -345,7 +347,7 @@ export default function Skills() {
               variants={containerVariants}
               initial="hidden"
               whileInView="visible"
-              viewport={{ once: true, margin: '-50px' }}
+              viewport={defaultViewport}
               className="bg-[var(--surface)] backdrop-blur-xl border border-[var(--border-default)] p-6 sm:p-8 md:p-10 lg:p-16 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] max-w-5xl lg:max-w-6xl mx-auto relative overflow-hidden shadow-2xl"
             >
               {topRow.length > 0 && (

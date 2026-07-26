@@ -1,12 +1,19 @@
-import { useEffect, useState, lazy, Suspense } from 'react'
+import { useEffect, useState, lazy, Suspense, useCallback, useRef, useMemo, memo } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
-import { ArrowRight, Award, BookOpen, Cpu, Users, Trophy, Shield, Terminal, GraduationCap, Heart, Briefcase, Coffee, Smile, Download, MapPin, ExternalLink } from 'lucide-react'
+import { ArrowRight, ExternalLink } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
+import { createContainerVariants, defaultViewport } from '../../shared/animations'
 
 const HeroDesktopScene = lazy(() =>
   import('../../components/3d/HeroDesktopScene')
 )
+
+import {
+  Award, BookOpen, Cpu, Users, Trophy, Shield,
+  Terminal, GraduationCap, Download, MapPin,
+  Heart, Briefcase, Coffee, Smile,
+} from 'lucide-react'
 
 const iconMap = {
   Award, BookOpen, Cpu, Users, Trophy, Shield,
@@ -18,30 +25,46 @@ function getIcon(name) {
   return iconMap[name] || Award
 }
 
-const GithubIcon = ({ size }) => (
+const GithubIcon = memo(({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/></svg>
-)
-const LinkedinIcon = ({ size }) => (
+))
+GithubIcon.displayName = 'GithubIcon'
+
+const LinkedinIcon = memo(({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M19 3a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h14m-.5 15.5v-5.3a3.26 3.26 0 0 0-3.26-3.26c-.85 0-1.84.52-2.32 1.3v-1.11h-2.79v8.37h2.79v-4.93c0-.77.62-1.4 1.39-1.4a1.4 1.4 0 0 1 1.4 1.4v4.93h2.79M6.88 8.56a1.68 1.68 0 0 0 1.68-1.68c0-.93-.75-1.69-1.68-1.69a1.69 1.69 0 0 0-1.69 1.69c0 .93.76 1.68 1.69 1.68m1.39 9.94v-8.37H5.5v8.37h2.77z"/></svg>
-)
-const TelegramIcon = ({ size }) => (
+))
+LinkedinIcon.displayName = 'LinkedinIcon'
+
+const TelegramIcon = memo(({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M9.78 18.65l.28-4.23 7.68-6.92c.34-.31-.07-.46-.52-.19L7.74 13.3 3.64 12c-.88-.25-.89-.86.2-1.3l15.97-6.16c.73-.33 1.43.18 1.15 1.3l-2.72 12.81c-.19.91-.74 1.13-1.5.71L12.6 16.3l-1.99 1.93c-.23.23-.42.42-.83.42z"/></svg>
-)
-const TwitterIcon = ({ size }) => (
+))
+TelegramIcon.displayName = 'TelegramIcon'
+
+const TwitterIcon = memo(({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-)
-const FacebookIcon = ({ size }) => (
+))
+TwitterIcon.displayName = 'TwitterIcon'
+
+const FacebookIcon = memo(({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
-)
-const InstagramIcon = ({ size }) => (
+))
+FacebookIcon.displayName = 'FacebookIcon'
+
+const InstagramIcon = memo(({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z"/></svg>
-)
-const YoutubeIcon = ({ size }) => (
+))
+InstagramIcon.displayName = 'InstagramIcon'
+
+const YoutubeIcon = memo(({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>
-)
-const EmailIcon = ({ size }) => (
+))
+YoutubeIcon.displayName = 'YoutubeIcon'
+
+const EmailIcon = memo(({ size }) => (
   <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
-)
+))
+EmailIcon.displayName = 'EmailIcon'
+
 const socialIconMap = {
   github: GithubIcon,
   linkedin: LinkedinIcon,
@@ -53,11 +76,66 @@ const socialIconMap = {
   email: EmailIcon,
 }
 
-export default function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLink }) {
+const containerVariants = createContainerVariants(false, 0.15)
+
+// Hero elements use bottom-up animation (not alternating left-right)
+const itemVariants = {
+  hidden: { y: 30, opacity: 0 },
+  visible: {
+    y: 0,
+    opacity: 1,
+    transition: {
+      type: 'spring',
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+}
+
+function useTypingEffect(fullText) {
+  const [typedText, setTypedText] = useState('')
+
+  useEffect(() => {
+    let index = 0
+    setTypedText('')
+    const timer = setInterval(() => {
+      if (index <= fullText.length) {
+        setTypedText(fullText.slice(0, index))
+        index++
+      } else {
+        clearInterval(timer)
+      }
+    }, 50)
+    return () => clearInterval(timer)
+  }, [fullText])
+
+  return typedText
+}
+
+const SocialLink = memo(({ platform, url, itemVariants }) => {
+  const Icon = socialIconMap[platform]
+  if (!Icon) return null
+  return (
+    <motion.a
+      key={platform}
+      href={url}
+      target="_blank"
+      rel="noopener noreferrer"
+      whileHover={{ scale: 1.15, y: -2 }}
+      whileTap={{ scale: 0.9 }}
+      className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[var(--surface)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-primary hover:text-white transition-all shadow-sm"
+      title={platform}
+    >
+      <Icon size={16} />
+    </motion.a>
+  )
+})
+SocialLink.displayName = 'SocialLink'
+
+function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLink }) {
   const { t, i18n } = useTranslation()
   const { settings } = useSiteSettings()
-  const [typedText, setTypedText] = useState('')
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const mousePositionRef = useRef({ x: 0, y: 0 })
   const isAm = i18n.language === 'am'
 
   const greeting = isAm ? (settings?.greetingAm || content?.greetingAm || settings?.greeting || content?.greeting || t('hero.greeting')) : (settings?.greeting || content?.greeting || t('hero.greeting'))
@@ -83,33 +161,22 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
     ? content.ctaButtons
     : [{ text: '', link: '', openNewTab: false, icon: 'ArrowRight' }]
 
-  useEffect(() => {
-    let index = 0
-    setTypedText('')
-    const timer = setInterval(() => {
-      if (index <= fullText.length) {
-        setTypedText(fullText.slice(0, index))
-        index++
-      } else {
-        clearInterval(timer)
-      }
-    }, 50)
-    return () => clearInterval(timer)
-  }, [fullText])
+  const typedText = useTypingEffect(fullText)
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
+      mousePositionRef.current.x = e.clientX
+      mousePositionRef.current.y = e.clientY
     }
-    window.addEventListener('mousemove', handleMouseMove)
+    window.addEventListener('mousemove', handleMouseMove, { passive: true })
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
-  const scrollToContact = () => {
+  const scrollToContact = useCallback(() => {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
-  }
+  }, [])
 
-  const handleCtaClick = (btn) => {
+  const handleCtaClick = useCallback((btn) => {
     if (btn.openNewTab) {
       window.open(btn.link, '_blank')
     } else if (btn.link) {
@@ -120,66 +187,38 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
     } else {
       scrollToContact()
     }
-  }
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.15,
-        delayChildren: 0.3,
-      },
-    },
-  }
-
-  const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
-    visible: {
-      y: 0,
-      opacity: 1,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 15,
-      },
-    },
-  }
+  }, [scrollToContact])
 
   return (
     <section id="home" className="relative min-h-screen flex items-center overflow-hidden bg-white dark:bg-black transition-colors duration-500">
-      {/* Subtle Background Gradient */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-transparent dark:bg-gradient-to-b dark:from-[#0B1120] dark:to-[#111827]" />
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]" 
-          style={{ 
+        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]"
+          style={{
             backgroundImage: 'linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px)',
-            backgroundSize: '60px 60px' 
-          }} 
+            backgroundSize: '60px 60px'
+          }}
         />
       </div>
 
       <div className="container mx-auto px-4 sm:px-6 relative z-10">
-        <motion.div 
+        <motion.div
           variants={containerVariants}
           initial="hidden"
           animate="visible"
           className="flex justify-center"
         >
-          <motion.div 
+          <motion.div
             variants={itemVariants}
             className="bg-white dark:bg-neutral-900 border border-gray-200 dark:border-neutral-800 p-6 sm:p-8 md:p-10 lg:p-12 rounded-[2rem] sm:rounded-[2.5rem] md:rounded-[3rem] lg:rounded-[3.5rem] grid grid-cols-1 lg:grid-cols-[45%_55%] items-stretch gap-8 md:gap-10 lg:gap-0 max-w-5xl lg:max-w-6xl xl:max-w-7xl relative overflow-hidden w-full shadow-sm"
           >
-            {/* Left Column - 2D Content */}
             <div className="flex flex-col items-center lg:items-start">
-              {/* Image Wrapper */}
-              <motion.div 
+              <motion.div
                 whileHover={{ scale: 1.05 }}
                 transition={{ type: 'spring', stiffness: 300 }}
                 className="relative flex-shrink-0 flex flex-col items-center"
               >
                 <div className="w-40 h-40 sm:w-52 sm:h-52 md:w-56 md:h-56 lg:w-64 lg:h-64 relative">
-                  {/* Decorative animated progress rings (SVG) */}
                   <svg viewBox="0 0 200 200" className="absolute -inset-3 w-[calc(100%+24px)] h-[calc(100%+24px)] z-0 pointer-events-none" aria-hidden="true">
                     <defs>
                       <linearGradient id="g1" x1="0%" x2="100%">
@@ -203,10 +242,8 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
                     </g>
                   </svg>
 
-                  {/* Simple ring border */}
                   <div className="absolute inset-0 rounded-full border-2 border-primary/20 z-10" />
-                  
-                  {/* Portrait (animated) */}
+
                   <motion.div
                     className="absolute inset-[6px] rounded-full overflow-hidden z-20 bg-[#dce5f0] shadow-sm pt-[14px]"
                     animate={{ y: [0, -8, 0] }}
@@ -219,35 +256,21 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
                       initial={{ scale: 1 }}
                       whileHover={{ scale: 1.06 }}
                       transition={{ duration: 0.45 }}
+                      loading="eager"
                     />
                   </motion.div>
                 </div>
-                {/* Social Links */}
                 <motion.div variants={itemVariants} className="flex gap-2 sm:gap-3 mt-4 sm:mt-6">
                   {Object.entries(settings?.socialLinks || {}).map(([platform, url]) => {
                     if (!url) return null
-                    const Icon = socialIconMap[platform]
-                    if (!Icon) return null
                     return (
-                      <motion.a
-                        key={platform}
-                        href={url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        whileHover={{ scale: 1.15, y: -2 }}
-                        whileTap={{ scale: 0.9 }}
-                        className="w-9 h-9 sm:w-10 sm:h-10 rounded-lg bg-[var(--surface)] border border-[var(--border-default)] flex items-center justify-center text-[var(--text-secondary)] hover:bg-primary hover:text-white transition-all shadow-sm"
-                        title={platform}
-                      >
-                        <Icon size={16} />
-                      </motion.a>
+                      <SocialLink key={platform} platform={platform} url={url} itemVariants={itemVariants} />
                     )
                   })}
                 </motion.div>
               </motion.div>
 
-              {/* Content */}
-              <motion.div 
+              <motion.div
                 variants={itemVariants}
                 className="flex-1 text-center lg:text-left space-y-4 sm:space-y-6 md:space-y-8 mt-8 lg:mt-10"
               >
@@ -262,25 +285,24 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
                   <br />
                   <span className="text-2xl sm:text-3xl md:text-4xl lg:text-4xl xl:text-5xl text-[var(--text-secondary)]">
                     {typedText}
-                    <motion.span 
-                      animate={{ opacity: [1, 0] }} 
+                    <motion.span
+                      animate={{ opacity: [1, 0] }}
                       transition={{ duration: 0.5, repeat: Infinity }}
                       className="inline-block w-0.5 h-6 sm:h-8 ml-1 bg-primary"
                     />
                   </span>
                 </h1>
 
-                <motion.p 
+                <motion.p
                   variants={itemVariants}
                   className="text-sm sm:text-base md:text-lg text-[var(--text-secondary)] max-w-2xl lg:max-w-none leading-relaxed"
                   dangerouslySetInnerHTML={{ __html: introduction }}
                 />
 
-                <motion.div 
+                <motion.div
                   variants={itemVariants}
                   className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center lg:justify-start"
                 >
-                  {/* Primary button */}
                   <motion.button
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
@@ -290,7 +312,6 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
                     {contactBtnText}
                     <ArrowRight className="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
                   </motion.button>
-                  {/* Secondary buttons */}
                   {ctaButtons.map((btn, i) => {
                     if (!btn.text && !btn.link) return null
                     return (
@@ -308,7 +329,6 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
                   })}
                 </motion.div>
 
-                {/* Stats */}
                 <motion.div variants={itemVariants} className="flex gap-6 sm:gap-10 lg:gap-12 justify-center lg:justify-start pt-6 sm:pt-8 border-t border-gray-100 dark:border-neutral-800">
                   {stats.map((stat, i) => {
                     const StatIcon = getIcon(stat.icon)
@@ -331,8 +351,7 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
               </motion.div>
             </div>
 
-            {/* Right Column - 3D Desktop Scene */}
-            <motion.div 
+            <motion.div
               variants={itemVariants}
               className="hidden lg:flex items-stretch justify-center relative p-4 xl:p-6"
             >
@@ -348,8 +367,7 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
         </motion.div>
       </div>
 
-      {/* Scroll Down Indicator */}
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 2, duration: 1 }}
@@ -357,18 +375,18 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
         onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
       >
         <span className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] group-hover:text-primary transition-colors">{t('hero.discoverMore')}</span>
-        <motion.div 
+        <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 1.5, repeat: Infinity }}
           className="w-6 h-10 sm:w-7 sm:h-12 border-2 border-gray-300 dark:border-neutral-800 rounded-full flex justify-center p-1.5 group-hover:border-primary transition-colors"
         >
-          <motion.div 
-            animate={{ 
+          <motion.div
+            animate={{
               y: [0, 12, 0],
               opacity: [1, 0.3, 1]
             }}
-            transition={{ 
-              duration: 1.5, 
+            transition={{
+              duration: 1.5,
               repeat: Infinity,
               ease: "easeInOut"
             }}
@@ -379,3 +397,5 @@ export default function Hero({ content, contactButtonText, contactButtonTextAm, 
     </section>
   )
 }
+
+export default memo(Hero)
