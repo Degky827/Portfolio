@@ -205,7 +205,8 @@ export default function Projects() {
               <p className="text-[var(--text-secondary)] mb-6">{t('projects.noProjectsHint')}</p>
               <button
                 onClick={() => { setSearchTerm('') }}
-                className="px-6 py-3 bg-cyan-500 text-white font-bold rounded-full hover:bg-cyan-400 transition-colors"
+                className="px-6 py-3 text-white font-bold rounded-full transition-colors"
+                style={{ backgroundColor: 'var(--accent-projects)' }}
               >
                 {t('projects.clearFilters')}
               </button>
@@ -255,7 +256,8 @@ export default function Projects() {
                 <p className="text-[var(--text-secondary)] mb-6">{t('projects.noAppsHint')}</p>
                 <button
                   onClick={() => setSearchTerm('')}
-                  className="px-6 py-3 bg-cyan-500 text-white font-bold rounded-full hover:bg-cyan-400 transition-colors"
+                  className="px-6 py-3 text-white font-bold rounded-full transition-colors"
+                  style={{ backgroundColor: 'var(--accent-projects)' }}
                 >
                   {t('projects.clearSearchBtn')}
                 </button>

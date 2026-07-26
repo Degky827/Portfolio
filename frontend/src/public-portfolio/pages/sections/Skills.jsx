@@ -299,7 +299,7 @@ export default function Skills() {
         <section id="skills" className="py-16 sm:py-20 md:py-24 min-h-screen" aria-label={t('skills.ariaLabel')}>
           <div className="container mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-center py-20">
-              <div className="w-10 h-10 border-4 border-cyan-500/30 border-t-cyan-500 rounded-full animate-spin" />
+              <div className="w-10 h-10 border-4 rounded-full animate-spin" style={{ borderColor: 'rgba(14, 165, 233, 0.3)', borderTopColor: 'var(--accent-skills)' }} />
             </div>
           </div>
         </section>
@@ -428,7 +428,7 @@ function CertModal({ cert, onClose }) {
       className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6"
       onClick={onClose}
     >
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+      <div className="absolute inset-0 backdrop-blur-sm" style={{ backgroundColor: 'var(--overlay-bg)' }} />
       <motion.div
         initial={{ opacity: 0, scale: 0.95, y: 20 }}
         animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -446,7 +446,7 @@ function CertModal({ cert, onClose }) {
         </button>
 
         {cert.icon && (
-          <div className="h-36 bg-[var(--bg-secondary)] overflow-hidden">
+          <div className="h-36 overflow-hidden" style={{ backgroundColor: 'var(--bg-secondary)' }}>
             <img
               src={getMediaUrl(cert.icon)}
               alt={cert.name}

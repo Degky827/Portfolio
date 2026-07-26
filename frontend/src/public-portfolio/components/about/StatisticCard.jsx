@@ -101,9 +101,11 @@ const StatisticCard = memo(function StatisticCard({
       <div
         className="relative rounded-[18px] sm:rounded-[22px] overflow-hidden"
         style={{
-          background: 'linear-gradient(145deg, rgba(18,10,50,0.85), rgba(12,6,35,0.92))',
+          background: 'var(--card-bg)',
           backdropFilter: 'blur(20px) saturate(1.1)',
           WebkitBackdropFilter: 'blur(20px) saturate(1.1)',
+          border: '1px solid var(--card-border)',
+          boxShadow: 'var(--card-shadow)',
         }}
       >
         {/* ═══════════ Inner Gradient ═══════════ */}
@@ -126,11 +128,11 @@ const StatisticCard = memo(function StatisticCard({
             <span
               className="text-2xl sm:text-3xl md:text-4xl font-black tracking-tight transition-all duration-300"
               style={{
-                color: '#f8fafc',
+                color: 'var(--text-primary)',
                 textShadow: isHovered ? `0 0 20px ${color}40` : 'none',
               }}
             >
-              <StatisticCounter value={value} color="#f8fafc" />
+              <StatisticCounter value={value} color="var(--text-primary)" />
             </span>
           </div>
 
