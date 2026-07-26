@@ -1,7 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
 import { logPortfolioVisit } from '../services/api'
-import { getSettings } from '../services/settingsService'
 
 function getVisitorId() {
   let id = localStorage.getItem('portfolio_visitor_id')
@@ -17,19 +16,22 @@ function getVisitorId() {
 export function usePageTracking(viewerName) {
   const lastPage = useRef('')
   const location = useLocation()
+  const analyticsChecked = useRef(false)
   const analyticsEnabled = useRef(true)
 
   useEffect(() => {
-    ;(async () => {
-      try {
-        const { settings } = await getSettings()
-        if (settings?.enableAnalytics !== undefined) {
-          analyticsEnabled.current = settings.enableAnalytics
-        }
-      } catch {
-        // default to enabled
-      }
-    })()
+    if (analyticsChecked.current) return
+    analyticsChecked.current = true
+
+    import('../services/settingsService').then(({ getSettings }) => {
+      getSettings()
+        .then(({ settings }) => {
+          if (settings?.enableAnalytics !== undefined) {
+            analyticsEnabled.current = settings.enableAnalytics
+          }
+        })
+        .catch(() => {})
+    })
   }, [])
 
   useEffect(() => {

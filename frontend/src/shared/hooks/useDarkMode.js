@@ -1,27 +1,34 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import api from '../services/api'
 
 export function useDarkMode() {
   const userHasToggled = useRef(false)
+  const apiCalled = useRef(false)
 
   const [darkMode, setDarkMode] = useState(() => {
     const saved = localStorage.getItem('darkMode')
-    return saved ? JSON.parse(saved) : false
+    if (saved !== null) return JSON.parse(saved)
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
   })
 
   useEffect(() => {
-    if (userHasToggled.current) return
+    if (userHasToggled.current || apiCalled.current) return
+    apiCalled.current = true
 
-    api.get('/settings/appearance')
-      .then(({ data }) => {
-        if (userHasToggled.current) return
-        if (data?.appearance?.mode) {
-          const mode = data.appearance.mode
-          const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
-          setDarkMode(isDark)
-        }
-      })
-      .catch(() => {})
+    const saved = localStorage.getItem('darkMode')
+    if (saved !== null) return
+
+    import('../services/api').then(({ default: api }) => {
+      api.get('/settings/appearance')
+        .then(({ data }) => {
+          if (userHasToggled.current) return
+          if (data?.appearance?.mode) {
+            const mode = data.appearance.mode
+            const isDark = mode === 'dark' || (mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+            setDarkMode(isDark)
+          }
+        })
+        .catch(() => {})
+    })
   }, [])
 
   useEffect(() => {
