@@ -221,7 +221,7 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
               {label}
             </span>
             {count !== undefined && (
-              <span className="text-[10px] font-medium text-slate-500 block mt-0.5">
+              <span className="text-[10px] font-medium block mt-0.5" style={{ color: 'var(--text-primary)' }}>
                 {count} items
               </span>
             )}

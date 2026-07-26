@@ -20,11 +20,11 @@ function RatingStars({ rating, color }) {
         >
           <Star
             size={12}
-            className={star <= Math.floor(rating) ? 'fill-amber-400 text-amber-400' : 'text-slate-600'}
+            style={{ color: 'var(--text-primary)', fill: star <= Math.floor(rating) ? 'var(--text-primary)' : 'none' }}
           />
         </motion.div>
       ))}
-      <span className="text-[10px] font-bold text-slate-400 ml-1">{rating}</span>
+      <span className="text-[10px] font-bold ml-1" style={{ color: 'var(--text-primary)' }}>{rating}</span>
     </div>
   )
 }
