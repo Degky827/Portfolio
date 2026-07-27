@@ -1,4 +1,4 @@
-import { Suspense, useRef, useMemo } from 'react'
+import { Suspense, useRef, useEffect } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Preload, Stars } from '@react-three/drei'
 import * as THREE from 'three'
@@ -36,114 +36,6 @@ function MouseParallaxCamera({ isMobile }) {
   })
 
   return null
-}
-
-function VolumetricFog() {
-  const meshRef = useRef()
-
-  useFrame((state) => {
-    if (!meshRef.current) return
-    meshRef.current.material.uniforms.uTime.value = state.clock.getElapsedTime()
-  })
-
-  const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uColor: { value: new THREE.Color('#06b6d4') },
-  }), [])
-
-  const vertexShader = `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `
-
-  const fragmentShader = `
-    uniform float uTime;
-    uniform vec3 uColor;
-    varying vec2 vUv;
-    void main() {
-      float noise = sin(vUv.x * 5.0 + uTime * 0.5) * cos(vUv.y * 3.0 + uTime * 0.3) * 0.5 + 0.5;
-      float fog = smoothstep(0.0, 0.5, vUv.y) * smoothstep(1.0, 0.6, vUv.y);
-      float alpha = noise * fog * 0.08;
-      float pulse = 0.8 + 0.2 * sin(uTime * 0.4);
-      vec3 color = uColor * pulse;
-      gl_FragColor = vec4(color, alpha);
-    }
-  `
-
-  return (
-    <mesh ref={meshRef} position={[0, 2, -5]} scale={[20, 8, 1]}>
-      <planeGeometry args={[1, 1, 16, 16]} />
-      <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        transparent
-        depthWrite={false}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
-  )
-}
-
-function AnimatedLightRays() {
-  const meshRef = useRef()
-
-  useFrame((state) => {
-    if (!meshRef.current) return
-    const time = state.clock.getElapsedTime()
-    meshRef.current.material.uniforms.uTime.value = time
-    meshRef.current.rotation.z = time * 0.05
-  })
-
-  const uniforms = useMemo(() => ({
-    uTime: { value: 0 },
-    uColor: { value: new THREE.Color('#8b5cf6') },
-  }), [])
-
-  const vertexShader = `
-    varying vec2 vUv;
-    void main() {
-      vUv = uv;
-      gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-    }
-  `
-
-  const fragmentShader = `
-    uniform float uTime;
-    uniform vec3 uColor;
-    varying vec2 vUv;
-    void main() {
-      float ray = 0.0;
-      for (int i = 0; i < 6; i++) {
-        float fi = float(i);
-        float offset = sin(uTime * 0.3 + fi * 0.8) * 0.15;
-        float width = 0.01 + fi * 0.003;
-        float intensity = 1.0 / (1.0 + fi * 0.4);
-        ray += intensity * smoothstep(width, 0.0, abs(vUv.x - 0.5 - offset));
-      }
-      float fade = smoothstep(1.0, 0.2, vUv.y) * smoothstep(0.0, 0.1, vUv.y);
-      float alpha = ray * 0.12 * fade;
-      vec3 color = uColor * (0.8 + 0.2 * sin(uTime * 0.5));
-      gl_FragColor = vec4(color, alpha);
-    }
-  `
-
-  return (
-    <mesh ref={meshRef} position={[2, 5, -3]} rotation={[0.3, 0, 0]} scale={[4, 8, 1]}>
-      <planeGeometry args={[1, 1, 1, 1]} />
-      <shaderMaterial
-        vertexShader={vertexShader}
-        fragmentShader={fragmentShader}
-        uniforms={uniforms}
-        transparent
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </mesh>
-  )
 }
 
 function LensFlare() {
@@ -223,7 +115,7 @@ function GlassReflections({ isMobile }) {
 export default function SkillsScene({ children }) {
   const isMobile = useIsMobile()
   const darkMode = useDarkModeScene()
-  const particleCount = isMobile ? 60 : 150
+  const particleCount = isMobile ? 40 : 100
   const bgColor = darkMode ? '#070B14' : '#ffffff'
   const fogColor = darkMode ? '#070B14' : '#ffffff'
 
@@ -254,8 +146,6 @@ export default function SkillsScene({ children }) {
 
               {!isMobile && (
                 <>
-                  <VolumetricFog />
-                  <AnimatedLightRays />
                   <LensFlare />
                   <NeonGlow />
                   <GlassReflections isMobile={isMobile} />
@@ -265,7 +155,7 @@ export default function SkillsScene({ children }) {
               <Stars
                 radius={50}
                 depth={50}
-                count={isMobile ? 300 : 1200}
+                count={isMobile ? 200 : 800}
                 factor={2}
                 saturation={0}
                 fade
