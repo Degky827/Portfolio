@@ -158,8 +158,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
       fullWidth: !!s.fullWidth,
       bgColor: s.bgColor || '#ffffff',
       textColor: s.textColor || '#374151',
-      hoverColor: s.hoverColor || '#22c55e',
-      activeLinkColor: s.activeLinkColor || '#22c55e',
+      hoverColor: s.hoverColor || '#6366f1',
+      activeLinkColor: s.activeLinkColor || '#6366f1',
       borderColor: s.borderColor || '#e5e7eb',
       shadowColor: s.shadowColor || 'rgba(0,0,0,0.1)',
       glassmorphism: s.glassmorphism !== false,
@@ -173,9 +173,9 @@ export default function Navbar({ darkMode, onToggleDark }) {
       resumeEnabled: s.resumeEnabled !== false,
       resumeText: s.resumeText || t('nav.downloadCv'),
       resumeFileUrl: s.resumeFileUrl || siteSettings?.resume?.url || '',
-      resumeBgColor: s.resumeBgColor || '#22c55e',
+      resumeBgColor: s.resumeBgColor || '#6366f1',
       resumeTextColor: s.resumeTextColor || '#ffffff',
-      resumeHoverColor: s.resumeHoverColor || '#16a34a',
+      resumeHoverColor: s.resumeHoverColor || '#4f46e5',
       resumeBorderRadius: s.resumeBorderRadius ?? 9999,
       resumeButtonSize: s.resumeButtonSize || 'md',
       languageEnabled: siteSettings?.languageEnabled !== false,
@@ -266,7 +266,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       style.backgroundColor = darkMode ? 'rgba(11,13,16,0.92)' : 'rgba(255,255,255,0.95)'
     }
     style.color = darkMode
-      ? (ns?.darkTheme?.textColor || settings.textColor)
+      ? (ns?.darkTheme?.textColor || settings.darkText || '#e2e8f0')
       : settings.textColor
     if (settings.shadow) {
       style.boxShadow = `0 4px 20px ${settings.shadowColor}`
@@ -277,11 +277,11 @@ export default function Navbar({ darkMode, onToggleDark }) {
     return style
   }, [settings, ns, scrolled, darkMode])
 
-  const linkTextColor = useMemo(() => {
-    return darkMode
-      ? (ns?.darkTheme?.textColor || settings.textColor)
-      : settings.textColor
-  }, [settings, ns, darkMode])
+   const linkTextColor = useMemo(() => {
+     return darkMode
+       ? (ns?.darkTheme?.textColor || '#d1d5db')
+       : (settings.textColor || '#374151')
+   }, [settings, ns, darkMode])
 
   const linkHoverColor = useMemo(() => {
     return settings.hoverColor
@@ -486,13 +486,13 @@ export default function Navbar({ darkMode, onToggleDark }) {
                         : 'hover:text-primary dark:hover:text-primary'
                       : 'cursor-default'
                   }`}
-                  style={{
-                    color: item.active
-                      ? activeSection === item.sectionId
-                        ? settings.activeLinkColor
-                        : linkTextColor
-                      : undefined,
-                  }}
+                   style={{
+                     color: item.active
+                       ? (activeSection === item.sectionId
+                         ? settings.activeLinkColor
+                         : linkTextColor)
+                       : undefined,
+                   }}
                   onMouseEnter={(e) => {
                     if (item.active && linkHoverColor && activeSection !== item.sectionId) {
                       e.currentTarget.style.color = linkHoverColor
