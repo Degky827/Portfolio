@@ -331,8 +331,9 @@ export default function CertificateCard3D({
         <div
           className="absolute inset-0 rounded-2xl"
           style={{
-            background: `linear-gradient(145deg, rgba(255,255,255,0.12) 0%, rgba(255,255,255,0.05) 50%, rgba(255,255,255,0.08) 100%)`,
-            backdropFilter: 'blur(20px)',
+             background: `linear-gradient(145deg, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0.04) 50%, rgba(255,255,255,0.07) 100%)`,
+             backdropFilter: 'blur(20px)',
+             border: '1px solid rgba(255,255,255,0.06)',
           }}
         />
 
@@ -405,8 +406,8 @@ export default function CertificateCard3D({
                 onClick={() => onCertClick(cert)}
                 className="w-full text-left flex items-center gap-3 p-3 rounded-xl transition-all duration-300 group/cert"
                 style={{
-                  background: `linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)`,
-                  border: `1px solid rgba(255,255,255,0.08)`,
+                   background: `linear-gradient(135deg, var(--surface-glass) 0%, var(--surface) 100%)`,
+                   border: '1px solid var(--border-default)',
                 }}
                 whileHover={{
                   background: `linear-gradient(135deg, ${color}15 0%, ${color}05 100%)`,
@@ -465,7 +466,7 @@ export default function CertificateCard3D({
           </div>
 
           {/* Bottom stats */}
-          <div className="mt-5 pt-4 border-t border-white/10">
+          <div className="mt-5 pt-4 border-t" style={{ borderColor: 'var(--border-default)' }}>
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <motion.div
