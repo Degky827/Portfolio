@@ -1,42 +1,40 @@
 import { useRef, useCallback, useEffect } from 'react'
 import { useIntro } from '../IntroContext'
 
-const AudioCtx = typeof AudioContext !== 'undefined' ? AudioContext : null
+const ACtx = typeof AudioContext !== 'undefined' ? AudioContext : null
 
-function createOscillator(ctx, type, freq, startTime, duration, gainValue = 0.15) {
-  const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
-  osc.type = type
-  osc.frequency.setValueAtTime(freq, startTime)
-  gain.gain.setValueAtTime(0, startTime)
-  gain.gain.linearRampToValueAtTime(gainValue, startTime + 0.05)
-  gain.gain.linearRampToValueAtTime(0, startTime + duration)
-  osc.connect(gain)
-  gain.connect(ctx.destination)
-  osc.start(startTime)
-  osc.stop(startTime + duration)
-  return { osc, gain }
+function createOsc(ctx, type, freq, start, dur, gain = 0.12) {
+  const o = ctx.createOscillator()
+  const g = ctx.createGain()
+  o.type = type
+  o.frequency.setValueAtTime(freq, start)
+  g.gain.setValueAtTime(0, start)
+  g.gain.linearRampToValueAtTime(gain, start + 0.03)
+  g.gain.linearRampToValueAtTime(0, start + dur)
+  o.connect(g)
+  g.connect(ctx.destination)
+  o.start(start)
+  o.stop(start + dur)
 }
 
-function createNoise(ctx, startTime, duration, gainValue = 0.03) {
-  const bufferSize = ctx.sampleRate * duration
-  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate)
-  const data = buffer.getChannelData(0)
-  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1
-  const source = ctx.createBufferSource()
-  source.buffer = buffer
-  const gain = ctx.createGain()
-  const filter = ctx.createBiquadFilter()
-  filter.type = 'lowpass'
-  filter.frequency.value = 800
-  gain.gain.setValueAtTime(0, startTime)
-  gain.gain.linearRampToValueAtTime(gainValue, startTime + 0.1)
-  gain.gain.linearRampToValueAtTime(0, startTime + duration)
-  source.connect(filter)
-  filter.connect(gain)
-  gain.connect(ctx.destination)
-  source.start(startTime)
-  return source
+function createNoise(ctx, start, dur, gain = 0.03) {
+  const len = ctx.sampleRate * dur
+  const buf = ctx.createBuffer(1, len, ctx.sampleRate)
+  const d = buf.getChannelData(0)
+  for (let i = 0; i < len; i++) d[i] = Math.random() * 2 - 1
+  const s = ctx.createBufferSource()
+  s.buffer = buf
+  const g = ctx.createGain()
+  const f = ctx.createBiquadFilter()
+  f.type = 'lowpass'
+  f.frequency.value = 600
+  g.gain.setValueAtTime(0, start)
+  g.gain.linearRampToValueAtTime(gain, start + 0.05)
+  g.gain.linearRampToValueAtTime(0, start + dur)
+  s.connect(f)
+  f.connect(g)
+  g.connect(ctx.destination)
+  s.start(start)
 }
 
 export function useIntroAudio() {
@@ -44,122 +42,134 @@ export function useIntroAudio() {
   const { isMuted } = useIntro()
 
   const getCtx = useCallback(() => {
-    if (!AudioCtx) return null
-    if (!ctxRef.current) ctxRef.current = new AudioCtx()
+    if (!ACtx) return null
+    if (!ctxRef.current) ctxRef.current = new ACtx()
     if (ctxRef.current.state === 'suspended') ctxRef.current.resume()
     return ctxRef.current
   }, [])
 
-  const playStartupHum = useCallback(() => {
+  const playHeartbeat = useCallback(() => {
     if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    const t = ctx.currentTime
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.type = 'sine'
-    osc.frequency.setValueAtTime(60, t)
-    osc.frequency.linearRampToValueAtTime(120, t + 2)
-    gain.gain.setValueAtTime(0, t)
-    gain.gain.linearRampToValueAtTime(0.08, t + 0.5)
-    gain.gain.linearRampToValueAtTime(0.04, t + 2)
-    gain.gain.linearRampToValueAtTime(0, t + 3)
-    osc.connect(gain)
-    gain.connect(ctx.destination)
-    osc.start(t)
-    osc.stop(t + 3)
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    createOsc(c, 'sine', 40, t, 0.15, 0.2)
+    createOsc(c, 'sine', 50, t + 0.15, 0.12, 0.15)
+    createNoise(c, t, 0.08, 0.04)
   }, [isMuted, getCtx])
 
-  const playKeystroke = useCallback(() => {
+  const playParticleBirth = useCallback(() => {
     if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    const t = ctx.currentTime
-    createOscillator(ctx, 'square', 800 + Math.random() * 400, t, 0.04, 0.04)
-    createNoise(ctx, t, 0.03, 0.02)
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    createOsc(c, 'sine', 200, t, 0.3, 0.06)
+    createOsc(c, 'sine', 400, t + 0.05, 0.2, 0.04)
   }, [isMuted, getCtx])
 
-  const playCheckmark = useCallback(() => {
+  const playDataFlow = useCallback(() => {
     if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    const t = ctx.currentTime
-    createOscillator(ctx, 'sine', 880, t, 0.08, 0.06)
-    createOscillator(ctx, 'sine', 1100, t + 0.06, 0.1, 0.05)
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    for (let i = 0; i < 5; i++) {
+      createOsc(c, 'sine', 300 + i * 100, t + i * 0.06, 0.1, 0.03)
+    }
   }, [isMuted, getCtx])
 
-  const playBeep = useCallback(() => {
+  const playNeuralPulse = useCallback(() => {
     if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    createOscillator(ctx, 'sine', 600, ctx.currentTime, 0.1, 0.05)
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    createOsc(c, 'sawtooth', 100, t, 0.2, 0.04)
+    createOsc(c, 'sine', 600, t + 0.05, 0.15, 0.03)
+    createNoise(c, t, 0.1, 0.02)
+  }, [isMuted, getCtx])
+
+  const playBlueprint = useCallback(() => {
+    if (isMuted) return
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    createOsc(c, 'square', 1200, t, 0.03, 0.04)
+    createOsc(c, 'square', 1400, t + 0.04, 0.03, 0.03)
+    createOsc(c, 'sine', 800, t + 0.08, 0.1, 0.03)
   }, [isMuted, getCtx])
 
   const playScanPulse = useCallback(() => {
     if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    const t = ctx.currentTime
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.type = 'sawtooth'
-    osc.frequency.setValueAtTime(200, t)
-    osc.frequency.linearRampToValueAtTime(800, t + 0.3)
-    gain.gain.setValueAtTime(0.04, t)
-    gain.gain.linearRampToValueAtTime(0, t + 0.3)
-    osc.connect(gain)
-    gain.connect(ctx.destination)
-    osc.start(t)
-    osc.stop(t + 0.3)
-  }, [isMuted, getCtx])
-
-  const playWhoosh = useCallback(() => {
-    if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    const t = ctx.currentTime
-    const osc = ctx.createOscillator()
-    const gain = ctx.createGain()
-    osc.type = 'sine'
-    osc.frequency.setValueAtTime(100, t)
-    osc.frequency.exponentialRampToValueAtTime(2000, t + 0.5)
-    gain.gain.setValueAtTime(0, t)
-    gain.gain.linearRampToValueAtTime(0.1, t + 0.1)
-    gain.gain.linearRampToValueAtTime(0, t + 0.6)
-    osc.connect(gain)
-    gain.connect(ctx.destination)
-    osc.start(t)
-    osc.stop(t + 0.6)
-    createNoise(ctx, t, 0.5, 0.06)
-  }, [isMuted, getCtx])
-
-  const playPowerOn = useCallback(() => {
-    if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    const t = ctx.currentTime
-    createOscillator(ctx, 'sine', 200, t, 0.15, 0.06)
-    createOscillator(ctx, 'sine', 400, t + 0.1, 0.15, 0.05)
-    createOscillator(ctx, 'sine', 600, t + 0.2, 0.2, 0.04)
-    createNoise(ctx, t, 0.3, 0.04)
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    const o = c.createOscillator()
+    const g = c.createGain()
+    o.type = 'sawtooth'
+    o.frequency.setValueAtTime(200, t)
+    o.frequency.linearRampToValueAtTime(1200, t + 0.4)
+    g.gain.setValueAtTime(0.04, t)
+    g.gain.linearRampToValueAtTime(0, t + 0.4)
+    o.connect(g); g.connect(c.destination)
+    o.start(t); o.stop(t + 0.4)
   }, [isMuted, getCtx])
 
   const playRelayClick = useCallback(() => {
     if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    createNoise(ctx, ctx.currentTime, 0.02, 0.08)
-    createOscillator(ctx, 'square', 2000, ctx.currentTime, 0.01, 0.04)
+    const c = getCtx(); if (!c) return
+    createNoise(c, c.currentTime, 0.02, 0.08)
+    createOsc(c, 'square', 2500, c.currentTime, 0.01, 0.04)
+  }, [isMuted, getCtx])
+
+  const playPowerOn = useCallback(() => {
+    if (isMuted) return
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    createOsc(c, 'sine', 150, t, 0.2, 0.08)
+    createOsc(c, 'sine', 300, t + 0.1, 0.15, 0.06)
+    createOsc(c, 'sine', 600, t + 0.2, 0.2, 0.05)
+    createNoise(c, t, 0.25, 0.05)
+  }, [isMuted, getCtx])
+
+  const playWhoosh = useCallback(() => {
+    if (isMuted) return
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    const o = c.createOscillator()
+    const g = c.createGain()
+    o.type = 'sine'
+    o.frequency.setValueAtTime(80, t)
+    o.frequency.exponentialRampToValueAtTime(2500, t + 0.6)
+    g.gain.setValueAtTime(0, t)
+    g.gain.linearRampToValueAtTime(0.12, t + 0.1)
+    g.gain.linearRampToValueAtTime(0, t + 0.7)
+    o.connect(g); g.connect(c.destination)
+    o.start(t); o.stop(t + 0.7)
+    createNoise(c, t, 0.5, 0.06)
   }, [isMuted, getCtx])
 
   const playDigitalChime = useCallback(() => {
     if (isMuted) return
-    const ctx = getCtx()
-    if (!ctx) return
-    const t = ctx.currentTime
-    createOscillator(ctx, 'sine', 523, t, 0.15, 0.05)
-    createOscillator(ctx, 'sine', 659, t + 0.1, 0.15, 0.04)
-    createOscillator(ctx, 'sine', 784, t + 0.2, 0.2, 0.03)
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    createOsc(c, 'sine', 523, t, 0.15, 0.05)
+    createOsc(c, 'sine', 659, t + 0.1, 0.15, 0.04)
+    createOsc(c, 'sine', 784, t + 0.2, 0.2, 0.03)
+  }, [isMuted, getCtx])
+
+  const playAmbientDrone = useCallback(() => {
+    if (isMuted) return
+    const c = getCtx(); if (!c) return
+    const t = c.currentTime
+    const o = c.createOscillator()
+    const g = c.createGain()
+    o.type = 'sine'
+    o.frequency.setValueAtTime(55, t)
+    g.gain.setValueAtTime(0, t)
+    g.gain.linearRampToValueAtTime(0.03, t + 1)
+    g.gain.linearRampToValueAtTime(0, t + 3)
+    o.connect(g); g.connect(c.destination)
+    o.start(t); o.stop(t + 3)
+  }, [isMuted, getCtx])
+
+  const playKeystroke = useCallback(() => {
+    if (isMuted) return
+    const c = getCtx(); if (!c) return
+    createOsc(c, 'square', 700 + Math.random() * 500, c.currentTime, 0.03, 0.03)
+    createNoise(c, c.currentTime, 0.02, 0.02)
   }, [isMuted, getCtx])
 
   useEffect(() => {
@@ -172,14 +182,17 @@ export function useIntroAudio() {
   }, [])
 
   return {
-    playStartupHum,
-    playKeystroke,
-    playCheckmark,
-    playBeep,
+    playHeartbeat,
+    playParticleBirth,
+    playDataFlow,
+    playNeuralPulse,
+    playBlueprint,
     playScanPulse,
-    playWhoosh,
-    playPowerOn,
     playRelayClick,
+    playPowerOn,
+    playWhoosh,
     playDigitalChime,
+    playAmbientDrone,
+    playKeystroke,
   }
 }
