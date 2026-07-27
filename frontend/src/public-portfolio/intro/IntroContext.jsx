@@ -1,57 +1,68 @@
 import { createContext, useContext, useState, useCallback, useRef, useEffect } from 'react'
 
-const PHASES = [
-  { id: 0, name: 'DIGITAL_AWAKENING', duration: 3500 },
-  { id: 1, name: 'CORE_INITIALIZATION', duration: 4000 },
-  { id: 2, name: 'IDENTITY_RECOGNITION', duration: 3000 },
-  { id: 3, name: 'DASHBOARD', duration: 3000 },
-  { id: 4, name: 'WORKSPACE_CONSTRUCTION', duration: 3500 },
-  { id: 5, name: 'POWER_ON', duration: 2500 },
-  { id: 6, name: 'ENTER_WORKSPACE', duration: 2000 },
+const SCENES = [
+  { id: 0, name: 'BEGINNING', duration: 1200 },
+  { id: 1, name: 'KNOWLEDGE', duration: 1400 },
+  { id: 2, name: 'INTELLIGENCE', duration: 1200 },
+  { id: 3, name: 'ENGINEERING', duration: 1500 },
+  { id: 4, name: 'DEVELOPER_DNA', duration: 1200 },
+  { id: 5, name: 'DIGITAL_ECOSYSTEM', duration: 1000 },
+  { id: 6, name: 'POWER_SEQUENCE', duration: 1200 },
+  { id: 7, name: 'WELCOME', duration: 1500 },
+  { id: 8, name: 'TRANSITION', duration: 1500 },
 ]
 
-const INTRO_SESSION_KEY = 'desalegn-os-intro-played'
+const SESSION_KEY = 'desalegn-cinematic-intro-v2'
 
 const IntroContext = createContext(null)
 
 export function IntroProvider({ children }) {
   const [introComplete, setIntroComplete] = useState(() => {
-    try { return sessionStorage.getItem(INTRO_SESSION_KEY) === 'true' } catch { return false }
+    try { return sessionStorage.getItem(SESSION_KEY) === 'true' } catch { return false }
   })
-  const [currentPhase, setCurrentPhase] = useState(0)
+  const [currentScene, setCurrentScene] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isMuted, setIsMuted] = useState(false)
-  const [phaseProgress, setPhaseProgress] = useState(0)
-  const timerRef = useRef(null)
-  const startTimeRef = useRef(null)
+  const [sceneProgress, setSceneProgress] = useState(0)
+  const rafRef = useRef(null)
+  const startTimeRef = useRef(0)
 
   const markComplete = useCallback(() => {
     setIntroComplete(true)
     setIsPlaying(false)
-    try { sessionStorage.setItem(INTRO_SESSION_KEY, 'true') } catch {}
+    try { sessionStorage.setItem(SESSION_KEY, 'true') } catch {}
   }, [])
 
   const skipIntro = useCallback(() => {
-    if (timerRef.current) clearTimeout(timerRef.current)
+    if (rafRef.current) cancelAnimationFrame(rafRef.current)
     markComplete()
   }, [markComplete])
 
-  const playIntro = useCallback(() => {
-    setCurrentPhase(0)
-    setPhaseProgress(0)
+  const replayIntro = useCallback(() => {
+    try { sessionStorage.removeItem(SESSION_KEY) } catch {}
+    setIntroComplete(false)
+    setCurrentScene(0)
+    setSceneProgress(0)
     setIsPlaying(true)
-    startTimeRef.current = Date.now()
+    startTimeRef.current = performance.now()
   }, [])
 
-  const nextPhase = useCallback(() => {
-    setCurrentPhase((prev) => {
+  const playIntro = useCallback(() => {
+    setCurrentScene(0)
+    setSceneProgress(0)
+    setIsPlaying(true)
+    startTimeRef.current = performance.now()
+  }, [])
+
+  const nextScene = useCallback(() => {
+    setCurrentScene((prev) => {
       const next = prev + 1
-      if (next >= PHASES.length) {
+      if (next >= SCENES.length) {
         markComplete()
         return prev
       }
-      setPhaseProgress(0)
-      startTimeRef.current = Date.now()
+      setSceneProgress(0)
+      startTimeRef.current = performance.now()
       return next
     })
   }, [markComplete])
@@ -60,32 +71,33 @@ export function IntroProvider({ children }) {
 
   useEffect(() => {
     if (!isPlaying) return
-    const phase = PHASES[currentPhase]
-    if (!phase) return
+    const scene = SCENES[currentScene]
+    if (!scene) return
 
     const tick = () => {
-      const elapsed = Date.now() - startTimeRef.current
-      const progress = Math.min(elapsed / phase.duration, 1)
-      setPhaseProgress(progress)
+      const elapsed = performance.now() - startTimeRef.current
+      const progress = Math.min(elapsed / scene.duration, 1)
+      setSceneProgress(progress)
       if (progress < 1) {
-        timerRef.current = requestAnimationFrame(tick)
+        rafRef.current = requestAnimationFrame(tick)
       }
     }
-    timerRef.current = requestAnimationFrame(tick)
-    return () => { if (timerRef.current) cancelAnimationFrame(timerRef.current) }
-  }, [isPlaying, currentPhase])
+    rafRef.current = requestAnimationFrame(tick)
+    return () => { if (rafRef.current) cancelAnimationFrame(rafRef.current) }
+  }, [isPlaying, currentScene])
 
   const value = {
     introComplete,
-    currentPhase,
-    currentPhaseName: PHASES[currentPhase]?.name || '',
+    currentScene,
+    currentSceneName: SCENES[currentScene]?.name || '',
     isPlaying,
     isMuted,
-    phaseProgress,
-    phases: PHASES,
+    sceneProgress,
+    scenes: SCENES,
     playIntro,
-    nextPhase,
+    nextScene,
     skipIntro,
+    replayIntro,
     toggleMute,
     markComplete,
   }
@@ -99,4 +111,4 @@ export function useIntro() {
   return ctx
 }
 
-export { PHASES, INTRO_SESSION_KEY }
+export { SCENES, SESSION_KEY }
