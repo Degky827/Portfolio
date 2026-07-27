@@ -104,13 +104,13 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     className="relative"
                   >
                     <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl scale-150" />
-                    <div                       className="relative px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border border-primary/30 backdrop-blur-xl bg-white/[0.06] shadow-[0_0_30px_rgba(34,197,94,0.15)]">
+                    <div className="relative px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border border-[var(--border-default)] backdrop-blur-xl bg-white/[0.06] shadow-[0_0_30px_rgba(99,102,241,0.08)]">
                       <motion.div
                         className="absolute inset-0 rounded-full"
                         animate={{ opacity: [0.3, 0.6, 0.3] }}
                         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
                         style={{
-                          background: 'linear-gradient(135deg, rgba(34,197,94,0.1) 0%, rgba(22,163,74,0.08) 50%, rgba(34,197,94,0.1) 100%)',
+                          background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0.04) 50%, rgba(99,102,241,0.08) 100%)',
                         }}
                       />
                       <motion.div
@@ -118,7 +118,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                         animate={{ opacity: [0.4, 0.8, 0.4] }}
                         transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
                         style={{
-                          background: 'conic-gradient(from 0deg, rgba(34,197,94,0.45), rgba(22,163,74,0.2), rgba(34,197,94,0.45))',
+                          background: 'conic-gradient(from 0deg, rgba(99,102,241,0.4), rgba(99,102,241,0.15), rgba(99,102,241,0.4))',
                           mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
                           maskComposite: 'exclude',
                           WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
@@ -126,9 +126,12 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           padding: '1px',
                         }}
                       />
-                      <span className="relative z-10 text-xs sm:text-sm font-bold tracking-[0.25em] text-primary/90 uppercase">
+                  <motion.span
+                      className="text-xs sm:text-sm font-bold tracking-[0.25em] uppercase"
+                      style={{ color: 'var(--text-secondary)' }}
+                    >
                         {t('contact.badge')}
-                      </span>
+                      </motion.span>
                     </div>
                   </motion.div>
                 </motion.div>
@@ -150,7 +153,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight select-none pointer-events-none"
                     style={{
                       color: 'transparent',
-                      WebkitTextStroke: '1px rgba(34,197,94,0.08)',
+                      WebkitTextStroke: '1px rgba(99,102,241,0.06)',
                       transform: 'translateZ(-20px) scale(1.02)',
                       filter: 'blur(2px)',
                     }}
@@ -162,7 +165,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight select-none pointer-events-none"
                     style={{
                       color: 'transparent',
-                      WebkitTextStroke: '1px rgba(22,163,74,0.12)',
+                      WebkitTextStroke: '1px rgba(99,102,241,0.1)',
                       transform: 'translateZ(-10px) scale(1.01)',
                       filter: 'blur(1px)',
                     }}
@@ -181,7 +184,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     animate={{ opacity: [0.3, 0.6, 0.3] }}
                     transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
                     style={{
-                      background: 'radial-gradient(ellipse at center, rgba(34,197,94,0.15) 0%, transparent 70%)',
+                      background: 'radial-gradient(ellipse at center, rgba(99,102,241,0.1) 0%, transparent 70%)',
                       filter: 'blur(30px)',
                     }}
                   />
@@ -225,7 +228,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                         top: '5%',
                         width: i % 2 === 0 ? '2px' : '1px',
                         height: '90%',
-                        background: `linear-gradient(to bottom, transparent, ${i % 2 === 0 ? 'rgba(34,197,94,0.18)' : 'rgba(22,163,74,0.12)'}, transparent)`,
+                        background: `linear-gradient(to bottom, transparent, ${i % 2 === 0 ? 'rgba(99,102,241,0.12)' : 'rgba(129,140,248,0.08)'}, transparent)`,
                         filter: `blur(${i % 2 === 0 ? 4 : 3}px)`,
                       }}
                     />
@@ -236,7 +239,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                 <div
                   className="absolute inset-0 pointer-events-none opacity-[0.015]"
                   style={{
-                    backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(34,197,94,0.15) 2px, rgba(34,197,94,0.15) 4px)',
+                    backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(99,102,241,0.1) 2px, rgba(99,102,241,0.1) 4px)',
                   }}
                 />
 
@@ -244,7 +247,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                 <div
                   className="absolute inset-0 pointer-events-none"
                   style={{
-                    background: 'radial-gradient(ellipse at 30% 60%, rgba(34,197,94,0.04) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(22,163,74,0.03) 0%, transparent 50%)',
+                    background: 'radial-gradient(ellipse at 30% 60%, rgba(99,102,241,0.03) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(129,140,248,0.02) 0%, transparent 50%)',
                   }}
                 />
 
@@ -258,7 +261,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     right: '20%',
                     width: '120px',
                     height: '120px',
-                    background: 'radial-gradient(circle, rgba(34,197,94,0.2) 0%, rgba(22,163,74,0.1) 30%, transparent 70%)',
+                    background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.08) 30%, transparent 70%)',
                     filter: 'blur(20px)',
                     borderRadius: '50%',
                   }}
@@ -300,7 +303,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     className="absolute inset-0 rounded-3xl pointer-events-none z-10"
                     style={{
                       padding: '1px',
-                      background: 'conic-gradient(from 0deg, rgba(34,197,94,0.15), transparent 30%, rgba(34,197,94,0.06) 50%, transparent 70%, rgba(34,197,94,0.15))',
+                      background: 'conic-gradient(from 0deg, rgba(99,102,241,0.15), transparent 30%, rgba(99,102,241,0.06) 50%, transparent 70%, rgba(99,102,241,0.15))',
                       mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
                       maskComposite: 'exclude',
                       WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
@@ -312,7 +315,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                   <div
                     className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-1/3 pointer-events-none z-0"
                     style={{
-                      background: 'radial-gradient(ellipse at center, rgba(34,197,94,0.08) 0%, transparent 70%)',
+                      background: 'radial-gradient(ellipse at center, rgba(99,102,241,0.06) 0%, transparent 70%)',
                       filter: 'blur(40px)',
                     }}
                   />
@@ -340,7 +343,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                         className="ml-auto w-2 h-2 rounded-full bg-green-500"
                         animate={{ opacity: [0.4, 1, 0.4] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        style={{ boxShadow: '0 0 8px rgba(34,197,94,0.5)' }}
+                        style={{ boxShadow: '0 0 8px rgba(99,102,241,0.5)' }}
                       />
                     </div>
 
@@ -413,12 +416,12 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                               className="p-4 sm:p-5 rounded-xl sm:rounded-2xl text-sm sm:text-base font-bold text-center"
                               style={{
                                 background: resultType === 'success'
-                                  ? 'linear-gradient(135deg, rgba(34,197,94,0.1), rgba(34,197,94,0.05))'
+                                  ? 'linear-gradient(135deg, rgba(99,102,241,0.1), rgba(99,102,241,0.05))'
                                   : 'linear-gradient(135deg, rgba(239,68,68,0.1), rgba(239,68,68,0.05))',
-                                border: `1px solid ${resultType === 'success' ? 'rgba(34,197,94,0.2)' : 'rgba(239,68,68,0.2)'}`,
-                                color: resultType === 'success' ? '#4ade80' : '#f87171',
+                                border: `1px solid ${resultType === 'success' ? 'rgba(99,102,241,0.2)' : 'rgba(239,68,68,0.2)'}`,
+                                color: resultType === 'success' ? '#818cf8' : '#f87171',
                                 boxShadow: resultType === 'success'
-                                  ? '0 0 20px rgba(34,197,94,0.1)'
+                                  ? '0 0 20px rgba(99,102,241,0.1)'
                                   : '0 0 20px rgba(239,68,68,0.1)',
                               }}
                               role="alert"
@@ -473,7 +476,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                 <div
                   className="absolute inset-0 pointer-events-none -z-10"
                   style={{
-                    background: 'radial-gradient(circle at center, rgba(34,197,94,0.08) 0%, rgba(139,92,246,0.04) 40%, transparent 70%)',
+                    background: 'radial-gradient(circle at center, rgba(99,102,241,0.06) 0%, rgba(139,92,246,0.03) 40%, transparent 70%)',
                     filter: 'blur(40px)',
                   }}
                 />
@@ -488,7 +491,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
         <div
           className="absolute w-full h-full"
           style={{
-            background: 'radial-gradient(ellipse at 20% 80%, rgba(34,197,94,0.03) 0%, transparent 40%), radial-gradient(ellipse at 80% 20%, rgba(22,163,74,0.025) 0%, transparent 40%)',
+            background: 'radial-gradient(ellipse at 20% 80%, rgba(99,102,241,0.02) 0%, transparent 40%), radial-gradient(ellipse at 80% 20%, rgba(129,140,248,0.015) 0%, transparent 40%)',
           }}
         />
       </div>
