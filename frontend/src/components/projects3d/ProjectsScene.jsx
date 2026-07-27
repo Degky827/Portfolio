@@ -19,13 +19,13 @@ function SceneEnvironment({ isMobile, fogColor }) {
 
       <CinematicLighting isMobile={isMobile} />
       <HolographicLines />
-      <FloatingParticles count={isMobile ? 40 : 120} />
+      <FloatingParticles count={isMobile ? 30 : 80} />
       <CinematicLensFlare isMobile={isMobile} />
 
       <Stars
         radius={40}
         depth={40}
-        count={isMobile ? 200 : 1000}
+        count={isMobile ? 150 : 600}
         factor={2.5}
         saturation={0.1}
         fade
