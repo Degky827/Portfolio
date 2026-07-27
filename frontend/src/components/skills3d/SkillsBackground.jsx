@@ -199,69 +199,6 @@ function AmbientGlow() {
   )
 }
 
-const volumetricVertexShader = /* glsl */ `
-  varying vec2 vUv;
-  void main() {
-    vUv = uv;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-  }
-`
-
-const volumetricFragmentShader = /* glsl */ `
-  uniform float uTime;
-  uniform vec3 uColor;
-  varying vec2 vUv;
-
-  void main() {
-    float ray = 0.0;
-    for (int i = 0; i < 8; i++) {
-      float fi = float(i);
-      float offset = sin(uTime * 0.3 + fi * 0.8) * 0.1;
-      float width = 0.02 + fi * 0.005;
-      float intensity = 1.0 / (1.0 + fi * 0.5);
-      ray += intensity * smoothstep(width, 0.0, abs(vUv.x - 0.5 - offset));
-    }
-
-    float fade = smoothstep(1.0, 0.3, vUv.y) * smoothstep(0.0, 0.2, vUv.y);
-    float alpha = ray * 0.15 * fade;
-
-    gl_FragColor = vec4(uColor, alpha);
-  }
-`
-
-function VolumetricLight() {
-  const materialRef = useRef()
-
-  const uniforms = useMemo(
-    () => ({
-      uTime: { value: 0 },
-      uColor: { value: new THREE.Color('#6366f1') },
-    }),
-    []
-  )
-
-  useFrame((state) => {
-    if (materialRef.current) {
-      materialRef.current.uniforms.uTime.value = state.clock.getElapsedTime()
-    }
-  })
-
-  return (
-    <mesh position={[0, 5, -4]} rotation={[0.3, 0, 0]} scale={[6, 10, 1]}>
-      <planeGeometry args={[1, 1, 1, 1]} />
-      <shaderMaterial
-        ref={materialRef}
-        vertexShader={volumetricVertexShader}
-        fragmentShader={volumetricFragmentShader}
-        uniforms={uniforms}
-        transparent
-        depthWrite={false}
-        blending={THREE.AdditiveBlending}
-      />
-    </mesh>
-  )
-}
-
 export default function SkillsBackground() {
   return (
     <group>
@@ -270,7 +207,6 @@ export default function SkillsBackground() {
       <AnimatedGrid />
       <GradientFog />
       <AmbientGlow />
-      <VolumetricLight />
     </group>
   )
 }
