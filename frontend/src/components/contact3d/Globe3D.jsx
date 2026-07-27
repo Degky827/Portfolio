@@ -46,7 +46,7 @@ function GlobeCore({ radius = 2 }) {
 
   return (
     <mesh ref={meshRef}>
-      <sphereGeometry args={[radius - 0.05, 64, 64]} />
+      <sphereGeometry args={[radius - 0.05, 32, 32]} />
       <meshStandardMaterial
         color="#06b6d4"
         transparent
@@ -101,7 +101,7 @@ function OrbitingRing({ radius = 2.8, tubeRadius = 0.015, color = '#06b6d4', spe
 
   return (
     <mesh ref={meshRef}>
-      <torusGeometry args={[radius, tubeRadius, 16, 100]} />
+      <torusGeometry args={[radius, tubeRadius, 8, 64]} />
       <meshStandardMaterial
         ref={materialRef}
         color={color}
@@ -165,7 +165,7 @@ function OrbitingRibbon({ radius = 2.5, color = '#8b5cf6', speed = 0.2, tiltX = 
   )
 }
 
-function FloatingDots({ count = 80, radius = 3.5 }) {
+function FloatingDots({ count = 50, radius = 3.5 }) {
   const meshRef = useRef()
   const dummy = useMemo(() => new THREE.Object3D(), [])
 
@@ -199,7 +199,7 @@ function FloatingDots({ count = 80, radius = 3.5 }) {
 
   return (
     <instancedMesh ref={meshRef} args={[null, null, count]}>
-      <sphereGeometry args={[1, 6, 6]} />
+      <sphereGeometry args={[1, 4, 4]} />
       <meshBasicMaterial color="#22d3ee" transparent opacity={0.6} />
     </instancedMesh>
   )
@@ -255,13 +255,12 @@ export default function Globe3D({ isMobile }) {
         tiltZ={0.4}
       />
 
-      <FloatingDots count={isMobile ? 40 : 80} radius={isMobile ? 2.2 : 3.5} />
+      <FloatingDots count={isMobile ? 30 : 50} radius={isMobile ? 2.2 : 3.5} />
 
-      <ambientLight intensity={0.08} color="#cffafe" />
-      <pointLight position={[5, 3, 4]} intensity={1.2} color="#06b6d4" distance={20} decay={2} />
-      <pointLight position={[-4, -2, 3]} intensity={0.6} color="#8b5cf6" distance={15} decay={2} />
-      <pointLight position={[0, 5, -3]} intensity={0.4} color="#22d3ee" distance={12} decay={2} />
-      <directionalLight position={[3, 5, 5]} intensity={0.5} color="#67e8f9" />
+      <ambientLight intensity={0.1} color="#cffafe" />
+      <pointLight position={[5, 3, 4]} intensity={1.0} color="#06b6d4" distance={20} decay={2} />
+      <pointLight position={[-4, -2, 3]} intensity={0.4} color="#8b5cf6" distance={15} decay={2} />
+      <directionalLight position={[3, 5, 5]} intensity={0.4} color="#67e8f9" />
     </group>
   )
 }
