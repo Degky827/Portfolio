@@ -103,7 +103,13 @@ export default function GlassCard({
         />
 
         {/* Glass background */}
-        <div className="absolute inset-0 rounded-2xl backdrop-blur-xl" style={{ background: 'linear-gradient(135deg, var(--card-bg), transparent)' }} />
+        <div className="absolute inset-0 rounded-2xl backdrop-blur-xl" style={{ background: 'linear-gradient(135deg, var(--surface-glass), var(--surface))' }} />
+
+        {/* Card border */}
+        <div
+          className="absolute inset-0 rounded-2xl pointer-events-none"
+          style={{ border: '1px solid var(--border-default)', opacity: 0.5 }}
+        />
 
         {/* Neon edge glow */}
         <div
