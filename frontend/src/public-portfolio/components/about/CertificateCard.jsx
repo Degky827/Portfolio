@@ -94,11 +94,11 @@ const CertificateCard = memo(function CertificateCard({
       <div
         className="relative rounded-[16px] sm:rounded-[20px] overflow-hidden"
         style={{
-          background: 'linear-gradient(145deg, rgba(18,12,50,0.85), rgba(10,6,30,0.92))',
-          border: '1px solid rgba(139,92,246,0.2)',
-          boxShadow: isHovered
-            ? '0 20px 50px rgba(0,0,0,0.5), 0 0 40px rgba(139,92,246,0.15), inset 0 1px 0 rgba(255,255,255,0.06)'
-            : '0 8px 30px rgba(0,0,0,0.3), 0 0 20px rgba(139,92,246,0.08), inset 0 1px 0 rgba(255,255,255,0.04)',
+           background: 'linear-gradient(145deg, var(--surface-glass-heavy), var(--surface))',
+           border: '1px solid var(--border-default)',
+           boxShadow: isHovered
+             ? '0 20px 50px rgba(0,0,0,0.15), 0 0 40px rgba(139,92,246,0.1), inset 0 1px 0 rgba(255,255,255,0.06)'
+             : '0 8px 30px rgba(0,0,0,0.08), 0 0 20px rgba(139,92,246,0.05), inset 0 1px 0 rgba(0,0,0,0.04)',
           transition: 'box-shadow 0.3s ease',
         }}
       >
@@ -109,11 +109,11 @@ const CertificateCard = memo(function CertificateCard({
             <div
               className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center transition-all duration-300"
               style={{
-                background: 'linear-gradient(135deg, rgba(34,211,238,0.15), rgba(139,92,246,0.1))',
-                border: '1px solid rgba(34,211,238,0.25)',
-                boxShadow: isHovered
-                  ? '0 0 20px rgba(34,211,238,0.3), 0 4px 12px rgba(0,0,0,0.3)'
-                  : '0 0 10px rgba(34,211,238,0.15), 0 2px 8px rgba(0,0,0,0.2)',
+             background: 'linear-gradient(135deg, rgba(34,211,238,0.1), rgba(139,92,246,0.06))',
+             border: '1px solid rgba(34,211,238,0.2)',
+             boxShadow: isHovered
+               ? '0 0 20px rgba(34,211,238,0.2), 0 4px 12px rgba(0,0,0,0.1)'
+               : '0 0 10px rgba(34,211,238,0.1), 0 2px 8px rgba(0,0,0,0.08)',
               }}
             >
               <Award
@@ -143,10 +143,10 @@ const CertificateCard = memo(function CertificateCard({
               <span
                 className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.15em] px-3 py-1 rounded-full transition-all duration-300"
                 style={{
-                  color: '#22d3ee',
-                  background: 'rgba(34,211,238,0.08)',
-                  border: '1px solid rgba(34,211,238,0.2)',
-                  boxShadow: isHovered ? '0 0 12px rgba(34,211,238,0.2)' : 'none',
+                   color: '#0e7490',
+                   background: 'rgba(34,211,238,0.06)',
+                   border: '1px solid rgba(34,211,238,0.15)',
+                   boxShadow: isHovered ? '0 0 12px rgba(34,211,238,0.15)' : 'none',
                 }}
               >
                 View Certificate
