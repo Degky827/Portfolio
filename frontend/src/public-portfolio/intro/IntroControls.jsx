@@ -7,9 +7,9 @@ function SkipButton({ onClick }) {
     <motion.button
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ delay: 1.5, duration: 0.5 }}
+      transition={{ delay: 1, duration: 0.5 }}
       onClick={onClick}
-      className="fixed bottom-6 right-6 z-[100] px-4 py-2 rounded-lg font-mono text-xs tracking-wider border transition-all hover:scale-105 active:scale-95"
+      className="fixed bottom-6 right-6 z-[100] px-4 py-2 rounded-lg font-mono text-xs tracking-wider border transition-all hover:scale-105 active:scale-95 cursor-pointer"
       style={{
         backgroundColor: 'rgba(6, 182, 212, 0.08)',
         borderColor: 'rgba(6, 182, 212, 0.25)',
@@ -27,9 +27,9 @@ function MuteButton({ isMuted, onToggle }) {
     <motion.button
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ delay: 2, duration: 0.5 }}
+      transition={{ delay: 1.5, duration: 0.5 }}
       onClick={onToggle}
-      className="fixed bottom-6 left-6 z-[100] p-2.5 rounded-lg border transition-all hover:scale-105 active:scale-95"
+      className="fixed bottom-6 left-6 z-[100] p-2.5 rounded-lg border transition-all hover:scale-105 active:scale-95 cursor-pointer"
       style={{
         backgroundColor: 'rgba(6, 182, 212, 0.08)',
         borderColor: 'rgba(6, 182, 212, 0.25)',
@@ -56,13 +56,44 @@ function MuteButton({ isMuted, onToggle }) {
   )
 }
 
+function ReplayButton({ onClick }) {
+  return (
+    <motion.button
+      initial={{ opacity: 0, scale: 0.8 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={{ delay: 0.3, duration: 0.4 }}
+      onClick={onClick}
+      className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] px-5 py-2.5 rounded-lg font-mono text-xs tracking-wider border transition-all hover:scale-105 active:scale-95 cursor-pointer"
+      style={{
+        backgroundColor: 'rgba(6, 182, 212, 0.1)',
+        borderColor: 'rgba(6, 182, 212, 0.3)',
+        color: '#06b6d4',
+        backdropFilter: 'blur(12px)',
+        boxShadow: '0 0 20px rgba(6, 182, 212, 0.15)',
+      }}
+    >
+      ↻ REPLAY INTRO
+    </motion.button>
+  )
+}
+
 function IntroControls() {
-  const { skipIntro, isMuted, toggleMute } = useIntro()
+  const { skipIntro, isMuted, toggleMute, introComplete, replayIntro, isPlaying } = useIntro()
 
   return (
     <>
-      <SkipButton onClick={skipIntro} />
-      <MuteButton isMuted={isMuted} onToggle={toggleMute} />
+      {!introComplete && isPlaying && (
+        <>
+          <SkipButton onClick={skipIntro} />
+          <MuteButton isMuted={isMuted} onToggle={toggleMute} />
+        </>
+      )}
+      {introComplete && !isPlaying && (
+        <>
+          <ReplayButton onClick={replayIntro} />
+          <MuteButton isMuted={isMuted} onToggle={toggleMute} />
+        </>
+      )}
     </>
   )
 }
