@@ -166,21 +166,13 @@ function GlowNumber({ value, suffix = '+', color, icon: Icon }) {
           strokeWidth={2}
         />
         <RotatingRing
-          size="85%"
+          size="80%"
           color={color}
           speed={6}
           delay={0.5}
           strokeWidth={1.5}
         />
-        <RotatingRing
-          size="70%"
-          color={color}
-          speed={8}
-          delay={1}
-          strokeWidth={1}
-        />
 
-        {/* Center icon */}
         <motion.div
           className="absolute inset-0 flex items-center justify-center"
           animate={{
@@ -226,7 +218,7 @@ function GlowNumber({ value, suffix = '+', color, icon: Icon }) {
       </motion.div>
 
       {/* Floating particles */}
-      {[...Array(6)].map((_, i) => (
+      {[...Array(4)].map((_, i) => (
         <motion.div
           key={i}
           className="absolute w-1 h-1 rounded-full"
@@ -237,14 +229,14 @@ function GlowNumber({ value, suffix = '+', color, icon: Icon }) {
           }}
           animate={{
             x: [
-              Math.cos((i * Math.PI * 2) / 6) * 60,
-              Math.cos((i * Math.PI * 2) / 6 + Math.PI) * 60,
-              Math.cos((i * Math.PI * 2) / 6) * 60,
+              Math.cos((i * Math.PI * 2) / 4) * 60,
+              Math.cos((i * Math.PI * 2) / 4 + Math.PI) * 60,
+              Math.cos((i * Math.PI * 2) / 4) * 60,
             ],
             y: [
-              Math.sin((i * Math.PI * 2) / 6) * 60,
-              Math.sin((i * Math.PI * 2) / 6 + Math.PI) * 60,
-              Math.sin((i * Math.PI * 2) / 6) * 60,
+              Math.sin((i * Math.PI * 2) / 4) * 60,
+              Math.sin((i * Math.PI * 2) / 4 + Math.PI) * 60,
+              Math.sin((i * Math.PI * 2) / 4) * 60,
             ],
             opacity: [0.2, 0.8, 0.2],
             scale: [0.5, 1.5, 0.5],
@@ -253,7 +245,7 @@ function GlowNumber({ value, suffix = '+', color, icon: Icon }) {
             duration: 4,
             repeat: Infinity,
             ease: 'easeInOut',
-            delay: i * 0.3,
+            delay: i * 0.4,
           }}
         />
       ))}
@@ -495,17 +487,6 @@ export default function StatsDashboard3D({
           <span className="text-[10px] font-bold tracking-[0.2em] uppercase" style={{ color: 'var(--text-primary)' }}>
             System Online
           </span>
-          <motion.div
-            className="w-1.5 h-1.5 rounded-full bg-green-400"
-            animate={{
-              boxShadow: [
-                '0 0 4px rgba(34,197,94,0.4)',
-                '0 0 8px rgba(34,197,94,0.8)',
-                '0 0 4px rgba(34,197,94,0.4)',
-              ],
-            }}
-            transition={{ duration: 1.5, repeat: Infinity, delay: 0.5 }}
-          />
         </div>
         <div className="h-px flex-1 max-w-[100px] bg-gradient-to-l from-transparent to-purple-500/30" />
       </motion.div>
