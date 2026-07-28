@@ -28,17 +28,18 @@ export default function Login() {
   const googleButtonRef = useRef(null)
   const googleInitialized = useRef(false)
 
-  const { setAuth, isAuthenticated } = useAuth()
+  const { setAuth, isAuthenticated, loading: authLoading } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from || '/admin/dashboard'
 
   useEffect(() => {
+    if (authLoading) return
     if (isAuthenticated && !navigatingRef.current) {
       navigatingRef.current = true
       navigate(from, { replace: true })
     }
-  }, [isAuthenticated, navigate, from])
+  }, [isAuthenticated, navigate, from, authLoading])
 
   useEffect(() => {
     if (step === 'totp' && inputRefs.current[0]) {
