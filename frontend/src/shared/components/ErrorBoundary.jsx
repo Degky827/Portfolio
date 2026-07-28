@@ -17,7 +17,7 @@ export default class ErrorBoundary extends Component {
 
   handleReload = () => {
     this.setState({ hasError: false, error: null })
-    window.location.reload()
+    this.props.onReload ? this.props.onReload() : window.location.reload()
   }
 
   render() {
