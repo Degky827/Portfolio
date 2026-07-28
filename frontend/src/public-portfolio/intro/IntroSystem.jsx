@@ -246,7 +246,8 @@ function IntroSystem() {
     }
   }, [pathname, introComplete, isPlaying, playIntro])
 
-  if (introComplete && !isPlaying) return null
+  const hideIntro = pathname.startsWith('/login') || pathname.startsWith('/admin') || pathname.startsWith('/workspace')
+  if (introComplete || hideIntro) return null
 
   return (
     <div className="fixed inset-0 z-[9999]" style={{ backgroundColor: '#000000' }}>
