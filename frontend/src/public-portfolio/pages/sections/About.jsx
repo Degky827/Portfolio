@@ -149,22 +149,11 @@ export default function About({ content, hero, aboutContent }) {
         <CinematicLighting />
         <GlobalAtmosphere />
       </div>
-      <MemoizedNeonGrid />
-      <MemoizedCyberParticles />
 
-      {/* Ambient glow orbs - only visible in dark mode */}
-      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-purple-600/8 rounded-full blur-[120px] pointer-events-none dark:block hidden" aria-hidden="true" />
-      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-600/6 rounded-full blur-[100px] pointer-events-none dark:block hidden" aria-hidden="true" />
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-600/5 rounded-full blur-[140px] pointer-events-none dark:block hidden" aria-hidden="true" />
-
-      {/* Metallic floor reflection - dark mode only */}
-      <div
-        className="absolute bottom-0 left-0 right-0 h-48 pointer-events-none dark:block hidden"
-        style={{
-          background: 'linear-gradient(to top, rgba(139,92,246,0.04), transparent)',
-        }}
-        aria-hidden="true"
-      />
+      {/* Clean subtle background orbs */}
+      <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-900/5 rounded-full blur-[120px] pointer-events-none dark:block hidden" aria-hidden="true" />
+      <div className="absolute bottom-0 right-1/4 w-[400px] h-[400px] bg-blue-900/3 rounded-full blur-[100px] pointer-events-none dark:block hidden" aria-hidden="true" />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-purple-900/3 rounded-full blur-[140px] pointer-events-none dark:block hidden" aria-hidden="true" />
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6">
         {/* ── Hero Section ── */}
@@ -194,11 +183,11 @@ export default function About({ content, hero, aboutContent }) {
             {subtitle}
           </p>
 
-          {/* Decorative line */}
+          {/* Clean decorative line */}
           <div className="mt-8 sm:mt-10 flex items-center justify-center gap-3">
-            <div className="h-px w-16 bg-gradient-to-r from-transparent to-[var(--accent-about)]/50" />
-            <div className="w-2 h-2 rotate-45 border border-[var(--accent-about)]/50" />
-            <div className="h-px w-16 bg-gradient-to-l from-transparent to-[var(--accent-about)]/50" />
+            <div className="h-px w-16 bg-[var(--accent-about)]/30" />
+            <div className="w-2 h-2 rotate-45 border border-[var(--accent-about)]/30" />
+            <div className="h-px w-16 bg-[var(--accent-about)]/30" />
           </div>
         </motion.div>
 
