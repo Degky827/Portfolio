@@ -581,6 +581,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 <span>{settings.resumeText}</span>
               </motion.a>
             )}
+
           </div>
         </div>
 
