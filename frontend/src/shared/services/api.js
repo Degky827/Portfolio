@@ -8,6 +8,7 @@ const api = axios.create({
     ? 'https://portfolio-backend-lgvk.onrender.com/api'
     : import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
   withCredentials: true,
+  timeout: 10000,
 })
 
 axios.defaults.withCredentials = true
