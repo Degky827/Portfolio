@@ -57,19 +57,18 @@ describe('ErrorBoundary', () => {
 
   it('calls reload on button click', () => {
     const consoleSpy = vi.spyOn(console, 'error').mockImplementation(() => {})
-    const reloadSpy = vi.spyOn(window.location, 'reload').mockImplementation(() => {})
+    const onReload = vi.fn()
 
     render(
-      <ErrorBoundary>
+      <ErrorBoundary onReload={onReload}>
         <ThrowingComponent />
       </ErrorBoundary>
     )
 
     fireEvent.click(screen.getByText('Reload Page'))
 
-    expect(reloadSpy).toHaveBeenCalled()
+    expect(onReload).toHaveBeenCalled()
 
     consoleSpy.mockRestore()
-    reloadSpy.mockRestore()
   })
 })
