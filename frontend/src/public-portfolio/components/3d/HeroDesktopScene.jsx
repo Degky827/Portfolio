@@ -10,7 +10,9 @@ import Monitor from './Monitor'
 import Keyboard from './Keyboard'
 import PC from './PC'
 import Speaker from './Speaker'
-import NeonBackground from './NeonBackground'
+import ProfessionalBackground from './ProfessionalBackground'
+
+const cyanColor = new THREE.Color('#22d3ee')
 
 const MAX_DRAG_X = 12 * (Math.PI / 180)
 const MAX_DRAG_Y = 35 * (Math.PI / 180)
@@ -100,22 +102,21 @@ function DesktopDragController({ groupRef, canvasRef }) {
 function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
   const desktopGroupRef = useRef()
 
-  const bgColor = darkMode ? '#0891b2' : '#ecfeff'
+  const bgColor = darkMode ? '#0B0D10' : '#ffffff'
   const fogColor = useMemo(() => new THREE.Color(bgColor), [bgColor])
-  const cyanColor = useMemo(() => new THREE.Color('#06b6d4'), [])
 
-  const floorColor = darkMode ? '#065f73' : '#cffafe'
-  const wallColor = darkMode ? '#065f73' : '#e0f7fa'
-  const stripEmissiveIntensity = darkMode ? 2.5 : 0.8
-  const ambientColor = darkMode ? '#cffafe' : '#e0f2fe'
-  const dirColor = darkMode ? '#22d3ee' : '#0891b2'
-  const ambientIntensity = darkMode ? 0.12 : 0.5
-  const dirIntensity = darkMode ? 1.0 : 1.3
+  const floorColor = darkMode ? '#13161B' : '#f9fafb'
+  const wallColor = darkMode ? '#1C2028' : '#f3f4f6'
+  const accentColor = darkMode ? '#6366f1' : '#3b82f6'
+  const ambientColor = darkMode ? '#1E1E1E' : '#f0f0f0'
+  const dirColor = darkMode ? '#818cf8' : '#6366f1'
+  const ambientIntensity = darkMode ? 0.4 : 0.6
+  const dirIntensity = darkMode ? 1.2 : 1.0
 
   return (
     <>
       <color attach="background" args={[bgColor]} />
-      <fog attach="fog" args={[fogColor, 6, 18]} />
+      <fog attach="fog" args={[fogColor, 15, 30]} />
 
       <ambientLight intensity={ambientIntensity} color={ambientColor} />
 
@@ -134,16 +135,9 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
         shadow-camera-bottom={-5}
       />
 
-      <pointLight position={[-4, 2, -2]} intensity={darkMode ? 1.2 : 0.4} color={cyanColor} distance={15} />
-      <pointLight position={[4, 1, -1]} intensity={darkMode ? 0.6 : 0.2} color={cyanColor} distance={12} />
-      <pointLight position={[0, -1, 2]} intensity={darkMode ? 0.3 : 0.1} color={cyanColor} distance={8} />
-      <pointLight position={[0, 0.3, 0.5]} intensity={darkMode ? 0.4 : 0.15} color={cyanColor} distance={3} />
-
-      {darkMode && !isMobile && (
-        <Suspense fallback={null}>
-          <NeonBackground />
-        </Suspense>
-      )}
+      <Suspense fallback={null}>
+        <ProfessionalBackground darkMode={darkMode} isMobile={isMobile} />
+      </Suspense>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
         <planeGeometry args={[30, 30]} />
@@ -153,11 +147,11 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.005, 1.5]}>
         <planeGeometry args={[4, 0.5]} />
         <meshStandardMaterial
-          color={cyanColor}
-          emissive={cyanColor}
-          emissiveIntensity={darkMode ? 0.5 : 0.2}
+          color={accentColor}
+          emissive={accentColor}
+          emissiveIntensity={darkMode ? 0.3 : 0.15}
           transparent
-          opacity={darkMode ? 0.3 : 0.15}
+          opacity={darkMode ? 0.2 : 0.1}
         />
       </mesh>
 
@@ -168,12 +162,12 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
 
       <mesh position={[0, 3.5, -1.99]}>
         <boxGeometry args={[8, 0.02, 0.01]} />
-        <meshStandardMaterial color={cyanColor} emissive={cyanColor} emissiveIntensity={stripEmissiveIntensity} />
+        <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={darkMode ? 0.8 : 0.3} />
       </mesh>
 
       <mesh position={[0, 1.5, -1.99]}>
         <boxGeometry args={[6, 0.01, 0.01]} />
-        <meshStandardMaterial color={cyanColor} emissive={cyanColor} emissiveIntensity={darkMode ? 1.5 : 0.4} />
+        <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={darkMode ? 0.5 : 0.2} />
       </mesh>
 
       <Suspense fallback={null}>
@@ -295,7 +289,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-50"
-            style={{ background: darkMode ? '#0891b2' : '#ecfeff' }}
+            style={{ background: darkMode ? '#0B0D10' : '#F3F4F6' }}
           >
             <Canvas
               key={`expanded-${cameraKey}`}
@@ -307,7 +301,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
                 powerPreference: 'high-performance',
               }}
               shadows
-              style={{ background: darkMode ? '#0891b2' : '#ecfeff' }}
+              style={{ background: darkMode ? '#0B0D10' : '#F3F4F6' }}
             >
               <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} canvasRef={canvasRef} />
             </Canvas>
