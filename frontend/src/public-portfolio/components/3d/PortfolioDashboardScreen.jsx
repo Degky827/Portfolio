@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useCallback } from 'react'
+import { useRef, useEffect, useMemo, useCallback, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -480,43 +480,67 @@ export default function PortfolioDashboardScreen({ screenW = 2.48, screenH = 1.3
   const profilePhotoUrl = profileData?.profilePhotoUrl
 
   useEffect(() => {
-    const canvas = document.createElement('canvas')
-    canvas.width = W
-    canvas.height = H
-    canvasRef.current = canvas
+    const cvs = document.createElement('canvas')
+    cvs.width = W
+    cvs.height = H
+    canvasRef.current = cvs
 
-    const texture = new THREE.CanvasTexture(canvas)
+    const texture = new THREE.CanvasTexture(cvs)
     texture.minFilter = THREE.LinearFilter
     texture.magFilter = THREE.LinearFilter
     textureRef.current = texture
 
+    const ctx = cvs.getContext('2d')
+    fullDraw(ctx)
+    texNeedsUpdateRef.current = true
     animRef.current = { skillProgress: 0, started: true, startTime: performance.now() }
 
     return () => {
       texture.dispose()
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const texNeedsUpdateRef = useRef(false)
+  const propsRef = useRef({ name, badge, stats, skills, socialLinks, ctaButtons, introduction, profilePhotoUrl })
+  propsRef.current = { name, badge, stats, skills, socialLinks, ctaButtons, introduction, profilePhotoUrl }
+
+  useEffect(() => {
+    const cvs = canvasRef.current
+    if (!cvs) return
+    const ctx = cvs.getContext('2d')
+    fullDraw(ctx)
+    texNeedsUpdateRef.current = true
+  }, [name, badge, stats, skills, socialLinks, ctaButtons, introduction, profilePhotoUrl])
 
   useFrame(() => {
     const tex = textureRef.current
     const cvs = canvasRef.current
     if (!tex || !cvs) return
 
+    const p = propsRef.current
     const elapsed = (performance.now() - animRef.current.startTime) / 1000
-    animRef.current.skillProgress = Math.min(1, elapsed / 1.5)
+    const newProgress = Math.min(1, elapsed / 1.5)
+    const progressChanged = Math.abs(newProgress - animRef.current.skillProgress) > 0.005
 
-    const ctx = cvs.getContext('2d')
-    drawFrame(ctx, animRef.current.skillProgress)
-    tex.needsUpdate = true
+    if (!progressChanged && !texNeedsUpdateRef.current) return
+
+    animRef.current.skillProgress = newProgress
+
+    if (progressChanged || texNeedsUpdateRef.current) {
+      const ctx = cvs.getContext('2d')
+      drawFrame(ctx, newProgress, p)
+      tex.needsUpdate = true
+      texNeedsUpdateRef.current = false
+    }
   })
 
-  const drawFrame = useCallback((ctx, skillProgress) => {
+  const drawFrame = useCallback((ctx, skillProgress, p) => {
     ctx.clearRect(0, 0, W, H)
 
     ctx.fillStyle = COLORS.bg
     ctx.fillRect(0, 0, W, H)
 
-    // Subtle gradient overlay
     const bgGrad = ctx.createRadialGradient(W * 0.3, H * 0.3, 0, W * 0.3, H * 0.3, W * 0.5)
     bgGrad.addColorStop(0, 'rgba(99,102,241,0.04)')
     bgGrad.addColorStop(1, 'transparent')
@@ -525,32 +549,38 @@ export default function PortfolioDashboardScreen({ screenW = 2.48, screenH = 1.3
 
     drawTitleBar(ctx)
     drawSidebar(ctx)
-    drawProfileSection(ctx, profilePhotoUrl, name, badge)
-    drawStatsCards(ctx, stats)
-    drawDescription(ctx, introduction)
+    drawProfileSection(ctx, p.profilePhotoUrl, p.name, p.badge)
+    drawStatsCards(ctx, p.stats)
+    drawDescription(ctx, p.introduction)
     drawWelcomePanel(ctx)
-    drawSkillsSection(ctx, skills, skillProgress)
-    drawSocialDock(ctx, socialLinks, ctaButtons)
+    drawSkillsSection(ctx, p.skills, skillProgress)
+    drawSocialDock(ctx, p.socialLinks, p.ctaButtons)
     drawStatusBar(ctx)
     drawScanlines(ctx)
     drawVignette(ctx)
-  }, [name, badge, stats, skills, socialLinks, ctaButtons, introduction, profilePhotoUrl])
+  }, [])
+
+  const fullDraw = useCallback((ctx) => {
+    drawFrame(ctx, 0, propsRef.current)
+  }, [drawFrame])
 
   const material = useMemo(() => {
+    const tex = textureRef.current
+    if (!tex) return null
     return new THREE.MeshBasicMaterial({
-      map: textureRef.current,
+      map: tex,
       toneMapped: false,
     })
   }, [])
 
   useEffect(() => {
     return () => {
-      if (material.map) material.map.dispose()
-      material.dispose()
+      if (material && material.map) material.map.dispose()
+      if (material) material.dispose()
     }
   }, [material])
 
-  if (!textureRef.current) return null
+  if (!textureRef.current || !material) return null
 
   return (
     <mesh position={[0, 0, 0.025]}>

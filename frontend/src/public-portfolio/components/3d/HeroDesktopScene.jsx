@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState, useEffect, useCallback, useRef } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Preload, Float } from '@react-three/drei'
+import { Float } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Maximize2, Minimize2, RotateCcw } from 'lucide-react'
 import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
@@ -177,7 +177,7 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
             <Desk position={[0, 0, 0]} />
             <Monitor
               position={[0, 0, -0.3]}
-              screenMode="dashboard"
+              screenMode="code"
               profileData={profileData}
             />
             <Keyboard position={[0, 0, 0.25]} />
@@ -206,7 +206,6 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
         </Float>
       </Suspense>
 
-      <Preload all />
     </>
   )
 }
@@ -248,8 +247,8 @@ export default function HeroDesktopScene({ className = '', profileData }) {
   }, [])
 
   const inlineCamera = isMobile
-    ? { position: [2.5, 2.2, 5], fov: 45, near: 0.1, far: 100 }
-    : { position: [3.5, 2.8, 5.5], fov: 35, near: 0.1, far: 100 }
+    ? { position: [2.5, 2.2, 5], fov: 45, near: 0.1, far: 20 }
+    : { position: [3.5, 2.8, 5.5], fov: 35, near: 0.1, far: 20 }
 
   return (
     <>
