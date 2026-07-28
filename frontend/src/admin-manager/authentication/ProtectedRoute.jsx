@@ -13,7 +13,7 @@ export default function ProtectedRoute({ children }) {
     )
   }
 
-  if (!isAuthenticated || !user || user.role !== 'super_admin') {
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" state={{ from: location.pathname }} replace />
   }
 
