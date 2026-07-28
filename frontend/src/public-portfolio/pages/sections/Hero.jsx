@@ -84,8 +84,8 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
         backgroundSize: '80px 80px'
       }} />
 
-      {/* Full-screen 3D Desktop Scene */}
-      <div className="absolute inset-0 z-0">
+      {/* 3D Desktop Scene - right side */}
+      <div className="absolute right-0 top-0 w-full md:w-1/2 h-full z-0">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
@@ -95,14 +95,14 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
         </Suspense>
       </div>
 
-      {/* Floating HTML Overlay */}
+      {/* Floating HTML Overlay - text over the desktop */}
       <div className="relative z-10 min-h-screen flex flex-col pointer-events-none">
         {/* Top-left greeting overlay */}
         <motion.div
           initial={{ opacity: 0, x: -40, y: 20 }}
           animate={{ opacity: 1, x: 0, y: 0 }}
           transition={{ duration: 0.9, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-          className="pt-16 sm:pt-20 md:pt-24 pl-6 sm:pl-10 md:pl-14 lg:pl-20 max-w-xl"
+          className="pt-16 sm:pt-20 md:pt-24 pl-6 sm:pl-10 md:pl-14 lg:pl-20 max-w-xl md:max-w-lg"
         >
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight drop-shadow-lg" style={{ color: 'var(--text-primary)' }}>
             {greeting}{' '}

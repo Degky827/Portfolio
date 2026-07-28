@@ -5,6 +5,7 @@ import { Eye, EyeOff, LogIn, AlertCircle, Shield, ArrowLeft, Smartphone, Bug, Ex
 import { useAuth } from './AuthContext'
 import { login as loginApi, verify2FA as verify2FAApi, googleAuth } from '../../shared/services/authService'
 
+
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID
 const TOTP_LENGTH = 6
 

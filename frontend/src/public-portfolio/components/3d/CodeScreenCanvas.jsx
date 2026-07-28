@@ -1,4 +1,4 @@
-import { useRef, useEffect, useMemo, useCallback } from 'react'
+import { useRef, useEffect, useMemo, useCallback, useState } from 'react'
 import { useFrame } from '@react-three/fiber'
 import * as THREE from 'three'
 
@@ -175,41 +175,52 @@ export default function CodeScreenCanvas({ screenW = 2.48, screenH = 1.38 }) {
 
     s.lastTime += dt
     s.cursorBlink += dt
+    let cursorToggled = false
     if (s.cursorBlink > 530) {
       s.cursorBlink -= 530
       s.cursorVisible = !s.cursorVisible
+      cursorToggled = true
     }
 
     /* Update typing state */
+    let contentChanged = false
     if (s.phase === 'typing') {
       s.timer += dt
       while (s.timer >= TYPING_SPEED && s.typedChars < FULL_TEXT.length) {
         s.typedChars = Math.min(s.typedChars + CHARS_PER_TICK, FULL_TEXT.length)
         s.timer -= TYPING_SPEED
+        contentChanged = true
       }
       if (s.typedChars >= FULL_TEXT.length) {
         s.phase = 'paused'
         s.timer = 0
+        contentChanged = true
       }
     } else if (s.phase === 'paused') {
       s.timer += dt
       if (s.timer >= PAUSE_MS) {
         s.phase = 'clearing'
         s.timer = 0
+        contentChanged = true
       }
     } else if (s.phase === 'clearing') {
       s.timer += dt
       while (s.timer >= 8 && s.clearedChars < FULL_TEXT.length) {
         s.clearedChars = Math.min(s.clearedChars + CLEAR_SPEED, FULL_TEXT.length)
         s.timer -= 8
+        contentChanged = true
       }
       if (s.clearedChars >= FULL_TEXT.length) {
         s.typedChars = 0
         s.clearedChars = 0
         s.phase = 'typing'
         s.timer = 0
+        contentChanged = true
       }
     }
+
+    /* Only redraw when content changes or cursor blinks */
+    if (!contentChanged && !cursorToggled) return
 
     /* Visible text */
     const visLen = s.phase === 'clearing'
