@@ -61,10 +61,10 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
     badge,
     stats,
     skills: [
-      { name: 'React', level: 92, color: '#61dafb', icon: '⚛' },
-      { name: 'Node.js', level: 85, color: '#68a063', icon: '⬢' },
-      { name: 'Three.js', level: 78, color: '#8b5cf6', icon: '△' },
-      { name: 'Flutter', level: 70, color: '#02569b', icon: '◆' },
+      { name: 'React', level: 92, color: '#61dafb', icon: 'React' },
+      { name: 'Node.js', level: 85, color: '#68a063', icon: 'Node.js' },
+      { name: 'Three.js', level: 78, color: '#8b5cf6', icon: 'Three.js' },
+      { name: 'Flutter', level: 70, color: '#02569b', icon: 'Flutter' },
     ],
     socialLinks: settings?.socialLinks || {},
     ctaButtons: ctaButtons.filter(b => b.text || b.link),
@@ -78,16 +78,11 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
 
   return (
     <section id="home" className="relative min-h-screen overflow-hidden transition-colors duration-500" style={{ backgroundColor: 'var(--bg-primary)' }}>
-      {/* Subtle background gradient */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute inset-0 dark:bg-gradient-to-b dark:from-[#0B1120] dark:to-[#111827]" style={{ background: 'linear-gradient(to bottom, transparent, transparent)' }} />
-        <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.04]"
-          style={{
-            backgroundImage: 'linear-gradient(rgba(99, 102, 241, 0.3) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.3) 1px, transparent 1px)',
-            backgroundSize: '60px 60px'
-          }}
-        />
-      </div>
+      {/* Clean subtle background pattern */}
+      <div className="absolute inset-0 pointer-events-none opacity-[0.02]" style={{
+        backgroundImage: 'linear-gradient(rgba(99, 102, 241, 0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(99, 102, 241, 0.15) 1px, transparent 1px)',
+        backgroundSize: '80px 80px'
+      }} />
 
       {/* Full-screen 3D Desktop Scene */}
       <div className="absolute inset-0 z-0">

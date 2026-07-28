@@ -4,21 +4,20 @@ import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 /**
  * AboutGlassCard
  *
- * Premium futuristic 3D glass panel for the About section.
+ * Clean, professional card for the About section.
  *
- * Multi-layer structure:
- *   Layer 1: Outer metallic frame
- *   Layer 2: Glass panel
- *   Layer 3: Gradient overlay
- *   Layer 4: Inner shadow
- *   Layer 5: Content (icon + title + description)
- *   Layer 6: Animated neon border
+ * Clean design with:
+ *   - Solid card background
+ *   - Subtle border
+ *   - Clean hover effects
+ *   - Subtle 3D tilt on mouse move
+ *   - Icon + title + description
  *
  * Props:
  *   icon         – React node (lucide icon)
  *   title        – Card heading string
  *   description  – Card body text (may contain HTML)
- *   accentColor  – Hex color for neon accents (default: '#8b5cf6')
+ *   accentColor  – Hex color for subtle accents (default: '#6366f1')
  *   animationDelay – Stagger delay in seconds (default: 0)
  *   index        – Card index for numbering (default: 0)
  *   shouldReduceMotion – Disable entrance animation (default: false)
@@ -27,7 +26,7 @@ const AboutGlassCard = memo(function AboutGlassCard({
   icon,
   title,
   description,
-  accentColor = '#8b5cf6',
+  accentColor = '#6366f1',
   animationDelay = 0,
   index = 0,
   shouldReduceMotion = false,
@@ -39,13 +38,13 @@ const AboutGlassCard = memo(function AboutGlassCard({
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [4, -4]), {
-    stiffness: 150,
-    damping: 20,
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [3, -3]), {
+    stiffness: 100,
+    damping: 15,
   })
-  const rotateZ = useSpring(useTransform(mouseX, [-0.5, 0.5], [-2, 2]), {
-    stiffness: 150,
-    damping: 20,
+  const rotateZ = useSpring(useTransform(mouseX, [-0.5, 0.5], [-1.5, 1.5]), {
+    stiffness: 100,
+    damping: 15,
   })
 
   const handleMouseMove = useCallback((e) => {
@@ -63,16 +62,13 @@ const AboutGlassCard = memo(function AboutGlassCard({
     mouseY.set(0)
   }, [mouseX, mouseY])
 
-  // Neon border animation key (unique per card)
-  const borderId = useMemo(() => `neon-border-${index}`, [index])
-
   // Clean HTML tags
   const cleanDescription = useMemo(() => {
     return description?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || ''
   }, [description])
 
   // Calculate alternating slide direction: even indices slide from left, odd from right
-  const slideDirection = index % 2 === 0 ? -60 : 60
+  const slideDirection = index % 2 === 0 ? -40 : 40
 
   return (
     <motion.article
@@ -87,10 +83,10 @@ const AboutGlassCard = memo(function AboutGlassCard({
         delay: animationDelay,
       }}
       whileHover={{
-        y: -8,
-        scale: 1.02,
-        rotateX: -2,
-        transition: { duration: 0.25, ease: 'easeOut' },
+        y: -6,
+        scale: 1.01,
+        rotateX: -1,
+        transition: { duration: 0.2, ease: 'easeOut' },
       }}
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
@@ -100,7 +96,7 @@ const AboutGlassCard = memo(function AboutGlassCard({
       tabIndex={0}
       role="article"
       aria-label={title}
-      className="group relative rounded-[20px] sm:rounded-[24px] cursor-default outline-none"
+      className="group relative rounded-xl sm:rounded-2xl cursor-default outline-none"
       style={{
         rotateX,
         rotateZ,
@@ -108,63 +104,49 @@ const AboutGlassCard = memo(function AboutGlassCard({
         perspective: '1000px',
       }}
     >
-      {/* ═══════════ LAYER 1: Outer Metallic Frame ═══════════ */}
+      {/* Clean Card Background */}
       <div
-        className="absolute -inset-[1px] rounded-[21px] sm:rounded-[25px] opacity-40 group-hover:opacity-70 transition-opacity duration-300"
-        style={{
-          background: `linear-gradient(135deg, ${accentColor}40, transparent 40%, transparent 60%, ${accentColor}30)`,
-        }}
-      />
-
-      {/* ═══════════ LAYER 2: Glass Panel ═══════════ */}
-      <div
-        className="relative rounded-[20px] sm:rounded-[24px] overflow-hidden"
+        className="relative rounded-xl sm:rounded-2xl overflow-hidden"
         style={{
           background: 'var(--card-bg)',
-          backdropFilter: 'blur(24px) saturate(1.2)',
-          WebkitBackdropFilter: 'blur(24px) saturate(1.2)',
           border: '1px solid var(--card-border)',
           boxShadow: 'var(--card-shadow)',
+          transition: 'box-shadow 0.3s ease, border-color 0.3s ease',
         }}
       >
-        {/* ═══════════ LAYER 3: Gradient Overlay ═══════════ */}
+        {/* Subtle hover overlay */}
         <div
-          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+          className="absolute inset-0 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300"
           style={{
-            background: `linear-gradient(135deg, ${accentColor}08 0%, transparent 40%, ${accentColor}05 100%)`,
+            background: `rgba(99, 102, 241, 0.02)`,
           }}
         />
 
-        {/* ═══════════ LAYER 4: Inner Shadow ═══════════ */}
+        {/* Inner highlight */}
         <div
-          className="absolute inset-0 rounded-[20px] sm:rounded-[24px] pointer-events-none"
+          className="absolute inset-0 rounded-xl sm:rounded-2xl pointer-events-none"
           style={{
-            boxShadow: 'inset 0 1px 1px rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.1)',
+            boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.03)',
           }}
         />
 
-        {/* ═══════════ LAYER 5: Content ═══════════ */}
+        {/* Content */}
         <div className="relative z-10 p-6 sm:p-7 md:p-8">
           <div className="flex items-start gap-4 sm:gap-5">
             {/* Icon Container */}
             <div className="shrink-0 relative">
-              {/* Icon box glow */}
-              <div
-                className="absolute -inset-2 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 blur-md"
-                style={{ background: `${accentColor}20` }}
-              />
               {/* Icon box */}
               <div
-                className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl transition-all duration-300 group-hover:scale-110"
+                className="relative flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-xl transition-all duration-300 group-hover:scale-105"
                 style={{
-                  background: `linear-gradient(135deg, ${accentColor}18, ${accentColor}08)`,
-                  border: `1px solid ${accentColor}30`,
-                  boxShadow: `0 4px 16px ${accentColor}15, inset 0 1px 0 rgba(255,255,255,0.05)`,
+                  background: `rgba(99, 102, 241, 0.08)`,
+                  border: `1px solid rgba(99, 102, 241, 0.15)`,
+                  boxShadow: '0 2px 8px rgba(0,0,0,0.05)',
                 }}
               >
                 <div
-                  className="text-lg sm:text-xl transition-all duration-300 group-hover:scale-110"
-                  style={{ color: accentColor, filter: `drop-shadow(0 0 6px ${accentColor}60)` }}
+                  className="text-lg sm:text-xl transition-all duration-300 group-hover:scale-105"
+                  style={{ color: accentColor }}
                 >
                   {icon}
                 </div>
@@ -175,10 +157,7 @@ const AboutGlassCard = memo(function AboutGlassCard({
             <div className="flex-1 min-w-0">
               <h3
                 className="text-lg sm:text-xl md:text-[22px] font-bold mb-2 sm:mb-3 leading-tight font-display transition-all duration-300"
-                style={{
-                  color: 'var(--text-primary)',
-                  textShadow: isHovered ? `0 0 20px ${accentColor}40` : 'none',
-                }}
+                style={{ color: 'var(--text-primary)' }}
               >
                 {title}
               </h3>
@@ -200,98 +179,22 @@ const AboutGlassCard = memo(function AboutGlassCard({
           </div>
         </div>
 
-        {/* ═══════════ LAYER 6: Animated Neon Border ═══════════ */}
-        <div className="absolute inset-0 rounded-[20px] sm:rounded-[24px] pointer-events-none overflow-hidden">
-          {/* Top border glow */}
+        {/* Subtle border accent on hover */}
+        <div className="absolute inset-0 rounded-xl sm:rounded-2xl pointer-events-none overflow-hidden">
           <div
-            className="absolute top-0 left-0 right-0 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-500"
+            className="absolute top-0 left-0 right-0 h-[1px] opacity-0 group-hover:opacity-100 transition-opacity duration-300"
             style={{
-              background: `linear-gradient(90deg, transparent, ${accentColor}80, transparent)`,
+              background: `rgba(99, 102, 241, 0.3)`,
             }}
           />
-          {/* Bottom border glow */}
           <div
-            className="absolute bottom-0 left-0 right-0 h-[1px] opacity-20 group-hover:opacity-50 transition-opacity duration-500"
+            className="absolute bottom-0 left-0 right-0 h-[1px] opacity-0 group-hover:opacity-50 transition-opacity duration-300"
             style={{
-              background: `linear-gradient(90deg, transparent, ${accentColor}50, transparent)`,
-            }}
-          />
-          {/* Left border glow */}
-          <div
-            className="absolute top-0 bottom-0 left-0 w-[1px] opacity-20 group-hover:opacity-60 transition-opacity duration-500"
-            style={{
-              background: `linear-gradient(180deg, ${accentColor}60, transparent 50%, ${accentColor}30)`,
-            }}
-          />
-          {/* Right border glow */}
-          <div
-            className="absolute top-0 bottom-0 right-0 w-[1px] opacity-10 group-hover:opacity-40 transition-opacity duration-500"
-            style={{
-              background: `linear-gradient(180deg, transparent, ${accentColor}40 50%, transparent)`,
-            }}
-          />
-
-          {/* Pulsing neon border overlay */}
-          <svg className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true">
-            <defs>
-              <linearGradient id={`${borderId}-grad`} x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor={accentColor} stopOpacity="0" />
-                <stop offset="50%" stopColor={accentColor} stopOpacity="0.6" />
-                <stop offset="100%" stopColor={accentColor} stopOpacity="0" />
-              </linearGradient>
-            </defs>
-            <rect
-              x="0.5"
-              y="0.5"
-              width="calc(100% - 1px)"
-              height="calc(100% - 1px)"
-              rx="20"
-              ry="20"
-              fill="none"
-              stroke={`url(#${borderId}-grad)`}
-              strokeWidth="1"
-              className="opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-              style={{
-                animation: 'neonPulse 3s ease-in-out infinite',
-                animationDelay: `${index * 0.5}s`,
-              }}
-            />
-          </svg>
-        </div>
-
-        {/* ═══════════ Reflection Sweep ═══════════ */}
-        <div
-          className="absolute inset-0 pointer-events-none overflow-hidden rounded-[20px] sm:rounded-[24px]"
-          aria-hidden="true"
-        >
-          <div
-            className="absolute -top-full -left-full w-[200%] h-[200%] opacity-0 group-hover:opacity-100 transition-opacity duration-700"
-            style={{
-              background: 'linear-gradient(105deg, transparent 40%, rgba(255,255,255,0.03) 45%, rgba(255,255,255,0.06) 50%, rgba(255,255,255,0.03) 55%, transparent 60%)',
-              animation: 'reflectionSweep 4s ease-in-out infinite',
-              animationDelay: `${index * 0.8}s`,
+              background: `rgba(99, 102, 241, 0.15)`,
             }}
           />
         </div>
-
-        {/* ═══════════ Bottom Shadow ═══════════ */}
-        <div
-          className="absolute -bottom-2 left-[10%] right-[10%] h-4 rounded-[20px] opacity-0 group-hover:opacity-60 transition-all duration-300 blur-lg pointer-events-none"
-          style={{ background: `${accentColor}30` }}
-        />
       </div>
-
-      {/* CSS Animations */}
-      <style>{`
-        @keyframes neonPulse {
-          0%, 100% { opacity: 0.3; }
-          50% { opacity: 0.8; }
-        }
-        @keyframes reflectionSweep {
-          0% { transform: translateX(-30%) translateY(-30%) rotate(25deg); }
-          100% { transform: translateX(30%) translateY(30%) rotate(25deg); }
-        }
-      `}</style>
     </motion.article>
   )
 })
