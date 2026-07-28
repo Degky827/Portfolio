@@ -71,6 +71,8 @@ function App() {
       <IntroSystem />
       <Suspense fallback={layoutSpinner}>
         <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin/*" element={<AdminRoutes />} />
           <Route element={<PublicLayout />}>
             <Route path="/" element={<HomePage />} />
             <Route path="/:customSlug" element={<DynamicCustomPage />} />
@@ -85,8 +87,6 @@ function App() {
               <WorkspaceScene />
             </Suspense>
           } />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin/*" element={<AdminRoutes />} />
         </Routes>
       </Suspense>
     </ErrorBoundary>
