@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Portkiro Portfolio API",
-    "description": "Portfolio tracking & admin system — Express/MongoDB API with 99 endpoints",
+    "description": "Portfolio tracking & admin system — Express/MongoDB API with 124 endpoints",
     "version": "1.0.0",
     "contact": {
       "name": "Portkiro Backend"
@@ -10,7 +10,7 @@
   },
   "servers": [
     {
-      "url": "http://localhost:5000",
+      "url": "http://localhost:5001",
       "description": "Development server"
     }
   ],
