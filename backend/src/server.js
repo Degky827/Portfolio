@@ -47,12 +47,12 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
+      scriptSrc: ["'self'", 'https://accounts.google.com', 'https://apis.google.com'],
       styleSrc: ["'self'", "'unsafe-inline'"],
       imgSrc: ["'self'", 'data:', 'https:'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      connectSrc: ["'self'", config.frontendUrl].filter(Boolean),
-      frameSrc: ["'none'"],
+      connectSrc: ["'self'", config.frontendUrl, 'https://accounts.google.com', 'https://oauth2.googleapis.com', 'https://www.googleapis.com'].filter(Boolean),
+      frameSrc: ["'self'", 'https://accounts.google.com'],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
       formAction: ["'self'"],
