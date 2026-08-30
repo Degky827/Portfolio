@@ -7,7 +7,7 @@ services:
     container_name: portkiro-mongo
     restart: unless-stopped
     ports:
-      - '${MONGO_PORT:-27017}:27017'
+      - '${MONGO_PORT:-27018}:27017'
     environment:
       MONGO_INITDB_ROOT_USERNAME: ${MONGO_ROOT_USER:-admin}
       MONGO_INITDB_ROOT_PASSWORD: ${MONGO_ROOT_PASS:-password}
@@ -57,7 +57,7 @@ services:
     container_name: portkiro-app
     restart: unless-stopped
     ports:
-      - '${APP_PORT:-5000}:5000'
+      - '${APP_PORT:-5001}:5000'
     environment:
       NODE_ENV: production
       PORT: 5000
