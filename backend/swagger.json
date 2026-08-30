@@ -1,0 +1,2842 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "Portkiro Portfolio API",
+    "description": "Portfolio tracking & admin system — Express/MongoDB API with 99 endpoints",
+    "version": "1.0.0",
+    "contact": {
+      "name": "Portkiro Backend"
+    }
+  },
+  "servers": [
+    {
+      "url": "http://localhost:5000",
+      "description": "Development server"
+    }
+  ],
+  "tags": [
+    { "name": "Health", "description": "Health check" },
+    { "name": "Auth", "description": "Authentication & 2FA" },
+    { "name": "Users", "description": "User management (super admin)" },
+    { "name": "Projects", "description": "Portfolio projects" },
+    { "name": "Skills", "description": "Skills CRUD" },
+    { "name": "Categories", "description": "Skill categories" },
+    { "name": "Home Content", "description": "Homepage content" },
+    { "name": "About", "description": "About page content" },
+    { "name": "Contact", "description": "Contact page content" },
+    { "name": "Contact Messages", "description": "Contact form messages" },
+    { "name": "Footer", "description": "Footer content" },
+    { "name": "Site Settings", "description": "Global site settings" },
+    { "name": "Settings", "description": "App settings & appearance" },
+    { "name": "Media", "description": "File/media management" },
+    { "name": "Navigation", "description": "Navbar & navigation" },
+    { "name": "Custom Pages", "description": "Admin custom pages" },
+    { "name": "Custom Pages Public", "description": "Public custom pages" },
+    { "name": "Analytics", "description": "Visit tracking & analytics" },
+    { "name": "Backups", "description": "Backup management" },
+    { "name": "Activity Logs", "description": "Admin activity logs" },
+    { "name": "Import/Export", "description": "Data import & export" },
+    { "name": "System Config", "description": "System configuration" },
+    { "name": "Maintenance", "description": "System maintenance" },
+    { "name": "Notifications", "description": "Admin notifications" },
+    { "name": "Security", "description": "Security settings & sessions" },
+    { "name": "AI Chat", "description": "AI copilot chat" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "cookieAuth": {
+        "type": "apiKey",
+        "in": "cookie",
+        "name": "token",
+        "description": "JWT token set in cookie after login"
+      },
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "SuccessResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": true },
+          "message": { "type": "string" }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean", "example": false },
+          "message": { "type": "string" }
+        }
+      },
+      "PaginatedResponse": {
+        "type": "object",
+        "properties": {
+          "success": { "type": "boolean" },
+          "totalCount": { "type": "integer" },
+          "pagination": {
+            "type": "object",
+            "properties": {
+              "page": { "type": "integer" },
+              "limit": { "type": "integer" },
+              "totalPages": { "type": "integer" },
+              "hasMore": { "type": "boolean" }
+            }
+          }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["email", "password"],
+        "properties": {
+          "email": { "type": "string", "format": "email", "example": "admin@example.com" },
+          "password": { "type": "string", "format": "password", "example": "password123" }
+        }
+      },
+      "Verify2FARequest": {
+        "type": "object",
+        "required": ["token", "code"],
+        "properties": {
+          "token": { "type": "string", "description": "Temp token from step 1" },
+          "code": { "type": "string", "description": "6-digit TOTP code" }
+        }
+      },
+      "GoogleLoginRequest": {
+        "type": "object",
+        "required": ["credential"],
+        "properties": {
+          "credential": { "type": "string", "description": "Google OAuth ID token" }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "properties": {
+          "refreshToken": { "type": "string" }
+        }
+      },
+      "Skill": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string", "example": "JavaScript" },
+          "category": { "type": "string", "example": "Frontend" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "SkillRequest": {
+        "type": "object",
+        "required": ["name", "category"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 100, "example": "JavaScript" },
+          "category": { "type": "string", "maxLength": 100, "example": "Frontend" }
+        }
+      },
+      "Category": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string", "example": "Frontend" },
+          "order": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CategoryRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "example": "Frontend" }
+        }
+      },
+      "Project": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string", "example": "My Portfolio" },
+          "shortDescription": { "type": "string" },
+          "category": { "type": "string" },
+          "slug": { "type": "string" },
+          "featured": { "type": "boolean" },
+          "published": { "type": "boolean" },
+          "archived": { "type": "boolean" },
+          "images": { "type": "array", "items": { "type": "string" } },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ProjectRequest": {
+        "type": "object",
+        "required": ["title", "shortDescription", "category"],
+        "properties": {
+          "title": { "type": "string", "maxLength": 200, "example": "My Portfolio" },
+          "shortDescription": { "type": "string", "maxLength": 500, "example": "A modern portfolio website" },
+          "category": { "type": "string", "maxLength": 100, "example": "Web Development" },
+          "description": { "type": "string" },
+          "images": { "type": "array", "items": { "type": "string" } },
+          "technologies": { "type": "array", "items": { "type": "string" } },
+          "githubUrl": { "type": "string", "format": "uri" },
+          "liveUrl": { "type": "string", "format": "uri" }
+        }
+      },
+      "User": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "role": { "type": "string", "enum": ["admin", "superadmin"] },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "UserRequest": {
+        "type": "object",
+        "required": ["name", "email", "password"],
+        "properties": {
+          "name": { "type": "string" },
+          "email": { "type": "string", "format": "email" },
+          "password": { "type": "string", "format": "password" },
+          "role": { "type": "string", "enum": ["admin", "superadmin"], "default": "admin" }
+        }
+      },
+      "ContactMessage": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "name": { "type": "string", "example": "John Doe" },
+          "email": { "type": "string", "format": "email" },
+          "phone": { "type": "string" },
+          "message": { "type": "string" },
+          "read": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ContactMessageRequest": {
+        "type": "object",
+        "required": ["name", "email", "message"],
+        "properties": {
+          "name": { "type": "string", "maxLength": 100, "example": "John Doe" },
+          "email": { "type": "string", "format": "email", "maxLength": 254, "example": "john@example.com" },
+          "phone": { "type": "string", "maxLength": 30, "example": "+1234567890" },
+          "message": { "type": "string", "maxLength": 5000, "example": "Hello, I'd like to discuss a project." }
+        }
+      },
+      "Notification": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "message": { "type": "string" },
+          "read": { "type": "boolean" },
+          "type": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ActivityLog": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "action": { "type": "string" },
+          "entity": { "type": "string" },
+          "entityId": { "type": "string" },
+          "user": { "type": "string" },
+          "details": { "type": "object" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Backup": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "filename": { "type": "string" },
+          "size": { "type": "integer" },
+          "collections": { "type": "array", "items": { "type": "string" } },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CustomPage": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "title": { "type": "string" },
+          "slug": { "type": "string" },
+          "content": { "type": "string" },
+          "published": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "CustomPageRequest": {
+        "type": "object",
+        "required": ["title"],
+        "properties": {
+          "title": { "type": "string", "example": "My Custom Page" },
+          "content": { "type": "string" },
+          "published": { "type": "boolean", "default": false }
+        }
+      },
+      "Navigation": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "label": { "type": "string" },
+          "url": { "type": "string" },
+          "order": { "type": "integer" },
+          "visible": { "type": "boolean" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "NavigationRequest": {
+        "type": "object",
+        "required": ["label", "url"],
+        "properties": {
+          "label": { "type": "string", "example": "Projects" },
+          "url": { "type": "string", "example": "/projects" },
+          "order": { "type": "integer" },
+          "visible": { "type": "boolean", "default": true }
+        }
+      },
+      "ChatRequest": {
+        "type": "object",
+        "required": ["message"],
+        "properties": {
+          "message": { "type": "string", "maxLength": 500, "example": "Tell me about this project" }
+        }
+      },
+      "HealthCheck": {
+        "type": "object",
+        "properties": {
+          "status": { "type": "string", "example": "ok" },
+          "message": { "type": "string", "example": "Server running smoothly" },
+          "timestamp": { "type": "string", "format": "date-time" }
+        }
+      },
+      "SiteSettings": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "siteName": { "type": "string" },
+          "siteDescription": { "type": "string" },
+          "logo": { "type": "string" },
+          "favicon": { "type": "string" },
+          "socialLinks": { "type": "object" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Settings": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "logo": { "type": "string" },
+          "favicon": { "type": "string" },
+          "siteName": { "type": "string" },
+          "updatedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "Appearance": {
+        "type": "object",
+        "properties": {
+          "primaryColor": { "type": "string" },
+          "theme": { "type": "string", "enum": ["light", "dark"] },
+          "fontFamily": { "type": "string" }
+        }
+      },
+      "MediaItem": {
+        "type": "object",
+        "properties": {
+          "_id": { "type": "string" },
+          "url": { "type": "string", "format": "uri" },
+          "filename": { "type": "string" },
+          "mimeType": { "type": "string" },
+          "size": { "type": "integer" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "SecuritySettings": {
+        "type": "object",
+        "properties": {
+          "twoFactorRequired": { "type": "boolean" },
+          "sessionTimeout": { "type": "integer" },
+          "maxLoginAttempts": { "type": "integer" }
+        }
+      },
+      "Session": {
+        "type": "object",
+        "properties": {
+          "index": { "type": "integer" },
+          "userAgent": { "type": "string" },
+          "ip": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "SystemConfig": {
+        "type": "object",
+        "properties": {
+          "backupEnabled": { "type": "boolean" },
+          "maintenanceMode": { "type": "boolean" },
+          "healthMonitorEnabled": { "type": "boolean" }
+        }
+      },
+      "Metrics": {
+        "type": "object",
+        "properties": {
+          "totalVisits": { "type": "integer" },
+          "uniqueVisitors": { "type": "integer" },
+          "pageViews": { "type": "integer" },
+          "averageTimeOnSite": { "type": "number" },
+          "bounceRate": { "type": "number" }
+        }
+      }
+    }
+  },
+  "security": [
+    { "cookieAuth": [] },
+    { "bearerAuth": [] }
+  ],
+  "paths": {
+    "/api/health": {
+      "get": {
+        "tags": ["Health"],
+        "summary": "Health check",
+        "description": "Returns server status and timestamp",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Server is healthy",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/HealthCheck" }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/auth/login": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Step 1: Email/password login",
+        "description": "Rate limited: 10 requests per 15 minutes. Returns temp token; if 2FA is enabled, client must call verify-2fa.",
+        "security": [],
+        "x-ms-ratelimit-scope": "10 requests / 15 minutes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/LoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful (or 2FA required)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "token": { "type": "string", "description": "JWT if no 2FA, temp token if 2FA required" },
+                    "requires2FA": { "type": "boolean" },
+                    "message": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "401": { "description": "Invalid credentials" },
+          "429": { "description": "Too many login attempts" }
+        }
+      }
+    },
+
+    "/api/auth/verify-2fa": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Step 2: Verify 2FA TOTP code",
+        "description": "Rate limited: 20 requests per 15 minutes",
+        "security": [],
+        "x-ms-ratelimit-scope": "20 requests / 15 minutes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Verify2FARequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "2FA verified, JWT returned" },
+          "401": { "description": "Invalid 2FA code" },
+          "429": { "description": "Too many attempts" }
+        }
+      }
+    },
+
+    "/api/auth/google": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Google OAuth login",
+        "description": "Rate limited: 5 requests per 15 minutes",
+        "security": [],
+        "x-ms-ratelimit-scope": "5 requests / 15 minutes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/GoogleLoginRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Google login successful" },
+          "401": { "description": "Invalid Google credential" },
+          "429": { "description": "Too many attempts" }
+        }
+      }
+    },
+
+    "/api/auth/logout": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Logout",
+        "description": "Clears JWT cookie",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "Logged out successfully" }
+        }
+      }
+    },
+
+    "/api/auth/refresh": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Refresh access token",
+        "security": [],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/RefreshRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "New JWT token issued" },
+          "401": { "description": "Invalid refresh token" }
+        }
+      }
+    },
+
+    "/api/auth/me": {
+      "get": {
+        "tags": ["Auth"],
+        "summary": "Get current user profile",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Current user info",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/User" }
+              }
+            }
+          },
+          "401": { "description": "Not authenticated" }
+        }
+      },
+      "patch": {
+        "tags": ["Auth"],
+        "summary": "Update current user profile",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string" },
+                  "email": { "type": "string", "format": "email" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Profile updated" },
+          "401": { "description": "Not authenticated" }
+        }
+      }
+    },
+
+    "/api/auth/setup-2fa": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Setup 2FA — generate TOTP secret & QR code",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "2FA setup data with QR code",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "secret": { "type": "string" },
+                    "otpauthUrl": { "type": "string" },
+                    "qrCode": { "type": "string", "description": "Base64 QR code image" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/auth/verify-2fa-setup": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Confirm 2FA setup with TOTP code",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code"],
+                "properties": {
+                  "code": { "type": "string", "description": "6-digit TOTP code from authenticator" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "2FA enabled" },
+          "400": { "description": "Invalid code" }
+        }
+      }
+    },
+
+    "/api/auth/disable-2fa": {
+      "post": {
+        "tags": ["Auth"],
+        "summary": "Disable 2FA",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["code"],
+                "properties": {
+                  "code": { "type": "string", "description": "Current TOTP code to confirm" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "2FA disabled" },
+          "400": { "description": "Invalid code" }
+        }
+      }
+    },
+
+    "/api/users/": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "List all users",
+        "description": "Requires super admin role",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } },
+          { "name": "role", "in": "query", "schema": { "type": "string", "enum": ["admin", "superadmin"] } }
+        ],
+        "responses": {
+          "200": {
+            "description": "User list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/PaginatedResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "users": { "type": "array", "items": { "$ref": "#/components/schemas/User" } }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "403": { "description": "Not super admin" }
+        }
+      },
+      "post": {
+        "tags": ["Users"],
+        "summary": "Create a new user",
+        "description": "Requires super admin role",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "User created" },
+          "400": { "description": "Validation error" },
+          "403": { "description": "Not super admin" }
+        }
+      }
+    },
+
+    "/api/users/{id}": {
+      "get": {
+        "tags": ["Users"],
+        "summary": "Get user by ID",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "User details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
+          "404": { "description": "User not found" }
+        }
+      },
+      "put": {
+        "tags": ["Users"],
+        "summary": "Update user",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/UserRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "User updated" },
+          "404": { "description": "User not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Users"],
+        "summary": "Delete user",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "User deleted" },
+          "404": { "description": "User not found" }
+        }
+      }
+    },
+
+    "/api/projects/": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "List all projects",
+        "security": [],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "category", "in": "query", "schema": { "type": "string" } },
+          { "name": "featured", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "published", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Project list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/PaginatedResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "projects": { "type": "array", "items": { "$ref": "#/components/schemas/Project" } }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Create a project",
+        "description": "Requires super admin role",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProjectRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Project created" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/projects/slug/{slug}": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "Get project by slug",
+        "security": [],
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Project details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Project" } } } },
+          "404": { "description": "Project not found" }
+        }
+      }
+    },
+
+    "/api/projects/{id}": {
+      "get": {
+        "tags": ["Projects"],
+        "summary": "Get project by ID",
+        "security": [],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Project details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Project" } } } },
+          "404": { "description": "Project not found" }
+        }
+      },
+      "put": {
+        "tags": ["Projects"],
+        "summary": "Update a project",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ProjectRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Project updated" },
+          "404": { "description": "Project not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Projects"],
+        "summary": "Delete a project",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Project deleted" },
+          "404": { "description": "Project not found" }
+        }
+      }
+    },
+
+    "/api/projects/reorder": {
+      "put": {
+        "tags": ["Projects"],
+        "summary": "Reorder projects",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["orderedIds"],
+                "properties": {
+                  "orderedIds": { "type": "array", "items": { "type": "string" }, "description": "Project IDs in desired order" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Projects reordered" }
+        }
+      }
+    },
+
+    "/api/projects/{id}/duplicate": {
+      "post": {
+        "tags": ["Projects"],
+        "summary": "Duplicate a project",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "201": { "description": "Project duplicated" },
+          "404": { "description": "Project not found" }
+        }
+      }
+    },
+
+    "/api/projects/{id}/featured": {
+      "patch": {
+        "tags": ["Projects"],
+        "summary": "Toggle featured status",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Featured status toggled" }
+        }
+      }
+    },
+
+    "/api/projects/{id}/publish": {
+      "patch": {
+        "tags": ["Projects"],
+        "summary": "Toggle publish status",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Publish status toggled" }
+        }
+      }
+    },
+
+    "/api/projects/{id}/archive": {
+      "patch": {
+        "tags": ["Projects"],
+        "summary": "Toggle archive status",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Archive status toggled" }
+        }
+      }
+    },
+
+    "/api/projects/{id}/images": {
+      "patch": {
+        "tags": ["Projects"],
+        "summary": "Update project images",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "images": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Images updated" }
+        }
+      }
+    },
+
+    "/api/skills/": {
+      "get": {
+        "tags": ["Skills"],
+        "summary": "List all skills",
+        "security": [],
+        "parameters": [
+          { "name": "category", "in": "query", "schema": { "type": "string" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Skill list",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Skill" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Skills"],
+        "summary": "Create a skill",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SkillRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Skill created" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/skills/{id}": {
+      "get": {
+        "tags": ["Skills"],
+        "summary": "Get skill by ID",
+        "security": [],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Skill details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Skill" } } } },
+          "404": { "description": "Skill not found" }
+        }
+      },
+      "put": {
+        "tags": ["Skills"],
+        "summary": "Update a skill",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SkillRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Skill updated" },
+          "404": { "description": "Skill not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Skills"],
+        "summary": "Delete a skill",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Skill deleted" },
+          "404": { "description": "Skill not found" }
+        }
+      }
+    },
+
+    "/api/categories/": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "List all categories",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Category list",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Category" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Categories"],
+        "summary": "Create a category",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CategoryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Category created" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/categories/reorder": {
+      "put": {
+        "tags": ["Categories"],
+        "summary": "Reorder categories",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["orderedIds"],
+                "properties": {
+                  "orderedIds": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Categories reordered" }
+        }
+      }
+    },
+
+    "/api/categories/{id}": {
+      "get": {
+        "tags": ["Categories"],
+        "summary": "Get category by ID",
+        "security": [],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Category details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Category" } } } },
+          "404": { "description": "Category not found" }
+        }
+      },
+      "put": {
+        "tags": ["Categories"],
+        "summary": "Update a category",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CategoryRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Category updated" },
+          "404": { "description": "Category not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Categories"],
+        "summary": "Delete a category",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Category deleted" },
+          "404": { "description": "Category not found" }
+        }
+      }
+    },
+
+    "/api/home-content/": {
+      "get": {
+        "tags": ["Home Content"],
+        "summary": "Get homepage content",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Homepage content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string" },
+                    "hero": { "type": "object" },
+                    "sections": { "type": "array" },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Home Content"],
+        "summary": "Update homepage content",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Homepage content fields (hero title, subtitle, sections, etc.)"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Homepage content updated" }
+        }
+      }
+    },
+
+    "/api/about/": {
+      "get": {
+        "tags": ["About"],
+        "summary": "Get about page content",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "About content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string" },
+                    "name": { "type": "string" },
+                    "bio": { "type": "string" },
+                    "profileImage": { "type": "string" },
+                    "skills": { "type": "array", "items": { "type": "string" } },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["About"],
+        "summary": "Update about page content",
+        "description": "Accepts multipart/form-data with optional profileImage file",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "profileImage": { "type": "string", "format": "binary", "description": "Profile image file" },
+                  "name": { "type": "string" },
+                  "bio": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "About content updated" }
+        }
+      }
+    },
+
+    "/api/contact/": {
+      "get": {
+        "tags": ["Contact"],
+        "summary": "Get contact page content",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Contact content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string" },
+                    "email": { "type": "string" },
+                    "phone": { "type": "string" },
+                    "address": { "type": "string" },
+                    "socialLinks": { "type": "object" },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Contact"],
+        "summary": "Update contact page content",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "format": "email" },
+                  "phone": { "type": "string" },
+                  "address": { "type": "string" },
+                  "socialLinks": { "type": "object" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Contact content updated" }
+        }
+      }
+    },
+
+    "/api/contact-messages/": {
+      "get": {
+        "tags": ["Contact Messages"],
+        "summary": "List contact messages",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
+          { "name": "read", "in": "query", "schema": { "type": "boolean" } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Message list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/PaginatedResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "messages": { "type": "array", "items": { "$ref": "#/components/schemas/ContactMessage" } }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Contact Messages"],
+        "summary": "Submit a contact message",
+        "description": "Rate limited: 10 requests per 15 minutes. No auth required.",
+        "security": [],
+        "x-ms-ratelimit-scope": "10 requests / 15 minutes",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ContactMessageRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Message sent" },
+          "400": { "description": "Validation error" },
+          "429": { "description": "Too many messages" }
+        }
+      }
+    },
+
+    "/api/contact-messages/unread-count": {
+      "get": {
+        "tags": ["Contact Messages"],
+        "summary": "Get unread message count",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Unread count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer", "example": 5 }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/contact-messages/{id}": {
+      "get": {
+        "tags": ["Contact Messages"],
+        "summary": "Get message by ID",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Message details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ContactMessage" } } } },
+          "404": { "description": "Message not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Contact Messages"],
+        "summary": "Delete a message",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Message deleted" },
+          "404": { "description": "Message not found" }
+        }
+      }
+    },
+
+    "/api/contact-messages/{id}/read": {
+      "patch": {
+        "tags": ["Contact Messages"],
+        "summary": "Mark message as read",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Marked as read" }
+        }
+      }
+    },
+
+    "/api/contact-messages/{id}/unread": {
+      "patch": {
+        "tags": ["Contact Messages"],
+        "summary": "Mark message as unread",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Marked as unread" }
+        }
+      }
+    },
+
+    "/api/footer/": {
+      "get": {
+        "tags": ["Footer"],
+        "summary": "Get footer content",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Footer content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "_id": { "type": "string" },
+                    "footerLogo": { "type": "string" },
+                    "copyright": { "type": "string" },
+                    "links": { "type": "array", "items": { "type": "object" } },
+                    "socialLinks": { "type": "object" },
+                    "updatedAt": { "type": "string", "format": "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Footer"],
+        "summary": "Update footer content",
+        "description": "Accepts multipart/form-data with optional footerLogo file",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "footerLogo": { "type": "string", "format": "binary" },
+                  "copyright": { "type": "string" },
+                  "links": { "type": "string", "description": "JSON array of link objects" },
+                  "socialLinks": { "type": "string", "description": "JSON object of social links" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Footer updated" }
+        }
+      }
+    },
+
+    "/api/site-settings/": {
+      "get": {
+        "tags": ["Site Settings"],
+        "summary": "Get global site settings",
+        "security": [],
+        "responses": {
+          "200": { "description": "Site settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SiteSettings" } } } }
+        }
+      },
+      "put": {
+        "tags": ["Site Settings"],
+        "summary": "Update site settings",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SiteSettings" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Site settings updated" }
+        }
+      }
+    },
+
+    "/api/settings/": {
+      "get": {
+        "tags": ["Settings"],
+        "summary": "Get app settings",
+        "security": [],
+        "responses": {
+          "200": { "description": "Settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Settings" } } } }
+        }
+      },
+      "put": {
+        "tags": ["Settings"],
+        "summary": "Update app settings",
+        "description": "Accepts multipart/form-data with optional logo and favicon files",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "logo": { "type": "string", "format": "binary" },
+                  "favicon": { "type": "string", "format": "binary" },
+                  "siteName": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Settings updated" }
+        }
+      }
+    },
+
+    "/api/settings/appearance": {
+      "get": {
+        "tags": ["Settings"],
+        "summary": "Get global appearance settings",
+        "security": [],
+        "responses": {
+          "200": { "description": "Appearance settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Appearance" } } } }
+        }
+      },
+      "patch": {
+        "tags": ["Settings"],
+        "summary": "Update global appearance",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/Appearance" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Appearance updated" }
+        }
+      }
+    },
+
+    "/api/media/upload": {
+      "post": {
+        "tags": ["Media"],
+        "summary": "Upload media file (image)",
+        "description": "Uploads to Cloudinary. Requires super admin.",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": { "type": "string", "format": "binary", "description": "Image file" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "File uploaded" },
+          "400": { "description": "Invalid file" }
+        }
+      }
+    },
+
+    "/api/media/upload-document": {
+      "post": {
+        "tags": ["Media"],
+        "summary": "Upload document file",
+        "description": "Uploads to Cloudinary. Requires super admin.",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": { "type": "string", "format": "binary", "description": "Document file (PDF, DOC, etc.)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Document uploaded" },
+          "400": { "description": "Invalid file" }
+        }
+      }
+    },
+
+    "/api/media/": {
+      "get": {
+        "tags": ["Media"],
+        "summary": "List all media items",
+        "security": [],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } },
+          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["image", "document", "video"] } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Media list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/PaginatedResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "media": { "type": "array", "items": { "$ref": "#/components/schemas/MediaItem" } }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/media/{id}": {
+      "get": {
+        "tags": ["Media"],
+        "summary": "Get media item by ID",
+        "security": [],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Media details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MediaItem" } } } },
+          "404": { "description": "Media not found" }
+        }
+      },
+      "put": {
+        "tags": ["Media"],
+        "summary": "Update media metadata",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "filename": { "type": "string" },
+                  "alt": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Media updated" }
+        }
+      },
+      "delete": {
+        "tags": ["Media"],
+        "summary": "Delete media item",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Media deleted" },
+          "404": { "description": "Media not found" }
+        }
+      }
+    },
+
+    "/api/navigation": {
+      "get": {
+        "tags": ["Navigation"],
+        "summary": "Get all navigation items",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Navigation list",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Navigation" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Navigation"],
+        "summary": "Create a navigation item",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NavigationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Navigation item created" }
+        }
+      }
+    },
+
+    "/api/navigation/{id}": {
+      "put": {
+        "tags": ["Navigation"],
+        "summary": "Update a navigation item",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/NavigationRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Navigation item updated" }
+        }
+      },
+      "delete": {
+        "tags": ["Navigation"],
+        "summary": "Delete a navigation item",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Navigation item deleted" }
+        }
+      }
+    },
+
+    "/api/navigation-reorder": {
+      "put": {
+        "tags": ["Navigation"],
+        "summary": "Reorder navigation items",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["orderedIds"],
+                "properties": {
+                  "orderedIds": { "type": "array", "items": { "type": "string" } }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Navigation reordered" }
+        }
+      }
+    },
+
+    "/api/navbar-settings": {
+      "get": {
+        "tags": ["Navigation"],
+        "summary": "Get navbar settings",
+        "security": [],
+        "responses": {
+          "200": {
+            "description": "Navbar settings",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "logo": { "type": "string" },
+                    "showLogo": { "type": "boolean" },
+                    "style": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Navigation"],
+        "summary": "Update navbar settings",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "logo": { "type": "string" },
+                  "showLogo": { "type": "boolean" },
+                  "style": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Navbar settings updated" }
+        }
+      }
+    },
+
+    "/api/custom-pages": {
+      "get": {
+        "tags": ["Custom Pages"],
+        "summary": "List all custom pages (admin)",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } },
+          { "name": "search", "in": "query", "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom page list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/PaginatedResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "pages": { "type": "array", "items": { "$ref": "#/components/schemas/CustomPage" } }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Custom Pages"],
+        "summary": "Create a custom page",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CustomPageRequest" }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Custom page created" },
+          "400": { "description": "Validation error" }
+        }
+      }
+    },
+
+    "/api/custom-pages/{id}": {
+      "get": {
+        "tags": ["Custom Pages"],
+        "summary": "Get custom page by ID (admin)",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Custom page details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/CustomPage" } } } },
+          "404": { "description": "Page not found" }
+        }
+      },
+      "put": {
+        "tags": ["Custom Pages"],
+        "summary": "Update a custom page",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/CustomPageRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Custom page updated" }
+        }
+      },
+      "delete": {
+        "tags": ["Custom Pages"],
+        "summary": "Delete a custom page",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Custom page deleted" }
+        }
+      }
+    },
+
+    "/api/custom-pages/{id}/status": {
+      "patch": {
+        "tags": ["Custom Pages"],
+        "summary": "Toggle custom page published status",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Status toggled" }
+        }
+      }
+    },
+
+    "/api/custom-pages/public": {
+      "get": {
+        "tags": ["Custom Pages Public"],
+        "summary": "List published custom pages (public)",
+        "security": [],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20, "maximum": 50 } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Published custom pages",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "totalCount": { "type": "integer" },
+                    "pages": { "type": "array", "items": { "$ref": "#/components/schemas/CustomPage" } },
+                    "pagination": {
+                      "type": "object",
+                      "properties": {
+                        "page": { "type": "integer" },
+                        "limit": { "type": "integer" },
+                        "totalPages": { "type": "integer" },
+                        "hasMore": { "type": "boolean" }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/custom-pages/public/{slug}": {
+      "get": {
+        "tags": ["Custom Pages Public"],
+        "summary": "Get custom page by slug (public)",
+        "security": [],
+        "parameters": [
+          { "name": "slug", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Custom page content",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "page": { "$ref": "#/components/schemas/CustomPage" }
+                  }
+                }
+              }
+            }
+          },
+          "404": { "description": "Page not found" }
+        }
+      }
+    },
+
+    "/api/analytics/log-visit": {
+      "post": {
+        "tags": ["Analytics"],
+        "summary": "Log a page visit",
+        "description": "Rate limited: 60 requests per minute. No auth required.",
+        "security": [],
+        "x-ms-ratelimit-scope": "60 requests / 1 minute",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "page": { "type": "string", "example": "/projects" },
+                  "referrer": { "type": "string" },
+                  "userAgent": { "type": "string" },
+                  "ip": { "type": "string" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Visit logged" },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
+
+    "/api/analytics/log-engagement": {
+      "post": {
+        "tags": ["Analytics"],
+        "summary": "Log an engagement event",
+        "description": "Rate limited: 60 requests per minute. No auth required.",
+        "security": [],
+        "x-ms-ratelimit-scope": "60 requests / 1 minute",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "event": { "type": "string", "example": "click" },
+                  "target": { "type": "string" },
+                  "page": { "type": "string" },
+                  "duration": { "type": "number", "description": "Time in seconds" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Engagement logged" },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    },
+
+    "/api/analytics/metrics": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get analytics metrics",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "startDate", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "endDate", "in": "query", "schema": { "type": "string", "format": "date" } }
+        ],
+        "responses": {
+          "200": { "description": "Analytics metrics", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Metrics" } } } }
+        }
+      }
+    },
+
+    "/api/analytics/stats": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get dashboard stats",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Dashboard stats",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "totalVisits": { "type": "integer" },
+                    "todayVisits": { "type": "integer" },
+                    "totalProjects": { "type": "integer" },
+                    "totalMessages": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/analytics/analytics-dashboard": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get full analytics dashboard data",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "period", "in": "query", "schema": { "type": "string", "enum": ["7d", "30d", "90d"], "default": "30d" } }
+        ],
+        "responses": {
+          "200": { "description": "Full analytics dashboard" }
+        }
+      }
+    },
+
+    "/api/analytics/clear": {
+      "delete": {
+        "tags": ["Analytics"],
+        "summary": "Clear all analytics data",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "Analytics cleared" }
+        }
+      }
+    },
+
+    "/api/backups/": {
+      "get": {
+        "tags": ["Backups"],
+        "summary": "List all backups",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Backup list",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Backup" } }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": ["Backups"],
+        "summary": "Create a new backup",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "201": { "description": "Backup created" }
+        }
+      }
+    },
+
+    "/api/backups/upload": {
+      "post": {
+        "tags": ["Backups"],
+        "summary": "Upload a backup file",
+        "description": "Max file size: 10MB. Uses memory storage.",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": { "type": "string", "format": "binary", "description": "Backup file (JSON)" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": { "description": "Backup uploaded" },
+          "400": { "description": "Invalid backup file" }
+        }
+      }
+    },
+
+    "/api/backups/{id}": {
+      "get": {
+        "tags": ["Backups"],
+        "summary": "Get backup details",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Backup details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Backup" } } } },
+          "404": { "description": "Backup not found" }
+        }
+      },
+      "delete": {
+        "tags": ["Backups"],
+        "summary": "Delete a backup",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Backup deleted" },
+          "404": { "description": "Backup not found" }
+        }
+      }
+    },
+
+    "/api/backups/{id}/download": {
+      "get": {
+        "tags": ["Backups"],
+        "summary": "Download a backup file",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Backup file download", "content": { "application/octet-stream": { "schema": { "type": "string", "format": "binary" } } } },
+          "404": { "description": "Backup not found" }
+        }
+      }
+    },
+
+    "/api/backups/{id}/restore": {
+      "post": {
+        "tags": ["Backups"],
+        "summary": "Restore from a backup",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Backup restored" },
+          "404": { "description": "Backup not found" }
+        }
+      }
+    },
+
+    "/api/activity-logs/": {
+      "get": {
+        "tags": ["Activity Logs"],
+        "summary": "List activity logs",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } },
+          { "name": "action", "in": "query", "schema": { "type": "string" } },
+          { "name": "entity", "in": "query", "schema": { "type": "string" } },
+          { "name": "startDate", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "endDate", "in": "query", "schema": { "type": "string", "format": "date" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Activity log list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/PaginatedResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "logs": { "type": "array", "items": { "$ref": "#/components/schemas/ActivityLog" } }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Activity Logs"],
+        "summary": "Clear activity logs",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "before", "in": "query", "schema": { "type": "string", "format": "date", "description": "Clear logs before this date" } }
+        ],
+        "responses": {
+          "200": { "description": "Logs cleared" }
+        }
+      }
+    },
+
+    "/api/activity-logs/actions": {
+      "get": {
+        "tags": ["Activity Logs"],
+        "summary": "Get distinct action types",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of action types",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/activity-logs/export": {
+      "get": {
+        "tags": ["Activity Logs"],
+        "summary": "Export activity logs",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "format", "in": "query", "schema": { "type": "string", "enum": ["json", "csv"], "default": "json" } },
+          { "name": "startDate", "in": "query", "schema": { "type": "string", "format": "date" } },
+          { "name": "endDate", "in": "query", "schema": { "type": "string", "format": "date" } }
+        ],
+        "responses": {
+          "200": { "description": "Exported logs file" }
+        }
+      }
+    },
+
+    "/api/activity-logs/{id}": {
+      "get": {
+        "tags": ["Activity Logs"],
+        "summary": "Get activity log by ID",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Log details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ActivityLog" } } } },
+          "404": { "description": "Log not found" }
+        }
+      }
+    },
+
+    "/api/import-export/export": {
+      "get": {
+        "tags": ["Import/Export"],
+        "summary": "Export all data",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "type", "in": "query", "schema": { "type": "string", "enum": ["all", "projects", "skills", "settings"], "default": "all" } },
+          { "name": "format", "in": "query", "schema": { "type": "string", "enum": ["json", "csv"], "default": "json" } }
+        ],
+        "responses": {
+          "200": { "description": "Exported data file" }
+        }
+      }
+    },
+
+    "/api/import-export/preview": {
+      "post": {
+        "tags": ["Import/Export"],
+        "summary": "Preview import data before applying",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": { "type": "string", "format": "binary", "description": "Data file to preview" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Import preview with validation" }
+        }
+      }
+    },
+
+    "/api/import-export/import": {
+      "post": {
+        "tags": ["Import/Export"],
+        "summary": "Execute data import",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "data": { "type": "object", "description": "Import data payload" },
+                  "overwrite": { "type": "boolean", "default": false }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Import completed" }
+        }
+      }
+    },
+
+    "/api/import-export/import-ups": {
+      "post": {
+        "tags": ["Import/Export"],
+        "summary": "Import UPS snapshot",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "required": ["file"],
+                "properties": {
+                  "file": { "type": "string", "format": "binary" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "UPS snapshot imported" }
+        }
+      }
+    },
+
+    "/api/system-config/": {
+      "get": {
+        "tags": ["System Config"],
+        "summary": "Get system configuration",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "System config", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SystemConfig" } } } }
+        }
+      },
+      "put": {
+        "tags": ["System Config"],
+        "summary": "Update system configuration",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SystemConfig" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "System config updated" }
+        }
+      }
+    },
+
+    "/api/system-config/trigger-backup": {
+      "post": {
+        "tags": ["System Config"],
+        "summary": "Trigger manual backup",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "Backup triggered" }
+        }
+      }
+    },
+
+    "/api/system-config/trigger-health-check": {
+      "post": {
+        "tags": ["System Config"],
+        "summary": "Trigger manual health check",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "Health check triggered" }
+        }
+      }
+    },
+
+    "/api/maintenance/health": {
+      "get": {
+        "tags": ["Maintenance"],
+        "summary": "System health check",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "System health info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string" },
+                    "uptime": { "type": "number" },
+                    "memoryUsage": { "type": "object" },
+                    "cpuUsage": { "type": "object" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/maintenance/storage": {
+      "get": {
+        "tags": ["Maintenance"],
+        "summary": "Get storage usage",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Storage info",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "uploadsSize": { "type": "string" },
+                    "backupSize": { "type": "string" },
+                    "totalSize": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/maintenance/collections": {
+      "get": {
+        "tags": ["Maintenance"],
+        "summary": "Get MongoDB collection stats",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Collection statistics",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "name": { "type": "string" },
+                      "count": { "type": "integer" },
+                      "size": { "type": "string" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/maintenance/indexes": {
+      "get": {
+        "tags": ["Maintenance"],
+        "summary": "Get index status for all collections",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "Index information per collection" }
+        }
+      }
+    },
+
+    "/api/maintenance/orphan-files": {
+      "get": {
+        "tags": ["Maintenance"],
+        "summary": "Find orphan files (files not referenced in DB)",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of orphan files",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "orphanFiles": { "type": "array", "items": { "type": "string" } },
+                    "totalSize": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/notifications/": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "List notifications",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
+          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 20 } },
+          { "name": "read", "in": "query", "schema": { "type": "boolean" } }
+        ],
+        "responses": {
+          "200": {
+            "description": "Notification list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "allOf": [
+                    { "$ref": "#/components/schemas/PaginatedResponse" },
+                    {
+                      "type": "object",
+                      "properties": {
+                        "notifications": { "type": "array", "items": { "$ref": "#/components/schemas/Notification" } }
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/notifications/unread-count": {
+      "get": {
+        "tags": ["Notifications"],
+        "summary": "Get unread notification count",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Unread count",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "count": { "type": "integer" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/notifications/{id}/read": {
+      "patch": {
+        "tags": ["Notifications"],
+        "summary": "Mark notification as read",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Notification marked as read" }
+        }
+      }
+    },
+
+    "/api/notifications/mark-all-read": {
+      "post": {
+        "tags": ["Notifications"],
+        "summary": "Mark all notifications as read",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "All notifications marked as read" }
+        }
+      }
+    },
+
+    "/api/notifications/{id}": {
+      "delete": {
+        "tags": ["Notifications"],
+        "summary": "Delete a notification",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "Notification deleted" },
+          "404": { "description": "Notification not found" }
+        }
+      }
+    },
+
+    "/api/security/settings": {
+      "get": {
+        "tags": ["Security"],
+        "summary": "Get security settings",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "Security settings", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SecuritySettings" } } } }
+        }
+      },
+      "put": {
+        "tags": ["Security"],
+        "summary": "Update security settings",
+        "security": [{ "cookieAuth": [] }],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/SecuritySettings" }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Security settings updated" }
+        }
+      }
+    },
+
+    "/api/security/sessions": {
+      "get": {
+        "tags": ["Security"],
+        "summary": "List active sessions",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Active sessions",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Session" } }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Security"],
+        "summary": "Revoke all sessions (force re-login)",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": { "description": "All sessions revoked" }
+        }
+      }
+    },
+
+    "/api/security/sessions/{sessionIndex}": {
+      "delete": {
+        "tags": ["Security"],
+        "summary": "Revoke a specific session",
+        "security": [{ "cookieAuth": [] }],
+        "parameters": [
+          { "name": "sessionIndex", "in": "path", "required": true, "schema": { "type": "integer" }, "description": "Session index from the sessions list" }
+        ],
+        "responses": {
+          "200": { "description": "Session revoked" },
+          "404": { "description": "Session not found" }
+        }
+      }
+    },
+
+    "/api/security/audit": {
+      "get": {
+        "tags": ["Security"],
+        "summary": "Get security audit log",
+        "security": [{ "cookieAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "Security audit entries",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "event": { "type": "string" },
+                      "ip": { "type": "string" },
+                      "userAgent": { "type": "string" },
+                      "timestamp": { "type": "string", "format": "date-time" }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+
+    "/api/chat": {
+      "post": {
+        "tags": ["AI Chat"],
+        "summary": "Send chat message to AI copilot",
+        "description": "Rate limited: 30 requests per minute (configurable via CHAT_REQUEST_LIMIT). Uses Gemini AI.",
+        "security": [],
+        "x-ms-ratelimit-scope": "30 requests / 1 minute",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": { "$ref": "#/components/schemas/ChatRequest" }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "AI response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "success": { "type": "boolean" },
+                    "response": { "type": "string", "description": "AI generated response" }
+                  }
+                }
+              }
+            }
+          },
+          "429": { "description": "Rate limit exceeded" }
+        }
+      }
+    }
+  }
+}

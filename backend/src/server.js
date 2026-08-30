@@ -3,6 +3,8 @@ const express = require('express')
 const helmet = require('helmet')
 const cookieParser = require('cookie-parser')
 const cors = require('cors')
+const swaggerUi = require('swagger-ui-express')
+const swaggerDocument = require('../swagger.json')
 const config = require('./infrastructure/config')
 const connectDB = require('./infrastructure/database/db')
 const { initSocket } = require('./infrastructure/socket')
@@ -128,6 +130,11 @@ app.use('/api', customPageAdminRoutes)
 app.use('/api', customPagePublicRoutes)
 
 app.use('/uploads', express.static('uploads'))
+
+app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
+  customSiteTitle: 'Portkiro API Docs',
+  customCss: '.swagger-ui .topbar { display: none }',
+}))
 
 app.use((_req, res) => {
   res.status(404).json({ error: 'Route not found' })
