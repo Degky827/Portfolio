@@ -10,7 +10,9 @@ const messageSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 }, { versionKey: false })
 
-// Provide a virtual `read` alias for compatibility with existing frontend
+messageSchema.index({ isRead: 1 })
+messageSchema.index({ createdAt: -1 })
+
 messageSchema.virtual('read').get(function getRead() {
   return this.isRead
 })
