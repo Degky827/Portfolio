@@ -129,6 +129,8 @@ app.use('/api', navigationRoutes)
 app.use('/api', customPageAdminRoutes)
 app.use('/api', customPagePublicRoutes)
 
+const path = require('path')
+
 app.use('/uploads', express.static('uploads'))
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
@@ -136,8 +138,14 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   customCss: '.swagger-ui .topbar { display: none }',
 }))
 
+const publicDir = path.join(__dirname, '..', 'public')
+app.use(express.static(publicDir))
+
 app.use((_req, res) => {
-  res.status(404).json({ error: 'Route not found' })
+  if (_req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'Route not found' })
+  }
+  res.sendFile(path.join(publicDir, 'index.html'))
 })
 
 app.use((err, _req, res, _next) => {
