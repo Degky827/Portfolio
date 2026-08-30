@@ -54,6 +54,9 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+      args:
+        VITE_GOOGLE_CLIENT_ID: ${VITE_GOOGLE_CLIENT_ID:-}
+        VITE_API_URL: ${VITE_API_URL:-}
     container_name: portkiro-app
     restart: unless-stopped
     ports:
