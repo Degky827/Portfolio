@@ -1,15 +1,5 @@
 const mongoose = require('mongoose')
-
-function slugify(text) {
-  return text
-    .toString()
-    .toLowerCase()
-    .trim()
-    .replace(/\s+/g, '-')
-    .replace(/[^\w-]+/g, '')
-    .replace(/--+/g, '-')
-    .replace(/^-+|-+$/g, '')
-}
+const { slugify } = require('../utilities/slugify')
 
 const sectionSchema = new mongoose.Schema(
   {
