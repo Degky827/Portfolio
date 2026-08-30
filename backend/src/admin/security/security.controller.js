@@ -2,7 +2,7 @@ const User = require('../../shared/models/User')
 const Session = require('../../shared/models/Session')
 const SecuritySettings = require('../../shared/models/SecuritySettings')
 const AuditLog = require('../../shared/models/AuditLog')
-const { parseUserAgent } = require('../../shared/utilities/userAgentParser')
+const { parseUserAgent } = require('../../shared/utilities/parseUserAgent')
 
 async function getSecuritySettings(_req, res) {
   try {

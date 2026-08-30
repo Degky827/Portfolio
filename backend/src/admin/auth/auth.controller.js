@@ -5,7 +5,7 @@ const User = require('../../shared/models/User')
 const AuditLog = require('../../shared/models/AuditLog')
 const config = require('../../infrastructure/config')
 const { generateAccessToken, generateRefreshToken } = require('../../shared/utilities/tokenUtils')
-const { parseUserAgent } = require('../../shared/utilities/userAgentParser')
+const { parseUserAgent } = require('../../shared/utilities/parseUserAgent')
 
 const MAX_FAILED_ATTEMPTS = 5
 const LOCK_DURATION_MINUTES = 15
