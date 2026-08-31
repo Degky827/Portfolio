@@ -7,8 +7,10 @@ export async function login(email, password) {
   return data
 }
 
-export async function verify2FA(email, totpCode, rememberMe) {
-  const { data } = await api.post('/auth/verify-2fa', { email, totpCode, rememberMe })
+export async function verify2FA(tempToken, totpCode, rememberMe) {
+  const { data } = await api.post('/auth/verify-2fa', { totpCode, rememberMe }, {
+    headers: { Authorization: `Bearer ${tempToken}` },
+  })
   return data
 }
 

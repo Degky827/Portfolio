@@ -8,6 +8,7 @@ const CSRF_SKIP_PATHS = [
   '/api/auth/verify-2fa',
   '/api/auth/google',
   '/api/auth/refresh',
+  '/api/auth/logout',
   '/api/analytics/log-visit',
   '/api/analytics/log-engagement',
 ]
@@ -57,6 +58,10 @@ function csrfProtection(req, res, next) {
 
     res.setHeader(CSRF_HEADER_NAME, payload)
 
+    return next()
+  }
+
+  if (req.headers.authorization?.startsWith('Bearer ')) {
     return next()
   }
 
