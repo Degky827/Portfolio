@@ -128,9 +128,10 @@ const CertificateCard = memo(function CertificateCard({
 
           {/* Title */}
           <h3
-            className="text-sm sm:text-base md:text-lg font-bold text-center leading-tight transition-all duration-300"
+            className="text-sm sm:text-base md:text-lg font-bold text-center leading-tight transition-all duration-300 group-hover:tracking-wide"
             style={{
               color: 'var(--text-primary)',
+              opacity: 0.6,
               textShadow: isHovered ? '0 0 16px rgba(34,211,238,0.3)' : 'none',
             }}
           >
