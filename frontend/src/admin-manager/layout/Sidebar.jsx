@@ -10,7 +10,6 @@ import {
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
-import { canAccess } from '../authentication/RoleGuard'
 import useUnreadMessages from '../../shared/hooks/useUnreadMessages'
 import { getMediaUrl } from '../../shared/services/api'
 
@@ -51,8 +50,8 @@ const navGroups = [
     collapsible: false,
     section: true,
     items: [
-      { path: '/admin/dashboard', label: 'Overview', icon: Eye, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/analytics', label: 'Analytics', icon: BarChart3, roles: ['super_admin', 'admin'] },
+      { path: '/admin/dashboard', label: 'Overview', icon: Eye },
+      { path: '/admin/analytics', label: 'Analytics', icon: BarChart3 },
     ],
   },
   {
@@ -62,15 +61,15 @@ const navGroups = [
     section: true,
     collapsible: true,
     items: [
-      { path: '/admin/navigation', label: 'Navigation', icon: Menu, roles: ['super_admin', 'admin'] },
-      { path: '/admin/home', label: 'Home', icon: Home, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/about', label: 'About', icon: UserCircle, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/skills', label: 'Skills', icon: Code2, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/projects', label: 'Projects', icon: FolderKanban, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/media', label: 'Media Library', icon: Image, roles: ['super_admin', 'admin'] },
-      { path: '/admin/footer', label: 'Footer', icon: FileText, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/messages', label: 'Messages', icon: MessageSquare, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/custom-pages', label: 'Custom Pages', icon: Globe, roles: ['super_admin', 'admin'] },
+      { path: '/admin/navigation', label: 'Navigation', icon: Menu },
+      { path: '/admin/home', label: 'Home', icon: Home },
+      { path: '/admin/about', label: 'About', icon: UserCircle },
+      { path: '/admin/skills', label: 'Skills', icon: Code2 },
+      { path: '/admin/projects', label: 'Projects', icon: FolderKanban },
+      { path: '/admin/media', label: 'Media Library', icon: Image },
+      { path: '/admin/footer', label: 'Footer', icon: FileText },
+      { path: '/admin/messages', label: 'Messages', icon: MessageSquare },
+      { path: '/admin/custom-pages', label: 'Custom Pages', icon: Globe },
     ],
   },
   {
@@ -80,11 +79,11 @@ const navGroups = [
     section: true,
     collapsible: true,
     items: [
-      { path: '/admin/backup', label: 'Backup & Restore', icon: HardDrive, roles: ['super_admin', 'admin'] },
-      { path: '/admin/import-export', label: 'Import / Export', icon: Download, roles: ['super_admin', 'admin'] },
-      { path: '/admin/maintenance', label: 'Maintenance', icon: HeartPulse, roles: ['super_admin'] },
-      { path: '/admin/activity-logs', label: 'Activity Logs', icon: Activity, roles: ['super_admin', 'admin'] },
-      { path: '/admin/security', label: 'Security', icon: Lock, roles: ['super_admin', 'admin'] },
+      { path: '/admin/backup', label: 'Backup & Restore', icon: HardDrive },
+      { path: '/admin/import-export', label: 'Import / Export', icon: Download },
+      { path: '/admin/maintenance', label: 'Maintenance', icon: HeartPulse },
+      { path: '/admin/activity-logs', label: 'Activity Logs', icon: Activity },
+      { path: '/admin/security', label: 'Security', icon: Lock },
     ],
   },
   {
@@ -94,8 +93,8 @@ const navGroups = [
     section: true,
     collapsible: false,
     items: [
-      { path: '/admin/profile', label: 'Profile', icon: User, roles: ['super_admin', 'admin', 'editor'] },
-      { path: '/admin/theme', label: 'Appearance', icon: Palette, roles: ['super_admin', 'admin'] },
+      { path: '/admin/profile', label: 'Profile', icon: User },
+      { path: '/admin/theme', label: 'Appearance', icon: Palette },
     ],
   },
 ]
@@ -127,7 +126,7 @@ const navItemVariants = {
 
 export default function Sidebar() {
   const { mobileOpen, closeMobile, collapsed, toggleCollapsed } = useAdmin()
-  const { user, userRole, logout } = useAuth()
+  const { user, logout } = useAuth()
   const location = useLocation()
   const [openMenus, setOpenMenus] = useState({ cms: true, system: false })
   const [searchQuery, setSearchQuery] = useState('')
@@ -159,22 +158,17 @@ export default function Sidebar() {
   const filteredGroups = useMemo(() => {
     if (!isSearching) {
       return navGroups
-        .map((g) => ({
-          ...g,
-          items: g.items.filter((item) => canAccess(userRole, item.roles)),
-        }))
-        .filter((g) => g.items.length > 0)
     }
     const q = searchQuery.toLowerCase()
     return navGroups
       .map((g) => ({
         ...g,
         items: g.items.filter(
-          (item) => canAccess(userRole, item.roles) && item.label.toLowerCase().includes(q),
+          (item) => item.label.toLowerCase().includes(q),
         ),
       }))
       .filter((g) => g.items.length > 0)
-  }, [userRole, searchQuery, isSearching])
+  }, [searchQuery, isSearching])
 
   const sidebarContent = (
     <div className="flex flex-col h-full">
@@ -214,7 +208,7 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      <ProfileFooter collapsed={collapsed} user={user} userRole={userRole} onLogout={logout} />
+      <ProfileFooter collapsed={collapsed} user={user} onLogout={logout} />
     </div>
   )
 
@@ -285,7 +279,7 @@ export default function Sidebar() {
                   />
                 ))}
               </nav>
-              <ProfileFooter collapsed={false} user={user} userRole={userRole} onLogout={logout} />
+              <ProfileFooter collapsed={false} user={user} onLogout={logout} />
             </motion.aside>
           </>
         )}
@@ -618,7 +612,7 @@ function DesktopHeader({ collapsed, onToggle, user }) {
   )
 }
 
-function ProfileFooter({ collapsed, user, userRole, onLogout }) {
+function ProfileFooter({ collapsed, user, onLogout }) {
   const [open, setOpen] = useState(false)
   const menuRef = useRef(null)
 
@@ -695,9 +689,6 @@ function ProfileFooter({ collapsed, user, userRole, onLogout }) {
           <div className="flex-1 text-left min-w-0">
             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
               {user?.displayName || user?.name || 'Account'}
-            </p>
-            <p className="text-[10px] text-gray-400 dark:text-gray-500 capitalize truncate">
-              {userRole?.replace('_', ' ') || 'Admin'}
             </p>
           </div>
           <motion.div

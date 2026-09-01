@@ -9,19 +9,10 @@ import { getUsers, createUser, updateUser, deleteUser, getUser } from '../../sha
 import ConfirmModal from '../shared/ConfirmModal'
 import Toast from '../shared/Toast'
 
-const roles = ['super_admin', 'admin', 'editor']
-
-const roleBadgeClass = {
-  super_admin: 'bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400',
-  admin: 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400',
-  editor: 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400',
-}
-
 const initialForm = {
   name: '',
   email: '',
   password: '',
-  role: 'editor',
 }
 
 export default function UserManagement() {
@@ -29,7 +20,6 @@ export default function UserManagement() {
   const [users, setUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
-  const [roleFilter, setRoleFilter] = useState('')
   const [statusFilter, setStatusFilter] = useState('')
   const [pagination, setPagination] = useState({ page: 1, totalPages: 1, totalCount: 0 })
   const [modalOpen, setModalOpen] = useState(false)
@@ -51,7 +41,6 @@ export default function UserManagement() {
     try {
       const params = { page, limit: 10 }
       if (search) params.search = search
-      if (roleFilter) params.role = roleFilter
       if (statusFilter) params.status = statusFilter
       const data = await getUsers(params)
       setUsers(data.users)
@@ -61,11 +50,11 @@ export default function UserManagement() {
     } finally {
       setLoading(false)
     }
-  }, [search, roleFilter, statusFilter])
+  }, [search, statusFilter])
 
   useEffect(() => {
     fetchUsers(1)
-  }, [search, roleFilter, statusFilter])
+  }, [search, statusFilter])
 
   function openCreateModal() {
     setEditingUser(null)
@@ -78,7 +67,7 @@ export default function UserManagement() {
 
   function openEditModal(user) {
     setEditingUser(user)
-    setForm({ name: user.name, email: user.email, password: '', role: user.role })
+    setForm({ name: user.name, email: user.email, password: '' })
     setFormErrors({})
     setServerError('')
     setCreatedUserData(null)
@@ -106,7 +95,7 @@ export default function UserManagement() {
     setServerError('')
     try {
       if (editingUser) {
-        const payload = { name: form.name.trim(), email: form.email.trim(), role: form.role }
+        const payload = { name: form.name.trim(), email: form.email.trim() }
         if (form.password) payload.password = form.password
         await updateUser(editingUser._id, payload)
         setToast({ message: 'User updated successfully.', type: 'success' })
@@ -197,16 +186,6 @@ export default function UserManagement() {
           />
         </div>
         <select
-          value={roleFilter}
-          onChange={(e) => setRoleFilter(e.target.value)}
-          className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
-        >
-          <option value="">All Roles</option>
-          {roles.map((r) => (
-            <option key={r} value={r}>{r.replace('_', ' ')}</option>
-          ))}
-        </select>
-        <select
           value={statusFilter}
           onChange={(e) => setStatusFilter(e.target.value)}
           className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
@@ -242,7 +221,6 @@ export default function UserManagement() {
               <thead>
                 <tr className="bg-gray-50 dark:bg-slate-800/50 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400">
                   <th className="text-left px-6 py-4">User</th>
-                  <th className="text-left px-6 py-4">Role</th>
                   <th className="text-left px-6 py-4 hidden md:table-cell">Status</th>
                   <th className="text-center px-6 py-4 hidden md:table-cell">2FA</th>
                   <th className="text-left px-6 py-4 hidden lg:table-cell">Last Login</th>
@@ -262,12 +240,6 @@ export default function UserManagement() {
                           <p className="text-xs text-gray-400">{u.email}</p>
                         </div>
                       </div>
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold ${roleBadgeClass[u.role] || roleBadgeClass.editor}`}>
-                        <Shield size={12} />
-                        {u.role.replace('_', ' ')}
-                      </span>
                     </td>
                     <td className="px-6 py-4 hidden md:table-cell">
                       <span className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-bold ${u.isActive ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400' : 'bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400'}`}>
@@ -313,15 +285,13 @@ export default function UserManagement() {
                             >
                               {u.isActive ? <X size={16} /> : <Shield size={16} />}
                             </button>
-                            {u.role !== 'super_admin' && (
-                              <button
-                                onClick={() => setDeleteTarget(u)}
-                                className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                                title="Delete user"
-                              >
-                                <Trash2 size={16} />
-                              </button>
-                            )}
+                            <button
+                              onClick={() => setDeleteTarget(u)}
+                              className="p-2 rounded-lg text-gray-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
+                              title="Delete user"
+                            >
+                              <Trash2 size={16} />
+                            </button>
                           </>
                         )}
                       </div>
@@ -472,18 +442,6 @@ export default function UserManagement() {
                     className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 ${formErrors.password ? 'border-red-500' : 'border-gray-300 dark:border-slate-700'}`}
                   />
                   {formErrors.password && <p className="text-red-500 text-xs mt-1">{formErrors.password}</p>}
-                </div>
-                <div>
-                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Role</label>
-                  <select
-                    value={form.role}
-                    onChange={(e) => setForm((p) => ({ ...p, role: e.target.value }))}
-                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
-                  >
-                    {roles.map((r) => (
-                      <option key={r} value={r}>{r.replace('_', ' ')}</option>
-                    ))}
-                  </select>
                 </div>
                 <div className="text-xs text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-slate-800/50 rounded-xl p-3 flex items-start gap-2">
                   <Smartphone size={14} className="shrink-0 mt-0.5" />
