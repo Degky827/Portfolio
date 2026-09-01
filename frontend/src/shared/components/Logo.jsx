@@ -1,15 +1,11 @@
 import { motion } from 'framer-motion'
-import { useTranslation } from 'react-i18next'
 import { getMediaUrl } from '../services/api'
 
 export default function Logo({ settings, showText = true, linkTo = '#home', onNavClick, className = '' }) {
-  const { i18n } = useTranslation()
-  const isAm = i18n.language === 'am'
   const logoImage = settings?.logoImage || ''
   const logoSvg = settings?.logoSvg || ''
   const logoText = settings?.logoText || ''
-  const brandName = isAm ? (settings?.brandNameAm || settings?.brandName || 'DESALEGN') : (settings?.brandName || 'DESALEGN')
-  const nameAmharic = settings?.nameAmharic || ''
+  const brandName = settings?.brandName || 'DESALEGN'
   const logoEnabled = settings?.logoEnabled !== false
   const logoWidth = settings?.logoWidth || 40
   const logoHeight = settings?.logoHeight || 40
@@ -45,7 +41,7 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center bg-[#6366f1] text-white text-[10px] sm:text-xs font-black">
-            {nameAmharic || brandName.charAt(0)}
+            {brandName.charAt(0)}
           </div>
         )}
       </div>
