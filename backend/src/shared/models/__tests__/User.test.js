@@ -16,7 +16,7 @@ describe('User Model', () => {
 
     expect(user.name).toBe('Test Admin')
     expect(user.email).toBe('admin@test.com')
-    expect(user.role).toBe('editor')
+    expect(user.role).toBe('super_admin')
     expect(user.isActive).toBe(true)
     expect(user.theme).toBe('system')
   })
@@ -91,14 +91,14 @@ describe('User Model', () => {
     expect(validationError.errors.password).toBeDefined()
   })
 
-  it('should default role to editor', () => {
+  it('should default role to super_admin', () => {
     const user = new User({
       name: 'Test',
       email: 'test@test.com',
       password: 'password123',
     })
 
-    expect(user.role).toBe('editor')
+    expect(user.role).toBe('super_admin')
   })
 
   it('should accept valid roles', () => {
