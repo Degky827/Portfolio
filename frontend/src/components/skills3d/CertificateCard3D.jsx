@@ -261,7 +261,6 @@ export default function CertificateCard3D({
   itemVariants,
   onCertClick,
   getMediaUrl,
-  t,
   index = 0,
 }) {
   const color = card.color
@@ -386,14 +385,14 @@ export default function CertificateCard3D({
                     border: `1px solid ${color}30`,
                   }}
                 >
-                  {t('skills.certificateLabel')}
+                  Certificate
                 </span>
               </div>
               <h3 className="text-base sm:text-lg font-bold leading-tight" style={{ color: 'var(--text-primary)' }}>
                 {card.category}
               </h3>
               <p className="text-xs mt-1" style={{ color: 'var(--text-primary)' }}>
-                {t('skills.certificateCount', { count: card.skills.length })}
+                {card.skills.length} {card.skills.length === 1 ? 'certificate' : 'certificates'}
               </p>
             </div>
           </div>

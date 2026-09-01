@@ -335,7 +335,6 @@ export default function StatsDashboard3D({
   technologies,
   certificates,
   categories,
-  t,
 }) {
   const containerRef = useRef(null)
   const isInView = useInView(containerRef, { once: true, margin: '-100px' })
@@ -346,7 +345,7 @@ export default function StatsDashboard3D({
 
   const stats = useMemo(() => [
     {
-      label: t('skills.statTechnologies'),
+      label: 'Technologies',
       value: technologies,
       animatedValue: techCount,
       color: '#06b6d4',
@@ -354,7 +353,7 @@ export default function StatsDashboard3D({
       progress: Math.min((technologies / 50) * 100, 100),
     },
     {
-      label: t('skills.statCertificates'),
+      label: 'Certificates',
       value: certificates,
       animatedValue: certCount,
       color: '#8b5cf6',
@@ -362,14 +361,14 @@ export default function StatsDashboard3D({
       progress: Math.min((certificates / 10) * 100, 100),
     },
     {
-      label: t('skills.statCategories'),
+      label: 'Categories',
       value: categories,
       animatedValue: catCount,
       color: '#22d3ee',
       icon: Layers,
       progress: Math.min((categories / 10) * 100, 100),
     },
-  ], [technologies, certificates, categories, techCount, certCount, catCount, t])
+  ], [technologies, certificates, categories, techCount, certCount, catCount])
 
   return (
     <motion.div
