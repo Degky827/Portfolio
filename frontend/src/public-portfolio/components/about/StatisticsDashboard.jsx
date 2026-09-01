@@ -25,8 +25,6 @@ const accentColors = ['#f59e0b', '#60a5fa', '#34d399', '#8b5cf6', '#22d3ee', '#f
 
 const StatisticsDashboard = memo(function StatisticsDashboard({
   metrics = [],
-  t,
-  isAm,
 }) {
   const containerRef = useRef(null)
 
@@ -60,14 +58,12 @@ const StatisticsDashboard = memo(function StatisticsDashboard({
   // Process metrics with labels
   const processedMetrics = metrics.map((metric, idx) => {
     const defaultLabels = [
-      t('about.metricNetworkDesigner'),
-      t('about.metricHappyClients'),
-      t('about.metricYearsExperience'),
+      'Network Designer',
+      'Happy Clients',
+      'Years Experience',
     ]
     const defaultLabel = defaultLabels[idx] || `Metric ${idx + 1}`
-    const label = isAm
-      ? (metric.titleAm || metric.title || defaultLabel)
-      : (metric.title || defaultLabel)
+    const label = metric.title || defaultLabel
 
     return {
       icon: metric.icon || 'Award',

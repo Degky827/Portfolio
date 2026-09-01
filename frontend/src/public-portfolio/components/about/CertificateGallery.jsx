@@ -12,7 +12,7 @@ import CertificateCard from './CertificateCard'
  * - Depth-based blur for distance realism
  * - Staggered fade-in + zoom-in from depth on scroll
  */
-const CertificateGallery = memo(function CertificateGallery({ certificates = [], t }) {
+const CertificateGallery = memo(function CertificateGallery({ certificates = [] }) {
   const containerRef = useRef(null)
 
   // Mouse-tracking for subtle 3D rotation
@@ -65,7 +65,7 @@ const CertificateGallery = memo(function CertificateGallery({ certificates = [],
       <div className="flex items-center gap-3 mb-6 sm:mb-8">
         <div className="w-1.5 h-1.5 rounded-full bg-cyan-400/60 animate-pulse" />
         <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-primary)' }}>
-          {t('about.certificationsPrefix') || 'Certifications'}
+          I hold certificates in
         </span>
         <div className="flex-1 h-px bg-gradient-to-r from-cyan-500/20 to-transparent" />
         <span className="text-[10px] sm:text-[11px] font-mono" style={{ color: 'var(--text-primary)' }}>
