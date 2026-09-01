@@ -12,7 +12,6 @@ export default function GlassCard({
   onCertClick,
   SkillIcon,
   getMediaUrl,
-  t,
   index = 0,
 }) {
   const color = card.color
@@ -57,7 +56,6 @@ export default function GlassCard({
         itemVariants={itemVariants}
         onCertClick={onCertClick}
         getMediaUrl={getMediaUrl}
-        t={t}
         index={index}
       />
     )
@@ -215,7 +213,7 @@ export default function GlassCard({
               }}
             />
             <span className="text-[11px] font-medium uppercase tracking-wider" style={{ color: 'var(--text-tertiary)' }}>
-              {t('skills.skillCount', { count: card.skills.length })}
+              {card.skills.length} {card.skills.length === 1 ? 'skill' : 'skills'}
             </span>
           </div>
         </div>
