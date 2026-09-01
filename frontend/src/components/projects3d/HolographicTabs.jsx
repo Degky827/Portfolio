@@ -204,7 +204,7 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
             >
               <Icon
                 size={18}
-                style={{ color: isActive ? color : '#94a3b8' }}
+                style={{ color: isActive ? color : '#ffffff' }}
                 className="transition-colors duration-300"
               />
             </div>
@@ -214,7 +214,7 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
             <span
               className="text-sm sm:text-base font-bold tracking-wide transition-all duration-300 block"
               style={{
-                color: isActive ? color : '#94a3b8',
+                color: isActive ? color : '#ffffff',
                 textShadow: isActive ? `0 0 20px ${color}50` : 'none',
               }}
             >
@@ -232,7 +232,7 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
               className="ml-auto px-2.5 py-1 rounded-full text-[11px] font-bold transition-all duration-300"
               style={{
                 background: isActive ? `${color}20` : 'rgba(255,255,255,0.05)',
-                color: isActive ? color : '#64748b',
+                color: isActive ? color : '#ffffff',
                 border: `1px solid ${isActive ? `${color}30` : 'rgba(255,255,255,0.08)'}`,
                 boxShadow: isActive ? `0 0 12px ${color}20` : 'none',
               }}

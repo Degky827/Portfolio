@@ -42,7 +42,7 @@ function FeaturePills({ features, color, isHovered }) {
           className="px-2 py-0.5 text-[9px] font-medium rounded-full border transition-all duration-200"
           style={{
             background: isHovered ? `${color}12` : 'rgba(255,255,255,0.05)',
-            color: isHovered ? `${color}cc` : '#94a3b8',
+            color: isHovered ? `${color}cc` : '#ffffff',
             borderColor: isHovered ? `${color}25` : 'rgba(255,255,255,0.08)',
           }}
         >
@@ -171,7 +171,7 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
             {/* Title */}
             <motion.h3
               className="text-sm sm:text-base font-bold leading-tight font-display line-clamp-2"
-              animate={{ color: isHovered ? color : '#f1f5f9' }}
+              animate={{ color: isHovered ? color : '#ffffff' }}
               transition={{ duration: 0.3 }}
             >
               {app.title}
