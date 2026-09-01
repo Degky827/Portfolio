@@ -174,7 +174,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
               {/* Eyebrow */}
               <motion.p
                 {...fadeIn(0.2)}
-                className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] mb-4 sm:mb-5 text-primary"
+                className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] mb-4 sm:mb-5 text-white"
               >
                 Welcome to my digital space
               </motion.p>
@@ -193,7 +193,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                 {/* Name */}
                 <motion.span
                   {...fadeUp(0.45)}
-                  className="block text-[34px] sm:text-[42px] md:text-[52px] lg:text-[64px] font-black leading-[1.05] tracking-tight text-primary"
+                  className="block text-[34px] sm:text-[42px] md:text-[52px] lg:text-[64px] font-black leading-[1.05] tracking-tight text-white"
                 >
                   {fullName}
                 </motion.span>

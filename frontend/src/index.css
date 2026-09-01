@@ -127,14 +127,14 @@
   --surface-glass: rgba(22, 22, 22, 0.7);
   --surface-glass-heavy: rgba(11, 13, 16, 0.85);
   --text-primary: #ffffff;
-  --text-secondary: #D1D5DB;
-  --text-tertiary: #9CA3AF;
+  --text-secondary: #ffffff;
+  --text-tertiary: #ffffff;
   --text-on-accent: #ffffff;
   --border-default: #2a2a2a;
   --border-subtle: #1f1f1f;
   --border-strong: #374151;
   --icon-primary: #ffffff;
-  --icon-secondary: #9CA3AF;
+  --icon-secondary: #ffffff;
   --card-bg: #161616;
   --card-border: #2a2a2a;
   --card-shadow: 0 1px 3px rgba(0, 0, 0, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);

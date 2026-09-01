@@ -375,7 +375,7 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
           <div className="flex items-start justify-between gap-2 mb-2">
             <motion.h3
               className="text-base sm:text-lg font-bold leading-tight font-display"
-              animate={{ color: isHovered ? color : '#f1f5f9' }}
+              animate={{ color: isHovered ? color : '#ffffff' }}
               transition={{ duration: 0.3 }}
             >
               {title}
@@ -400,7 +400,7 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
                 className="px-2 py-0.5 text-[10px] font-medium rounded-md transition-all duration-200"
                 style={{
                   background: isHovered ? `${color}15` : 'rgba(255,255,255,0.05)',
-                  color: isHovered ? `${color}dd` : '#94a3b8',
+                  color: isHovered ? `${color}dd` : '#ffffff',
                   border: `1px solid ${isHovered ? `${color}25` : 'rgba(255,255,255,0.08)'}`,
                 }}
               >

@@ -181,7 +181,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       lightText: s.lightTheme?.textColor || '#1f2937',
       lightHover: s.lightTheme?.hoverColor || '#22c55e',
       darkBg: s.darkTheme?.bgColor || '#0f172a',
-      darkText: s.darkTheme?.textColor || '#e2e8f0',
+      darkText: s.darkTheme?.textColor || '#ffffff',
       darkHover: s.darkTheme?.hoverColor || '#4ade80',
       hamburgerColor: s.hamburgerColor || '#374151',
       hamburgerPosition: s.hamburgerPosition || 'right',
@@ -260,7 +260,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       style.backgroundColor = darkMode ? 'rgba(11,13,16,0.92)' : 'rgba(255,255,255,0.95)'
     }
     style.color = darkMode
-      ? (ns?.darkTheme?.textColor || settings.darkText || '#e2e8f0')
+      ? (ns?.darkTheme?.textColor || settings.darkText || '#ffffff')
       : settings.textColor
     if (settings.shadow) {
       style.boxShadow = `0 4px 20px ${settings.shadowColor}`
@@ -273,7 +273,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
    const linkTextColor = useMemo(() => {
      return darkMode
-       ? (ns?.darkTheme?.textColor || '#d1d5db')
+       ? (ns?.darkTheme?.textColor || '#ffffff')
        : '#374151'
    }, [ns, darkMode])
 
@@ -405,7 +405,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
   const controlTextColor = useMemo(() => {
     return darkMode
-      ? (ns?.darkTheme?.textColor || '#cbd5e1')
+      ? (ns?.darkTheme?.textColor || '#ffffff')
       : '#4b5563'
   }, [ns?.darkTheme?.textColor, darkMode])
 
