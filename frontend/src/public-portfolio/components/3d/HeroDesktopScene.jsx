@@ -99,14 +99,14 @@ function DesktopDragController({ groupRef, canvasRef }) {
   return null
 }
 
-function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
+function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackground = true }) {
   const desktopGroupRef = useRef()
 
   const bgColor = darkMode ? '#0B0D10' : '#ffffff'
   const fogColor = useMemo(() => new THREE.Color(bgColor), [bgColor])
 
-  const floorColor = darkMode ? '#13161B' : '#f9fafb'
-  const wallColor = darkMode ? '#1C2028' : '#f3f4f6'
+  const floorColor = darkMode ? '#13161B' : '#ffffff'
+  const wallColor = darkMode ? '#1C2028' : '#ffffff'
   const accentColor = darkMode ? '#6366f1' : '#3b82f6'
   const ambientColor = darkMode ? '#1E1E1E' : '#f0f0f0'
   const dirColor = darkMode ? '#818cf8' : '#6366f1'
@@ -115,7 +115,7 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
 
   return (
     <>
-      <color attach="background" args={[bgColor]} />
+      {showBackground && <color attach="background" args={[bgColor]} />}
       <fog attach="fog" args={[fogColor, 15, 30]} />
 
       <ambientLight intensity={ambientIntensity} color={ambientColor} />
@@ -272,6 +272,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
             isMobile={isMobile}
             profileData={profileData}
             canvasRef={canvasRef}
+            showBackground={false}
           />
         </Canvas>
 
@@ -288,7 +289,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-50"
-            style={{ background: darkMode ? '#0B0D10' : '#F3F4F6' }}
+            style={{ background: darkMode ? '#0B0D10' : '#ffffff' }}
           >
             <Canvas
               key={`expanded-${cameraKey}`}
@@ -300,7 +301,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
                 powerPreference: 'high-performance',
               }}
               shadows
-              style={{ background: darkMode ? '#0B0D10' : '#F3F4F6' }}
+              style={{ background: darkMode ? '#0B0D10' : '#ffffff' }}
             >
               <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} canvasRef={canvasRef} />
             </Canvas>
