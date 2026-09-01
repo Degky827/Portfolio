@@ -1,8 +1,9 @@
 import { Suspense, useRef, useState, useEffect, useCallback } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { Preload, Stars } from '@react-three/drei'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import { Bloom, Vignette } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
+import SafeEffectComposer from '../projects3d/SafeEffectComposer'
 import * as THREE from 'three'
 import Globe3D from './Globe3D'
 import ContactErrorBoundary from './ContactErrorBoundary'
@@ -138,7 +139,7 @@ function GlobeLighting({ isMobile }) {
 
 function GlobePostProcessing({ isMobile }) {
   return (
-    <EffectComposer multisampling={isMobile ? 0 : 2}>
+    <SafeEffectComposer multisampling={isMobile ? 0 : 2}>
       <Bloom
         intensity={isMobile ? 0.5 : 0.9}
         luminanceThreshold={isMobile ? 0.3 : 0.15}
@@ -151,7 +152,7 @@ function GlobePostProcessing({ isMobile }) {
         darkness={isMobile ? 0.35 : 0.65}
         blendFunction={BlendFunction.NORMAL}
       />
-    </EffectComposer>
+    </SafeEffectComposer>
   )
 }
 
