@@ -1,5 +1,4 @@
 import { useState, useEffect, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
 import { createContainerVariants, defaultViewport } from '../../shared/animations'
 import {
@@ -210,7 +209,6 @@ function SkillIcon({ skill, className, style }) {
 
 export default function Skills() {
   const shouldReduceMotion = useReducedMotion()
-  const { t } = useTranslation()
   const [categories, setCategories] = useState([])
   const [skills, setSkills] = useState([])
   const [loading, setLoading] = useState(true)
@@ -296,7 +294,7 @@ export default function Skills() {
   if (loading) {
     return (
       <SkillsScene>
-        <section id="skills" className="py-16 sm:py-20 md:py-24 min-h-screen" aria-label={t('skills.ariaLabel')}>
+        <section id="skills" className="py-16 sm:py-20 md:py-24 min-h-screen" aria-label="Skills section">
           <div className="container mx-auto px-4 sm:px-6">
             <div className="flex items-center justify-center py-20">
               <div className="w-10 h-10 border-4 rounded-full animate-spin" style={{ borderColor: 'rgba(14, 165, 233, 0.3)', borderTopColor: 'var(--accent-skills)' }} />
@@ -312,7 +310,7 @@ export default function Skills() {
       <section
         id="skills"
         className="py-16 sm:py-20 md:py-24 min-h-screen"
-        aria-label={t('skills.ariaLabel')}
+        aria-label="Skills section"
       >
         <div className="container mx-auto px-4 sm:px-6">
           <motion.div
@@ -328,19 +326,19 @@ export default function Skills() {
               className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-[var(--accent-skills)] uppercase bg-[var(--accent-skills)]/10 rounded-full border border-[var(--accent-skills)]/20"
             >
               <Code2 className="w-3 h-3 sm:w-4 sm:h-4" />
-              {t('skills.badge')}
+              My Expertise
             </motion.span>
             <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-4 sm:mb-6 tracking-tight">
-              {t('skills.title')}
+              Technical Skills
             </h2>
             <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
-              {t('skills.description')}
+              A comprehensive overview of the technologies and tools I master to build modern digital solutions.
             </p>
           </motion.div>
 
           {allCards.length === 0 ? (
             <div className="text-center py-12">
-              <p className="text-[var(--text-secondary)]">{t('skills.empty')}</p>
+              <p className="text-[var(--text-secondary)]">No skills added yet.</p>
             </div>
           ) : (
             <motion.div
@@ -360,7 +358,6 @@ export default function Skills() {
                       onCertClick={(cert) => setSelectedCert(cert)}
                       SkillIcon={SkillIcon}
                       getMediaUrl={getMediaUrl}
-                      t={t}
                       index={index}
                     />
                   ))}
@@ -388,7 +385,6 @@ export default function Skills() {
                 technologies={skills.filter((s) => s.category?.toLowerCase() !== 'certificates').length}
                 certificates={certificatesCard?.skills.length || 0}
                 categories={skillCards.length}
-                t={t}
               />
             </motion.div>
           )}
@@ -405,7 +401,6 @@ export default function Skills() {
 }
 
 function CertModal({ cert, onClose }) {
-  const { t } = useTranslation()
   useEffect(() => {
     document.body.style.overflow = 'hidden'
     return () => { document.body.style.overflow = '' }
@@ -440,7 +435,7 @@ function CertModal({ cert, onClose }) {
         <button
           onClick={onClose}
           className="absolute top-4 right-4 p-1.5 rounded-lg text-[var(--text-secondary)] hover:text-[var(--text-primary)] hover:bg-[var(--border-default)] transition-colors z-10"
-          aria-label={t('skills.close')}
+          aria-label="Close"
         >
           <X size={18} />
         </button>
@@ -458,7 +453,7 @@ function CertModal({ cert, onClose }) {
         <div className="p-6">
           <div className="flex items-center gap-2 mb-3">
             <Award size={18} style={{ color: 'var(--text-primary)' }} />
-            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>{t('skills.certificateLabel')}</span>
+            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: 'var(--text-primary)' }}>Certificate</span>
           </div>
           <h3 className="text-xl font-bold text-[var(--text-primary)] mb-4">
             {cert.name}
@@ -494,7 +489,7 @@ function CertModal({ cert, onClose }) {
               style={{ color: 'var(--text-primary)' }}
             >
               <ExternalLink size={14} />
-              {t('skills.viewCertificate')}
+              View Certificate
             </a>
           )}
         </div>

@@ -1,5 +1,4 @@
 import { useEffect, useState, lazy, Suspense, useCallback, useRef, memo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { motion } from 'framer-motion'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
 
@@ -27,28 +26,23 @@ function useTypingEffect(fullText) {
   return typedText
 }
 
-function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLink }) {
-  const { t, i18n } = useTranslation()
+function Hero({ content, contactButtonText, contactButtonLink }) {
   const { settings } = useSiteSettings()
-  const isAm = i18n.language === 'am'
 
-  const greeting = isAm ? (settings?.greetingAm || content?.greetingAm || settings?.greeting || content?.greeting || t('hero.greeting')) : (settings?.greeting || content?.greeting || t('hero.greeting'))
-  const fullName = isAm ? (settings?.brandNameAm || content?.fullNameAm || settings?.brandName || content?.fullName || t('hero.fullName')) : (settings?.brandName || content?.fullName || t('hero.fullName'))
-  const nameAmharic = settings?.nameAmharic || content?.nameAmharic || t('hero.nameAmharic')
-  const badge = isAm ? (settings?.professionalBadgeAm || content?.professionalBadgeAm || settings?.professionalBadge || content?.professionalBadge || t('hero.badge')) : (settings?.professionalBadge || content?.professionalBadge || t('hero.badge'))
-  const fullText = isAm
-    ? ((settings?.typingWordsAm?.length ? settings.typingWordsAm : content?.typingWordsAm)?.[0] || (settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || t('hero.typingText'))
-    : ((settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || t('hero.typingText'))
-  const introduction = isAm ? (settings?.shortIntroductionAm || content?.shortIntroductionAm || settings?.shortIntroduction || content?.shortIntroduction || t('hero.introduction')) : (settings?.shortIntroduction || content?.shortIntroduction || t('hero.introduction'))
+  const greeting = settings?.greeting || content?.greeting || "Hi, I'm"
+  const fullName = settings?.brandName || content?.fullName || 'Desalegn'
+  const badge = settings?.professionalBadge || content?.professionalBadge || 'Student Developer'
+  const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || 'Developer and Network Designer'
+  const introduction = settings?.shortIntroduction || content?.shortIntroduction || 'Passionate about creating <span class="text-primary font-semibold">secure</span>, <span class="text-secondary font-semibold">scalable</span> digital solutions and designing robust network architectures. Specializing in modern web development and enterprise networking.'
   const profilePhotoUrl = content?.profilePhoto?.url || '/BDU1601297.png'
   const stats = content?.statistics?.length > 0
     ? content.statistics
     : [
-        { label: t('hero.statTopCertifications'), value: '3+', icon: 'Award', color: '#6366f1' },
-        { label: t('hero.statClassProjects'), value: '15+', icon: 'BookOpen', color: '#10b981' },
-        { label: t('hero.statCoreSkills'), value: '30+', icon: 'Cpu', color: '#f59e0b' },
+        { label: 'Top Certifications', value: '3+', icon: 'Award', color: '#6366f1' },
+        { label: 'Class Projects', value: '15+', icon: 'BookOpen', color: '#10b981' },
+        { label: 'Core Skills', value: '30+', icon: 'Cpu', color: '#f59e0b' },
       ]
-  const contactBtnText = isAm ? (contactButtonTextAm || settings?.contactButtonTextAm || contactButtonText || t('hero.getInTouch')) : (settings?.contactButtonText || contactButtonText || t('hero.getInTouch'))
+  const contactBtnText = settings?.contactButtonText || contactButtonText || 'Get In Touch'
   const contactBtnLink = settings?.contactButtonLink || contactButtonLink || '#contact'
   const ctaButtons = content?.ctaButtons?.length > 0
     ? content.ctaButtons
@@ -107,9 +101,6 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black leading-tight drop-shadow-lg" style={{ color: 'var(--text-primary)' }}>
             {greeting}{' '}
             <span className="text-primary">
-              <span className="inline-flex items-center justify-center h-6 sm:h-7 md:h-8 px-1.5 rounded-lg bg-[#6366f1] text-white text-[8px] sm:text-[9px] md:text-[11px] font-black mr-1.5 -mt-0.5 align-middle shadow-lg">
-                {nameAmharic}
-              </span>{' '}
               {fullName}
             </span>
             <br />
@@ -172,7 +163,7 @@ function Hero({ content, contactButtonText, contactButtonTextAm, contactButtonLi
           style={{ color: 'var(--text-tertiary)' }}
           onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
         >
-          <span className="text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] group-hover:text-primary transition-colors">{t('hero.discoverMore')}</span>
+          <span className="text-[9px] sm:text-[10px] md:text-xs font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] group-hover:text-primary transition-colors">Discover More</span>
           <motion.div
             animate={{ y: [0, 8, 0] }}
             transition={{ duration: 1.5, repeat: Infinity }}
