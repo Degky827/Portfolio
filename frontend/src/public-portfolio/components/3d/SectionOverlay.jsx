@@ -1,5 +1,4 @@
 import { useEffect, useRef, lazy, Suspense } from 'react'
-import { useTranslation } from 'react-i18next'
 import gsap from 'gsap'
 import { X, Monitor, Keyboard, Cpu, Volume2 } from 'lucide-react'
 import { useWorkspace } from './WorkspaceContext'
@@ -12,7 +11,7 @@ const Contact = lazy(() => import('../../pages/sections/Contact'))
 const SECTION_CONFIG = {
   about: {
     icon: Monitor,
-    labelKey: 'workspace.sectionAbout',
+    label: 'About Me',
     color: '#8b5cf6',
     Component: About,
     seoTitle: 'About - Portfolio',
@@ -20,7 +19,7 @@ const SECTION_CONFIG = {
   },
   skills: {
     icon: Keyboard,
-    labelKey: 'workspace.sectionSkills',
+    label: 'Skills & Expertise',
     color: '#22d3ee',
     Component: Skills,
     seoTitle: 'Skills - Portfolio',
@@ -28,7 +27,7 @@ const SECTION_CONFIG = {
   },
   projects: {
     icon: Cpu,
-    labelKey: 'workspace.sectionProjects',
+    label: 'Projects',
     color: '#6366f1',
     Component: Projects,
     seoTitle: 'Projects - Portfolio',
@@ -36,7 +35,7 @@ const SECTION_CONFIG = {
   },
   contact: {
     icon: Volume2,
-    labelKey: 'workspace.sectionContact',
+    label: 'Get In Touch',
     color: '#a78bfa',
     Component: Contact,
     seoTitle: 'Contact - Portfolio',
@@ -71,7 +70,6 @@ function useSectionSEO(activeSection) {
 }
 
 export default function SectionOverlay() {
-  const { t } = useTranslation()
   const { activeSection, closeSection } = useWorkspace()
   const panelRef = useRef(null)
   const backdropRef = useRef(null)
@@ -165,7 +163,7 @@ export default function SectionOverlay() {
               {Icon && <Icon size={20} />}
             </div>
             <h2 className="text-lg font-bold font-display" style={{ color: 'var(--text-primary)' }}>
-              {t(config.labelKey)}
+              {config.label}
             </h2>
           </div>
           <button
