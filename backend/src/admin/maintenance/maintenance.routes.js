@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const { authenticateToken, authorizeSuperAdmin } = require('../../shared/middleware/auth')
+const { authenticateToken } = require('../../shared/middleware/auth')
 const {
   healthCheck, storageUsage, collectionStats, indexStatus, orphanFiles,
 } = require('./maintenance.controller')
@@ -7,7 +7,6 @@ const {
 const router = Router()
 
 router.use(authenticateToken)
-router.use(authorizeSuperAdmin)
 
 router.get('/health', healthCheck)
 router.get('/storage', storageUsage)

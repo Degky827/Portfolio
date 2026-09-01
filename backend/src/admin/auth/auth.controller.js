@@ -113,13 +113,6 @@ async function loginStep1(req, res) {
       })
     }
 
-    if (user.role !== 'super_admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Only super administrators can access this system.',
-      })
-    }
-
     await User.updateOne(
       { _id: user._id },
       { $set: { failedLoginAttempts: 0, lockedUntil: null } },
@@ -259,13 +252,6 @@ async function verify2FA(req, res) {
       return res.status(423).json({
         success: false,
         message: `Account is locked. Try again in ${remainingMinutes} minute(s).`,
-      })
-    }
-
-    if (user.role !== 'super_admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Only super administrators can access this system.',
       })
     }
 
