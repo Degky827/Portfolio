@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { lazy, Suspense } from 'react'
 import Hero from './sections/Hero'
 import About from './sections/About'
+import Experience from './sections/Experience'
 import Skills from './sections/Skills'
 import { getHomeContent } from '../../shared/services/homeContentService'
 import { getAboutContent } from '../../shared/services/aboutService'
@@ -38,6 +39,7 @@ export default function Home() {
       {aboutContent?.status !== 'inactive' && (
         <About content={content?.about} hero={content?.hero} aboutContent={aboutContent} />
       )}
+      <Experience />
       <Skills />
       <Suspense fallback={spinner}>
         <Projects />

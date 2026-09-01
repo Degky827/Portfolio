@@ -186,7 +186,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                 {/* Greeting line */}
                 <motion.span
                   {...fadeUp(0.35)}
-                  className="block text-[26px] sm:text-3xl md:text-4xl lg:text-5xl font-semibold leading-tight"
+                  className="block text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold leading-tight"
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {greeting}
@@ -195,7 +195,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                 {/* Name */}
                 <motion.span
                   {...fadeUp(0.45)}
-                  className="block text-[34px] sm:text-[42px] md:text-[52px] lg:text-[64px] font-black leading-[1.05] tracking-tight text-white"
+                  className="block text-[28px] sm:text-[36px] md:text-[46px] lg:text-[56px] font-black leading-[1.05] tracking-tight text-white"
                 >
                   {fullName}
                 </motion.span>
@@ -203,7 +203,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                 {/* Role / typed text */}
                 <motion.span
                   {...fadeUp(0.55)}
-                  className="block text-[20px] sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mt-1"
+                  className="block text-base sm:text-xl md:text-2xl lg:text-3xl font-bold leading-tight mt-1"
                   style={{ color: 'var(--text-primary)' }}
                 >
                   {typedText}
@@ -294,9 +294,9 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
           {...fadeUp(1.1)}
           className="pointer-events-auto"
         >
-          <div className="w-full px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 pb-4">
+          <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 pb-16">
             <div
-              className="flex flex-wrap items-center gap-4 sm:gap-6 py-3 sm:py-3.5 px-4 sm:px-5 rounded-lg border"
+              className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-3 sm:gap-6 py-3 sm:py-3.5 px-3 sm:px-5 rounded-lg border"
               style={{
                 backgroundColor: 'var(--bg-secondary)',
                 borderColor: 'var(--border-primary)',
@@ -311,18 +311,18 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                   className="flex items-center gap-2"
                 >
                   <div
-                    className="w-7 h-7 flex items-center justify-center rounded-md shrink-0"
+                    className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-md shrink-0"
                     style={{ backgroundColor: '#6366f110', color: '#6366f1' }}
                   >
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
                     </svg>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-base sm:text-lg font-bold leading-none" style={{ color: 'var(--text-primary)' }}>
+                    <span className="text-sm sm:text-base md:text-lg font-bold leading-none" style={{ color: 'var(--text-primary)' }}>
                       {stat.value}
                     </span>
-                    <span className="text-[9px] sm:text-[10px] font-medium mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
+                    <span className="text-[8px] sm:text-[9px] md:text-[10px] font-medium mt-0.5" style={{ color: 'var(--text-tertiary)' }}>
                       {stat.label}
                     </span>
                   </div>

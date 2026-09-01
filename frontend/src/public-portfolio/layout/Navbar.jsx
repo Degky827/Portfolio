@@ -17,7 +17,7 @@ function getVisitorId() {
   return id
 }
 
-const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'contact']
+const FALLBACK_NAV_IDS = ['home', 'about', 'experience', 'skills', 'projects', 'contact']
 
 function buildFallbackItems() {
   return FALLBACK_NAV_IDS.map((id) => ({
@@ -241,32 +241,31 @@ export default function Navbar({ darkMode, onToggleDark }) {
       style.right = '0'
       style.margin = '0 auto'
     }
-    const lightBg = darkMode
-      ? (ns?.darkTheme?.bgColor || settings.bgColor)
-      : settings.bgColor
     if (scrolled) {
       if (settings.glassmorphism) {
-        style.backgroundColor = darkMode ? 'rgba(11,13,16,0.92)' : 'rgba(255,255,255,0.95)'
+        style.backgroundColor = darkMode ? 'rgba(11,13,16,0.92)' : '#ffffff'
+        style.backdropFilter = 'blur(12px)'
+        style.WebkitBackdropFilter = 'blur(12px)'
       } else if (settings.scrollEffect === 'none') {
         style.backgroundColor = 'transparent'
       } else {
-        style.backgroundColor = lightBg
+        style.backgroundColor = darkMode ? (ns?.darkTheme?.bgColor || '#0f172a') : '#ffffff'
       }
-      if (settings.scrollEffect === 'blur') {
+      if (settings.scrollEffect === 'blur' && !settings.glassmorphism) {
         style.backdropFilter = 'blur(12px)'
         style.WebkitBackdropFilter = 'blur(12px)'
       }
     } else {
-      style.backgroundColor = darkMode ? 'rgba(11,13,16,0.92)' : 'rgba(255,255,255,0.95)'
+      style.backgroundColor = darkMode ? 'rgba(11,13,16,0.92)' : '#ffffff'
     }
     style.color = darkMode
-      ? (ns?.darkTheme?.textColor || settings.darkText || '#ffffff')
-      : settings.textColor
+      ? (ns?.darkTheme?.textColor || '#ffffff')
+      : '#374151'
     if (settings.shadow) {
       style.boxShadow = `0 4px 20px ${settings.shadowColor}`
     }
     if (settings.borderColor) {
-      style.borderBottom = `1px solid ${settings.borderColor}`
+      style.borderBottom = `1px solid ${darkMode ? settings.borderColor : '#e5e7eb'}`
     }
     return style
   }, [settings, ns, scrolled, darkMode])
@@ -274,7 +273,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
    const linkTextColor = useMemo(() => {
      return darkMode
        ? (ns?.darkTheme?.textColor || '#ffffff')
-       : '#374151'
+       : '#1f2937'
    }, [ns, darkMode])
 
   const linkHoverColor = useMemo(() => {
