@@ -274,8 +274,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
    const linkTextColor = useMemo(() => {
      return darkMode
        ? (ns?.darkTheme?.textColor || '#d1d5db')
-       : (settings.textColor || '#374151')
-   }, [settings, ns, darkMode])
+       : '#374151'
+   }, [ns, darkMode])
 
   const linkHoverColor = useMemo(() => {
     return settings.hoverColor
@@ -406,8 +406,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
   const controlTextColor = useMemo(() => {
     return darkMode
       ? (ns?.darkTheme?.textColor || '#cbd5e1')
-      : (ns?.lightTheme?.textColor || '#4b5563')
-  }, [ns?.darkTheme?.textColor, ns?.lightTheme?.textColor, darkMode])
+      : '#4b5563'
+  }, [ns?.darkTheme?.textColor, darkMode])
 
   const drawerSurfaceBg = useMemo(() => {
     return darkMode
@@ -473,19 +473,13 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   href="#"
                   target={item.active && item.openNewTab ? '_blank' : undefined}
                   rel={item.active && item.openNewTab ? 'noopener noreferrer' : undefined}
-                  className={`text-xs sm:text-sm font-bold uppercase tracking-widest transition-colors relative group ${
-                    item.active
-                      ? activeSection === item.sectionId
-                        ? 'text-primary dark:text-primary'
-                        : 'hover:text-primary dark:hover:text-primary'
-                      : 'cursor-default'
-                  }`}
+                  className="text-xs sm:text-sm font-bold uppercase tracking-widest transition-colors relative group"
                    style={{
                      color: item.active
                        ? (activeSection === item.sectionId
                          ? settings.activeLinkColor
                          : linkTextColor)
-                       : undefined,
+                       : linkTextColor,
                    }}
                   onMouseEnter={(e) => {
                     if (item.active && linkHoverColor && activeSection !== item.sectionId) {
@@ -620,19 +614,13 @@ export default function Navbar({ darkMode, onToggleDark }) {
                       href="#"
                       target={item.active && item.openNewTab ? '_blank' : undefined}
                       rel={item.active && item.openNewTab ? 'noopener noreferrer' : undefined}
-                      className={`text-3xl sm:text-4xl md:text-5xl font-black transition-all flex items-center justify-between group font-display tracking-tighter ${
-                        item.active
-                          ? activeSection === item.sectionId
-                            ? 'text-primary dark:text-primary'
-                            : 'hover:text-primary'
-                          : 'cursor-default'
-                      }`}
+                      className="text-3xl sm:text-4xl md:text-5xl font-black transition-all flex items-center justify-between group font-display tracking-tighter"
                       style={{
                         color: item.active
                           ? activeSection === item.sectionId
                             ? settings.activeLinkColor
                             : linkTextColor
-                          : undefined,
+                          : linkTextColor,
                       }}
                       onMouseEnter={(e) => {
                         if (item.active && linkHoverColor && activeSection !== item.sectionId) {
