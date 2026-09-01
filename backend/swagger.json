@@ -2,7 +2,7 @@
   "openapi": "3.0.3",
   "info": {
     "title": "Portkiro Portfolio API",
-    "description": "Portfolio tracking & admin system — Express/MongoDB API with 124 endpoints",
+    "description": "Portfolio tracking & admin system — Express/MongoDB API",
     "version": "1.0.0",
     "contact": {
       "name": "Portkiro Backend"
@@ -17,7 +17,7 @@
   "tags": [
     { "name": "Health", "description": "Health check" },
     { "name": "Auth", "description": "Authentication & 2FA" },
-    { "name": "Users", "description": "User management (super admin)" },
+
     { "name": "Projects", "description": "Portfolio projects" },
     { "name": "Skills", "description": "Skills CRUD" },
     { "name": "Categories", "description": "Skill categories" },
@@ -181,27 +181,7 @@
           "liveUrl": { "type": "string", "format": "uri" }
         }
       },
-      "User": {
-        "type": "object",
-        "properties": {
-          "_id": { "type": "string" },
-          "name": { "type": "string" },
-          "email": { "type": "string", "format": "email" },
-          "role": { "type": "string", "enum": ["admin", "superadmin"] },
-          "createdAt": { "type": "string", "format": "date-time" },
-          "updatedAt": { "type": "string", "format": "date-time" }
-        }
-      },
-      "UserRequest": {
-        "type": "object",
-        "required": ["name", "email", "password"],
-        "properties": {
-          "name": { "type": "string" },
-          "email": { "type": "string", "format": "email" },
-          "password": { "type": "string", "format": "password" },
-          "role": { "type": "string", "enum": ["admin", "superadmin"], "default": "admin" }
-        }
-      },
+
       "ContactMessage": {
         "type": "object",
         "properties": {
@@ -699,106 +679,7 @@
       }
     },
 
-    "/api/users/": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "List all users",
-        "description": "Requires super admin role",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          { "name": "page", "in": "query", "schema": { "type": "integer", "default": 1 } },
-          { "name": "limit", "in": "query", "schema": { "type": "integer", "default": 10 } },
-          { "name": "search", "in": "query", "schema": { "type": "string" } },
-          { "name": "role", "in": "query", "schema": { "type": "string", "enum": ["admin", "superadmin"] } }
-        ],
-        "responses": {
-          "200": {
-            "description": "User list",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "allOf": [
-                    { "$ref": "#/components/schemas/PaginatedResponse" },
-                    {
-                      "type": "object",
-                      "properties": {
-                        "users": { "type": "array", "items": { "$ref": "#/components/schemas/User" } }
-                      }
-                    }
-                  ]
-                }
-              }
-            }
-          },
-          "403": { "description": "Not super admin" }
-        }
-      },
-      "post": {
-        "tags": ["Users"],
-        "summary": "Create a new user",
-        "description": "Requires super admin role",
-        "security": [{ "bearerAuth": [] }],
-        "requestBody": {
-          "required": true,
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/UserRequest" }
-            }
-          }
-        },
-        "responses": {
-          "201": { "description": "User created" },
-          "400": { "description": "Validation error" },
-          "403": { "description": "Not super admin" }
-        }
-      }
-    },
 
-    "/api/users/{id}": {
-      "get": {
-        "tags": ["Users"],
-        "summary": "Get user by ID",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "responses": {
-          "200": { "description": "User details", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/User" } } } },
-          "404": { "description": "User not found" }
-        }
-      },
-      "put": {
-        "tags": ["Users"],
-        "summary": "Update user",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": { "$ref": "#/components/schemas/UserRequest" }
-            }
-          }
-        },
-        "responses": {
-          "200": { "description": "User updated" },
-          "404": { "description": "User not found" }
-        }
-      },
-      "delete": {
-        "tags": ["Users"],
-        "summary": "Delete user",
-        "security": [{ "bearerAuth": [] }],
-        "parameters": [
-          { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
-        ],
-        "responses": {
-          "200": { "description": "User deleted" },
-          "404": { "description": "User not found" }
-        }
-      }
-    },
 
     "/api/projects/": {
       "get": {
