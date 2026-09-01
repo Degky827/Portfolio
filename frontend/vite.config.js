@@ -26,9 +26,6 @@ export default defineConfig({
             if (id.includes('react-router') || id.includes('react-router-dom')) {
               return 'router'
             }
-            if (id.includes('i18next') || id.includes('react-i18next')) {
-              return 'i18n'
-            }
             if (id.includes('@emailjs')) {
               return 'emailjs'
             }
