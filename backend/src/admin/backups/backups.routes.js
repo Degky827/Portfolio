@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const multer = require('multer')
-const { authenticateToken, authorizeSuperAdmin } = require('../../shared/middleware/auth')
+const { authenticateToken } = require('../../shared/middleware/auth')
 const {
   listBackups, createBackup, getBackup, downloadBackup, deleteBackup, uploadBackup, restoreBackup,
 } = require('./backups.controller')
@@ -13,7 +13,6 @@ const backupUpload = multer({
 const router = Router()
 
 router.use(authenticateToken)
-router.use(authorizeSuperAdmin)
 
 router.get('/', listBackups)
 router.post('/', createBackup)

@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { body } = require('express-validator')
-const { authenticateToken, authorizeSuperAdmin } = require('../../shared/middleware/auth')
+const { authenticateToken } = require('../../shared/middleware/auth')
 const { handleValidation } = require('../../shared/middleware/validate')
 const {
   createProject,
@@ -29,14 +29,14 @@ router.get('/', getProjects)
 router.get('/slug/:slug', getProjectBySlug)
 router.get('/:id', getProject)
 
-router.post('/', authenticateToken, authorizeSuperAdmin, projectValidation, handleValidation, createProject)
-router.put('/reorder', authenticateToken, authorizeSuperAdmin, reorderProjects)
-router.put('/:id', authenticateToken, authorizeSuperAdmin, projectValidation, handleValidation, updateProject)
-router.delete('/:id', authenticateToken, authorizeSuperAdmin, deleteProject)
-router.post('/:id/duplicate', authenticateToken, authorizeSuperAdmin, duplicateProject)
-router.patch('/:id/featured', authenticateToken, authorizeSuperAdmin, toggleFeatured)
-router.patch('/:id/publish', authenticateToken, authorizeSuperAdmin, togglePublish)
-router.patch('/:id/archive', authenticateToken, authorizeSuperAdmin, toggleArchive)
-router.patch('/:id/images', authenticateToken, authorizeSuperAdmin, updateImages)
+router.post('/', authenticateToken, projectValidation, handleValidation, createProject)
+router.put('/reorder', authenticateToken, reorderProjects)
+router.put('/:id', authenticateToken, projectValidation, handleValidation, updateProject)
+router.delete('/:id', authenticateToken, deleteProject)
+router.post('/:id/duplicate', authenticateToken, duplicateProject)
+router.patch('/:id/featured', authenticateToken, toggleFeatured)
+router.patch('/:id/publish', authenticateToken, togglePublish)
+router.patch('/:id/archive', authenticateToken, toggleArchive)
+router.patch('/:id/images', authenticateToken, updateImages)
 
 module.exports = router
