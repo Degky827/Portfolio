@@ -1,5 +1,4 @@
 import { useState, useRef, useEffect, lazy, Suspense, useCallback, memo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Mail, Phone, User, MessageSquare } from 'lucide-react'
 import emailjs from '@emailjs/browser'
@@ -66,7 +65,6 @@ const globeSlideVariants = {
 }
 
 const ContactContent = memo(function ContactContent({ content, contactFormEnabled, values, errors, touched, fieldError, handleChange, handleBlur, handleSubmit, isSubmitting, isValid, result, resultType, form }) {
-  const { t } = useTranslation()
   const [heroTransforms, setHeroTransforms] = useState({ badge: { rx: 0, ry: 0 }, title: { rx: 0, ry: 0 }, subtitle: { ry: 0 } })
 
   useMouseParallaxSubscribe(useCallback((x, y) => {
@@ -130,7 +128,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                       className="text-xs sm:text-sm font-bold tracking-[0.25em] uppercase"
                       style={{ color: 'var(--text-secondary)' }}
                     >
-                        {t('contact.badge')}
+                        Contact
                       </motion.span>
                     </div>
                   </motion.div>
@@ -159,7 +157,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     }}
                     aria-hidden="true"
                   >
-                    {t('contact.title')}
+                    Let's Collaborate
                   </h2>
                   <h2
                     className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight select-none pointer-events-none"
@@ -171,13 +169,13 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     }}
                     aria-hidden="true"
                   >
-                    {t('contact.title')}
+                    Let's Collaborate
                   </h2>
                   <motion.h2
                     className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight"
                     style={{ color: 'var(--text-primary)' }}
                   >
-                    {t('contact.title')}
+                    Let's Collaborate
                   </motion.h2>
                   <motion.div
                     className="absolute inset-0 pointer-events-none"
@@ -207,7 +205,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     animate={{ opacity: [0.7, 1, 0.7] }}
                     transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
                   >
-                    {t('contact.description')}
+                    Ready to bring your vision to life? Reach out and let's start a conversation about your next big project.
                   </motion.span>
                 </motion.p>
 
@@ -348,7 +346,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     </div>
 
                     <Suspense fallback={null}>
-                      <form ref={form} className="space-y-5 sm:space-y-6" onSubmit={handleSubmit} noValidate aria-label={t('contact.formAriaLabel')}>
+                      <form ref={form} className="space-y-5 sm:space-y-6" onSubmit={handleSubmit} noValidate aria-label="Contact form">
                         <FuturisticInput
                           id="from_name"
                           name="from_name"
@@ -436,8 +434,8 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                           disabled={isSubmitting || !isValid}
                           isSubmitting={isSubmitting}
                           isValid={isValid}
-                          label={t('contact.submitText')}
-                          ariaLabel={isSubmitting ? t('contact.submitAriaSubmitting') : t('contact.submitAriaNormal')}
+                          label="Send Message"
+                          ariaLabel={isSubmitting ? 'Sending message...' : 'Send message'}
                         />
                       </form>
                     </Suspense>
@@ -505,7 +503,6 @@ export default function Contact() {
   const [resultType, setResultType] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [content, setContent] = useState(null)
-  const { t } = useTranslation()
 
   const [values, setValues] = useState({ from_name: '', reply_to: '', phone: '', message: '' })
   const [errors, setErrors] = useState({})
@@ -580,7 +577,7 @@ export default function Contact() {
     let saved = false
     try {
       await createMessage({ name, email, phone, message })
-      setResult(t('contact.successMessage'))
+      setResult('Message sent successfully! I will get back to you soon.')
       setResultType('success')
       saved = true
     } catch {
@@ -593,7 +590,7 @@ export default function Contact() {
       if (!saved) {
         const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
         window.location.href = mailtoLink
-        setResult(t('contact.mailtoFallback'))
+        setResult('Opening your email client...')
         setResultType('success')
       }
       setIsSubmitting(false)
@@ -603,7 +600,7 @@ export default function Contact() {
     try {
       await emailjs.sendForm(SERVICE_ID, TEMPLATE_ID, form.current, PUBLIC_KEY)
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
-      setResult(t('contact.successMessage'))
+      setResult('Message sent successfully! I will get back to you soon.')
       setResultType('success')
       setValues({ from_name: '', reply_to: '', phone: '', message: '' })
       setTouched({})
@@ -613,7 +610,7 @@ export default function Contact() {
       console.error('EmailJS error:', error)
       logPortfolioEngagement({ action: 'contact_submit', page: window.location.pathname })
       if (saved) {
-        setResult(t('contact.successMessage'))
+        setResult('Message sent successfully! I will get back to you soon.')
         setResultType('success')
         setValues({ from_name: '', reply_to: '', phone: '', message: '' })
         setTouched({})
@@ -622,7 +619,7 @@ export default function Contact() {
       } else {
         const mailtoLink = `mailto:${emailTo}?subject=Portfolio Contact from ${encodeURIComponent(name)}&body=${encodeURIComponent(`From: ${name}\nEmail: ${email}\nPhone: ${phone}\n\n${message}`)}`
         window.location.href = mailtoLink
-        setResult(t('contact.mailtoFallback'))
+        setResult('Opening your email client...')
         setResultType('success')
       }
     }
@@ -631,7 +628,7 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 transition-colors duration-500 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }} aria-label={t('contact.ariaLabel')}>
+    <section id="contact" className="py-16 sm:py-20 md:py-24 transition-colors duration-500 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }} aria-label="Contact section">
       <MouseParallaxProvider>
         <ContactContent
           content={content}

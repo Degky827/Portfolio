@@ -1,9 +1,7 @@
 import { useState, useEffect, useMemo, useCallback, useRef, memo } from 'react'
-import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download, Globe, Sun, Moon } from 'lucide-react'
+import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download, Sun, Moon } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
-import { changeLanguageWithPersistence } from '../../i18n'
 import Logo from '../../shared/components/Logo'
 import { getNavigation, getNavbarSettings } from '../../shared/services/navigationService'
 import { logPortfolioEngagement } from '../../shared/services/api'
@@ -21,10 +19,10 @@ function getVisitorId() {
 
 const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'contact']
 
-function buildFallbackItems(t) {
+function buildFallbackItems() {
   return FALLBACK_NAV_IDS.map((id) => ({
     _id: id,
-    title: t(`nav.${id}`),
+    title: id.charAt(0).toUpperCase() + id.slice(1),
     sectionId: id,
     url: `#${id}`,
     order: 0,
@@ -36,7 +34,6 @@ function buildFallbackItems(t) {
 }
 
 export default function Navbar({ darkMode, onToggleDark }) {
-  const { t, i18n } = useTranslation()
   const { settings: siteSettings } = useSiteSettings()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
@@ -91,10 +88,10 @@ export default function Navbar({ darkMode, onToggleDark }) {
   }, [ns?.themeMode, darkMode, onToggleDark])
 
   const displayNavItems = useMemo(() => {
-    if (!navLoaded) return buildFallbackItems(t)
+    if (!navLoaded) return buildFallbackItems()
     if (navItems && navItems.length > 0) return navItems
-    return buildFallbackItems(t)
-  }, [navItems, navLoaded, t])
+    return buildFallbackItems()
+  }, [navItems, navLoaded])
 
   // ── Active Section Detection ──────────────────────────────────
 
@@ -171,14 +168,13 @@ export default function Navbar({ darkMode, onToggleDark }) {
       navbarPadding: s.navbarPadding ?? 16,
       buttonPadding: s.buttonPadding ?? 12,
       resumeEnabled: s.resumeEnabled !== false,
-      resumeText: s.resumeText || t('nav.downloadCv'),
+      resumeText: s.resumeText || 'Download CV',
       resumeFileUrl: s.resumeFileUrl || siteSettings?.resume?.url || '',
       resumeBgColor: s.resumeBgColor || '#6366f1',
       resumeTextColor: s.resumeTextColor || '#ffffff',
       resumeHoverColor: s.resumeHoverColor || '#4f46e5',
       resumeBorderRadius: s.resumeBorderRadius ?? 9999,
       resumeButtonSize: s.resumeButtonSize || 'md',
-      languageEnabled: siteSettings?.languageEnabled !== false,
       themeEnabled: s.themeEnabled !== false,
       themeMode: s.themeMode || 'auto',
       lightBg: s.lightTheme?.bgColor || '#ffffff',
@@ -198,7 +194,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
       drawerShowSocial: s.drawerShowSocial !== false,
       drawerShowResume: s.drawerShowResume !== false,
       drawerShowTheme: s.drawerShowTheme !== false,
-      drawerShowLanguage: s.drawerShowLanguage !== false,
       drawerShadow: s.drawerShadow !== false,
       drawerBlur: s.drawerBlur !== false,
       navAnimation: s.navbarAnimation || 'slide-down',
@@ -217,7 +212,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       result.menuGap = s.mobileMenuGap ?? result.menuGap
     }
     return result
-  }, [ns, t, siteSettings, breakpoint])
+  }, [ns, siteSettings, breakpoint])
 
   // ── Merged Logo Settings ──────────────────────────────────────
 
@@ -226,7 +221,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
     logoImage: ns?.logo || siteSettings?.logoImage || '',
     logoSvg: ns?.logoSvg || siteSettings?.logoSvg || '',
     brandName: ns?.brandName || siteSettings?.brandName || '',
-    brandNameAm: ns?.brandNameAm || siteSettings?.brandNameAm || '',
     logoText: ns?.logoAlt || siteSettings?.logoText || '',
     logoWidth: ns?.logoWidth ?? siteSettings?.logoWidth ?? 40,
     logoHeight: ns?.logoHeight ?? siteSettings?.logoHeight ?? 40,
@@ -453,7 +447,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
         <button
           className="md:hidden w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center cursor-pointer z-[1001] rounded-lg sm:rounded-xl hover:bg-primary hover:text-white transition-colors"
           onClick={() => setIsOpen(!isOpen)}
-          aria-label={t('nav.toggleMenu')}
+          aria-label="Toggle menu"
           style={{ ...hamburgerBtnStyle, backgroundColor: controlBg }}
         >
           {isOpen ? <X size={settings.hamburgerHeight} /> : <Menu size={settings.hamburgerHeight} />}
@@ -522,22 +516,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
             className="flex items-center"
             style={{ gap: rightControlsGap + 'px' }}
           >
-            {settings.languageEnabled && (
-              <motion.button
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.6 }}
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => changeLanguageWithPersistence(i18n.language === 'en' ? 'am' : 'en')}
-                className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-primary hover:text-white transition-colors"
-                style={{ backgroundColor: controlBg, color: controlTextColor }}
-                aria-label={i18n.language === 'en' ? t('nav.switchLanguage') : t('nav.switchLanguage_am')}
-              >
-                <Globe size={16} className="sm:w-[18px] sm:h-[18px]" />
-                <span className="text-[9px] sm:text-[10px] font-bold ml-0.5">{i18n.language === 'en' ? t('nav.en') : t('nav.am')}</span>
-              </motion.button>
-            )}
             {settings.themeEnabled && (
               <motion.button
                 initial={{ opacity: 0, y: -20 }}
@@ -548,7 +526,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 onClick={onToggleDark}
                 className="w-9 h-9 sm:w-10 sm:h-10 flex items-center justify-center rounded-lg hover:bg-primary hover:text-white transition-colors"
                 style={{ backgroundColor: controlBg, color: controlTextColor }}
-                aria-label={darkMode ? t('nav.switchThemeLight') : t('nav.switchThemeDark')}
+                        aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
               >
                 {darkMode ? <Sun size={16} className="sm:w-[18px] sm:h-[18px]" /> : <Moon size={16} className="sm:w-[18px] sm:h-[18px]" />}
               </motion.button>
@@ -686,24 +664,14 @@ export default function Navbar({ darkMode, onToggleDark }) {
               )}
 
               <div className="mt-auto space-y-6 sm:space-y-8">
-                {(settings.drawerShowTheme || settings.drawerShowLanguage || settings.drawerShowResume) && (
+                {(settings.drawerShowTheme || settings.drawerShowResume) && (
                   <div className="flex justify-center gap-3 sm:gap-4">
-                    {settings.drawerShowLanguage && settings.languageEnabled && (
-                      <button
-                        onClick={() => changeLanguageWithPersistence(i18n.language === 'en' ? 'am' : 'en')}
-                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"
-                        style={{ backgroundColor: controlBg, color: controlTextColor }}
-                        aria-label={t('nav.switchLanguage')}
-                      >
-                        <Globe size={18} />
-                      </button>
-                    )}
                     {settings.drawerShowTheme && settings.themeEnabled && (
                       <button
                         onClick={onToggleDark}
                         className="w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center hover:bg-primary hover:text-white transition-all"
                         style={{ backgroundColor: controlBg, color: controlTextColor }}
-                        aria-label={darkMode ? t('nav.switchThemeLight') : t('nav.switchThemeDark')}
+                aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
                       >
                         {darkMode ? <Sun size={18} /> : <Moon size={18} />}
                       </button>
@@ -737,7 +705,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                     <div className="space-y-4 sm:space-y-5">
                       <div className="flex items-center gap-3">
                         <MapPin size={18} className="text-primary" />
-                        <span className="text-sm sm:text-base font-bold" style={{ color: controlTextColor }}>{t('nav.location')}</span>
+                        <span className="text-sm sm:text-base font-bold" style={{ color: controlTextColor }}>{siteSettings?.contactLocation || 'Bahirdar, Ethiopia'}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <Phone size={18} className="text-primary" />

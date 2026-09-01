@@ -1,7 +1,6 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play, CheckCircle, Clock, AlertCircle } from 'lucide-react'
 import { useState, useMemo, useEffect } from 'react'
-import { useTranslation } from 'react-i18next'
 import projectsData from '../../../shared/data/projects.json'
 import mobileAppsData from '../../../shared/data/mobileApps.json'
 import { getProjects } from '../../../shared/services/projectService'
@@ -58,7 +57,6 @@ const GithubIcon = ({ size = 24, className = '' }) => (
 const DEFAULT_THUMBNAIL = 'https://placehold.co/600x400/1E293B/94A3B8?text=Project'
 
 export default function Projects() {
-  const { t } = useTranslation()
   const shouldReduceMotion = useReducedMotion()
   const [activeTab, setActiveTab] = useState('web')
   const [searchTerm, setSearchTerm] = useState('')
@@ -137,7 +135,7 @@ export default function Projects() {
 
   return (
     <ProjectsScene>
-    <section id="projects" className="py-16 sm:py-20 md:py-24 min-h-screen" aria-label={t('projects.ariaLabel')}>
+    <section id="projects" className="py-16 sm:py-20 md:py-24 min-h-screen" aria-label="Projects section">
       <div className="container mx-auto px-4 sm:px-6">
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
@@ -151,13 +149,13 @@ export default function Projects() {
             whileInView={{ opacity: 1, scale: 1 }}
             className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-[var(--accent-projects)] uppercase bg-[var(--accent-projects)]/10 rounded-full border border-[var(--accent-projects)]/20"
           >
-            {t('projects.badge')}
+            Portfolio
           </motion.span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-4 sm:mb-6 tracking-tight">
-            {t('projects.title')}
+            Featured Projects
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
-            {t('projects.description')}
+            A showcase of my recent work across web development and enterprise network architecture.
           </p>
         </motion.div>
 
@@ -201,14 +199,14 @@ export default function Projects() {
               <div className="w-20 h-20 mx-auto mb-6 bg-[var(--surface)] rounded-full flex items-center justify-center border border-[var(--border-default)]">
                 <Search className="w-10 h-10 text-[var(--text-secondary)]" />
               </div>
-              <p className="text-xl font-bold text-[var(--text-primary)] mb-2">{t('projects.noProjectsFound')}</p>
-              <p className="text-[var(--text-secondary)] mb-6">{t('projects.noProjectsHint')}</p>
+              <p className="text-xl font-bold text-[var(--text-primary)] mb-2">No projects found</p>
+              <p className="text-[var(--text-secondary)] mb-6">Try adjusting your search or filter criteria</p>
               <button
                 onClick={() => { setSearchTerm('') }}
                 className="px-6 py-3 text-white font-bold rounded-full transition-colors"
                 style={{ backgroundColor: 'var(--accent-projects)' }}
               >
-                {t('projects.clearFilters')}
+                Clear Filters
               </button>
             </div>
           )}
@@ -227,7 +225,7 @@ export default function Projects() {
           />
 
           <p className="text-center text-sm text-[var(--text-secondary)] mb-6">
-            {t('projects.showingApps', { count: filteredMobileApps.length, total: mobileAppsData.length })}
+            Showing {filteredMobileApps.length} of {mobileAppsData.length} apps
           </p>
 
           <motion.div
@@ -252,14 +250,14 @@ export default function Projects() {
                 <div className="w-20 h-20 mx-auto mb-6 bg-[var(--surface)] rounded-full flex items-center justify-center border border-[var(--border-default)]">
                   <Smartphone className="w-10 h-10 text-[var(--text-secondary)]" />
                 </div>
-                <p className="text-xl font-bold text-[var(--text-primary)] mb-2">{t('projects.noAppsFound')}</p>
-                <p className="text-[var(--text-secondary)] mb-6">{t('projects.noAppsHint')}</p>
+                <p className="text-xl font-bold text-[var(--text-primary)] mb-2">No apps found</p>
+                <p className="text-[var(--text-secondary)] mb-6">Try adjusting your search</p>
                 <button
                   onClick={() => setSearchTerm('')}
                   className="px-6 py-3 text-white font-bold rounded-full transition-colors"
                   style={{ backgroundColor: 'var(--accent-projects)' }}
                 >
-                  {t('projects.clearSearchBtn')}
+                  Clear Search
                 </button>
               </div>
             )}
