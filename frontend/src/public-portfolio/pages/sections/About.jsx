@@ -3,7 +3,6 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { Award, GraduationCap, Briefcase, Cpu, Target } from 'lucide-react'
 import AboutGlassCard from '../../components/about/AboutGlassCard'
 import DeveloperWorkstation from '../../components/about/DeveloperWorkstation'
-import StatisticsDashboard from '../../components/about/StatisticsDashboard'
 import CertificateGallery from '../../components/about/CertificateGallery'
 import CinematicLighting from '../../components/about/CinematicLighting'
 import GlobalAtmosphere from '../../components/about/GlobalAtmosphere'
@@ -89,7 +88,7 @@ const MemoizedCyberParticles = memo(CyberParticles)
 export default function About({ content, hero, aboutContent }) {
   const shouldReduceMotion = useReducedMotion()
 
-  const title = aboutContent?.title || content?.title || 'Get to Know Me'
+  const title = aboutContent?.title || content?.title || 'Who Am I'
   const subtitle = aboutContent?.subtitle || content?.subtitle || 'A passionate developer and network designer dedicated to building secure and scalable digital experiences.'
   const fullName = hero?.fullName || 'Desalegn'
   const roleTitle = hero?.professionalBadge || 'Full-Stack Dev'
@@ -112,14 +111,6 @@ export default function About({ content, hero, aboutContent }) {
   const skills = ide.skills?.length ? ide.skills : ['React', 'Node']
   const available = ide.available !== undefined ? ide.available : true
   const locationText = ide.location || content?.location || hero?.location || 'Bahirdar'
-
-  const highlightMetrics = aboutContent?.highlightMetrics?.length
-    ? aboutContent.highlightMetrics
-    : [
-        { icon: 'Award', title: 'Network Designer', value: '' },
-        { icon: 'Users', title: 'Happy Clients', value: '50+' },
-        { icon: 'TrendingUp', title: 'Years Experience', value: '5+' },
-      ]
 
   const certifications = aboutContent?.certifications?.length
     ? [...aboutContent.certifications].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
@@ -162,7 +153,7 @@ export default function About({ content, hero, aboutContent }) {
           </motion.div>
 
           <h2
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 tracking-tight text-[var(--text-primary)]"
+            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 tracking-tight text-[var(--text-primary)]"
           >
             {title}
           </h2>
@@ -214,11 +205,43 @@ export default function About({ content, hero, aboutContent }) {
             </div>
           </div>
 
-          {/* ── Statistics Dashboard ── */}
-          <div className="mt-12 sm:mt-16">
-            <StatisticsDashboard
-              metrics={highlightMetrics}
-            />
+          {/* ── Experience Navbar ── */}
+          <div className="mt-8 sm:mt-10">
+            <div className="flex items-center gap-2 mb-4 sm:mb-5">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#6366f1] animate-pulse" />
+              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-primary)' }}>
+                Experience
+              </span>
+              <div className="flex-1 h-px bg-gradient-to-r from-[#6366f1]/20 to-transparent" />
+            </div>
+            <div
+              className="flex flex-wrap items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl border"
+              style={{
+                backgroundColor: 'var(--bg-secondary)',
+                borderColor: 'var(--border-primary)',
+              }}
+            >
+              {[
+                { label: 'Full-Stack Dev', years: '2+ yrs' },
+                { label: 'Network Design', years: '3+ yrs' },
+                { label: 'UI/UX Design', years: '2+ yrs' },
+                { label: 'Cloud & DevOps', years: '1+ yr' },
+              ].map((exp, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
+                  style={{ backgroundColor: '#6366f110', border: '1px solid #6366f120' }}
+                >
+                  <div className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ backgroundColor: '#6366f1' }} />
+                  <span className="text-[11px] sm:text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
+                    {exp.label}
+                  </span>
+                  <span className="text-[9px] sm:text-[10px] font-medium" style={{ color: '#6366f1' }}>
+                    {exp.years}
+                  </span>
+                </div>
+              ))}
+            </div>
           </div>
 
           {/* ── Certificate Gallery (3D Wall) ── */}

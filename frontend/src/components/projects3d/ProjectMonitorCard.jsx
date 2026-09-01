@@ -257,7 +257,7 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
     mouseY.set(0)
   }, [mouseX, mouseY])
 
-  const color = project.color || statusColorMap[project.status] || '#6366f1'
+  const color = '#6366f1'
   const title = project.title || ''
   const desc = project.shortDescription || project.description || ''
   const techs = project.technologies || project.tags || []
@@ -425,7 +425,7 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
                 href={liveUrl}
                 icon={ExternalLink}
                 label="Live Demo"
-                color={color}
+                color="#3b82f6"
                 variant="primary"
               />
             )}

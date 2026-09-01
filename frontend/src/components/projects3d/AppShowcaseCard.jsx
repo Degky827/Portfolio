@@ -81,7 +81,7 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
     mouseY.set(0)
   }, [mouseX, mouseY])
 
-  const color = app.color || '#06b6d4'
+  const color = '#6366f1'
   const floatDelay = useMemo(() => index * 0.4, [index])
 
   const platformIcon = app.platform === 'iOS' ? Apple : app.platform === 'Android' ? Play : Globe
