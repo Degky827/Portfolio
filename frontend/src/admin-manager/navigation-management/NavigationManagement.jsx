@@ -232,7 +232,6 @@ export default function NavigationManagement() {
       try {
         await updateSiteSettings({
           brandName: settings.brandName,
-          brandNameAm: settings.brandNameAm,
           logoImage: settings.logo,
           logoSvg: settings.logoSvg,
           logoText: settings.logoAlt,
@@ -574,9 +573,6 @@ export default function NavigationManagement() {
             </Field>
             <Field label="Brand Name">
               <Input value={settings?.brandName ?? 'DESALEGN'} onChange={(e) => updateSetting('brandName', e.target.value)} />
-            </Field>
-            <Field label="Brand Name (Amharic)">
-              <Input value={settings?.brandNameAm ?? ''} onChange={(e) => updateSetting('brandNameAm', e.target.value)} placeholder="Amharic brand name" />
             </Field>
             <Field label="Logo Alt Text">
               <Input value={settings?.logoAlt ?? ''} onChange={(e) => updateSetting('logoAlt', e.target.value)} />
