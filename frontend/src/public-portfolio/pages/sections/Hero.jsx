@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense, useCallback, memo } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, MessageCircle, Mail, Download } from 'lucide-react'
+import { ArrowRight, MessageCircle } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
 
 const HeroDesktopScene = lazy(() =>
@@ -41,12 +41,10 @@ const fadeIn = (delay = 0) => ({
 
 const technologies = [
   { name: 'React', icon: 'react' },
-  { name: 'Node.js', icon: 'nodejs' },
   { name: 'TypeScript', icon: 'typescript' },
-  { name: 'MongoDB', icon: 'mongodb' },
+  { name: 'PostgreSQL', icon: 'postgresql' },
   { name: 'Express', icon: 'express' },
   { name: 'Flutter', icon: 'flutter' },
-  { name: 'More', icon: 'more' },
 ]
 
 function TechIcon({ name }) {
@@ -72,6 +70,11 @@ function TechIcon({ name }) {
     mongodb: (
       <svg viewBox="0 0 24 24" width="20" height="20" fill="#47A248">
         <path d="M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.889 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.274 0 .261 6.741.261 6.741l-.261 1.549z" />
+      </svg>
+    ),
+    postgresql: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#4169E1">
+        <path d="M17.128 0c-.31.023-.62.06-.926.113C14.32.34 12.95.6 12.157.818c-.793.218-1.447.572-1.97 1.093-.524.52-.87 1.162-1.085 1.938-.177.635-.27 1.452-.3 2.282H6.96c-.122-.62-.342-1.2-.66-1.707-.317-.507-.732-.936-1.23-1.266-.498-.33-1.08-.56-1.72-.672C2.72 2.38 2.04 2.34 1.38 2.404.72.468.18 2.78.04 3.58c-.14.8.04 1.64.44 2.35.4.71 1.04 1.28 1.8 1.66.76.38 1.64.57 2.52.55.88-.02 1.74-.22 2.52-.6.78-.38 1.44-.94 1.92-1.63.48-.69.78-1.5.88-2.34h3.2c.16.88.52 1.7 1.04 2.4.52.7 1.2 1.26 2 1.64.8.38 1.68.57 2.56.55.88-.02 1.74-.22 2.52-.6.78-.38 1.44-.94 1.92-1.63.48-.69.78-1.5.88-2.34h3.48c-.1 1.14-.52 2.24-1.2 3.14-.68.9-1.6 1.6-2.66 2.04-1.06.44-2.24.62-3.42.52-1.18-.1-2.3-.46-3.26-1.06-.96-.6-1.74-1.42-2.26-2.38-.52-.96-.78-2.06-.74-3.18.04-1.12.42-2.2 1.1-3.08.68-.88 1.62-1.52 2.7-1.86 1.08-.34 2.24-.38 3.34-.12 1.1.26 2.1.8 2.88 1.56.78.76 1.3 1.7 1.5 2.74h3.56c-.36-2.24-1.3-4.32-2.74-6-1.44-1.68-3.32-2.9-5.44-3.52C18.18.34 16.36.08 14.56.16 13.7.2 12.86.36 12.08.64c-.78.28-1.48.7-2.06 1.24-.58.54-1.04 1.2-1.36 1.94-.32.74-.5 1.56-.54 2.4H5.76c-.18-.82-.46-1.6-.84-2.32-.38-.72-.86-1.36-1.44-1.88-.58-.52-1.26-.92-2-.1.4.38.72.84.96 1.36.24.52.4 1.08.48 1.66.08.58.08 1.18 0 1.76H1.2c-.08.58-.08 1.16 0 1.74h1.76c.08.58.24 1.14.48 1.66.24.52.56.98.96 1.36-.74.52-1.42.92-2 .1.58-.52 1.06-1.16 1.44-1.88.38-.72.66-1.5.84-2.32h3.36c.04.84.22 1.66.54 2.4.32.74.78 1.4 1.36 1.94.58.54 1.28.96 2.06 1.24.78.28 1.62.44 2.48.48.86.04 1.7-.04 2.52-.24.82-.2 1.6-.54 2.28-1.02.68-.48 1.26-1.1 1.7-1.82.44-.72.74-1.54.88-2.4h3.48c-.14 1.32-.6 2.58-1.34 3.66-.74 1.08-1.74 1.96-2.92 2.56-1.18.6-2.52.92-3.9.92-1.38 0-2.72-.32-3.9-.92-1.18-.6-2.18-1.48-2.92-2.56-.74-1.08-1.2-2.34-1.34-3.66H1.2c.18 1.96.92 3.84 2.12 5.4 1.2 1.56 2.82 2.8 4.68 3.6 1.86.8 3.94 1.16 6.04 1.04 2.1-.12 4.1-.64 5.88-1.52 1.78-.88 3.26-2.1 4.36-3.56 1.1-1.46 1.78-3.14 2-4.92h-3.48c-.18 1.08-.6 2.1-1.2 3-0.6.9-1.38 1.64-2.28 2.16-.9.52-1.92.82-2.96.88-1.04.06-2.06-.14-3-.56-.94-.42-1.74-1.06-2.34-1.86-.6-.8-.98-1.74-1.12-2.74h3.36c.24.58.64 1.08 1.16 1.44.52.36 1.14.56 1.78.58.64-.02 1.26-.22 1.78-.58.52-.36.92-.86 1.16-1.44H22.8c-.14 1.08-.54 2.12-1.18 3.02-.64.9-1.5 1.64-2.5 2.16-1 .52-2.1.82-3.22.88-1.12.06-2.22-.14-3.24-.56-1.02-.42-1.9-.1-2.62-.6-.72-.5-1.28-1.18-1.62-1.98-.34-.8-.46-1.68-.36-2.56h-3.36c.18 1.44.72 2.82 1.56 4 .84 1.18 1.96 2.14 3.26 2.78 1.3.64 2.76.94 4.24.88 1.48-.06 2.92-.46 4.2-1.2 1.28-.74 2.34-1.78 3.08-3.02.74-1.24 1.14-2.64 1.18-4.08h-3.48c-.08.58-.24 1.14-.48 1.66-.24.52-.56.98-.96 1.36.74-.52 1.42-.92 2-.1-.58.52-1.06 1.16-1.44 1.88-.38.72-.66 1.5-.84 2.32h-3.36c-.04-.58-.04-1.16 0-1.74h3.36c.18-.82.46-1.6.84-2.32.38-.72.86-1.36 1.44-1.88-.58-.52-1.26-.92-2-.1.58.52 1.06 1.16 1.44 1.88.38.72.66 1.5.84 2.32h3.36c.04-.58.04-1.16 0-1.74h-3.36c-.18-.82-.46-1.6-.84-2.32-.38-.72-.86-1.36-1.44-1.88.58-.52 1.26-.92 2-.1-.58.52-1.06 1.16-1.44 1.88-.38.72-.66 1.5-.84 2.32h-3.36c.04-.58.04-1.16 0-1.74h3.36c.18-.82.46-1.6.84-2.32.38-.72.86-1.36 1.44-1.88-.58-.52-1.26-.92-2-.1.58.52 1.06 1.16 1.44 1.88.38.72.66 1.5.84 2.32h3.36c.04-.58.04-1.16 0-1.74h-3.36c-.18-.82-.46-1.6-.84-2.32-.38-.72-.86-1.36-1.44-1.88.58-.52 1.26-.92 2-.1z" />
       </svg>
     ),
     express: (
@@ -118,7 +121,6 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
     : [{ text: '', link: '', openNewTab: false, icon: 'ArrowRight' }]
 
   const socialLinks = settings?.socialLinks || {}
-  const resumeUrl = settings?.resume?.url || '#'
 
   const typedText = useTypingEffect(fullText)
 
@@ -255,21 +257,28 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                 <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.18em] mb-3" style={{ color: 'var(--text-tertiary)' }}>
                   Technologies I work with
                 </p>
-                <div className="flex flex-wrap gap-2">
+                <div className="flex flex-wrap gap-3">
                   {technologies.map((tech, i) => (
                     <motion.div
                       key={tech.name}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.35, delay: 0.95 + i * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg border transition-colors duration-200 hover:border-primary/40 cursor-default"
+                      className="relative group flex items-center justify-center w-10 h-10 rounded-xl cursor-default"
                       style={{
                         backgroundColor: 'var(--bg-secondary)',
-                        borderColor: 'var(--border-primary)',
+                        border: '1px solid var(--border-primary)',
                       }}
                     >
                       <TechIcon name={tech.icon} />
-                      <span className="text-[11px] sm:text-xs font-medium" style={{ color: 'var(--text-secondary)' }}>
+                      <span
+                        className="absolute -top-8 left-1/2 -translate-x-1/2 px-2 py-1 text-[10px] font-semibold rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none z-30"
+                        style={{
+                          backgroundColor: 'var(--bg-primary)',
+                          color: 'var(--text-primary)',
+                          border: '1px solid var(--border-primary)',
+                        }}
+                      >
                         {tech.name}
                       </span>
                     </motion.div>
@@ -285,9 +294,9 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
           {...fadeUp(1.1)}
           className="pointer-events-auto"
         >
-          <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 pb-4">
+          <div className="w-full px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 pb-4">
             <div
-              className="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-3 sm:gap-0 py-3 sm:py-3.5 px-4 sm:px-5 rounded-lg border"
+              className="flex flex-wrap items-center gap-4 sm:gap-6 py-3 sm:py-3.5 px-4 sm:px-5 rounded-lg border"
               style={{
                 backgroundColor: 'var(--bg-secondary)',
                 borderColor: 'var(--border-primary)',
@@ -299,14 +308,11 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
               {stats.map((stat, i) => (
                 <div
                   key={i}
-                  className={`flex items-center gap-2 px-3 sm:px-4 ${
-                    i < stats.length - 1 ? 'sm:border-r' : ''
-                  } ${i === 0 ? 'sm:border-r' : ''}`}
-                  style={{ borderColor: 'var(--border-primary)' }}
+                  className="flex items-center gap-2"
                 >
                   <div
                     className="w-7 h-7 flex items-center justify-center rounded-md shrink-0"
-                    style={{ backgroundColor: `${stat.color}10`, color: stat.color }}
+                    style={{ backgroundColor: '#6366f110', color: '#6366f1' }}
                   >
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
@@ -322,128 +328,22 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                   </div>
                 </div>
               ))}
-
-              {/* Spacer */}
-              <div className="hidden sm:block flex-1 min-w-4" />
-
-              {/* Available for freelance */}
-              <div className="flex items-center gap-3 px-3 sm:px-4 sm:border-l" style={{ borderColor: 'var(--border-primary)' }}>
-                <div className="flex items-center gap-2">
-                  <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse shrink-0" aria-hidden="true" />
-                  <div className="flex flex-col">
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wide" style={{ color: 'var(--text-primary)' }}>
-                      Available for freelance
-                    </span>
-                    <span className="text-[10px] sm:text-[11px] hidden sm:block" style={{ color: 'var(--text-tertiary)' }}>
-                      Let's build something amazing together.
-                    </span>
-                  </div>
-                </div>
-                <button
-                  onClick={scrollToContact}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-white text-[11px] sm:text-xs font-bold rounded-md hover:opacity-90 transition-all duration-200 whitespace-nowrap shrink-0"
-                  aria-label="Hire me"
-                >
-                  Hire Me
-                  <ArrowRight size={11} />
-                </button>
-              </div>
             </div>
           </div>
         </motion.div>
       </div>
-
-      {/* Right social sidebar */}
-      <motion.div
-        {...fadeIn(1.4)}
-        className="hidden lg:flex fixed right-5 top-1/2 -translate-y-1/2 z-30 flex-col gap-2"
-        aria-label="Social links"
-      >
-        {socialLinks.github && (
-          <a
-            href={socialLinks.github}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-200 hover:scale-110 hover:border-primary/40"
-            style={{
-              backgroundColor: 'var(--bg-secondary)',
-              borderColor: 'var(--border-primary)',
-              color: 'var(--text-secondary)',
-            }}
-            title="GitHub"
-            aria-label="GitHub profile"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z" />
-            </svg>
-          </a>
-        )}
-        {socialLinks.linkedin && (
-          <a
-            href={socialLinks.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-200 hover:scale-110 hover:border-primary/40"
-            style={{
-              backgroundColor: 'var(--bg-secondary)',
-              borderColor: 'var(--border-primary)',
-              color: 'var(--text-secondary)',
-            }}
-            title="LinkedIn"
-            aria-label="LinkedIn profile"
-          >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-            </svg>
-          </a>
-        )}
-        <a
-          href={contactBtnLink}
-          onClick={(e) => { e.preventDefault(); scrollToContact() }}
-          className="w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-200 hover:scale-110 hover:border-primary/40"
-          style={{
-            backgroundColor: 'var(--bg-secondary)',
-            borderColor: 'var(--border-primary)',
-            color: 'var(--text-secondary)',
-          }}
-          title="Email"
-          aria-label="Send email"
-        >
-          <Mail size={14} />
-        </a>
-        {resumeUrl && resumeUrl !== '#' && (
-          <a
-            href={resumeUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            download
-            className="w-9 h-9 rounded-lg flex items-center justify-center border transition-all duration-200 hover:scale-110 hover:border-primary/40"
-            style={{
-              backgroundColor: 'var(--bg-secondary)',
-              borderColor: 'var(--border-primary)',
-              color: 'var(--text-secondary)',
-            }}
-            title="Download CV"
-            aria-label="Download CV"
-          >
-            <Download size={14} />
-          </a>
-        )}
-      </motion.div>
 
       {/* Scroll indicator */}
       <motion.div
         {...fadeIn(1.6)}
         className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 cursor-pointer group z-20 pointer-events-auto"
         style={{ color: 'var(--text-tertiary)' }}
-        onClick={() => document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })}
         role="button"
         tabIndex={0}
-        onKeyDown={(e) => { if (e.key === 'Enter') document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' }) }}
-        aria-label="Scroll to about section"
+        aria-label="Scroll to explore"
       >
         <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] group-hover:text-primary transition-colors duration-200">
-          Scroll Down
+          Scroll to Explore
         </span>
         <motion.div
           animate={{ y: [0, 5, 0] }}
@@ -457,23 +357,6 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
             className="w-[2px] h-[6px] bg-primary rounded-full"
           />
         </motion.div>
-      </motion.div>
-
-      {/* Bottom bar: copyright + location */}
-      <motion.div
-        {...fadeIn(1.5)}
-        className="absolute bottom-2.5 left-0 right-0 z-20 flex items-center justify-between px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 pointer-events-none"
-      >
-        <span className="text-[9px] sm:text-[10px] font-medium" style={{ color: 'var(--text-tertiary)' }}>
-          &copy; {new Date().getFullYear()} {fullName}. All rights reserved.
-        </span>
-        <span className="flex items-center gap-1.5 text-[9px] sm:text-[10px] font-medium" style={{ color: 'var(--text-tertiary)' }}>
-          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
-            <circle cx="12" cy="10" r="3" />
-          </svg>
-          Based in Ethiopia
-        </span>
       </motion.div>
     </section>
   )

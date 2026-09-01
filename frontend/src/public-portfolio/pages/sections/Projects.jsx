@@ -151,7 +151,7 @@ export default function Projects() {
           >
             Portfolio
           </motion.span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-[var(--text-primary)] mb-4 sm:mb-6 tracking-tight">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--text-primary)] mb-4 sm:mb-6 tracking-tight">
             Featured Projects
           </h2>
           <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">

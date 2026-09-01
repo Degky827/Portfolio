@@ -172,7 +172,7 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
                     Let's Collaborate
                   </h2>
                   <motion.h2
-                    className="relative text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight"
+                    className="relative text-3xl sm:text-4xl md:text-5xl font-black tracking-tight"
                     style={{ color: 'var(--text-primary)' }}
                   >
                     Let's Collaborate
