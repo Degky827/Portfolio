@@ -42,17 +42,18 @@ const fadeIn = (delay = 0) => ({
 const technologies = [
   { name: 'React', icon: 'react' },
   { name: 'Node.js', icon: 'nodejs' },
-  { name: 'TypeScript', icon: 'typescript' },
-  { name: 'MongoDB', icon: 'mongodb' },
   { name: 'Express', icon: 'express' },
+  { name: 'MongoDB', icon: 'mongodb' },
+  { name: 'PostgreSQL', icon: 'postgresql' },
   { name: 'Flutter', icon: 'flutter' },
-  { name: 'More', icon: 'more' },
+  { name: 'Docker', icon: 'docker' },
+  { name: 'Git', icon: 'git' },
 ]
 
 function TechIcon({ name }) {
   const icons = {
     react: (
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="#61DAFB" strokeWidth="1.5">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="#61DAFB" strokeWidth="1.5">
         <circle cx="12" cy="12" r="2.5" fill="#61DAFB" stroke="none" />
         <ellipse cx="12" cy="12" rx="10" ry="4" />
         <ellipse cx="12" cy="12" rx="10" ry="4" transform="rotate(60 12 12)" />
@@ -60,35 +61,38 @@ function TechIcon({ name }) {
       </svg>
     ),
     nodejs: (
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="#68A063">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#68A063">
         <path d="M12 1.85c-.27 0-.55.07-.78.2l-7.44 4.3c-.48.28-.78.8-.78 1.36v8.58c0 .56.3 1.08.78 1.36l1.95 1.12c.95.46 1.27.46 1.71.46 1.4 0 2.21-.85 2.21-2.33V8.44c0-.12-.09-.21-.21-.21H8.22c-.12 0-.21.09-.21.21v8.06c0 .66-.68 1.31-1.77.76L4.16 16.2a.27.27 0 01-.13-.22V7.41c0-.09.05-.17.13-.22l7.44-4.29a.27.27 0 01.26 0l7.44 4.29c.08.05.13.13.13.22v8.58c0 .09-.05.17-.13.22l-7.44 4.29a.25.25 0 01-.25 0l-1.88-1.11c-.07-.04-.17-.05-.24-.02-.65.3-.78.32-1.39.51-.14.04-.36.11.08.34l2.48 1.47c.24.14.5.21.78.21s.55-.07.78-.2l7.44-4.3c.48-.28.78-.8.78-1.36V7.71c0-.56-.3-1.08-.78-1.36l-7.44-4.3c-.23-.13-.5-.2-.78-.2z" />
       </svg>
     ),
-    typescript: (
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="#3178C6">
-        <path d="M1.125 0C.502 0 0 .502 0 1.125v21.75C0 23.498.502 24 1.125 24h21.75c.623 0 1.125-.502 1.125-1.125V1.125C24 .502 23.498 0 22.875 0zm17.363 9.75c.612 0 1.154.037 1.627.111a6.38 6.38 0 011.306.34v2.458a3.95 3.95 0 00-.643-.361 5.093 5.093 0 00-.717-.26 5.453 5.453 0 00-1.426-.2c-.3 0-.573.028-.819.086a2.1 2.1 0 00-.623.242c-.17.104-.3.229-.393.374a.888.888 0 00-.14.49c0 .196.053.373.156.529.104.156.252.304.443.444s.423.276.696.41c.273.135.582.274.926.416.47.197.892.407 1.266.628.374.222.695.473.963.753.268.279.472.598.614.957.142.359.214.776.214 1.253 0 .657-.125 1.21-.373 1.656a3.033 3.033 0 01-1.012 1.085 4.38 4.38 0 01-1.487.596c-.566.12-1.163.18-1.79.18a9.916 9.916 0 01-1.84-.164 5.544 5.544 0 01-1.512-.493v-2.63a5.033 5.033 0 003.237 1.2c.333 0 .624-.03.872-.09.249-.06.456-.144.623-.25.166-.108.29-.234.373-.38a1.023 1.023 0 00-.074-1.089 2.12 2.12 0 00-.537-.5 5.597 5.597 0 00-.807-.444 27.72 27.72 0 00-1.007-.436c-.918-.383-1.602-.852-2.053-1.405-.45-.553-.676-1.222-.676-2.005 0-.614.123-1.141.369-1.582.246-.441.58-.804 1.004-1.089a4.494 4.494 0 011.47-.629 7.536 7.536 0 011.77-.201zm-15.113.188h9.563v2.166H9.506v9.646H6.789v-9.646H3.375z" />
-      </svg>
-    ),
-    mongodb: (
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="#47A248">
-        <path d="M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.889 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29c.274 0 .261 6.741.261 6.741l-.261 1.549z" />
-      </svg>
-    ),
     express: (
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
         <path d="M24 18.588a1.529 1.529 0 01-1.895-.72l-3.45-4.771-.241-.334-.258.347-2.118 2.904a1.583 1.583 0 01-1.928.562l3.593-4.927-3.317-4.45a1.614 1.614 0 011.961.584l2.274 3.083 2.257-3.069a1.593 1.593 0 012.351-.152l.381.524a.345.345 0 01.063.365l-1.455 2.323 3.17 4.242a1.527 1.527 0 01.444 1.007v.033zM0 18.618l.426-2.805H3.6l2.223 2.805H0zm6.347 0l.426-2.805h3.173l2.222 2.805H6.347zm6.42 0l.427-2.805h3.172l2.222 2.805h-5.821z" />
       </svg>
     ),
+    mongodb: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#47A248">
+        <path d="M17.193 9.555c-1.264-5.58-4.252-7.414-4.573-8.115-.28-.394-.53-.954-.735-1.44-.036.495-.055.685-.523 1.184-.723.566-4.438 3.682-4.74 10.02-.282 5.912 4.27 9.435 4.889 9.884l.07.05A73.49 73.49 0 0111.91 24h.481c.114-1.032.284-2.056.51-3.07.417-.296.604-.463.85-.693a11.342 11.342 0 003.639-8.464c.01-.814-.103-1.662-.197-2.218zm-5.336 8.195s0-8.291.275-8.29.274 0 .261 6.741.261 6.741l-.261 1.549z" />
+      </svg>
+    ),
+    postgresql: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#336791">
+        <path d="M12 0C5.37 0 0 5.37 0 12c0 6.63 5.37 12 12 12s12-5.37 12-12C24 5.37 18.63 0 12 0zm0 3.27c2.4 0 4.36 1.96 4.36 4.36S14.4 12 12 12 7.64 10.04 7.64 7.63 9.6 3.27 12 3.27zm0 10.37c3.15 0 7.09 1.42 7.09 3.27v1.09H4.91v-1.09c0-1.85 3.94-3.27 7.09-3.27z" />
+      </svg>
+    ),
     flutter: (
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="#02569B">
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#02569B">
         <path d="M14.314 0L2.2 12.114l6.517 6.517L21.514 7.1 14.314 0zM14.314 14.314L7.797 7.8l5.617-5.614L20 12.114l-5.686 6.517-5.686-5.686L14.314 14.314zM14.5 24l6.514-6.514-6.514-6.514L8 10.972l6.5 6.514-6.5 6.514z" />
       </svg>
     ),
-    more: (
-      <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-        <circle cx="5" cy="12" r="1.5" fill="currentColor" />
-        <circle cx="12" cy="12" r="1.5" fill="currentColor" />
-        <circle cx="19" cy="12" r="1.5" fill="currentColor" />
+    docker: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#2496ED">
+        <path d="M13.983 11.078h2.119a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.119a.185.185 0 00-.185.186v1.887c0 .102.083.185.185.185zm-2.954-5.43h2.118a.185.185 0 00.186-.186V3.574a.185.185 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.888c0 .102.082.185.185.185zm0 2.716h2.118a.187.187 0 00.186-.186V6.29a.186.186 0 00-.186-.185h-2.118a.185.185 0 00-.185.185v1.887c0 .102.082.186.185.186zm-2.93 0h2.12a.186.186 0 00.184-.186V6.29a.185.185 0 00-.185-.185H8.1a.185.185 0 00-.185.185v1.887c0 .102.083.186.185.186zm-2.956 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H5.143a.186.186 0 00-.185.185v1.887c0 .102.083.186.185.186zm-2.93 0h2.119a.186.186 0 00.185-.186V6.29a.185.185 0 00-.185-.185H2.213a.186.186 0 00-.185.185v1.887c0 .102.083.186.185.186zm8.816 2.714h2.118a.186.186 0 00.186-.185V9.006a.186.186 0 00-.186-.186h-2.118a.185.185 0 00-.185.186v1.887c0 .102.082.185.185.185zm-2.93 0h2.12a.185.185 0 00.184-.185V9.006a.185.185 0 00-.184-.186h-2.12a.185.185 0 00-.185.186v1.887c0 .102.083.185.185.185zm-2.956 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.185-.186H5.143a.186.186 0 00-.185.186v1.887c0 .102.083.185.185.185zm-2.93 0h2.119a.185.185 0 00.185-.185V9.006a.185.185 0 00-.185-.186H2.213a.186.186 0 00-.185.186v1.887c0 .102.083.185.185.185z" />
+      </svg>
+    ),
+    git: (
+      <svg viewBox="0 0 24 24" width="20" height="20" fill="#F05032">
+        <path d="M23.546 10.93L13.067.452c-.604-.603-1.582-.603-2.188 0L8.708 2.627l2.76 2.76c.645-.215 1.379-.07 1.889.441.516.515.658 1.258.438 1.9l2.658 2.66c.645-.223 1.387-.078 1.9.435.721.72.721 1.884 0 2.604-.719.719-1.881.719-2.6 0-.539-.541-.674-1.337-.404-1.996L12.86 8.955v6.525c.176.086.342.203.488.348.713.721.713 1.883 0 2.6-.719.721-1.889.721-2.609 0-.719-.719-.719-1.879 0-2.598.182-.18.387-.316.605-.406V8.835c-.217-.091-.424-.227-.605-.406-.521-.52-.656-1.266-.43-1.91L7.525 3.738.452 10.81c-.603.605-.603 1.582 0 2.189l10.48 10.478c.604.604 1.582.604 2.186 0l10.428-10.43c.604-.603.604-1.58 0-2.187z" />
       </svg>
     ),
   }
@@ -99,10 +103,10 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   const { settings } = useSiteSettings()
 
   const greeting = settings?.greeting || content?.greeting || "Hi, I'm"
-  const fullName = settings?.brandName || content?.fullName || 'Desalegn Kasaye'
+  const fullName = settings?.brandName || content?.fullName || 'DESALEGN'
   const badge = settings?.professionalBadge || content?.professionalBadge || 'Full Stack Developer'
-  const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || 'Full Stack Developer'
-  const introduction = settings?.shortIntroduction || content?.shortIntroduction || 'I build scalable, high-performance web and mobile applications with modern technologies and clean architecture.'
+  const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || 'Fullstack Developer'
+  const introduction = settings?.shortIntroduction || content?.shortIntroduction || 'I build scalable, high-performance web and mobile applications using modern technologies, robust architecture, and production-ready engineering practices.'
   const stats = content?.statistics?.length > 0
     ? content.statistics
     : [
@@ -111,8 +115,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         { label: 'Technologies', value: '10+', icon: 'Cpu', color: '#6366f1' },
         { label: 'Happy Clients', value: '5+', icon: 'Users', color: '#6366f1' },
       ]
-  const contactBtnText = settings?.contactButtonText || contactButtonText || 'Contact Me'
-  const contactBtnLink = settings?.contactButtonLink || contactButtonLink || '#contact'
+  const contactBtnText = settings?.contactButtonText || contactButtonText || "Let's Work Together"
   const ctaButtons = content?.ctaButtons?.length > 0
     ? content.ctaButtons
     : [{ text: '', link: '', openNewTab: false, icon: 'ArrowRight' }]
@@ -126,8 +129,8 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
     skills: [
       { name: 'React', level: 92, color: '#61dafb', icon: 'React' },
       { name: 'Node.js', level: 85, color: '#68a063', icon: 'Node.js' },
-      { name: 'Three.js', level: 78, color: '#8b5cf6', icon: 'Three.js' },
-      { name: 'Flutter', level: 70, color: '#02569b', icon: 'Flutter' },
+      { name: 'Express', level: 82, color: '#6366f1', icon: 'Express' },
+      { name: 'Flutter', level: 78, color: '#02569b', icon: 'Flutter' },
     ],
     socialLinks: settings?.socialLinks || {},
     ctaButtons: ctaButtons.filter(b => b.text || b.link),
@@ -145,54 +148,53 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   return (
     <section
       id="home"
-      className="relative min-h-screen overflow-hidden"
-      style={{ backgroundColor: '#0a0e1a' }}
+      className="relative min-h-screen overflow-hidden bg-white dark:bg-[#080B14] text-slate-900 dark:text-white transition-colors duration-300"
       aria-label="Hero section"
     >
-      {/* 3D Desktop Scene - right side, visible on all screens */}
-      <div className="absolute right-0 top-0 w-full md:w-[52%] lg:w-[48%] h-full z-0" aria-hidden="true">
+      {/* 3D Desktop Scene - right side with pointer-events-auto for OrbitControls drag rotation */}
+      <div className="absolute right-0 top-0 w-full md:w-[50%] lg:w-[48%] h-full z-10 pointer-events-auto cursor-grab active:cursor-grabbing">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+            <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
           </div>
         }>
           <HeroDesktopScene className="w-full h-full" profileData={profileData} />
         </Suspense>
       </div>
 
-      {/* Social media sidebar - right edge */}
+      {/* Social media sidebar - right edge floating bar */}
       <motion.div
         {...fadeIn(1.4)}
-        className="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-3"
+        className="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-3 pointer-events-auto"
       >
         {[
           {
             name: 'GitHub',
-            url: profileData.socialLinks?.github || 'https://github.com/',
+            url: profileData.socialLinks?.github || 'https://github.com/desalegn-tech',
             icon: (
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
               </svg>
             ),
           },
           {
             name: 'LinkedIn',
-            url: profileData.socialLinks?.linkedin || 'https://linkedin.com/',
+            url: profileData.socialLinks?.linkedin || 'https://linkedin.com/in/dk-cs-3rd',
             icon: (
-              <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
               </svg>
             ),
           },
           {
             name: 'Email',
-            url: `mailto:${profileData.socialLinks?.email || 'hello@example.com'}`,
-            icon: <Mail size={16} />,
+            url: `mailto:${profileData.socialLinks?.email || 'desalegnky827@gmail.com'}`,
+            icon: <Mail size={17} />,
           },
           {
             name: 'Download CV',
             url: profileData.socialLinks?.cv || '#',
-            icon: <Download size={16} />,
+            icon: <Download size={17} />,
           },
         ].map((social, i) => (
           <motion.a
@@ -202,23 +204,13 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
             rel={social.name !== 'Email' && social.name !== 'Download CV' ? 'noopener noreferrer' : undefined}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 1.5 + i * 0.1 }}
-            className="group relative flex items-center justify-center w-10 h-10 rounded-lg transition-all duration-200 hover:scale-110"
-            style={{
-              backgroundColor: 'rgba(255,255,255,0.05)',
-              border: '1px solid rgba(255,255,255,0.1)',
-              color: 'rgba(255,255,255,0.6)',
-            }}
+            transition={{ duration: 0.4, delay: 1.2 + i * 0.1 }}
+            className="group relative flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 hover:scale-110 border bg-white/80 dark:bg-[#101522]/80 border-slate-200 dark:border-white/10 text-slate-600 dark:text-[#A8B0C0] hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500 shadow-md backdrop-blur-md"
             aria-label={social.name}
           >
             {social.icon}
             <span
-              className="absolute right-full mr-2 px-2 py-1 text-[10px] font-semibold rounded-md whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none"
-              style={{
-                backgroundColor: 'rgba(0,0,0,0.8)',
-                color: '#fff',
-                border: '1px solid rgba(255,255,255,0.1)',
-              }}
+              className="absolute right-full mr-3 px-2.5 py-1 text-xs font-semibold rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg bg-slate-900 dark:bg-[#101522] text-white border border-slate-700 dark:border-white/10"
             >
               {social.name}
             </span>
@@ -231,25 +223,23 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         {/* Hero content area */}
         <div className="flex-1 flex items-center">
           <div className="w-full max-w-7xl mx-auto px-5 sm:px-8 md:px-12 lg:px-16 xl:px-20 flex items-center">
-            {/* Left text content */}
-            <div className="w-full md:w-1/2 lg:max-w-lg pt-24 sm:pt-28 md:pt-0">
+            {/* Left text content - Information Anchor */}
+            <div className="w-full md:w-[52%] lg:max-w-xl pt-24 sm:pt-28 md:pt-0 pointer-events-auto">
 
               {/* Eyebrow */}
               <motion.p
                 {...fadeIn(0.2)}
-                className="text-[10px] sm:text-xs font-semibold uppercase tracking-[0.2em] mb-4 sm:mb-5"
-                style={{ color: '#60a5fa' }}
+                className="text-xs font-bold uppercase tracking-[0.25em] mb-4 text-indigo-600 dark:text-indigo-400"
               >
                 Welcome to my digital space
               </motion.p>
 
               {/* Heading group */}
-              <h1 className="mb-5 sm:mb-6">
+              <h1 className="mb-6">
                 {/* Greeting line */}
                 <motion.span
                   {...fadeUp(0.35)}
-                  className="block text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold leading-tight"
-                  style={{ color: 'var(--text-primary)' }}
+                  className="block text-lg sm:text-xl md:text-2xl font-semibold leading-tight text-slate-500 dark:text-[#A8B0C0]"
                 >
                   {greeting}
                 </motion.span>
@@ -257,7 +247,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                 {/* Name */}
                 <motion.span
                   {...fadeUp(0.45)}
-                  className="block text-[28px] sm:text-[36px] md:text-[46px] lg:text-[56px] font-black leading-[1.05] tracking-tight text-white"
+                  className="block text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black leading-[1.05] tracking-tight text-slate-900 dark:text-white my-1"
                 >
                   {fullName}
                 </motion.span>
@@ -265,14 +255,13 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                 {/* Role / typed text */}
                 <motion.span
                   {...fadeUp(0.55)}
-                  className="block text-base sm:text-xl md:text-2xl lg:text-3xl font-bold leading-tight mt-1"
-                  style={{ color: 'var(--text-primary)' }}
+                  className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold leading-tight mt-1 text-indigo-600 dark:text-[#818CF8]"
                 >
                   {typedText}
                   <motion.span
                     animate={{ opacity: [1, 0] }}
                     transition={{ duration: 0.6, repeat: Infinity }}
-                    className="inline-block w-[2px] h-5 sm:h-6 md:h-7 lg:h-8 ml-0.5 bg-primary align-middle"
+                    className="inline-block w-[2.5px] h-6 sm:h-7 md:h-8 lg:h-9 ml-1 bg-indigo-500 align-middle"
                     aria-hidden="true"
                   />
                 </motion.span>
@@ -281,8 +270,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
               {/* Introduction */}
               <motion.p
                 {...fadeUp(0.65)}
-                className="text-sm sm:text-base md:text-lg leading-relaxed mb-6 sm:mb-8 max-w-md"
-                style={{ color: '#c8d0e0' }}
+                className="text-sm sm:text-base md:text-lg leading-relaxed mb-8 text-slate-600 dark:text-[#A8B0C0] max-w-lg font-normal"
               >
                 {introduction}
               </motion.p>
@@ -290,54 +278,42 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
               {/* CTA Buttons */}
               <motion.div
                 {...fadeUp(0.75)}
-                className="flex flex-wrap items-center gap-3 sm:gap-4 mb-8 sm:mb-10"
+                className="flex flex-wrap items-center gap-4 mb-10"
               >
                 <button
                   onClick={scrollToWork}
-                  className="group flex items-center gap-2.5 px-5 sm:px-6 py-2.5 sm:py-3 bg-primary text-white font-semibold text-sm sm:text-[15px] rounded-lg hover:opacity-90 transition-all duration-200 shadow-md shadow-primary/20"
+                  className="group flex items-center gap-2.5 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-sm sm:text-[15px] rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/25 cursor-pointer"
                   aria-label="Explore my work"
                 >
                   Explore My Work
-                  <ArrowRight size={15} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-200" />
                 </button>
                 <button
                   onClick={scrollToContact}
-                  className="group flex items-center gap-2.5 px-5 sm:px-6 py-2.5 sm:py-3 border font-semibold text-sm sm:text-[15px] rounded-lg transition-all duration-200 hover:border-primary/50"
-                  style={{
-                    borderColor: '#2a3454',
-                    color: '#ffffff',
-                  }}
+                  className="group flex items-center gap-2.5 px-6 py-3 border border-slate-300 dark:border-white/10 hover:border-indigo-500/50 bg-slate-100/80 dark:bg-white/[0.04] backdrop-blur-md text-slate-800 dark:text-white font-semibold text-sm sm:text-[15px] rounded-xl transition-all duration-200 cursor-pointer"
                   aria-label={contactBtnText}
                 >
                   {contactBtnText}
-                  <MessageCircle size={15} className="opacity-60" />
+                  <MessageCircle size={16} className="opacity-70 group-hover:opacity-100 transition-opacity" />
                 </button>
               </motion.div>
 
-              {/* Technologies */}
+              {/* Technologies Strip */}
               <motion.div {...fadeUp(0.85)}>
-                <p className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.18em] mb-3" style={{ color: '#7a8599' }}>
+                <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em] mb-3.5 text-slate-500 dark:text-[#64748B]">
                   Technologies I work with
                 </p>
-                <div className="flex flex-wrap gap-3">
+                <div className="flex flex-wrap gap-2.5">
                   {technologies.map((tech, i) => (
                     <motion.div
                       key={tech.name}
                       initial={{ opacity: 0, y: 8 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.35, delay: 0.95 + i * 0.04, ease: [0.25, 0.46, 0.45, 0.94] }}
-                      className="relative group flex flex-col items-center gap-1.5 cursor-default"
+                      transition={{ duration: 0.35, delay: 0.95 + i * 0.04 }}
+                      className="relative group flex items-center gap-2 px-3 py-2 rounded-xl bg-slate-100 dark:bg-[#101522] border border-slate-200 dark:border-white/10 hover:border-indigo-500/50 transition-all duration-200 shadow-sm cursor-default"
                     >
-                      <div
-                        className="flex items-center justify-center w-10 h-10 sm:w-11 sm:h-11 rounded-xl transition-all duration-200 group-hover:scale-110"
-                        style={{
-                          backgroundColor: '#111827',
-                          border: '1px solid #1e2640',
-                        }}
-                      >
-                        <TechIcon name={tech.icon} />
-                      </div>
-                      <span className="text-[9px] sm:text-[10px] font-medium" style={{ color: '#7a8599' }}>
+                      <TechIcon name={tech.icon} />
+                      <span className="text-xs font-semibold text-slate-700 dark:text-[#A8B0C0] group-hover:text-indigo-600 dark:group-hover:text-white transition-colors">
                         {tech.name}
                       </span>
                     </motion.div>
@@ -355,11 +331,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         >
           <div className="w-full px-4 sm:px-8 md:px-12 lg:px-16 xl:px-20 pb-16">
             <div
-              className="flex flex-wrap items-center gap-3 sm:gap-5 py-3 sm:py-3.5 px-3 sm:px-5 rounded-xl border"
-              style={{
-                backgroundColor: 'rgba(17, 24, 39, 0.8)',
-                borderColor: '#1e2640',
-              }}
+              className="flex flex-wrap items-center gap-3 sm:gap-5 py-3 sm:py-3.5 px-3 sm:px-5 rounded-xl border bg-slate-100/90 dark:bg-[#101522]/90 border-slate-200 dark:border-white/10 backdrop-blur-md"
               role="region"
               aria-label="Portfolio statistics"
             >
@@ -370,18 +342,17 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                   className="flex items-center gap-2"
                 >
                   <div
-                    className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-md shrink-0"
-                    style={{ backgroundColor: 'rgba(99, 102, 241, 0.1)', color: '#6366f1' }}
+                    className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-md shrink-0 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
                   >
                     <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                       <circle cx="12" cy="12" r="10" />
                     </svg>
                   </div>
                   <div className="flex flex-col">
-                    <span className="text-sm sm:text-base md:text-lg font-bold leading-none" style={{ color: '#ffffff' }}>
+                    <span className="text-sm sm:text-base md:text-lg font-bold leading-none text-slate-900 dark:text-white">
                       {stat.value}
                     </span>
-                    <span className="text-[8px] sm:text-[9px] md:text-[10px] font-medium mt-0.5" style={{ color: '#7a8599' }}>
+                    <span className="text-[8px] sm:text-[9px] md:text-[10px] font-medium mt-0.5 text-slate-500 dark:text-[#7a8599]">
                       {stat.label}
                     </span>
                   </div>
@@ -389,24 +360,24 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
               ))}
 
               {/* Divider */}
-              <div className="hidden sm:block w-px h-8 mx-1" style={{ backgroundColor: '#1e2640' }} />
+              <div className="hidden sm:block w-px h-8 mx-1 bg-slate-200 dark:bg-white/10" />
 
               {/* Available for freelance */}
               <div className="hidden sm:flex items-center gap-3 ml-auto">
                 <div className="flex flex-col">
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider" style={{ color: '#ffffff' }}>
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span className="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                       Available for freelance
                     </span>
                   </div>
-                  <span className="text-[9px] sm:text-[10px] mt-0.5" style={{ color: '#7a8599' }}>
+                  <span className="text-[9px] sm:text-[10px] mt-0.5 text-slate-500 dark:text-[#7a8599]">
                     Let's build something amazing together.
                   </span>
                 </div>
                 <button
                   onClick={scrollToContact}
-                  className="group flex items-center gap-1.5 px-4 py-2 bg-primary text-white font-semibold text-xs sm:text-[13px] rounded-lg hover:opacity-90 transition-all duration-200 shrink-0"
+                  className="group flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-[13px] rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md"
                 >
                   Hire Me
                   <ArrowRight size={13} className="group-hover:translate-x-0.5 transition-transform duration-200" />
@@ -420,25 +391,23 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       {/* Scroll indicator */}
       <motion.div
         {...fadeIn(1.6)}
-        className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 cursor-pointer group z-20 pointer-events-auto"
-        style={{ color: '#7a8599' }}
+        className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 cursor-pointer group z-20 pointer-events-auto text-slate-400 dark:text-[#7a8599]"
         role="button"
         tabIndex={0}
         aria-label="Scroll to explore"
       >
-        <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] group-hover:text-primary transition-colors duration-200">
+        <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
           Scroll Down
         </span>
         <motion.div
           animate={{ y: [0, 5, 0] }}
           transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-[18px] h-[28px] border-[1.5px] rounded-full flex justify-center pt-1.5 group-hover:border-primary transition-colors duration-200"
-          style={{ borderColor: '#2a3454' }}
+          className="w-[18px] h-[28px] border-[1.5px] border-slate-300 dark:border-[#2a3454] rounded-full flex justify-center pt-1.5 group-hover:border-indigo-600 dark:group-hover:border-indigo-400 transition-colors duration-200"
         >
           <motion.div
             animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-[2px] h-[6px] bg-primary rounded-full"
+            className="w-[2px] h-[6px] bg-indigo-600 dark:bg-indigo-400 rounded-full"
           />
         </motion.div>
       </motion.div>
