@@ -100,7 +100,7 @@ const skillIconMap = {
   SiDocker: SiDocker, DOCKER: SiDocker,
   SiKubernetes: SiKubernetes, KUBERNETES: SiKubernetes, K8S: SiKubernetes,
   SiDigitalocean: SiDigitalocean, DIGITALOCEAN: SiDigitalocean,
-  SiDigitalocean: SiDigitalocean, HEROKU: SiDigitalocean,
+  SiHeroku: SiDigitalocean, HEROKU: SiDigitalocean,
   SiVercel: SiVercel, VERCEL: SiVercel,
   SiNetlify: SiNetlify, NETLIFY: SiNetlify,
   SiRailway: SiRailway, RAILWAY: SiRailway,
