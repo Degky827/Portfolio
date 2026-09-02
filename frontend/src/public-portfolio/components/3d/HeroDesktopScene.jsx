@@ -1,6 +1,6 @@
-import { Suspense, useMemo, useState, useEffect, useCallback, useRef } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { Float } from '@react-three/drei'
+import { Suspense, useMemo, useState, useCallback, useRef } from 'react'
+import { Canvas } from '@react-three/fiber'
+import { Float, OrbitControls } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Maximize2, Minimize2, RotateCcw } from 'lucide-react'
 import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
@@ -13,114 +13,6 @@ import Speaker from './Speaker'
 import ProfessionalBackground from './ProfessionalBackground'
 
 const CYAN = new THREE.Color('#22d3ee')
-
-/* ────────────────────────────────────────────────────────────────
-   Drag Controller
-   - Auto-rotation on Y axis when idle
-   - Pauses during interaction
-   - Velocity-based inertia on release
-   - Smooth damping back to idle
-   ──────────────────────────────────────────────────────────────── */
-const DRAG_SENSITIVITY = 0.005
-const MAX_TILT_X = 0.25
-const MAX_TILT_Y = 0.5
-const AUTO_ROTATE_SPEED = 0.15
-const INERTIA_DECAY = 0.92
-const DAMPING_LERP = 0.04
-
-function DesktopDragController({ groupRef, canvasRef }) {
-  const isDragging = useRef(false)
-  const prevPointer = useRef({ x: 0, y: 0 })
-  const velocity = useRef({ x: 0, y: 0 })
-  const rotation = useRef({ x: 0, y: 0 })
-  const targetRotation = useRef({ x: 0, y: 0 })
-  const autoAngle = useRef(0)
-  const interactionTimeout = useRef(null)
-  const isInteracting = useRef(false)
-
-  useEffect(() => {
-    const canvas = canvasRef?.current
-    if (!canvas) return
-
-    const handlePointerDown = (e) => {
-      isDragging.current = true
-      isInteracting.current = true
-      prevPointer.current = { x: e.clientX, y: e.clientY }
-      velocity.current = { x: 0, y: 0 }
-      canvas.setPointerCapture(e.pointerId)
-      if (interactionTimeout.current) clearTimeout(interactionTimeout.current)
-    }
-
-    const handlePointerMove = (e) => {
-      if (!isDragging.current) return
-      const dx = e.clientX - prevPointer.current.x
-      const dy = e.clientY - prevPointer.current.y
-      prevPointer.current = { x: e.clientX, y: e.clientY }
-
-      velocity.current.x = dy * DRAG_SENSITIVITY
-      velocity.current.y = dx * DRAG_SENSITIVITY
-
-      targetRotation.current.y = THREE.MathUtils.clamp(
-        targetRotation.current.y + velocity.current.y,
-        -MAX_TILT_Y,
-        MAX_TILT_Y
-      )
-      targetRotation.current.x = THREE.MathUtils.clamp(
-        targetRotation.current.x + velocity.current.x,
-        -MAX_TILT_X,
-        MAX_TILT_X
-      )
-    }
-
-    const handlePointerUp = (e) => {
-      isDragging.current = false
-      canvas.releasePointerCapture(e.pointerId)
-      interactionTimeout.current = setTimeout(() => {
-        isInteracting.current = false
-      }, 2000)
-    }
-
-    canvas.addEventListener('pointerdown', handlePointerDown, { passive: true })
-    canvas.addEventListener('pointermove', handlePointerMove, { passive: true })
-    canvas.addEventListener('pointerup', handlePointerUp, { passive: true })
-    canvas.addEventListener('pointercancel', handlePointerUp, { passive: true })
-
-    return () => {
-      canvas.removeEventListener('pointerdown', handlePointerDown)
-      canvas.removeEventListener('pointermove', handlePointerMove)
-      canvas.removeEventListener('pointerup', handlePointerUp)
-      canvas.removeEventListener('pointercancel', handlePointerUp)
-      if (interactionTimeout.current) clearTimeout(interactionTimeout.current)
-    }
-  }, [canvasRef])
-
-  useFrame((_, delta) => {
-    if (!groupRef.current) return
-
-    if (!isInteracting.current) {
-      autoAngle.current += delta * AUTO_ROTATE_SPEED
-      targetRotation.current.y = Math.sin(autoAngle.current) * 0.15
-      targetRotation.current.x = Math.sin(autoAngle.current * 0.7) * 0.03
-    }
-
-    if (!isDragging.current) {
-      velocity.current.x *= INERTIA_DECAY
-      velocity.current.y *= INERTIA_DECAY
-      targetRotation.current.x += velocity.current.x
-      targetRotation.current.y += velocity.current.y
-      targetRotation.current.x = THREE.MathUtils.clamp(targetRotation.current.x, -MAX_TILT_X, MAX_TILT_X)
-      targetRotation.current.y = THREE.MathUtils.clamp(targetRotation.current.y, -MAX_TILT_Y, MAX_TILT_Y)
-    }
-
-    rotation.current.x = THREE.MathUtils.lerp(rotation.current.x, targetRotation.current.x, DAMPING_LERP)
-    rotation.current.y = THREE.MathUtils.lerp(rotation.current.y, targetRotation.current.y, DAMPING_LERP)
-
-    groupRef.current.rotation.x = rotation.current.x
-    groupRef.current.rotation.y = rotation.current.y
-  })
-
-  return null
-}
 
 /* ────────────────────────────────────────────────────────────────
    Demand-based renderer — only re-renders when something changes
@@ -144,33 +36,26 @@ function DemandRenderer() {
    ──────────────────────────────────────────────────────────────── */
 function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackground = true }) {
   const desktopGroupRef = useRef()
-  const { invalidate } = useThree()
 
-  const bgColor = darkMode ? '#0B0D10' : '#ffffff'
+  const bgColor = darkMode ? '#080B14' : '#ffffff'
   const fogColor = useMemo(() => new THREE.Color(bgColor), [bgColor])
 
-  const floorColor = darkMode ? '#0d1117' : '#f8f9fa'
-  const wallColor = darkMode ? '#141820' : '#f3f4f6'
-  const accentColor = darkMode ? '#6366f1' : '#3b82f6'
-  const ambientColor = darkMode ? '#1a1a2e' : '#f5f5f5'
+  const floorColor = darkMode ? '#080B14' : '#ffffff'
+  const wallColor = darkMode ? '#080B14' : '#ffffff'
+  const accentColor = darkMode ? '#6366f1' : '#4f46e5'
+  const ambientColor = darkMode ? '#080B14' : '#ffffff'
   const dirColor = darkMode ? '#818cf8' : '#6366f1'
 
-  const ambientIntensity = darkMode ? 0.45 : 0.6
-  const dirIntensity = darkMode ? 1.3 : 1.0
+  const ambientIntensity = darkMode ? 0.6 : 0.75
+  const dirIntensity = darkMode ? 1.2 : 1.0
 
-  const floorRoughness = darkMode ? 0.6 : 0.85
-  const floorMetalness = darkMode ? 0.35 : 0.1
-
-  useEffect(() => {
-    return () => {
-      gl?.dispose()
-    }
-  }, [])
+  const floorRoughness = darkMode ? 0.8 : 0.9
+  const floorMetalness = darkMode ? 0.1 : 0.05
 
   return (
     <>
       {showBackground && <color attach="background" args={[bgColor]} />}
-      <fog attach="fog" args={[fogColor, 14, 32]} />
+      <fog attach="fog" args={[fogColor, 10, 28]} />
 
       {/* Ambient fill */}
       <ambientLight intensity={ambientIntensity} color={ambientColor} />
@@ -203,8 +88,8 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
       {darkMode && (
         <pointLight
           position={[0.5, 1.6, -0.1]}
-          intensity={0.7}
-          color="#60a5fa"
+          intensity={0.6}
+          color="#818cf8"
           distance={5}
           decay={2}
         />
@@ -214,50 +99,39 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
         <ProfessionalBackground darkMode={darkMode} isMobile={isMobile} />
       </Suspense>
 
-      {/* Floor */}
+      {/* Floor - matches exact page background */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
         <planeGeometry args={[30, 30]} />
         <meshStandardMaterial
           color={floorColor}
           roughness={floorRoughness}
           metalness={floorMetalness}
-          envMapIntensity={darkMode ? 0.5 : 0.2}
+          envMapIntensity={darkMode ? 0.3 : 0.1}
         />
       </mesh>
 
-      {/* Accent strip under desk */}
+      {/* Subtle Accent strip under desk */}
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.003, 1.2]}>
-        <planeGeometry args={[3.5, 0.4]} />
+        <planeGeometry args={[3.2, 0.3]} />
         <meshStandardMaterial
           color={accentColor}
           emissive={accentColor}
-          emissiveIntensity={darkMode ? 0.25 : 0.1}
+          emissiveIntensity={darkMode ? 0.2 : 0.08}
           transparent
-          opacity={darkMode ? 0.15 : 0.08}
+          opacity={darkMode ? 0.12 : 0.05}
         />
       </mesh>
 
-      {/* Back wall */}
+      {/* Back wall - matches exact page background */}
       <mesh position={[0, 2.5, -2]} receiveShadow>
-        <planeGeometry args={[12, 6]} />
-        <meshStandardMaterial color={wallColor} roughness={0.92} metalness={0.05} />
+        <planeGeometry args={[14, 8]} />
+        <meshStandardMaterial color={wallColor} roughness={0.98} metalness={0.0} />
       </mesh>
 
-      {/* Wall accent lines */}
-      <mesh position={[0, 3.5, -1.99]}>
-        <boxGeometry args={[8, 0.015, 0.01]} />
-        <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={darkMode ? 0.7 : 0.25} />
-      </mesh>
-      <mesh position={[0, 1.5, -1.99]}>
-        <boxGeometry args={[6, 0.01, 0.01]} />
-        <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={darkMode ? 0.4 : 0.15} />
-      </mesh>
-
-      {/* Desktop assembly */}
+      {/* Desktop assembly scaled & centered appropriately */}
       <Suspense fallback={null}>
-        <Float speed={1.2} rotationIntensity={0} floatIntensity={0.06}>
-          <group ref={desktopGroupRef} position={[0.5, 0, 0]} scale={0.9}>
-            <DesktopDragController groupRef={desktopGroupRef} canvasRef={canvasRef} />
+        <Float speed={1.2} rotationIntensity={0} floatIntensity={0.05}>
+          <group ref={desktopGroupRef} position={[0.2, -0.05, 0]} scale={0.82}>
             <Desk position={[0, 0, 0]} />
             <Monitor position={[0, 0, -0.3]} screenMode="code" profileData={profileData} />
             <Keyboard position={[0, 0, 0.25]} />
@@ -285,6 +159,21 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
           </group>
         </Float>
       </Suspense>
+
+      {/* Orbit Controls for interactive mouse drag & rotation */}
+      <OrbitControls
+        enableZoom={false}
+        enablePan={false}
+        minPolarAngle={Math.PI / 4}
+        maxPolarAngle={Math.PI / 2 + 0.1}
+        minAzimuthAngle={-Math.PI / 2.5}
+        maxAzimuthAngle={Math.PI / 2.5}
+        enableDamping
+        dampingFactor={0.05}
+        rotateSpeed={0.7}
+        autoRotate={!isMobile}
+        autoRotateSpeed={0.5}
+      />
     </>
   )
 }
@@ -298,12 +187,11 @@ function ExpandButton({ onClick, icon: Icon, label, darkMode }) {
       onClick={onClick}
       whileHover={{ scale: 1.1 }}
       whileTap={{ scale: 0.9 }}
-      className={`absolute top-3 right-3 z-20 p-2 rounded-xl backdrop-blur-md border transition-all shadow-lg ${
+      className={`absolute top-3 right-3 z-30 p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-lg cursor-pointer ${
         darkMode
-          ? 'bg-black/60 border-white/10 hover:bg-black/80'
-          : 'bg-white/60 border-black/10 hover:bg-white/80'
+          ? 'bg-black/60 border-white/10 text-white hover:bg-black/80'
+          : 'bg-white/80 border-black/10 text-slate-900 hover:bg-white'
       }`}
-      style={{ color: 'var(--text-primary)' }}
       title={label}
       aria-label={label}
     >
@@ -331,7 +219,7 @@ function FallbackScene({ darkMode }) {
   return (
     <div
       className="w-full h-full flex items-center justify-center"
-      style={{ backgroundColor: darkMode ? '#0B0D10' : '#ffffff' }}
+      style={{ backgroundColor: darkMode ? '#080B14' : '#ffffff' }}
     >
       <div className="text-center max-w-xs px-4">
         <div
@@ -345,7 +233,7 @@ function FallbackScene({ darkMode }) {
             <path d="M6 10l4 4 4-4" />
           </svg>
         </div>
-        <p className="text-xs font-medium" style={{ color: 'var(--text-tertiary)' }}>
+        <p className="text-xs font-medium" style={{ color: darkMode ? '#A8B0C0' : '#64748B' }}>
           3D workspace requires WebGL
         </p>
       </div>
@@ -435,9 +323,37 @@ export default function HeroDesktopScene({ className = '', profileData }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 z-50"
-            style={{ background: darkMode ? '#0B0D10' : '#ffffff' }}
+            className="fixed inset-0 z-[99999] flex flex-col"
+            style={{ background: darkMode ? '#080B14' : '#ffffff' }}
           >
+            <div className="absolute top-0 left-0 right-0 z-[100000] flex items-center justify-between px-6 py-4 bg-slate-900/60 dark:bg-black/60 backdrop-blur-md border-b border-white/10 text-white">
+              <span className="text-xs font-bold uppercase tracking-[0.2em]">
+                3D Workspace (Interactive View)
+              </span>
+              <div className="flex items-center gap-2">
+                <motion.button
+                  onClick={handleResetCamera}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+                  title="Reset camera"
+                  aria-label="Reset camera"
+                >
+                  <RotateCcw size={16} />
+                </motion.button>
+                <motion.button
+                  onClick={handleToggle}
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer"
+                  title="Collapse"
+                  aria-label="Collapse 3D workspace"
+                >
+                  <Minimize2 size={16} />
+                </motion.button>
+              </div>
+            </div>
+
             <Canvas
               key={`expanded-${cameraKey}`}
               camera={{ position: [0, 2.2, 8], fov: 40, near: 0.1, far: 100 }}
@@ -452,48 +368,10 @@ export default function HeroDesktopScene({ className = '', profileData }) {
               }}
               shadows
               frameloop="demand"
-              style={{ background: darkMode ? '#0B0D10' : '#ffffff' }}
+              style={{ background: darkMode ? '#080B14' : '#ffffff', width: '100%', height: '100%' }}
             >
               <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} canvasRef={canvasRef} />
             </Canvas>
-
-            <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-6 py-4">
-              <span className="text-xs font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-primary)' }}>
-                3D Workspace
-              </span>
-              <div className="flex items-center gap-2">
-                <motion.button
-                  onClick={handleResetCamera}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`p-2.5 rounded-xl backdrop-blur-md border transition-all ${
-                    darkMode
-                      ? 'bg-white/10 border-white/10 hover:bg-white/20'
-                      : 'bg-black/10 border-black/10 hover:bg-black/20'
-                  }`}
-                  style={{ color: 'var(--text-primary)' }}
-                  title="Reset camera"
-                  aria-label="Reset camera"
-                >
-                  <RotateCcw size={16} />
-                </motion.button>
-                <motion.button
-                  onClick={handleToggle}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className={`p-2.5 rounded-xl backdrop-blur-md border transition-all ${
-                    darkMode
-                      ? 'bg-white/10 border-white/10 hover:bg-white/20'
-                      : 'bg-black/10 border-black/10 hover:bg-black/20'
-                  }`}
-                  style={{ color: 'var(--text-primary)' }}
-                  title="Collapse"
-                  aria-label="Collapse 3D workspace"
-                >
-                  <Minimize2 size={16} />
-                </motion.button>
-              </div>
-            </div>
           </motion.div>
         )}
       </AnimatePresence>

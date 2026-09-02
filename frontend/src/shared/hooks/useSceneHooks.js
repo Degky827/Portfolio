@@ -16,11 +16,15 @@ export function useIsMobile() {
 }
 
 export function useDarkModeScene() {
-  const [dark, setDark] = useState(() =>
-    typeof document !== 'undefined'
-      ? document.documentElement.classList.contains('dark')
-      : true
-  )
+  const [dark, setDark] = useState(() => {
+    if (typeof document === 'undefined') return true
+    if (document.documentElement.classList.contains('dark')) return true
+    const saved = localStorage.getItem('darkMode')
+    if (saved !== null) {
+      try { return JSON.parse(saved) } catch { /* ignore */ }
+    }
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  })
 
   useEffect(() => {
     const el = document.documentElement
