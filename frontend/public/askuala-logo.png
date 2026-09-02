@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="google-site-verification" content="InCErcIzlRlo8cwGaqZOWoEij4otPMvXSTxF1ncTp_o" />
+    <meta name="msvalidate.01" content="3BEAE49D1843DAAB7CB6664898EA3D70" />
+
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Preconnect to external origins BEFORE any requests -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preconnect" href="https://api.askuala.link" />
+
+    <!-- DNS prefetch for all canonical domains -->
+    <link rel="dns-prefetch" href="https://www.askualalink.com" />
+    <link rel="dns-prefetch" href="https://askualalink.com" />
+    <link rel="dns-prefetch" href="https://www.askuala.link" />
+    <link rel="dns-prefetch" href="https://askuala.link" />
+    <link rel="dns-prefetch" href="https://askuala.et" />
+
+    <!-- LCP hero image: preload from initial HTML so browser fetches immediately -->
+    <link rel="preload" href="/africa.svg" as="image" type="image/svg+xml" fetchpriority="high" />
+
+    <!-- Non-blocking font load: media=print trick defers render until after paint -->
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&family=Open+Sans:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;500;700&display=swap"
+      media="print"
+      onload="this.media='all'"
+    />
+    <noscript>
+      <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,700&family=Open+Sans:wght@400;500;600;700&family=Noto+Sans+Ethiopic:wght@400;500;700&display=swap" />
+    </noscript>
+
+    <!-- Primary SEO -->
+    <title>Askuala Link | Best School Management System in Ethiopia | AI Student &amp; Parent Portal</title>
+    <meta
+      name="description"
+      content="Askuala Link is Ethiopia's #1 AI-powered school management system. Automate attendance, grades, and parent-school communication. Trusted by 15,000+ students and 27+ schools. The best student management and parent portal system in Ethiopia."
+    />
+    <meta
+      name="keywords"
+      content="best school management system Ethiopia, school management system Ethiopia, student management system Ethiopia, parent portal Ethiopia, parent portal system Ethiopia, school automated system Ethiopia, school automation Ethiopia, AI school management Ethiopia, school management system AI, school management AI, Askuala Link, Askuala, AskualaLink, Askuala AI, asquala, asquala link, asquala login, askuala login, asquala school, asquala school system, askuala school system, asquala app, askuala app, asquala app download, askuala app download, asquala cruise, asquala cruise school, askuala cruise school, asquala login password, askual, school portal Ethiopia, LMS Ethiopia, Ethiopian EdTech, eSchool Ethiopia alternative, Smart School Manager alternative, Fidel school system alternative, best school software Ethiopia, attendance management Ethiopia, school reporting system Ethiopia, gradebook Ethiopia, school fee management Ethiopia, private school software Ethiopia, Addis Ababa school management, Bahir Dar school management, digital school system Ethiopia, automated school system Ethiopia, student tracking Ethiopia, teacher management Ethiopia, adaptive learning Ethiopia, AI powered education Ethiopia, best EdTech Ethiopia, Nolawi Online School alternative, Ethio Telecom EMS alternative, school management platform Ethiopia, report card system Ethiopia, exam management Ethiopia, school SMS system Ethiopia"
+    />
+
+    <!-- Geo targeting -->
+    <meta name="geo.region" content="ET" />
+    <meta name="geo.country" content="Ethiopia" />
+    <meta name="geo.placename" content="Bahir Dar, Amhara, Ethiopia" />
+    <meta name="geo.position" content="11.594;37.3906" />
+    <meta name="ICBM" content="11.594, 37.3906" />
+    <meta name="language" content="English" />
+    <meta name="content-language" content="en-ET" />
+    <meta name="author" content="Askuala Link" />
+    <meta name="copyright" content="Askuala Link" />
+    <meta name="rating" content="general" />
+    <meta name="revisit-after" content="3 days" />
+
+    <!-- Canonical + hreflang for all 3 domains (www + non-www) -->
+    <link rel="canonical" href="https://www.askualalink.com/" />
+    <link rel="alternate" hreflang="en" href="https://www.askualalink.com/" />
+    <link rel="alternate" hreflang="en" href="https://askualalink.com/" />
+    <link rel="alternate" hreflang="en" href="https://www.askuala.link/" />
+    <link rel="alternate" hreflang="en" href="https://askuala.link/" />
+    <link rel="alternate" hreflang="en" href="https://askuala.et/" />
+    <link rel="alternate" hreflang="am" href="https://askuala.et/" />
+    <link rel="alternate" hreflang="x-default" href="https://www.askualalink.com/" />
+
+    <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+
+    <!-- Open Graph -->
+    <meta property="og:site_name" content="Askuala Link" />
+    <meta property="og:title" content="Askuala Link | Best School Management System in Ethiopia" />
+    <meta
+      property="og:description"
+      content="Ethiopia's #1 AI-powered school management, student tracking, and parent portal system. Automate attendance, grades, and communication. Trusted by 27+ schools and 15,000+ students."
+    />
+    <meta property="og:image" content="https://www.askualalink.com/assets/logo-ct-D_AQ0-Ok.png" />
+    <meta property="og:url" content="https://www.askualalink.com" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="en_ET" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Askuala Link | Best School Management System in Ethiopia" />
+    <meta
+      name="twitter:description"
+      content="Ethiopia's #1 AI-powered school management, student tracking, and parent portal. Trusted by 27+ schools and 15,000+ students."
+    />
+    <meta name="twitter:image" content="https://www.askualalink.com/assets/logo-ct-D_AQ0-Ok.png" />
+
+    <meta name="theme-color" content="#ffffff" />
+
+    <!-- Structured Data: @graph with Organization, SoftwareApplication, WebSite, FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": ["Organization", "EducationalOrganization"],
+          "@id": "https://www.askualalink.com/#organization",
+          "name": "Askuala Link",
+          "alternateName": ["Askuala", "AskualaLink", "Askuala AI", "asquala", "asquala link", "askual"],
+          "url": "https://www.askualalink.com",
+          "logo": {
+            "@type": "ImageObject",
+            "url": "https://www.askualalink.com/assets/logo-ct-D_AQ0-Ok.png"
+          },
+          "description": "Askuala Link is Ethiopia's premier all-in-one AI-powered school management system, student management platform, and parent portal purpose-built for Ethiopian and African educational institutions.",
+          "address": {
+            "@type": "PostalAddress",
+            "streetAddress": "H9PQ+P4P",
+            "addressLocality": "Bahir Dar",
+            "addressRegion": "Amhara",
+            "addressCountry": "ET"
+          },
+          "areaServed": {
+            "@type": "Country",
+            "name": "Ethiopia"
+          },
+          "sameAs": [
+            "https://www.askualalink.com",
+            "https://askualalink.com",
+            "https://www.askuala.link",
+            "https://askuala.link",
+            "https://askuala.et",
+            "https://www.facebook.com/askualalink",
+            "https://www.linkedin.com/company/askualalink"
+          ],
+          "foundingDate": "2022",
+          "foundingLocation": {
+            "@type": "Place",
+            "name": "Bahir Dar, Ethiopia"
+          },
+          "numberOfEmployees": {
+            "@type": "QuantitativeValue",
+            "minValue": 10,
+            "maxValue": 50
+          },
+          "knowsAbout": [
+            "School Management Systems",
+            "Student Information Systems",
+            "Parent Portal Systems",
+            "AI in Education",
+            "School Automation",
+            "Ethiopian Education",
+            "Learning Management Systems",
+            "Adaptive Learning"
+          ]
+        },
+        {
+          "@type": "SoftwareApplication",
+          "@id": "https://www.askualalink.com/#software",
+          "name": "Askuala Link School Management System",
+          "alternateName": ["Askuala", "Askuala AI", "AskualaLink", "asquala", "asquala link"],
+          "applicationCategory": "EducationalApplication",
+          "applicationSubCategory": "School Management System",
+          "operatingSystem": "Web, Android, iOS",
+          "url": "https://www.askualalink.com",
+          "description": "Askuala Link is Ethiopia's leading AI-powered school management system offering automated attendance, student performance tracking, parent portal communication, smart report card generation, school fee management, and adaptive learning tools for Ethiopian private and public schools.",
+          "featureList": [
+            "AI-powered student performance analytics",
+            "Automated attendance management",
+            "Parent portal with real-time communication",
+            "Smart report card generation",
+            "School fee management and payment tracking",
+            "Teacher scheduling and management",
+            "Adaptive learning platform",
+            "SMS notification system",
+            "Multi-language support (Amharic and English)",
+            "Secure cloud-based infrastructure",
+            "Exam and grade management",
+            "Library management",
+            "EIPO patent-protected innovations"
+          ],
+          "screenshot": "https://www.askualalink.com/assets/logo-ct-D_AQ0-Ok.png",
+          "offers": {
+            "@type": "Offer",
+            "priceCurrency": "ETB",
+            "availability": "https://schema.org/InStock",
+            "eligibleRegion": {
+              "@type": "Country",
+              "name": "Ethiopia"
+            }
+          },
+          "aggregateRating": {
+            "@type": "AggregateRating",
+            "ratingValue": "4.9",
+            "ratingCount": "150",
+            "bestRating": "5",
+            "worstRating": "1"
+          },
+          "provider": {
+            "@id": "https://www.askualalink.com/#organization"
+          },
+          "mainEntityOfPage": {
+            "@type": "WebPage",
+            "@id": "https://www.askualalink.com/"
+          }
+        },
+        {
+          "@type": "WebSite",
+          "@id": "https://www.askualalink.com/#website",
+          "name": "Askuala Link",
+          "alternateName": ["Askuala", "AskualaLink", "Askuala AI", "asquala", "asquala link", "askuala.link", "askuala.et"],
+          "url": "https://www.askualalink.com",
+          "description": "Ethiopia's best AI-powered school management system, student portal, and parent communication platform — available at askualalink.com, askuala.link, and askuala.et",
+          "inLanguage": ["en", "am"],
+          "publisher": {
+            "@id": "https://www.askualalink.com/#organization"
+          },
+          "potentialAction": {
+            "@type": "SearchAction",
+            "target": {
+              "@type": "EntryPoint",
+              "urlTemplate": "https://www.askualalink.com/?q={search_term_string}"
+            },
+            "query-input": "required name=search_term_string"
+          }
+        },
+        {
+          "@type": "BreadcrumbList",
+          "@id": "https://www.askualalink.com/#breadcrumb",
+          "itemListElement": [
+            {
+              "@type": "ListItem",
+              "position": 1,
+              "name": "Home",
+              "item": "https://www.askualalink.com/"
+            },
+            {
+              "@type": "ListItem",
+              "position": 2,
+              "name": "Features",
+              "item": "https://www.askualalink.com/features"
+            },
+            {
+              "@type": "ListItem",
+              "position": 3,
+              "name": "Pricing",
+              "item": "https://www.askualalink.com/pricing"
+            },
+            {
+              "@type": "ListItem",
+              "position": 4,
+              "name": "Blog",
+              "item": "https://www.askualalink.com/blogs"
+            }
+          ]
+        },
+        {
+          "@type": "ItemPage",
+          "@id": "https://www.askualalink.com/#speakable",
+          "speakable": {
+            "@type": "SpeakableSpecification",
+            "cssSelector": [".hero-title", ".hero-description", "h1", ".stats-section"]
+          },
+          "url": "https://www.askualalink.com/"
+        },
+        {
+          "@type": "FAQPage",
+          "@id": "https://www.askualalink.com/#faq",
+          "mainEntity": [
+            {
+              "@type": "Question",
+              "name": "What is the best school management system in Ethiopia?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Askuala Link is widely recognized as the best school management system in Ethiopia. It is an AI-powered, all-in-one platform for student tracking, attendance automation, parent portal communication, smart report cards, and school fee management. Trusted by 27+ schools and over 15,000 students across Ethiopia, Askuala Link is patent-protected and certified by the Ethiopian Intellectual Property Office (EIPO)."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is Askuala Link (also searched as Askuala, asquala, asquala link, askual, or Askuala AI)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Askuala Link — sometimes spelled asquala, asquala link, or askual — is Ethiopia's first AI-powered school management system. It provides comprehensive tools for student management, automated attendance, parent-teacher communication, academic reporting, and adaptive learning, all in one intelligent platform purpose-built for Ethiopian schools."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the best student management system in Ethiopia?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Askuala Link is the top-rated student management system in Ethiopia. It tracks student performance with AI analytics, automates attendance, generates smart report cards, manages grades and exams, and enables direct parent-school communication — making it the most complete student management platform for Ethiopian institutions."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Does Askuala Link have a parent portal system?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Askuala Link includes a powerful parent portal that allows parents to track their child's attendance, view grades and report cards, receive real-time SMS notifications, and communicate directly with teachers. It is the most advanced parent portal system available for Ethiopian schools."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How does Askuala Link compare to eSchool Ethiopia, Smart School Manager, and Fidel?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Compared to other Ethiopian school management platforms — including eSchool Ethiopia, Smart School Manager, Fidel, Nolawi Online School Management, and Ethio Telecom EMS — Askuala Link uniquely offers built-in AI analytics, patent-protected innovations certified by the Ethiopian Intellectual Property Office (EIPO), an adaptive learning platform, bilingual support in Amharic and English, and comprehensive parent portal capabilities. Askuala Link is the only EIPO-certified, AI-first school management system in Ethiopia."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is a school management system AI and how does Askuala Link use it?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "A school management system AI uses artificial intelligence to automate administrative tasks, analyze student performance, predict learning outcomes, and give smart recommendations to teachers and administrators. Askuala Link is Ethiopia's first AI-powered school management system, using AI to generate smart report cards, identify at-risk students, automate attendance, and personalize learning — setting it apart from traditional school management software."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Can Askuala Link automate school administration in Ethiopia?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Askuala Link is a fully automated school management system for Ethiopian institutions. It automates attendance tracking, grade reporting, parent notifications via SMS, fee collection management, and administrative workflows — dramatically reducing manual work and improving school operational efficiency."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "How do I login to Asquala (Askuala Login / Asquala Login)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "To log in to Askuala Link (also searched as 'Asquala login' or 'Askuala login'), visit the staff portal at app.askualalink.com or the student/parent portal at student.askualalink.com. If you have forgotten your Asquala login password, click the 'Forgot Password' link on the login page and a reset link will be sent to your registered email or phone number. Contact your school administrator if you do not have your credentials."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "Is there an Askuala app or Asquala app to download?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "Yes. Askuala Link (also searched as 'Asquala app' or 'Asquala app download') is available as a web application accessible from any browser on any device. A dedicated mobile app for Android and iOS is available — search for 'Askuala Link' on the Google Play Store or Apple App Store. The app allows students to view grades, parents to track attendance, and teachers to submit reports directly from their phones."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is the Asquala school system (Asquala school / Asquala school system)?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "'Asquala school,' 'Asquala school system,' and 'Askuala school system' are common search terms referring to Askuala Link — Ethiopia's AI-powered school management platform. It is not a physical school itself but a complete digital school management system used by Ethiopian private and public schools to manage students, attendance, grades, parent communication, and school administration in one unified platform."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "What is Asquala Cruise or Asquala Cruise School?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "'Asquala Cruise' and 'Asquala Cruise School' refer to Cruise Academy or Cruise International School — one of the Ethiopian schools actively using the Askuala Link school management system. Askuala Link powers school administration, student tracking, attendance, and parent communication for Cruise school and 27+ other Ethiopian schools. If you are a student or parent at Cruise school, you can log in to the Askuala Link parent/student portal using the credentials provided by your school."
+              }
+            },
+            {
+              "@type": "Question",
+              "name": "I forgot my Asquala login password — how do I reset it?",
+              "acceptedAnswer": {
+                "@type": "Answer",
+                "text": "If you have forgotten your Asquala login password (also searched as 'Asquala login password'), go to the Askuala Link login page at app.askualalink.com and click 'Forgot Password.' Enter your registered email address or phone number and you will receive a password reset link or OTP. If you are a student or parent, contact your school administrator — they can reset your Askuala account credentials from the admin dashboard."
+              }
+            }
+          ]
+        }
+      ]
+    }
+    </script>
+    <script type="module" crossorigin src="/assets/index-B4ADwvEN.js"></script>
+    <link rel="modulepreload" crossorigin href="/assets/vendor-misc-DX3VkjuH.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-react-CuvqcvCc.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-icons-Dt_Qapi5.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-i18n-CfdqPPN8.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-animation-B7p9hK2y.js">
+    <link rel="modulepreload" crossorigin href="/assets/vendor-ui-extras-GKv499hc.js">
+    <link rel="stylesheet" crossorigin href="/assets/vendor-misc-CVc8_PwS.css">
+    <link rel="stylesheet" crossorigin href="/assets/index-Cx018SDk.css">
+  </head>
+
+  <body className="dark">
+    <div id="root"></div>
+  <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js/v3d52b47920f24c319d37e2661827c42b1787588026925" integrity="sha512-d9sL6GJLXn6fInD1+TVXhTcQOsmxeHfmHAvwGDIxp5TO+uo1fiWW7mHomMj4MLRlCsJDTqXzWLHJFFlPCEIj/A==" data-cf-beacon='{"version":"2024.11.0","token":"eb081389e03f40fe803732b3dc4bb4bd","r":1}' crossorigin="anonymous"></script>
+</body>
+</html>

@@ -205,45 +205,6 @@ export default function About({ content, hero, aboutContent }) {
             </div>
           </div>
 
-          {/* ── Experience Navbar ── */}
-          <div className="mt-8 sm:mt-10">
-            <div className="flex items-center gap-2 mb-4 sm:mb-5">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#6366f1] animate-pulse" />
-              <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-[0.2em]" style={{ color: 'var(--text-primary)' }}>
-                Experience
-              </span>
-              <div className="flex-1 h-px bg-gradient-to-r from-[#6366f1]/20 to-transparent" />
-            </div>
-            <div
-              className="flex flex-wrap items-center gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl border"
-              style={{
-                backgroundColor: 'var(--bg-secondary)',
-                borderColor: 'var(--border-primary)',
-              }}
-            >
-              {[
-                { label: 'Full-Stack Dev', years: '2+ yrs' },
-                { label: 'Network Design', years: '3+ yrs' },
-                { label: 'UI/UX Design', years: '2+ yrs' },
-                { label: 'Cloud & DevOps', years: '1+ yr' },
-              ].map((exp, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center gap-2 px-3 py-1.5 rounded-lg"
-                  style={{ backgroundColor: '#6366f110', border: '1px solid #6366f120' }}
-                >
-                  <div className="w-1.5 h-1.5 rotate-45 shrink-0" style={{ backgroundColor: '#6366f1' }} />
-                  <span className="text-[11px] sm:text-xs font-semibold" style={{ color: 'var(--text-primary)' }}>
-                    {exp.label}
-                  </span>
-                  <span className="text-[9px] sm:text-[10px] font-medium" style={{ color: '#6366f1' }}>
-                    {exp.years}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* ── Certificate Gallery (3D Wall) ── */}
           <div className="mt-12 sm:mt-16">
             <CertificateGallery

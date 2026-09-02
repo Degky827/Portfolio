@@ -155,8 +155,8 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
   const ambientColor = darkMode ? '#1a1a2e' : '#f5f5f5'
   const dirColor = darkMode ? '#818cf8' : '#6366f1'
 
-  const ambientIntensity = darkMode ? 0.35 : 0.5
-  const dirIntensity = darkMode ? 1.0 : 0.8
+  const ambientIntensity = darkMode ? 0.45 : 0.6
+  const dirIntensity = darkMode ? 1.3 : 1.0
 
   const floorRoughness = darkMode ? 0.6 : 0.85
   const floorMetalness = darkMode ? 0.35 : 0.1
@@ -170,7 +170,7 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
   return (
     <>
       {showBackground && <color attach="background" args={[bgColor]} />}
-      <fog attach="fog" args={[fogColor, 12, 28]} />
+      <fog attach="fog" args={[fogColor, 14, 32]} />
 
       {/* Ambient fill */}
       <ambientLight intensity={ambientIntensity} color={ambientColor} />
@@ -195,17 +195,17 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
       {/* Fill light — softer, from opposite side */}
       <directionalLight
         position={[-3, 3, 2]}
-        intensity={darkMode ? 0.15 : 0.1}
+        intensity={darkMode ? 0.25 : 0.15}
         color={darkMode ? '#4f46e5' : '#93c5fd'}
       />
 
-      {/* Screen glow — subtle point light in dark mode */}
+      {/* Screen glow — point light in dark mode */}
       {darkMode && (
         <pointLight
           position={[0.5, 1.6, -0.1]}
-          intensity={0.4}
+          intensity={0.7}
           color="#60a5fa"
-          distance={4}
+          distance={5}
           decay={2}
         />
       )}
@@ -375,12 +375,12 @@ export default function HeroDesktopScene({ className = '', profileData }) {
 
   const inlineCamera = useMemo(() => {
     if (isMobile) {
-      return { position: [2.0, 1.8, 5.5], fov: 48, near: 0.1, far: 20 }
+      return { position: [2.5, 1.5, 5.0], fov: 42, near: 0.1, far: 25 }
     }
     if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      return { position: [3.0, 2.4, 5.5], fov: 38, near: 0.1, far: 20 }
+      return { position: [3.0, 2.4, 5.5], fov: 38, near: 0.1, far: 25 }
     }
-    return { position: [3.5, 2.8, 5.5], fov: 35, near: 0.1, far: 20 }
+    return { position: [3.5, 2.8, 5.5], fov: 35, near: 0.1, far: 25 }
   }, [isMobile])
 
   const inlineGl = useMemo(() => ({
@@ -409,7 +409,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
           ref={canvasRef}
           key={`inline-${cameraKey}`}
           camera={inlineCamera}
-          dpr={isMobile ? [1, 1] : [1, 1.5]}
+          dpr={isMobile ? [1, 1.5] : [1, 2]}
           gl={inlineGl}
           frameloop="demand"
           style={{ background: 'transparent' }}
