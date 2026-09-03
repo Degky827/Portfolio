@@ -375,7 +375,7 @@ function ProceduralChair({ darkMode }) {
 function ProceduralScene({ darkMode, isMobile }) {
   const groupRef = useRef()
 
-  const bgColor = darkMode ? '#080B14' : '#ffffff'
+  const bgColor = darkMode ? '#1a1a2e' : '#ffffff'
   const fogColor = useMemo(() => new THREE.Color(bgColor), [bgColor])
   const floorColor = darkMode ? '#0b0e17' : '#f8f9fa'
   const wallColor = darkMode ? '#101522' : '#f3f4f6'
@@ -468,7 +468,7 @@ function GLBModel({ url, darkMode, isMobile }) {
 /* ─── Loading Indicator ────────────────────────────────────────── */
 function LoadingIndicator({ darkMode }) {
   return (
-    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: darkMode ? '#080B14' : '#ffffff' }}>
+    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: darkMode ? '#1a1a2e' : '#ffffff' }}>
       <div className="flex flex-col items-center gap-3">
         <div
           className="w-8 h-8 rounded-full border-2 animate-spin"
@@ -489,7 +489,7 @@ function LoadingIndicator({ darkMode }) {
 function ErrorFallback({ darkMode }) {
   const accentColor = darkMode ? '#6366f1' : '#4f46e5'
   return (
-    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: darkMode ? '#080B14' : '#ffffff' }}>
+    <div className="w-full h-full flex items-center justify-center" style={{ backgroundColor: darkMode ? '#1a1a2e' : '#ffffff' }}>
       <div className="text-center max-w-[200px] px-4">
         <div
           className="w-14 h-14 mx-auto mb-3 rounded-xl flex items-center justify-center"

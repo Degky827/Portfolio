@@ -37,13 +37,13 @@ function DemandRenderer() {
 function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackground = true }) {
   const desktopGroupRef = useRef()
 
-  const bgColor = darkMode ? '#080B14' : '#ffffff'
+  const bgColor = darkMode ? '#1a1a2e' : '#ffffff'
   const fogColor = useMemo(() => new THREE.Color(bgColor), [bgColor])
 
-  const floorColor = darkMode ? '#080B14' : '#ffffff'
-  const wallColor = darkMode ? '#080B14' : '#ffffff'
+  const floorColor = darkMode ? '#1a1a2e' : '#ffffff'
+  const wallColor = darkMode ? '#1a1a2e' : '#ffffff'
   const accentColor = darkMode ? '#6366f1' : '#4f46e5'
-  const ambientColor = darkMode ? '#080B14' : '#ffffff'
+  const ambientColor = darkMode ? '#1a1a2e' : '#ffffff'
   const dirColor = darkMode ? '#818cf8' : '#6366f1'
 
   const ambientIntensity = darkMode ? 0.6 : 0.75
@@ -219,7 +219,7 @@ function FallbackScene({ darkMode }) {
   return (
     <div
       className="w-full h-full flex items-center justify-center"
-      style={{ backgroundColor: darkMode ? '#080B14' : '#ffffff' }}
+      style={{ backgroundColor: darkMode ? '#1a1a2e' : '#ffffff' }}
     >
       <div className="text-center max-w-xs px-4">
         <div
@@ -324,7 +324,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[99999] flex flex-col"
-            style={{ background: darkMode ? '#080B14' : '#ffffff' }}
+            style={{ background: darkMode ? '#1a1a2e' : '#ffffff' }}
           >
             <div className="absolute top-0 left-0 right-0 z-[100000] flex items-center justify-between px-6 py-4 bg-slate-900/60 dark:bg-black/60 backdrop-blur-md border-b border-white/10 text-white">
               <span className="text-xs font-bold uppercase tracking-[0.2em]">
@@ -368,7 +368,7 @@ export default function HeroDesktopScene({ className = '', profileData }) {
               }}
               shadows
               frameloop="demand"
-              style={{ background: darkMode ? '#080B14' : '#ffffff', width: '100%', height: '100%' }}
+              style={{ background: darkMode ? '#1a1a2e' : '#ffffff', width: '100%', height: '100%' }}
             >
               <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} canvasRef={canvasRef} />
             </Canvas>
