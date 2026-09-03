@@ -169,6 +169,7 @@ function GlobeSceneContent({ isMobile, canvasRef }) {
       </group>
       <GlobeDragController globeRef={globeGroupRef} canvasRef={canvasRef} />
       <Stars
+        key={isMobile ? 'stars-mobile' : 'stars-desktop'}
         radius={40}
         depth={40}
         count={isMobile ? 150 : 800}

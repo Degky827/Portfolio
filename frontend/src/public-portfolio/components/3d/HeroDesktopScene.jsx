@@ -96,7 +96,7 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
       )}
 
       <Suspense fallback={null}>
-        <ProfessionalBackground darkMode={darkMode} isMobile={isMobile} />
+        <ProfessionalBackground key={isMobile ? 'mobile' : 'desktop'} darkMode={darkMode} isMobile={isMobile} />
       </Suspense>
 
       {/* Floor - matches exact page background */}
