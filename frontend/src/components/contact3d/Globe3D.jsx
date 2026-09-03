@@ -255,7 +255,7 @@ export default function Globe3D({ isMobile }) {
         tiltZ={0.4}
       />
 
-      <FloatingDots key={isMobile ? 'mobile' : 'desktop'} count={isMobile ? 30 : 50} radius={isMobile ? 2.2 : 3.5} />
+      <FloatingDots key={isMobile ? 'dots-mobile' : 'dots-desktop'} count={isMobile ? 30 : 50} radius={isMobile ? 2.2 : 3.5} />
 
       <ambientLight intensity={0.1} color="#cffafe" />
       <pointLight position={[5, 3, 4]} intensity={1.0} color="#06b6d4" distance={20} decay={2} />
