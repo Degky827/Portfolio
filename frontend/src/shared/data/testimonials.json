@@ -1,0 +1,30 @@
+[
+  {
+    "_id": "t1",
+    "name": "Abebe Kebede",
+    "role": "Project Supervisor",
+    "organization": "Askuals Link",
+    "relationship": "Direct Supervisor",
+    "avatar": null,
+    "content": "Desalegn demonstrated strong problem-solving skills while contributing to our transportation application. His ability to work with complex microservices architecture and deliver reliable mobile solutions was impressive.",
+    "project": "Menged Transport Platform",
+    "rating": null,
+    "featured": true,
+    "displayOrder": 1,
+    "publishedAt": "2026-02-15T00:00:00Z"
+  },
+  {
+    "_id": "t2",
+    "name": "Sara Tesfaye",
+    "role": "Team Lead",
+    "organization": "Askuals Link",
+    "relationship": "Team Lead",
+    "avatar": null,
+    "content": "Working with Desalegn was a great experience. He consistently delivered clean, well-structured code and was always willing to collaborate on challenging technical problems. His Flutter development skills are excellent.",
+    "project": "Menged Transport Platform",
+    "rating": null,
+    "featured": false,
+    "displayOrder": 2,
+    "publishedAt": "2026-02-10T00:00:00Z"
+  }
+]

@@ -8,6 +8,7 @@ import { getHomeContent } from '../../shared/services/homeContentService'
 import { getAboutContent } from '../../shared/services/aboutService'
 
 const Projects = lazy(() => import('./sections/Projects'))
+const Testimonials = lazy(() => import('./sections/Testimonials'))
 const Contact = lazy(() => import('./sections/Contact'))
 
 const spinner = (
@@ -43,6 +44,9 @@ export default function Home() {
       <Skills />
       <Suspense fallback={spinner}>
         <Projects />
+      </Suspense>
+      <Suspense fallback={spinner}>
+        <Testimonials />
       </Suspense>
       <Suspense fallback={spinner}>
         <Contact />

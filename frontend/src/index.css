@@ -118,6 +118,7 @@
   --accent-projects: #8B5CF6;
   --accent-contact: #4F46E5;
   --accent-experience: #6366f1;
+  --accent-testimonials: #D97706;
 }
 
 .dark {
@@ -161,6 +162,7 @@
   --accent-projects: #8B5CF6;
   --accent-contact: #6366f1;
   --accent-experience: #6366f1;
+  --accent-testimonials: #F59E0B;
 }
 
 body {
