@@ -2,8 +2,9 @@ import { Suspense, lazy, useMemo } from 'react'
 import { Canvas } from '@react-three/fiber'
 import { OrbitControls, Preload, Float } from '@react-three/drei'
 import * as THREE from 'three'
-import { WorkspaceProvider } from './WorkspaceContext'
+import { WorkspaceProvider, useWorkspace } from './WorkspaceContext'
 import SectionOverlay from './SectionOverlay'
+import FloatingHitbox from './FloatingHitbox'
 
 const Desk = lazy(() => import('./Desk'))
 const Monitor = lazy(() => import('./Monitor'))
@@ -11,6 +12,58 @@ const Keyboard = lazy(() => import('./Keyboard'))
 const PC = lazy(() => import('./PC'))
 const Speaker = lazy(() => import('./Speaker'))
 const NeonBackground = lazy(() => import('./NeonBackground'))
+
+function Mouse({ position = [0, 0, 0] }) {
+  const workspace = useWorkspace()
+  const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
+  const cyanColor = useMemo(() => new THREE.Color('#22d3ee'), [])
+
+  return (
+    <group position={position}>
+      <mesh
+        castShadow
+        onClick={(e) => {
+          e.stopPropagation()
+          workspace?.openByObject?.('mouse')
+        }}
+        onPointerOver={(e) => {
+          e.stopPropagation()
+          document.body.style.cursor = 'pointer'
+        }}
+        onPointerOut={() => {
+          document.body.style.cursor = 'auto'
+        }}
+      >
+        <boxGeometry args={[0.12, 0.03, 0.18]} />
+        <meshStandardMaterial
+          color="#0f0a2a"
+          roughness={0.2}
+          metalness={0.8}
+        />
+      </mesh>
+      {/* Mouse scroll wheel */}
+      <mesh position={[0, 0.02, -0.03]}>
+        <cylinderGeometry args={[0.01, 0.01, 0.02, 8]} />
+        <meshStandardMaterial
+          color={cyanColor}
+          emissive={cyanColor}
+          emissiveIntensity={2}
+        />
+      </mesh>
+      {/* Mouse glow */}
+      <mesh position={[0, -0.01, 0]}>
+        <boxGeometry args={[0.1, 0.005, 0.16]} />
+        <meshStandardMaterial
+          color={purpleColor}
+          emissive={purpleColor}
+          emissiveIntensity={1}
+          transparent
+          opacity={0.5}
+        />
+      </mesh>
+    </group>
+  )
+}
 
 /**
  * WorkspaceScene
@@ -22,13 +75,13 @@ const NeonBackground = lazy(() => import('./NeonBackground'))
  *   <WorkspaceScene />  // renders fullscreen Canvas
  */
 export default function WorkspaceScene() {
-  const fogColor = useMemo(() => new THREE.Color('#0a0a1a'), [])
+  const fogColor = useMemo(() => new THREE.Color('#1a1a2e'), [])
   const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
   const cyanColor = useMemo(() => new THREE.Color('#22d3ee'), [])
 
   return (
     <WorkspaceProvider>
-      <div className="w-full h-screen bg-[#0a0a1a]">
+      <div className="w-full h-screen bg-[#1a1a2e]">
         <Canvas
           camera={{ position: [0, 2.2, 8], fov: 40, near: 0.1, far: 100 }}
           dpr={[1, 1.5]}
@@ -38,9 +91,9 @@ export default function WorkspaceScene() {
             powerPreference: 'high-performance',
           }}
           shadows
-          style={{ background: '#0a0a1a' }}
+          style={{ background: '#1a1a2e' }}
         >
-          <color attach="background" args={['#0a0a1a']} />
+          <color attach="background" args={['#1a1a2e']} />
           <fog attach="fog" args={[fogColor, 6, 18]} />
 
           {/* Ambient fill */}
@@ -107,7 +160,7 @@ export default function WorkspaceScene() {
           >
             <planeGeometry args={[30, 30]} />
             <meshStandardMaterial
-              color="#050210"
+              color="#12121f"
               roughness={0.8}
               metalness={0.2}
             />
@@ -129,7 +182,7 @@ export default function WorkspaceScene() {
           <mesh position={[0, 2.5, -2]} receiveShadow>
             <planeGeometry args={[12, 6]} />
             <meshStandardMaterial
-              color="#080418"
+              color="#14142a"
               roughness={0.9}
               metalness={0.1}
             />
@@ -167,36 +220,7 @@ export default function WorkspaceScene() {
 
             {/* Mouse on desk */}
             <Float speed={2} rotationIntensity={0} floatIntensity={0.1}>
-              <group position={[0.9, 0.78, 0.3]}>
-                <mesh castShadow>
-                  <boxGeometry args={[0.12, 0.03, 0.18]} />
-                  <meshStandardMaterial
-                    color="#0f0a2a"
-                    roughness={0.2}
-                    metalness={0.8}
-                  />
-                </mesh>
-                {/* Mouse scroll wheel */}
-                <mesh position={[0, 0.02, -0.03]}>
-                  <cylinderGeometry args={[0.01, 0.01, 0.02, 8]} />
-                  <meshStandardMaterial
-                    color={cyanColor}
-                    emissive={cyanColor}
-                    emissiveIntensity={2}
-                  />
-                </mesh>
-                {/* Mouse glow */}
-                <mesh position={[0, -0.01, 0]}>
-                  <boxGeometry args={[0.1, 0.005, 0.16]} />
-                  <meshStandardMaterial
-                    color={purpleColor}
-                    emissive={purpleColor}
-                    emissiveIntensity={1}
-                    transparent
-                    opacity={0.5}
-                  />
-                </mesh>
-              </group>
+              <Mouse position={[0.9, 0.78, 0.3]} />
             </Float>
 
             {/* PC Tower - left side of desk */}
@@ -205,6 +229,10 @@ export default function WorkspaceScene() {
             {/* Speakers */}
             <Speaker position={[-1.8, 0.78, 0.1]} side="left" />
             <Speaker position={[1.8, 0.78, 0.1]} side="right" />
+
+            {/* Floating hitboxes for sections without dedicated objects */}
+            <FloatingHitbox position={[2.5, 1.2, 0.5]} size={[0.6, 0.8, 0.6]} section="testimonials" />
+            <FloatingHitbox position={[-2.5, 1.2, 0.5]} size={[0.6, 0.8, 0.6]} section="cv" />
           </Suspense>
 
           <Preload all />
