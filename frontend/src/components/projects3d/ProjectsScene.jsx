@@ -45,7 +45,7 @@ export default function ProjectsScene({ children }) {
 
   return (
     <div className="relative w-full min-h-screen" style={{ perspective: '1200px' }}>
-      <div className="fixed inset-0 z-0">
+      <div className="absolute inset-0 z-0">
         <ProjectsErrorBoundary>
           <Canvas
             camera={{ position: [0, 2, 10], fov: 50, near: 0.1, far: 100 }}

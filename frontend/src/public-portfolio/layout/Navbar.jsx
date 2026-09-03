@@ -268,11 +268,17 @@ export default function Navbar({ darkMode, onToggleDark }) {
     if (item.isExternal || item.openNewTab) return
     e.preventDefault()
     const targetId = item.sectionId || item.url?.replace('#', '')
-    if (targetId) {
-      const target = document.getElementById(targetId)
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }
+    if (!targetId) return
+
+    const target = document.getElementById(targetId)
+    if (target) {
+      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    } else {
+      window.location.hash = '/' + (targetId === 'home' ? '' : '#' + targetId)
+      setTimeout(() => {
+        const el = document.getElementById(targetId)
+        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 100)
     }
     setIsOpen(false)
   }, [])
@@ -303,7 +309,15 @@ export default function Navbar({ darkMode, onToggleDark }) {
       >
         {/* Logo — left */}
         <div className="shrink-0" style={settings.logoMargin ? { marginLeft: settings.logoMargin + 'px', marginRight: settings.logoMargin + 'px' } : {}}>
-          <Logo settings={mergedSettings} linkTo="/" onNavClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsOpen(false) }} />
+          <Logo settings={mergedSettings} linkTo="/" onNavClick={(e) => {
+            e.preventDefault()
+            if (window.location.hash !== '#/' && window.location.hash !== '#') {
+              window.location.hash = '/'
+            } else {
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            }
+            setIsOpen(false)
+          }} />
         </div>
 
         {/* Mobile Menu Toggle */}

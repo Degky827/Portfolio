@@ -1,5 +1,5 @@
 import { MapPin, Phone, Mail, Globe } from 'lucide-react'
-import { FaGithub, FaLinkedin } from 'react-icons/fa6'
+import { FaGithub, FaLinkedin } from 'react-icons/fa'
 
 const contactItems = [
   { icon: MapPin, label: 'location', href: null, text: null },

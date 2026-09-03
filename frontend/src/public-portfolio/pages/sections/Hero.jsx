@@ -152,7 +152,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       aria-label="Hero section"
     >
       {/* 3D Desktop Scene - visible on all screens */}
-      <div className="absolute right-0 top-0 w-full md:w-[50%] lg:w-[48%] h-full z-10 pointer-events-auto cursor-grab active:cursor-grabbing">
+      <div className="hidden md:block absolute right-0 top-0 md:w-[50%] lg:w-[48%] h-full z-10 pointer-events-auto cursor-grab active:cursor-grabbing">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
