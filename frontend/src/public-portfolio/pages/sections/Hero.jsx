@@ -148,11 +148,11 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   return (
     <section
       id="home"
-      className="relative min-h-screen overflow-hidden bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300"
+      className="relative min-h-0 md:min-h-screen overflow-hidden bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300"
       aria-label="Hero section"
     >
       {/* 3D Desktop Scene - visible on all screens */}
-      <div className="hidden md:block absolute right-0 top-0 md:w-[50%] lg:w-[48%] h-full z-10 pointer-events-auto cursor-grab active:cursor-grabbing">
+      <div className="md:absolute md:right-0 md:top-0 md:w-[50%] lg:md:w-[48%] md:h-full md:z-10 w-full h-[45vh] sm:h-[50vh] relative z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
@@ -219,12 +219,12 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       </motion.div>
 
       {/* Main content overlay */}
-      <div className="relative z-10 min-h-screen flex flex-col pointer-events-none">
+      <div className="md:relative md:z-10 relative z-10 min-h-0 md:min-h-screen flex flex-col pointer-events-none">
         {/* Hero content area */}
         <div className="flex-1 flex items-center">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex items-center">
             {/* Left text content */}
-            <div className="w-full md:w-[52%] lg:max-w-xl pt-20 sm:pt-24 md:pt-0 pointer-events-auto relative">
+            <div className="w-full md:w-[52%] lg:max-w-xl pt-6 sm:pt-8 md:pt-0 pointer-events-auto relative">
               {/* Mobile text backdrop */}
               <div className="md:hidden absolute -inset-x-6 -top-24 -bottom-6 bg-white/80 dark:bg-[#1a1a2e]/85 backdrop-blur-sm -z-10 rounded-3xl" />
 
@@ -329,7 +329,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         {/* Bottom stats panel */}
         <motion.div
           {...fadeUp(1.1)}
-          className="pointer-events-auto"
+          className="pointer-events-auto hidden md:block"
         >
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 pb-12 sm:pb-16">
             <div

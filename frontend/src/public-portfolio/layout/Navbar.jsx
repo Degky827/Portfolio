@@ -220,7 +220,11 @@ export default function Navbar({ darkMode, onToggleDark }) {
       style.right = '0'
       style.margin = '0 auto'
     }
-    style.backgroundColor = darkMode ? 'rgba(8,11,20,0.85)' : 'rgba(255,255,255,0.92)'
+    if (isOpen) {
+      style.backgroundColor = darkMode ? 'rgba(8,11,20,1)' : 'rgba(255,255,255,1)'
+    } else {
+      style.backgroundColor = darkMode ? 'rgba(8,11,20,0.85)' : 'rgba(255,255,255,0.92)'
+    }
     style.backdropFilter = 'blur(16px)'
     style.WebkitBackdropFilter = 'blur(16px)'
     style.color = darkMode ? '#ffffff' : '#1f2937'
@@ -229,7 +233,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
     }
     style.borderBottom = `1px solid ${darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)'}`
     return style
-  }, [settings, ns, scrolled, darkMode])
+  }, [settings, ns, scrolled, darkMode, isOpen])
 
   const linkTextColor = useMemo(() => {
     return darkMode ? '#ffffff' : '#1f2937'
@@ -426,7 +430,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsOpen(false)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1002] md:hidden"
+                className="fixed inset-0 bg-black backdrop-blur-sm z-[1002] md:hidden"
               />
               <motion.div
                 initial={drawerVariants.initial}
