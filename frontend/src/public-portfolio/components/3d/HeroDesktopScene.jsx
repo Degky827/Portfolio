@@ -136,7 +136,7 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef }) {
       />
 
       <Suspense fallback={null}>
-        <ProfessionalBackground darkMode={darkMode} isMobile={isMobile} />
+        <ProfessionalBackground key={isMobile ? 'mobile' : 'desktop'} darkMode={darkMode} isMobile={isMobile} />
       </Suspense>
 
       <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
