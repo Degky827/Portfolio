@@ -3,6 +3,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion'
 import MonitorFrame from './MonitorFrame'
 import MonitorScreen from './MonitorScreen'
 import ScreenEffects from './ScreenEffects'
+import CodeEditor from './CodeEditor'
 import ProfilePhotoScreen from './ProfilePhotoScreen'
 
 /**
@@ -24,6 +25,8 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
   fullName,
   roleTitle,
   locationText,
+  skills,
+  available,
   photoUrl,
 }) {
   const containerRef = useRef(null)
@@ -162,12 +165,20 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
               <ScreenEffects />
               <MonitorFrame>
                 <MonitorScreen>
-                  <ProfilePhotoScreen
-                    fullName={fullName}
-                    roleTitle={roleTitle}
-                    locationText={locationText}
-                    photoUrl={photoUrl}
-                  />
+                  <div className="flex h-full w-full">
+                    <div className="flex-1 min-w-0 h-full">
+                      <CodeEditor
+                        fullName={fullName}
+                        roleTitle={roleTitle}
+                        locationText={locationText}
+                        skills={skills}
+                        available={available}
+                      />
+                    </div>
+                    <div className="w-[38%] flex-shrink-0 h-full">
+                      <ProfilePhotoScreen fullName={fullName} photoUrl={photoUrl} />
+                    </div>
+                  </div>
                 </MonitorScreen>
               </MonitorFrame>
             </div>
