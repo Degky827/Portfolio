@@ -4,7 +4,6 @@ import MonitorFrame from './MonitorFrame'
 import MonitorScreen from './MonitorScreen'
 import ScreenEffects from './ScreenEffects'
 import CodeEditor from './CodeEditor'
-import ProfilePhotoScreen from './ProfilePhotoScreen'
 
 /**
  * DeveloperWorkstation
@@ -165,20 +164,14 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
               <ScreenEffects />
               <MonitorFrame>
                 <MonitorScreen>
-                  <div className="flex h-full w-full">
-                    <div className="flex-1 min-w-0 h-full">
-                      <CodeEditor
-                        fullName={fullName}
-                        roleTitle={roleTitle}
-                        locationText={locationText}
-                        skills={skills}
-                        available={available}
-                      />
-                    </div>
-                    <div className="w-[38%] flex-shrink-0 h-full">
-                      <ProfilePhotoScreen fullName={fullName} photoUrl={photoUrl} />
-                    </div>
-                  </div>
+                  <CodeEditor
+                    fullName={fullName}
+                    roleTitle={roleTitle}
+                    locationText={locationText}
+                    skills={skills}
+                    available={available}
+                    photoUrl={photoUrl}
+                  />
                 </MonitorScreen>
               </MonitorFrame>
             </div>
