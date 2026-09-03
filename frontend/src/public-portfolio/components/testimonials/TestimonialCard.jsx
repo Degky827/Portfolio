@@ -89,6 +89,7 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
   const initials = getInitials(name)
   const dateLabel = formatPublishedDate(publishedAt)
   const relStyle = getRelationshipStyle(relationship)
+  const [imgFailed, setImgFailed] = useState(false)
 
   useEffect(() => {
     const el = textRef.current
@@ -123,12 +124,13 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
         {/* Card Header: Photo + Author Info */}
         <div className="flex items-start gap-3.5 mb-4">
           <div className="relative shrink-0">
-            {avatarUrl ? (
+            {avatarUrl && !imgFailed ? (
               <img
                 src={avatarUrl}
                 alt={`${name}'s profile photo`}
                 className="w-[80px] h-[80px] rounded-full object-cover ring-2 ring-slate-100 dark:ring-slate-800 group-hover:ring-[#0a66c2]/20 dark:group-hover:ring-[#70b5f9]/20 transition-all duration-300 group-hover:scale-[1.03]"
                 loading="lazy"
+                onError={() => setImgFailed(true)}
               />
             ) : (
               <div className="w-[80px] h-[80px] rounded-full bg-slate-100 dark:bg-slate-800 ring-2 ring-slate-200 dark:ring-slate-700 group-hover:ring-[#0a66c2]/20 dark:group-hover:ring-[#70b5f9]/20 flex items-center justify-center transition-all duration-300 group-hover:scale-[1.03]">
