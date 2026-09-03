@@ -1,4 +1,4 @@
-import { useRef, useState, useCallback } from 'react'
+import { useRef, useState, useCallback, useEffect } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion'
 import { Code, Smartphone } from 'lucide-react'
 
@@ -112,6 +112,15 @@ function ReflectionOverlay({ mouseX, mouseY }) {
 function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) {
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
+  const [isDark, setIsDark] = useState(() => document.documentElement.classList.contains('dark'))
+
+  useEffect(() => {
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains('dark'))
+    })
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
+    return () => observer.disconnect()
+  }, [])
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -159,10 +168,14 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
         className="relative px-8 sm:px-10 py-4 rounded-2xl overflow-hidden transition-all duration-300"
         style={{
           background: isActive
-            ? `linear-gradient(135deg, ${color}15 0%, rgba(255,255,255,0.08) 50%, ${color}10 100%)`
-            : 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)',
+            ? isDark
+              ? `linear-gradient(135deg, ${color}15 0%, rgba(255,255,255,0.08) 50%, ${color}10 100%)`
+              : `linear-gradient(135deg, ${color}12 0%, rgba(255,255,255,0.9) 50%, ${color}08 100%)`
+            : isDark
+              ? 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0.02) 100%)'
+              : 'linear-gradient(135deg, rgba(255,255,255,0.8) 0%, rgba(245,247,250,0.9) 100%)',
           backdropFilter: 'blur(20px)',
-          border: `1px solid ${isActive ? `${color}40` : 'rgba(255,255,255,0.08)'}`,
+          border: `1px solid ${isActive ? `${color}40` : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
         }}
       >
         {/* Animated effects */}
@@ -198,13 +211,13 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
               style={{
                 background: isActive
                   ? `linear-gradient(135deg, ${color}30 0%, ${color}15 100%)`
-                  : 'rgba(255,255,255,0.05)',
+                  : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.04)',
                 boxShadow: isActive ? `0 0 20px ${color}30` : 'none',
               }}
             >
               <Icon
                 size={18}
-                style={{ color: isActive ? color : '#94a3b8' }}
+                style={{ color: isActive ? color : isDark ? '#ffffff' : '#374151' }}
                 className="transition-colors duration-300"
               />
             </div>
@@ -214,7 +227,7 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
             <span
               className="text-sm sm:text-base font-bold tracking-wide transition-all duration-300 block"
               style={{
-                color: isActive ? color : '#94a3b8',
+                color: isActive ? color : isDark ? '#ffffff' : '#1f2937',
                 textShadow: isActive ? `0 0 20px ${color}50` : 'none',
               }}
             >
@@ -231,9 +244,9 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
             <motion.div
               className="ml-auto px-2.5 py-1 rounded-full text-[11px] font-bold transition-all duration-300"
               style={{
-                background: isActive ? `${color}20` : 'rgba(255,255,255,0.05)',
-                color: isActive ? color : '#64748b',
-                border: `1px solid ${isActive ? `${color}30` : 'rgba(255,255,255,0.08)'}`,
+                background: isActive ? `${color}20` : isDark ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.05)',
+                color: isActive ? color : isDark ? '#ffffff' : '#374151',
+                border: `1px solid ${isActive ? `${color}30` : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.08)'}`,
                 boxShadow: isActive ? `0 0 12px ${color}20` : 'none',
               }}
               animate={isActive ? {

@@ -1,7 +1,5 @@
 import { Suspense, lazy } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuth } from '../authentication/AuthContext'
-import RoleGuard from '../authentication/RoleGuard'
 import ProtectedRoute from '../authentication/ProtectedRoute'
 import AdminLayout from '../layout/AdminLayout'
 
@@ -31,8 +29,6 @@ const CustomPagesList = lazy(() => import('../custom-pages-management/CustomPage
 const CustomPageForm = lazy(() => import('../custom-pages-management/CustomPageForm'))
 
 export default function AdminRoutes() {
-  const { user } = useAuth()
-
   return (
     <ProtectedRoute>
       <Suspense fallback={<div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900"><div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" /></div>}>
@@ -40,30 +36,9 @@ export default function AdminRoutes() {
           <Route element={<AdminLayout />}>
           <Route index element={<Navigate to="dashboard" replace />} />
           <Route path="dashboard" element={<Dashboard />} />
-          <Route
-            path="analytics"
-            element={
-              <RoleGuard roles={['super_admin', 'admin']}>
-                <Analytics />
-              </RoleGuard>
-            }
-          />
-          <Route
-            path="activity-logs"
-            element={
-              <RoleGuard roles={['super_admin', 'admin']}>
-                <ActivityLogs />
-              </RoleGuard>
-            }
-          />
-          <Route
-            path="messages"
-            element={
-              <RoleGuard roles={['super_admin', 'admin']}>
-                <MessageCenter />
-              </RoleGuard>
-            }
-          />
+          <Route path="analytics" element={<Analytics />} />
+          <Route path="activity-logs" element={<ActivityLogs />} />
+          <Route path="messages" element={<MessageCenter />} />
           <Route path="projects" element={<Projects />} />
           <Route path="projects/new" element={<ProjectForm />} />
           <Route path="projects/:id" element={<ProjectForm />} />
@@ -71,22 +46,8 @@ export default function AdminRoutes() {
           <Route path="custom-pages/new" element={<CustomPageForm />} />
           <Route path="custom-pages/:id" element={<CustomPageForm />} />
           <Route path="media" element={<MediaLibrary />} />
-          <Route
-            path="import-export"
-            element={
-              <RoleGuard roles={['super_admin', 'admin']}>
-                <ImportExport />
-              </RoleGuard>
-            }
-          />
-          <Route
-            path="maintenance"
-            element={
-              <RoleGuard roles={['super_admin']}>
-                <Maintenance />
-              </RoleGuard>
-            }
-          />
+          <Route path="import-export" element={<ImportExport />} />
+          <Route path="maintenance" element={<Maintenance />} />
           <Route path="skills" element={<Skills />} />
           <Route path="skills/new" element={<SkillForm />} />
           <Route path="skills/:id" element={<SkillForm />} />
@@ -95,47 +56,12 @@ export default function AdminRoutes() {
           <Route path="about" element={<AboutContent />} />
           <Route path="contact" element={<ContactContent />} />
           <Route path="footer" element={<FooterContent />} />
-          <Route
-            path="users"
-            element={
-              <RoleGuard roles={['super_admin']}>
-                <UserManagement />
-              </RoleGuard>
-            }
-          />
+          <Route path="users" element={<UserManagement />} />
           <Route path="profile" element={<Profile />} />
-          <Route
-            path="theme"
-            element={
-              <RoleGuard roles={['super_admin', 'admin']}>
-                <ThemeSettings />
-              </RoleGuard>
-            }
-          />
-          <Route
-            path="system-config"
-            element={
-              <RoleGuard roles={['super_admin']}>
-                <SystemConfig />
-              </RoleGuard>
-            }
-          />
-          <Route
-            path="backup"
-            element={
-              <RoleGuard roles={['super_admin', 'admin']}>
-                <Backup />
-              </RoleGuard>
-            }
-          />
-          <Route
-            path="security"
-            element={
-              <RoleGuard roles={['super_admin', 'admin']}>
-                <Security />
-              </RoleGuard>
-            }
-          />
+          <Route path="theme" element={<ThemeSettings />} />
+          <Route path="system-config" element={<SystemConfig />} />
+          <Route path="backup" element={<Backup />} />
+          <Route path="security" element={<Security />} />
         </Route>
       </Routes>
       </Suspense>

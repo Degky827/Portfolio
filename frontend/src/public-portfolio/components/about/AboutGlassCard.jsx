@@ -156,13 +156,13 @@ const AboutGlassCard = memo(function AboutGlassCard({
             {/* Text Content */}
             <div className="flex-1 min-w-0">
               <h3
-                className="text-lg sm:text-xl md:text-[22px] font-bold mb-2 sm:mb-3 leading-tight font-display transition-all duration-300"
-                style={{ color: 'var(--text-primary)' }}
+                className="text-lg sm:text-xl md:text-[22px] font-bold mb-2 sm:mb-3 leading-tight font-display transition-all duration-300 group-hover:tracking-wide"
+                style={{ color: 'var(--text-primary)', opacity: 0.65 }}
               >
                 {title}
               </h3>
 
-              <p className="text-sm sm:text-[15px] leading-relaxed sm:leading-[1.7] transition-colors duration-300" style={{ color: 'var(--text-secondary)' }}>
+              <p className="text-sm sm:text-[15px] leading-relaxed sm:leading-[1.7] transition-all duration-300 group-hover:opacity-100" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>
                 {cleanDescription}
               </p>
             </div>

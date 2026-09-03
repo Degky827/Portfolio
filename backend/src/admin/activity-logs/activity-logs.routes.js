@@ -4,10 +4,12 @@ const { listLogs, getLog, exportLogs, getActions, clearLogs } = require('./activ
 
 const router = Router()
 
-router.get('/', authenticateToken, listLogs)
-router.get('/actions', authenticateToken, getActions)
-router.get('/export', authenticateToken, exportLogs)
-router.get('/:id', authenticateToken, getLog)
-router.delete('/', authenticateToken, clearLogs)
+router.use(authenticateToken)
+
+router.get('/', listLogs)
+router.get('/actions', getActions)
+router.get('/export', exportLogs)
+router.get('/:id', getLog)
+router.delete('/', clearLogs)
 
 module.exports = router

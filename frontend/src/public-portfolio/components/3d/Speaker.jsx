@@ -110,7 +110,7 @@ export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
         position={[0, 0.45, 0]}
           onClick={(e) => {
             e.stopPropagation()
-            workspace?.openByObject?.('speaker')
+            workspace?.openByObject?.(side === 'right' ? 'speaker-right' : 'speaker')
           }}
         onPointerOver={(e) => {
           e.stopPropagation()

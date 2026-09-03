@@ -5,7 +5,7 @@ const User = require('../../shared/models/User')
 const AuditLog = require('../../shared/models/AuditLog')
 const config = require('../../infrastructure/config')
 const { generateAccessToken, generateRefreshToken } = require('../../shared/utilities/tokenUtils')
-const { parseUserAgent } = require('../../shared/utilities/userAgentParser')
+const { parseUserAgent } = require('../../shared/utilities/parseUserAgent')
 
 const MAX_FAILED_ATTEMPTS = 5
 const LOCK_DURATION_MINUTES = 15
@@ -113,13 +113,6 @@ async function loginStep1(req, res) {
       })
     }
 
-    if (user.role !== 'super_admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Only super administrators can access this system.',
-      })
-    }
-
     await User.updateOne(
       { _id: user._id },
       { $set: { failedLoginAttempts: 0, lockedUntil: null } },
@@ -179,15 +172,23 @@ async function loginStep1(req, res) {
         success: true,
         require2FA: false,
         user: userPayload,
+        accessToken,
+        refreshToken,
         message: 'Authentication successful. Welcome back!',
       })
     }
 
+    const tempToken = jwt.sign(
+      { id: user._id, email: user.email, purpose: '2fa-verify' },
+      config.jwtSecret,
+      { expiresIn: '15m' },
+    )
+
     return res.status(200).json({
       success: true,
       require2FA: true,
-      email: user.email,
-      message: 'Password verified. Please provide 2FA TOTP code.',
+      tempToken,
+      message: 'Password verified. Use tempToken in Authorize header, then call verify-2fa with totpCode.',
     })
   } catch (error) {
     console.error('CRITICAL LOGIN ERROR:', error)
@@ -200,12 +201,32 @@ async function loginStep1(req, res) {
 
 async function verify2FA(req, res) {
   try {
-    const { email, totpCode, rememberMe } = req.body
+    let email = req.body.email
+    const totpCode = req.body.totpCode
+    const rememberMe = req.body.rememberMe
+
+    if (!email && req.headers.authorization) {
+      const header = req.headers.authorization
+      if (header.startsWith('Bearer ')) {
+        const tempToken = header.slice(7)
+        try {
+          const decoded = jwt.verify(tempToken, config.jwtSecret)
+          if (decoded.purpose === '2fa-verify' && decoded.email) {
+            email = decoded.email
+          }
+        } catch (err) {
+          return res.status(401).json({
+            success: false,
+            message: 'Invalid or expired temp token. Please login again.',
+          })
+        }
+      }
+    }
 
     if (!email || !totpCode) {
       return res.status(400).json({
         success: false,
-        message: 'Email and TOTP code are required.',
+        message: 'Email (in body or via Bearer token) and totpCode are required.',
       })
     }
 
@@ -231,13 +252,6 @@ async function verify2FA(req, res) {
       return res.status(423).json({
         success: false,
         message: `Account is locked. Try again in ${remainingMinutes} minute(s).`,
-      })
-    }
-
-    if (user.role !== 'super_admin') {
-      return res.status(403).json({
-        success: false,
-        message: 'Access denied. Only super administrators can access this system.',
       })
     }
 
@@ -340,6 +354,8 @@ async function verify2FA(req, res) {
     return res.status(200).json({
       success: true,
       user: userPayload,
+      accessToken,
+      refreshToken,
       message: 'Authentication successful. Welcome back!',
     })
   } catch (error) {

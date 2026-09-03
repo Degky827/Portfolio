@@ -47,18 +47,20 @@ app.use(helmet({
   contentSecurityPolicy: {
     directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],
-      styleSrc: ["'self'", "'unsafe-inline'"],
+      scriptSrc: ["'self'", "'unsafe-inline'", 'https://accounts.google.com', 'https://apis.google.com'],
+      scriptSrcAttr: ["'unsafe-inline'"],
+      styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://accounts.google.com'],
       imgSrc: ["'self'", 'data:', 'https:'],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      connectSrc: ["'self'", config.frontendUrl].filter(Boolean),
-      frameSrc: ["'none'"],
+      connectSrc: ["'self'", config.frontendUrl, 'https://accounts.google.com', 'https://oauth2.googleapis.com', 'https://www.googleapis.com'].filter(Boolean),
+      frameSrc: ["'self'", 'https://accounts.google.com'],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
       formAction: ["'self'"],
     },
   },
   crossOriginEmbedderPolicy: false,
+  crossOriginOpenerPolicy: false,
   crossOriginResourcePolicy: { policy: 'same-site' },
   referrerPolicy: { policy: 'strict-origin-when-cross-origin' },
   hsts: { maxAge: 31536000, includeSubDomains: true, preload: true },
@@ -129,6 +131,8 @@ app.use('/api', navigationRoutes)
 app.use('/api', customPageAdminRoutes)
 app.use('/api', customPagePublicRoutes)
 
+const path = require('path')
+
 app.use('/uploads', express.static('uploads'))
 
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
@@ -136,8 +140,14 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   customCss: '.swagger-ui .topbar { display: none }',
 }))
 
+const publicDir = path.join(__dirname, '..', 'public')
+app.use(express.static(publicDir))
+
 app.use((_req, res) => {
-  res.status(404).json({ error: 'Route not found' })
+  if (_req.path.startsWith('/api')) {
+    return res.status(404).json({ error: 'Route not found' })
+  }
+  res.sendFile(path.join(publicDir, 'index.html'))
 })
 
 app.use((err, _req, res, _next) => {

@@ -82,7 +82,7 @@ function CameraModule({ color, isHovered }) {
                 style={{
                   width: 14,
                   height: 14,
-                  background: `radial-gradient(circle at 35% 35%, #3a3a4a 0%, #1a1a2a 60%, #0a0a1a 100%)`,
+                  background: `radial-gradient(circle at 35% 35%, #3a3a4a 0%, #1a1a2a 60%, #1a1a2e 100%)`,
                   boxShadow: `
                     inset 0 1px 2px rgba(255,255,255,0.1),
                     0 1px 2px rgba(0,0,0,0.5)
@@ -102,7 +102,7 @@ function CameraModule({ color, isHovered }) {
                 <div
                   className="absolute inset-2 rounded-full"
                   style={{
-                    background: 'radial-gradient(circle at 40% 40%, #2a2a3a 0%, #0a0a1a 100%)',
+                    background: 'radial-gradient(circle at 40% 40%, #2a2a3a 0%, #1a1a2e 100%)',
                     boxShadow: 'inset 0 0 2px rgba(0,0,0,0.8)',
                   }}
                 />

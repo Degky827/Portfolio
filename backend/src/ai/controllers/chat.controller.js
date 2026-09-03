@@ -29,9 +29,15 @@ const chatController = async (req, res) => {
   } catch (error) {
     console.error("Chat Controller Error:", error);
 
-    return res.status(500).json({
+    const status = error.status || error.statusCode || 500;
+    const message =
+      error.userMessage ||
+      error.message ||
+      "Failed to process AI request";
+
+    return res.status(status).json({
       success: false,
-      message: "Failed to process AI request",
+      message,
     });
   }
 };

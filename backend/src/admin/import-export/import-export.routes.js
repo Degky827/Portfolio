@@ -5,9 +5,11 @@ const { exportData, previewImport, executeImport, importUPSSnapshot } = require(
 
 const router = Router()
 
-router.get('/export', authenticateToken, exportData)
-router.post('/preview', authenticateToken, importUpload.single('file'), previewImport)
-router.post('/import', authenticateToken, executeImport)
-router.post('/import-ups', authenticateToken, importUpload.single('file'), importUPSSnapshot)
+router.use(authenticateToken)
+
+router.get('/export', exportData)
+router.post('/preview', importUpload.single('file'), previewImport)
+router.post('/import', executeImport)
+router.post('/import-ups', importUpload.single('file'), importUPSSnapshot)
 
 module.exports = router

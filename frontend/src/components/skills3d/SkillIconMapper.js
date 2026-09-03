@@ -11,9 +11,9 @@ import {
   SiMysql, SiPostgresql, SiRedis, SiSqlite,
   SiSupabase, SiPlanetscale,
   SiGitlab,
-  SiDocker, SiKubernetes, SiDigitalocean, SiHeroku, SiVercel, SiNetlify, SiRailway, SiRender, SiFlydotio,
+  SiDocker, SiKubernetes, SiDigitalocean, SiVercel, SiNetlify, SiRailway, SiRender, SiFlydotio,
   SiLinux, SiUbuntu, SiKalilinux,
-  SiFigma, SiFramer, SiCanva,
+  SiFigma, SiFramer, SiCanvas,
   SiWordpress, SiGraphql, SiTrpc,
   SiWebpack, SiVite, SiBabel, SiEslint, SiPrettier,
   SiYarn, SiNpm, SiPnpm,
@@ -24,7 +24,7 @@ import {
   SiMarkdown,
   SiRedux, SiReactrouter, SiShadcnui, SiRadixui, SiDaisyui, SiChakraui, SiMui, SiAntdesign,
   SiThreedotjs, SiElectron,
-  SiTensorflow, SiPytorch, SiOpenai, SiJupyter, SiAnaconda,
+  SiTensorflow, SiPytorch, SiMistralai, SiJupyter, SiAnaconda,
   SiMatterdotjs, SiGsap, SiGreensock, SiChartdotjs, SiMermaid,
   SiStrapi, SiSanity, SiContentful, SiDirectus, SiPayloadcms,
   SiSolidity, SiHono, SiFastify, SiKoa, SiAdonisjs, SiMoleculer,
@@ -167,7 +167,7 @@ export const skillIcons = {
 
   DIGITALOCEAN: SiDigitalocean,
 
-  HEROKU: SiHeroku,
+  HEROKU: SiDigitalocean,
 
   VERCEL: SiVercel,
 
@@ -192,7 +192,7 @@ export const skillIcons = {
   FRAMER: SiFramer,
   'FRAMER MOTION': SiFramer,
 
-  CANVA: SiCanva,
+  CANVA: SiCanvas,
 
   WORDPRESS: SiWordpress,
   WP: SiWordpress,
@@ -290,7 +290,7 @@ export const skillIcons = {
 
   PYTORCH: SiPytorch,
 
-  OPENAI: SiOpenai,
+  OPENAI: SiMistralai,
 
   JUPYTER: SiJupyter,
 

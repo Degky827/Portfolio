@@ -11,7 +11,6 @@ import {
 } from 'react-icons/fa6'
 import { MdEmail } from 'react-icons/md'
 import { FaXTwitter } from 'react-icons/fa6'
-import { useTranslation } from 'react-i18next'
 
 const socialIconMap = {
   github: FaGithub,
@@ -50,11 +49,9 @@ function getPhoneHref(phone, protocol, customUrl) {
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()
-  const { t, i18n } = useTranslation()
   const { settings } = useSiteSettings()
   const [content, setContent] = useState(null)
   const [ns, setNs] = useState(null)
-  const isAm = i18n.language === 'am'
 
   useEffect(() => {
     ;(async () => {
@@ -87,23 +84,19 @@ export default function Footer() {
     logoEnabled: ns?.logoEnabled !== false,
   }), [settings, ns])
 
-  const brandName = isAm
-    ? (mergedSettings?.brandNameAm || content?.brandNameAm || mergedSettings?.brandName || content?.brandName || t('nav.logoText'))
-    : (mergedSettings?.brandName || content?.brandName || t('nav.logoText'))
-  const brandDescription = isAm
-    ? (settings?.brandDescriptionAm || content?.brandDescriptionAm || settings?.brandDescription || content?.brandDescription || t('footer.brandDescription'))
-    : (settings?.brandDescription || content?.brandDescription || t('footer.brandDescription'))
+  const brandName = mergedSettings?.brandName || content?.brandName || 'DESALEGN'
+  const brandDescription = settings?.brandDescription || content?.brandDescription || 'Building robust digital experiences through modern web development and secure network infrastructure.'
   const footerLogo = mergedSettings?.logoImage || content?.footerLogo || ''
 
-  const locationHeadline = content?.locationHeadline || t('footer.location')
-  const subLocation = content?.subLocation || t('footer.subLocation')
+  const locationHeadline = content?.locationHeadline || 'Bahirdar, Ethiopia'
+  const subLocation = content?.subLocation || 'Amhara Region'
   const locationMapUrl = content?.locationMapUrl || ''
-  const emailAddress = settings?.email || content?.emailAddress || t('footer.email')
-  const phoneNumber = settings?.phone || content?.phoneNumber || t('footer.phone')
+  const emailAddress = settings?.email || content?.emailAddress || 'desalegnky827@gmail.com'
+  const phoneNumber = settings?.phone || content?.phoneNumber || '+251 908 720 092'
   const phoneProtocol = content?.phoneProtocol || 'tel'
   const phoneCustomUrl = content?.phoneCustomUrl || ''
 
-  const copyrightText = settings?.copyrightText || content?.copyrightText || t('footer.copyright', { year: currentYear, brand: brandName })
+  const copyrightText = settings?.copyrightText || content?.copyrightText || `© ${currentYear} ${brandName}. Built with passion and precision.`
   const visualSeparator = content?.visualSeparator || ''
   const attributionText = content?.attributionText || ''
 
@@ -199,7 +192,7 @@ export default function Footer() {
                 },
               }}
             >
-<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-6 sm:mb-8 md:mb-10" style={{ color: 'var(--footer-text-secondary)' }}>{t('footer.explore')}</h4>
+<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-6 sm:mb-8 md:mb-10" style={{ color: 'var(--footer-text-secondary)' }}>Explore</h4>
                <ul className="space-y-3 sm:space-y-4 md:space-y-6">
                 {navigationItems.map((item, idx) => (
                   <li key={idx}>
@@ -238,7 +231,7 @@ export default function Footer() {
               },
             }}
           >
-<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-6 sm:mb-8 md:mb-10" style={{ color: 'var(--footer-text-secondary)' }}>{t('footer.contact')}</h4>
+<h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-6 sm:mb-8 md:mb-10" style={{ color: 'var(--footer-text-secondary)' }}>Contact</h4>
              <ul className="space-y-4 sm:space-y-5 md:space-y-6" style={{ color: 'var(--footer-text-secondary)' }}>
               {locationHeadline && (
                 <li className="flex items-start gap-3 sm:gap-4">
@@ -250,7 +243,7 @@ export default function Footer() {
                     {subLocation && <span className="text-xs" style={{ color: 'var(--footer-text-secondary)', opacity: 0.7 }}>{subLocation}</span>}
                     {locationMapUrl && (
                       <a href={locationMapUrl} target="_blank" rel="noopener noreferrer" className="text-[10px] text-primary hover:opacity-80 transition-opacity mt-0.5 block">
-                        {t('footer.viewOnGoogleMaps')}
+                        View on Google Maps ↗
                       </a>
                     )}
                   </div>
@@ -297,7 +290,7 @@ export default function Footer() {
             onClick={scrollToTop}
             className="w-10 h-10 sm:w-12 sm:h-12 rounded-full hover:bg-primary flex items-center justify-center transition-colors"
             style={{ backgroundColor: 'rgba(255,255,255,0.1)', color: 'var(--footer-text-secondary)' }}
-            title={t('footer.backToTop')}
+            title="Back to top"
           >
             <ArrowUp size={18} className="w-4 h-4 sm:w-5 sm:h-5" />
           </motion.button>
