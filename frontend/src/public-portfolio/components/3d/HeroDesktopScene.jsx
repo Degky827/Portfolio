@@ -261,6 +261,18 @@ export default function HeroDesktopScene({ className = '', profileData }) {
     setCameraKey((k) => k + 1)
   }, [])
 
+  useEffect(() => {
+    if (!expanded) return
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setExpanded(false)
+        setCameraKey((k) => k + 1)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [expanded])
+
   const inlineCamera = useMemo(() => {
     if (isMobile) {
       return { position: [2.5, 1.5, 5.0], fov: 42, near: 0.1, far: 25 }
@@ -325,6 +337,12 @@ export default function HeroDesktopScene({ className = '', profileData }) {
             transition={{ duration: 0.3 }}
             className="fixed inset-0 z-[99999] flex flex-col"
             style={{ background: darkMode ? '#1a1a2e' : '#ffffff' }}
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setExpanded(false)
+                setCameraKey((k) => k + 1)
+              }
+            }}
           >
             <div className="absolute top-0 left-0 right-0 z-[100000] flex items-center justify-between px-6 py-4 bg-slate-900/60 dark:bg-black/60 backdrop-blur-md border-b border-white/10 text-white">
               <span className="text-xs font-bold uppercase tracking-[0.2em]">
