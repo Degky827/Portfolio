@@ -10,7 +10,13 @@
     "relationship": "Supervisor",
     "avatar": "https://randomuser.me/api/portraits/men/32.jpg",
     "content": "Desalegn consistently delivered high-quality software solutions and demonstrated strong problem-solving skills throughout the Menged Transport project. His ability to work with microservices, APIs, and modern web technologies helped the team successfully deliver critical features on time.",
-    "highlights": ["high-quality software solutions", "problem-solving", "microservices", "APIs", "critical features"],
+    "highlights": [
+      "high-quality software solutions",
+      "problem-solving",
+      "microservices",
+      "APIs",
+      "critical features"
+    ],
     "project": "Menged Transport Platform",
     "projectUrl": "https://github.com/Degky827",
     "verified": true,
@@ -30,7 +36,11 @@
     "relationship": "Team Lead",
     "avatar": "https://randomuser.me/api/portraits/women/44.jpg",
     "content": "Working with Desalegn on the mobile banking interface was a great experience. He wrote clean, maintainable React components that our team could easily build upon, and his attention to detail and proactive communication made collaboration effortless.",
-    "highlights": ["clean, maintainable React components", "attention to detail", "proactive communication"],
+    "highlights": [
+      "clean, maintainable React components",
+      "attention to detail",
+      "proactive communication"
+    ],
     "project": "Dashen Super App",
     "verified": true,
     "featured": false,
@@ -48,7 +58,12 @@
     "relationship": "Client",
     "avatar": "https://randomuser.me/api/portraits/men/75.jpg",
     "content": "Desalegn delivered an e-commerce platform that exceeded our expectations. His command of both frontend and backend technologies allowed him to build a seamless, performant application. He was responsive, met every deadline, and provided thoughtful technical guidance throughout the engagement.",
-    "highlights": ["exceeded our expectations", "frontend and backend", "performant application", "met every deadline"],
+    "highlights": [
+      "exceeded our expectations",
+      "frontend and backend",
+      "performant application",
+      "met every deadline"
+    ],
     "project": "E-Commerce Platform",
     "verified": true,
     "featured": false,
@@ -66,50 +81,16 @@
     "relationship": "Colleague",
     "avatar": "https://randomuser.me/api/portraits/men/52.jpg",
     "content": "I collaborated with Desalegn on several government digitalization initiatives. He is dependable, collaborative, and committed to writing clean, maintainable code. His ability to quickly adapt to new technologies and mentor junior developers made a real difference in our team's productivity.",
-    "highlights": ["dependable, collaborative", "clean, maintainable code", "mentor junior developers"],
+    "highlights": [
+      "dependable, collaborative",
+      "clean, maintainable code",
+      "mentor junior developers"
+    ],
     "project": "Digital Governance Portal",
     "verified": true,
     "featured": false,
     "status": "PUBLISHED",
     "publishedAt": "2025-01-25T00:00:00Z",
     "displayOrder": 4
-  },
-  {
-    "id": "rec-005",
-    "name": "Meron Tadesse",
-    "role": "Product Manager",
-    "organization": "Africa's Talking",
-    "organizationUrl": "https://africastalking.com",
-    "organizationLogo": "https://logo.clearbit.com/africastalking.com",
-    "linkedinUrl": "https://www.linkedin.com/in/meron-tadesse",
-    "relationship": "Colleague",
-    "avatar": "https://randomuser.me/api/portraits/women/68.jpg",
-    "content": "Desalegn has a rare combination of technical skill and product thinking. During our API integration project he implemented the features flawlessly and suggested improvements that enhanced the overall user experience. I would confidently recommend him for any complex software engineering role.",
-    "highlights": ["technical skill and product thinking", "API integration", "user experience", "confidently recommend"],
-    "project": "SMS & Payments API Integration",
-    "verified": true,
-    "featured": true,
-    "status": "PUBLISHED",
-    "publishedAt": "2024-11-05T00:00:00Z",
-    "displayOrder": 5
-  },
-  {
-    "id": "rec-006",
-    "name": "Hanna Bekele",
-    "role": "Engineering Manager",
-    "organization": "Gebeya Inc.",
-    "organizationUrl": "https://gebeya.com",
-    "organizationLogo": "https://logo.clearbit.com/gebeya.com",
-    "linkedinUrl": "https://www.linkedin.com/in/hanna-bekele",
-    "relationship": "Mentor",
-    "avatar": "https://randomuser.me/api/portraits/women/21.jpg",
-    "content": "I mentored Desalegn during his time on our platform team and watched him grow into an engineer who owns problems end to end. He designed a Node.js and MongoDB service layer that cut our API response times significantly, documented it thoroughly, and handed it over cleanly to the team.",
-    "highlights": ["owns problems end to end", "Node.js and MongoDB", "cut our API response times", "documented it thoroughly"],
-    "project": "Talent Marketplace Platform",
-    "verified": true,
-    "featured": false,
-    "status": "PUBLISHED",
-    "publishedAt": "2024-08-12T00:00:00Z",
-    "displayOrder": 6
   }
 ]
