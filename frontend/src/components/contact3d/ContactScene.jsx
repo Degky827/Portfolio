@@ -19,9 +19,10 @@ function SceneEnvironment({ isMobile, darkMode }) {
 
       <ContactLighting isMobile={isMobile} darkMode={darkMode} />
       <ContactEnvironment isMobile={isMobile} />
-      <FloatingParticles count={isMobile ? 30 : 120} darkMode={darkMode} />
+      <FloatingParticles key={isMobile ? 'mobile' : 'desktop'} count={isMobile ? 30 : 120} darkMode={darkMode} />
 
       <Stars
+        key={isMobile ? 'mobile' : 'desktop'}
         radius={45}
         depth={45}
         count={isMobile ? 100 : 1000}
