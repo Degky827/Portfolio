@@ -1,4 +1,3 @@
-import api from './api'
 import testimonialsData from '../data/testimonials.json'
 
 function normalizeTestimonials(data) {
@@ -20,17 +19,8 @@ function normalizeTestimonials(data) {
   }))
 }
 
-const localFallback = normalizeTestimonials(testimonialsData)
+const localTestimonials = normalizeTestimonials(testimonialsData)
 
-export async function getTestimonials({ published = true, featured = false } = {}) {
-  try {
-    const response = await api.get('/testimonials', { timeout: 3000 })
-    const data = normalizeTestimonials(response.data)
-    if (data.length > 0) {
-      return { testimonials: data }
-    }
-    return { testimonials: localFallback }
-  } catch {
-    return { testimonials: localFallback }
-  }
+export async function getTestimonials() {
+  return { testimonials: localTestimonials }
 }
