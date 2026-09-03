@@ -100,10 +100,10 @@ export default memo(function ChatWindow({ isOpen, onClose }) {
                 </p>
                 <div className="flex flex-wrap gap-2 mt-4 justify-center">
                   {[
-                    'What skills does he have?',
-                    'List his projects',
+                    'What skills does Desalegn have?',
+                    'What projects has he built?',
                     'What is his experience?',
-                    'His education?',
+                    'Tell me about his education?',
                   ].map((q) => (
                     <button
                       key={q}
