@@ -1,4 +1,3 @@
-const ContactMessage = require('../../shared/models/ContactMessage')
 const Message = require('../../shared/models/Message')
 const { emitToAdmin } = require('../../infrastructure/socket')
 const { auditLog } = require('../../shared/utilities/auditLogger')
@@ -25,7 +24,6 @@ async function getMessages(req, res) {
     res.json({
       success: true,
       totalCount,
-      // include legacy `read` prop for frontend compatibility
       messages: messages.map((m) => ({ ...m, read: m.isRead })),
       pagination: {
         page, limit,
@@ -41,11 +39,11 @@ async function getMessages(req, res) {
 
 async function getMessage(req, res) {
   try {
-    const message = await Message.findById(req.params.id).lean() || await ContactMessage.findById(req.params.id).lean()
+    const message = await Message.findById(req.params.id).lean()
     if (!message) {
       return res.status(404).json({ success: false, message: 'Message not found' })
     }
-    res.json({ success: true, message: { ...message, read: message.isRead || message.read } })
+    res.json({ success: true, message: { ...message, read: message.isRead } })
   } catch (error) {
     console.error('[contact-messages] getMessage error:', error)
     res.status(500).json({ success: false, message: 'Failed to fetch message' })
@@ -93,7 +91,7 @@ async function markRead(req, res) {
       req.params.id,
       { isRead: true },
       { new: true },
-    ) || await ContactMessage.findByIdAndUpdate(req.params.id, { read: true }, { new: true })
+    )
     if (!msg) {
       return res.status(404).json({ success: false, message: 'Message not found' })
     }
@@ -111,7 +109,7 @@ async function markUnread(req, res) {
       req.params.id,
       { isRead: false },
       { new: true },
-    ) || await ContactMessage.findByIdAndUpdate(req.params.id, { read: false }, { new: true })
+    )
     if (!msg) {
       return res.status(404).json({ success: false, message: 'Message not found' })
     }
@@ -135,7 +133,7 @@ async function getUnreadCount(_req, res) {
 
 async function deleteMessage(req, res) {
   try {
-    const msg = await Message.findByIdAndDelete(req.params.id) || await ContactMessage.findByIdAndDelete(req.params.id)
+    const msg = await Message.findByIdAndDelete(req.params.id)
     if (!msg) {
       return res.status(404).json({ success: false, message: 'Message not found' })
     }

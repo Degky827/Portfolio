@@ -1,4 +1,4 @@
-import { useRef, useCallback, useState, memo, useEffect } from 'react'
+import { useRef, useCallback, useState, memo } from 'react'
 import { motion, useMotionValue, useSpring } from 'framer-motion'
 import MonitorFrame from './MonitorFrame'
 import MonitorScreen from './MonitorScreen'
@@ -26,6 +26,7 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
   locationText,
   skills,
   available,
+  photoUrl,
 }) {
   const containerRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -80,14 +81,6 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
     rotateX.set(0)
     rotateY.set(0)
   }, [rotateX, rotateY])
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      rotateX.destroy()
-      rotateY.destroy()
-    }
-  }, [])
 
   return (
     <div className="relative">
@@ -169,6 +162,7 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
                     locationText={locationText}
                     skills={skills}
                     available={available}
+                    photoUrl={photoUrl}
                   />
                 </MonitorScreen>
               </MonitorFrame>

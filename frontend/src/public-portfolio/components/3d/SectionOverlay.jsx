@@ -1,18 +1,29 @@
 import { useEffect, useRef, lazy, Suspense } from 'react'
-import { useTranslation } from 'react-i18next'
 import gsap from 'gsap'
-import { X, Monitor, Keyboard, Cpu, Volume2 } from 'lucide-react'
+import { X, Monitor, Keyboard, Cpu, Volume2, Home, Briefcase, Quote, FileText } from 'lucide-react'
 import { useWorkspace } from './WorkspaceContext'
 
+const Hero = lazy(() => import('../../pages/sections/Hero'))
 const About = lazy(() => import('../../pages/sections/About'))
 const Skills = lazy(() => import('../../pages/sections/Skills'))
+const Experience = lazy(() => import('../../pages/sections/Experience'))
 const Projects = lazy(() => import('../../pages/sections/Projects'))
+const Testimonials = lazy(() => import('../../pages/sections/Testimonials'))
 const Contact = lazy(() => import('../../pages/sections/Contact'))
+const CVPage = lazy(() => import('../../pages/cv/CVPage'))
 
 const SECTION_CONFIG = {
+  home: {
+    icon: Home,
+    label: 'Home',
+    color: '#6366f1',
+    Component: Hero,
+    seoTitle: 'Home - Portfolio',
+    seoDescription: 'Welcome to my developer portfolio.',
+  },
   about: {
     icon: Monitor,
-    labelKey: 'workspace.sectionAbout',
+    label: 'About Me',
     color: '#8b5cf6',
     Component: About,
     seoTitle: 'About - Portfolio',
@@ -20,27 +31,51 @@ const SECTION_CONFIG = {
   },
   skills: {
     icon: Keyboard,
-    labelKey: 'workspace.sectionSkills',
+    label: 'Skills & Expertise',
     color: '#22d3ee',
     Component: Skills,
     seoTitle: 'Skills - Portfolio',
     seoDescription: 'Explore my technical skills, certifications, and expertise.',
   },
+  experience: {
+    icon: Briefcase,
+    label: 'Experience',
+    color: '#f59e0b',
+    Component: Experience,
+    seoTitle: 'Experience - Portfolio',
+    seoDescription: 'View my professional experience and work history.',
+  },
   projects: {
     icon: Cpu,
-    labelKey: 'workspace.sectionProjects',
+    label: 'Projects',
     color: '#6366f1',
     Component: Projects,
     seoTitle: 'Projects - Portfolio',
     seoDescription: 'View my web and mobile development projects.',
   },
+  testimonials: {
+    icon: Quote,
+    label: 'Testimonials',
+    color: '#0a66c2',
+    Component: Testimonials,
+    seoTitle: 'Testimonials - Portfolio',
+    seoDescription: 'Read professional recommendations and testimonials.',
+  },
   contact: {
     icon: Volume2,
-    labelKey: 'workspace.sectionContact',
+    label: 'Get In Touch',
     color: '#a78bfa',
     Component: Contact,
     seoTitle: 'Contact - Portfolio',
     seoDescription: 'Get in touch with me for collaborations and inquiries.',
+  },
+  cv: {
+    icon: FileText,
+    label: 'CV / Resume',
+    color: '#4F46E5',
+    Component: CVPage,
+    seoTitle: 'CV - Desalegn Kasaye',
+    seoDescription: 'Professional CV of Desalegn Kasaye, Full-Stack Developer.',
   },
 }
 
@@ -71,7 +106,6 @@ function useSectionSEO(activeSection) {
 }
 
 export default function SectionOverlay() {
-  const { t } = useTranslation()
   const { activeSection, closeSection } = useWorkspace()
   const panelRef = useRef(null)
   const backdropRef = useRef(null)
@@ -152,11 +186,11 @@ export default function SectionOverlay() {
       {/* Panel */}
       <div
         ref={panelRef}
-        className="absolute right-0 top-0 h-full w-full max-w-4xl bg-white dark:bg-[#0a0a1a] shadow-2xl overflow-hidden flex flex-col"
+        className="absolute right-0 top-0 h-full w-full max-w-4xl bg-white dark:bg-[#1a1a2e] shadow-2xl overflow-hidden flex flex-col"
         style={{ opacity: 0, transform: 'translateX(100%)' }}
       >
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#0a0a1a] shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-neutral-800 bg-white dark:bg-[#1a1a2e] shrink-0">
           <div className="flex items-center gap-3">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center"
@@ -165,7 +199,7 @@ export default function SectionOverlay() {
               {Icon && <Icon size={20} />}
             </div>
             <h2 className="text-lg font-bold font-display" style={{ color: 'var(--text-primary)' }}>
-              {t(config.labelKey)}
+              {config.label}
             </h2>
           </div>
           <button

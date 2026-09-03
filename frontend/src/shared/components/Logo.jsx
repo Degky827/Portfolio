@@ -1,15 +1,11 @@
 import { motion } from 'framer-motion'
-import { useTranslation } from 'react-i18next'
 import { getMediaUrl } from '../services/api'
 
 export default function Logo({ settings, showText = true, linkTo = '#home', onNavClick, className = '' }) {
-  const { i18n } = useTranslation()
-  const isAm = i18n.language === 'am'
   const logoImage = settings?.logoImage || ''
   const logoSvg = settings?.logoSvg || ''
   const logoText = settings?.logoText || ''
-  const brandName = isAm ? (settings?.brandNameAm || settings?.brandName || 'DESALEGN') : (settings?.brandName || 'DESALEGN')
-  const nameAmharic = settings?.nameAmharic || ''
+  const brandName = settings?.brandName || 'DESALEGN'
   const logoEnabled = settings?.logoEnabled !== false
   const logoWidth = settings?.logoWidth || 40
   const logoHeight = settings?.logoHeight || 40
@@ -33,8 +29,11 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
   }
 
   const content = (
-    <div className={`flex items-center gap-2 sm:gap-3 ${className}`} style={{ justifyContent: logoPosition }}>
-      <div className="overflow-hidden flex items-center justify-center shadow-lg border border-gray-200 dark:border-neutral-700" style={iconStyle}>
+    <div className={`flex items-center gap-2.5 sm:gap-3 ${className}`} style={{ justifyContent: logoPosition }}>
+      <div
+        className="overflow-hidden flex items-center justify-center transition-all duration-200"
+        style={iconStyle}
+      >
         {logoSvg ? (
           <div className="w-full h-full flex items-center justify-center" dangerouslySetInnerHTML={{ __html: logoSvg }} />
         ) : logoImage ? (
@@ -44,21 +43,17 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
             className="w-full h-full object-contain p-0.5"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center bg-[#6366f1] text-white text-[10px] sm:text-xs font-black">
-            {nameAmharic || brandName.charAt(0)}
+          <div className="w-full h-full flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-indigo-700 border border-indigo-400/40 text-white font-black text-xs sm:text-sm tracking-tight shadow-md shadow-indigo-500/20">
+            {brandName.substring(0, 1).toUpperCase()}
           </div>
         )}
       </div>
       {showText && (
         <span
-          className={`font-black tracking-tighter ${
-            onNavClick
-              ? 'text-xl sm:text-2xl'
-              : 'uppercase tracking-tight'
-          }`}
-          style={{ color: 'var(--text-primary)' }}
+          className="font-black text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white flex items-center gap-1"
         >
-          {logoText || brandName}
+          {logoText || (brandName === 'DESALEGN' ? 'DK' : brandName)}
+          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block ml-0.5" />
         </span>
       )}
     </div>

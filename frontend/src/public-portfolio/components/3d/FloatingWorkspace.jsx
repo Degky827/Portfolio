@@ -86,7 +86,7 @@ export default function FloatingWorkspace({ profileData }) {
             </div>
             <div className="w-full h-[calc(100%-32px)]">
               <Suspense fallback={
-                <div className="w-full h-full flex items-center justify-center" style={{ background: '#0B0D10' }}>
+                <div className="w-full h-full flex items-center justify-center" style={{ background: '#1a1a2e' }}>
                   <div className="w-5 h-5 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
                 </div>
               }>

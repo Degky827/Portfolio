@@ -4,9 +4,11 @@ const { getConfig, updateConfig, triggerBackup, triggerHealthCheck } = require('
 
 const router = Router()
 
-router.get('/', authenticateToken, getConfig)
-router.put('/', authenticateToken, updateConfig)
-router.post('/trigger-backup', authenticateToken, triggerBackup)
-router.post('/trigger-health-check', authenticateToken, triggerHealthCheck)
+router.use(authenticateToken)
+
+router.get('/', getConfig)
+router.put('/', updateConfig)
+router.post('/trigger-backup', triggerBackup)
+router.post('/trigger-health-check', triggerHealthCheck)
 
 module.exports = router

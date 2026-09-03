@@ -184,7 +184,7 @@ export default function Login() {
     try {
       const data = await loginApi(email, password)
       if (data.require2FA) {
-        setVerifiedEmail(data.email)
+        setVerifiedEmail(data.tempToken)
         setStep('totp')
       } else {
         navigatingRef.current = true

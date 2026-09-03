@@ -1,9 +1,9 @@
 const mongoose = require('mongoose')
-const ContactMessage = require('../ContactMessage')
+const Message = require('../Message')
 
-describe('ContactMessage Model', () => {
-  it('should create a valid contact message', () => {
-    const msg = new ContactMessage({
+describe('Message Model', () => {
+  it('should create a valid message', () => {
+    const msg = new Message({
       name: 'John Doe',
       email: 'john@example.com',
       message: 'Hello there!',
@@ -12,11 +12,11 @@ describe('ContactMessage Model', () => {
     expect(msg.name).toBe('John Doe')
     expect(msg.email).toBe('john@example.com')
     expect(msg.message).toBe('Hello there!')
-    expect(msg.read).toBe(false)
+    expect(msg.isRead).toBe(false)
   })
 
   it('should trim whitespace from fields', () => {
-    const msg = new ContactMessage({
+    const msg = new Message({
       name: '  John Doe  ',
       email: '  john@example.com  ',
       message: '  Hello!  ',
@@ -28,7 +28,7 @@ describe('ContactMessage Model', () => {
   })
 
   it('should enforce maxlength on name', () => {
-    const msg = new ContactMessage({
+    const msg = new Message({
       name: 'a'.repeat(101),
       email: 'test@example.com',
       message: 'test',
@@ -40,7 +40,7 @@ describe('ContactMessage Model', () => {
   })
 
   it('should enforce maxlength on message', () => {
-    const msg = new ContactMessage({
+    const msg = new Message({
       name: 'Test',
       email: 'test@example.com',
       message: 'a'.repeat(5001),
@@ -52,7 +52,7 @@ describe('ContactMessage Model', () => {
   })
 
   it('should require name field', () => {
-    const msg = new ContactMessage({
+    const msg = new Message({
       email: 'test@example.com',
       message: 'test',
     })
@@ -63,7 +63,7 @@ describe('ContactMessage Model', () => {
   })
 
   it('should require email field', () => {
-    const msg = new ContactMessage({
+    const msg = new Message({
       name: 'Test',
       message: 'test',
     })
@@ -74,7 +74,7 @@ describe('ContactMessage Model', () => {
   })
 
   it('should require message field', () => {
-    const msg = new ContactMessage({
+    const msg = new Message({
       name: 'Test',
       email: 'test@example.com',
     })
@@ -85,7 +85,7 @@ describe('ContactMessage Model', () => {
   })
 
   it('should set default values', () => {
-    const msg = new ContactMessage({
+    const msg = new Message({
       name: 'Test',
       email: 'test@example.com',
       message: 'Hello',
@@ -93,11 +93,11 @@ describe('ContactMessage Model', () => {
 
     expect(msg.phone).toBe('')
     expect(msg.subject).toBe('')
-    expect(msg.read).toBe(false)
+    expect(msg.isRead).toBe(false)
   })
 
   it('should enforce maxlength on phone', () => {
-    const msg = new ContactMessage({
+    const msg = new Message({
       name: 'Test',
       email: 'test@example.com',
       message: 'Hello',

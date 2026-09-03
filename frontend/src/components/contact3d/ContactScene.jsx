@@ -19,9 +19,10 @@ function SceneEnvironment({ isMobile, darkMode }) {
 
       <ContactLighting isMobile={isMobile} darkMode={darkMode} />
       <ContactEnvironment isMobile={isMobile} />
-      <FloatingParticles count={isMobile ? 30 : 120} darkMode={darkMode} />
+      <FloatingParticles key={isMobile ? 'particles-mobile' : 'particles-desktop'} count={isMobile ? 30 : 120} darkMode={darkMode} />
 
       <Stars
+        key={isMobile ? 'stars-mobile' : 'stars-desktop'}
         radius={45}
         depth={45}
         count={isMobile ? 100 : 1000}
@@ -43,7 +44,7 @@ export default function ContactScene({ children }) {
 
   return (
     <div className="relative w-full" style={{ perspective: '1200px' }}>
-      <div className="fixed inset-0 z-0">
+      <div className="absolute inset-0 z-0">
         <ContactErrorBoundary>
           <Canvas
             camera={{ position: [0, 2, 10], fov: 50, near: 0.1, far: 100 }}

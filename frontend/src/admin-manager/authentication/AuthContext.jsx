@@ -84,30 +84,19 @@ export function AuthProvider({ children }) {
   }, [clearAuth])
 
   const isAuthenticated = useMemo(() => !!(token || cookieAuth), [token, cookieAuth])
-  const userRole = useMemo(() => user?.role || null, [user])
-
-  const hasRole = useCallback(
-    (...roles) => {
-      if (!userRole) return false
-      return roles.includes(userRole)
-    },
-    [userRole],
-  )
 
   const value = useMemo(
     () => ({
       user,
       token,
       isAuthenticated,
-      userRole,
       loading,
       setAuth,
       setUserData,
       logout,
-      hasRole,
       cookieAuth,
     }),
-    [user, token, isAuthenticated, userRole, loading, setAuth, setUserData, logout, hasRole, cookieAuth],
+    [user, token, isAuthenticated, loading, setAuth, setUserData, logout, cookieAuth],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

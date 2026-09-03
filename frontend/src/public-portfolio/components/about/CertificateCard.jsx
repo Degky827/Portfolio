@@ -128,9 +128,10 @@ const CertificateCard = memo(function CertificateCard({
 
           {/* Title */}
           <h3
-            className="text-sm sm:text-base md:text-lg font-bold text-center leading-tight transition-all duration-300"
+            className="text-sm sm:text-base md:text-lg font-bold text-center leading-tight transition-all duration-300 group-hover:tracking-wide"
             style={{
               color: 'var(--text-primary)',
+              opacity: 0.6,
               textShadow: isHovered ? '0 0 16px rgba(34,211,238,0.3)' : 'none',
             }}
           >
@@ -143,7 +144,7 @@ const CertificateCard = memo(function CertificateCard({
               <span
                 className="text-[10px] sm:text-[11px] font-semibold uppercase tracking-[0.15em] px-3 py-1 rounded-full transition-all duration-300"
                 style={{
-                   color: '#0e7490',
+                   color: '#ffffff',
                    background: 'rgba(34,211,238,0.06)',
                    border: '1px solid rgba(34,211,238,0.15)',
                    boxShadow: isHovered ? '0 0 12px rgba(34,211,238,0.15)' : 'none',

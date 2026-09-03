@@ -2,11 +2,13 @@ import { useEffect, useState } from 'react'
 import { lazy, Suspense } from 'react'
 import Hero from './sections/Hero'
 import About from './sections/About'
+import Experience from './sections/Experience'
 import Skills from './sections/Skills'
 import { getHomeContent } from '../../shared/services/homeContentService'
 import { getAboutContent } from '../../shared/services/aboutService'
 
 const Projects = lazy(() => import('./sections/Projects'))
+const Testimonials = lazy(() => import('./sections/Testimonials'))
 const Contact = lazy(() => import('./sections/Contact'))
 
 const spinner = (
@@ -33,20 +35,22 @@ export default function Home() {
       <Hero
         content={content?.hero}
         contactButtonText={content?.contactButtonText}
-        contactButtonTextAm={content?.contactButtonTextAm}
         contactButtonLink={content?.contactButtonLink}
       />
       {aboutContent?.status !== 'inactive' && (
         <About content={content?.about} hero={content?.hero} aboutContent={aboutContent} />
       )}
+      <Experience />
       <Skills />
       <Suspense fallback={spinner}>
         <Projects />
+      </Suspense>
+      <Suspense fallback={spinner}>
+        <Testimonials />
       </Suspense>
       <Suspense fallback={spinner}>
         <Contact />
       </Suspense>
     </>
   )
-
 }
