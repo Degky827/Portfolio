@@ -151,8 +151,8 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       className="relative min-h-screen overflow-hidden bg-white dark:bg-[#080B14] text-slate-900 dark:text-white transition-colors duration-300"
       aria-label="Hero section"
     >
-      {/* 3D Desktop Scene - hidden on mobile, shown on md+ */}
-      <div className="hidden md:block absolute right-0 top-0 w-[50%] lg:w-[48%] h-full z-10 pointer-events-auto cursor-grab active:cursor-grabbing">
+      {/* 3D Desktop Scene - visible on all screens */}
+      <div className="absolute right-0 top-0 w-full md:w-[50%] lg:w-[48%] h-full z-10 pointer-events-auto cursor-grab active:cursor-grabbing">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
@@ -223,8 +223,10 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         {/* Hero content area */}
         <div className="flex-1 flex items-center">
           <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex items-center">
-            {/* Left text content - full width on mobile, 52% on md+ */}
-            <div className="w-full md:w-[52%] lg:max-w-xl pt-20 sm:pt-24 md:pt-0 pointer-events-auto">
+            {/* Left text content */}
+            <div className="w-full md:w-[52%] lg:max-w-xl pt-20 sm:pt-24 md:pt-0 pointer-events-auto relative">
+              {/* Mobile text backdrop */}
+              <div className="md:hidden absolute -inset-x-6 -top-24 -bottom-6 bg-white/80 dark:bg-[#080B14]/85 backdrop-blur-sm -z-10 rounded-3xl" />
 
               {/* Eyebrow */}
               <motion.p

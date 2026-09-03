@@ -300,7 +300,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
   }), [])
 
   const drawerTransition = { type: 'spring', damping: 30, stiffness: 150 }
-  const drawerWidthClass = 'w-full sm:w-96'
+  const drawerWidthClass = 'w-full'
   const rightControlsGap = Math.round(settings.menuGap / 3)
 
   const handleNavClick = useCallback((e, item) => {
@@ -475,7 +475,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsOpen(false)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1001] md:hidden"
+                className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1002] md:hidden"
               />
               <motion.div
                 initial={drawerVariants.initial}

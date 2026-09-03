@@ -4,6 +4,7 @@ import { useDarkMode, usePageTracking } from './shared/hooks'
 import ErrorBoundary from './shared/components/ErrorBoundary'
 import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
 import IntroSystem from './public-portfolio/intro/IntroSystem'
+import CursorSystem from './components/cursor/CursorSystem'
 
 const Navbar = lazy(() => import('./public-portfolio/layout/Navbar'))
 const Footer = lazy(() => import('./public-portfolio/layout/Footer'))
@@ -67,6 +68,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <CursorSystem />
       <ScrollToTop />
       <IntroSystem />
       <Suspense fallback={layoutSpinner}>

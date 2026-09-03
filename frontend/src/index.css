@@ -641,3 +641,37 @@ p, span, li, label, td, th, dt, dd, figcaption, blockquote {
 .theme-transition *::after {
   transition-duration: 300ms !important;
 }
+
+/* ── Custom Cursor System ───────────────────────────── */
+@media (hover: hover) and (pointer: fine) {
+  .custom-cursor-active,
+  .custom-cursor-active * {
+    cursor: none !important;
+  }
+
+  .custom-cursor-active a,
+  .custom-cursor-active button,
+  .custom-cursor-active input,
+  .custom-cursor-active textarea,
+  .custom-cursor-active select {
+    cursor: none !important;
+  }
+
+  .cursor-dot {
+    mix-blend-mode: difference;
+  }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .cursor-dot,
+  .cursor-ring,
+  .cursor-click-layer {
+    display: none !important;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .cursor-ring {
+    transition: none !important;
+  }
+}
