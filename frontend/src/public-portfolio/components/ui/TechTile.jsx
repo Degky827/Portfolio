@@ -55,8 +55,8 @@ function abbreviate(name) {
 }
 
 const SIZES = {
-  md: { box: 'w-[60px] h-[60px] rounded-2xl', icon: 28, label: 'text-[11px] sm:text-xs' },
-  sm: { box: 'w-12 h-12 rounded-xl', icon: 22, label: 'text-[10px]' },
+  md: { box: 'w-12 h-12 rounded-xl', icon: 20, label: 'text-[10px]' },
+  sm: { box: 'w-10 h-10 rounded-lg', icon: 16, label: 'text-[9px]' },
 }
 
 export function TechTile({ name, icon, size = 'md', label = name, onClick, className = '' }) {
@@ -70,7 +70,7 @@ export function TechTile({ name, icon, size = 'md', label = name, onClick, class
       type={onClick ? 'button' : undefined}
       onClick={onClick}
       aria-label={onClick ? label : undefined}
-      className={`group flex flex-col items-center gap-1.5 ${onClick ? 'cursor-pointer' : 'cursor-default'} ${className}`}
+      className={`group flex flex-col items-center gap-1 ${onClick ? 'cursor-pointer' : 'cursor-default'} ${className}`}
     >
       <div
         className={`${s.box} flex items-center justify-center bg-slate-100 dark:bg-[#151B2B] border border-slate-200 dark:border-white/[0.08] shadow-sm group-hover:border-indigo-500/50 group-hover:-translate-y-0.5 transition-all duration-200`}
@@ -85,7 +85,7 @@ export function TechTile({ name, icon, size = 'md', label = name, onClick, class
             aria-hidden="true"
           />
         ) : (
-          <div className={`font-bold tracking-wide text-slate-700 dark:text-white ${size === 'sm' ? 'text-[11px]' : 'text-sm'}`}>
+          <div className={`font-bold tracking-wide text-slate-700 dark:text-white ${size === 'sm' ? 'text-[9px]' : 'text-[11px]'}`}>
             {abbreviate(name)}
           </div>
         )}
