@@ -201,6 +201,7 @@ export default function About({ content, hero, aboutContent }) {
                 locationText={locationText}
                 skills={skills}
                 available={available}
+                photoUrl={hero?.profilePhoto?.url || '/BDU1601297.png'}
               />
             </div>
           </div>

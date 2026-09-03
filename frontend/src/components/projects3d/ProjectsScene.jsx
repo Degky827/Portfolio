@@ -19,10 +19,11 @@ function SceneEnvironment({ isMobile, fogColor }) {
 
       <CinematicLighting isMobile={isMobile} />
       <HolographicLines />
-      <FloatingParticles count={isMobile ? 30 : 80} />
+      <FloatingParticles key={isMobile ? 'particles-mobile' : 'particles-desktop'} count={isMobile ? 30 : 80} />
       <CinematicLensFlare isMobile={isMobile} />
 
       <Stars
+        key={isMobile ? 'stars-mobile' : 'stars-desktop'}
         radius={40}
         depth={40}
         count={isMobile ? 150 : 600}
