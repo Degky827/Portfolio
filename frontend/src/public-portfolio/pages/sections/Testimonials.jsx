@@ -2,17 +2,8 @@ import { useState, useEffect } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { BadgeCheck, RefreshCw } from 'lucide-react'
 import { getTestimonials } from '../../../shared/services/testimonialService'
-import TestimonialCard from '../../components/testimonials/TestimonialCard'
+import TestimonialCarousel from '../../components/testimonials/TestimonialCarousel'
 import TestimonialSkeleton from '../../components/testimonials/TestimonialSkeleton'
-
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-}
 
 export default function Testimonials() {
   const shouldReduceMotion = useReducedMotion()
@@ -40,7 +31,7 @@ export default function Testimonials() {
   return (
     <section
       id="testimonials"
-      className="py-14 sm:py-16 lg:py-20"
+      className="py-12 sm:py-14 lg:py-16"
       aria-label="Professional recommendations"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -50,26 +41,20 @@ export default function Testimonials() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: '-80px' }}
           transition={{ duration: shouldReduceMotion ? 0.1 : 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-center mb-10 sm:mb-12"
+          className="text-center mb-6 sm:mb-8"
         >
-          <motion.div
-            initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.9 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-1.5 mb-4 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50"
-          >
-            <BadgeCheck size={16} className="text-[#0a66c2] dark:text-[#70b5f9]" aria-hidden="true" />
-            <span className="text-xs font-semibold tracking-wide text-slate-600 dark:text-slate-300 uppercase">
+          <div className="inline-flex items-center gap-2 px-3 py-1 mb-3 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
+            <BadgeCheck size={14} className="text-[#0a66c2] dark:text-[#70b5f9]" aria-hidden="true" />
+            <span className="text-[11px] font-semibold tracking-wider text-slate-600 dark:text-slate-300 uppercase">
               Recommendations
             </span>
-          </motion.div>
+          </div>
 
-          <h2 className="text-3xl sm:text-4xl md:text-[2.5rem] font-bold text-[#0f172a] dark:text-white mb-3 tracking-tight leading-tight">
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#0f172a] dark:text-white mb-2 tracking-tight leading-tight">
             Professional Recommendations
           </h2>
-          <p className="text-base sm:text-lg text-slate-500 dark:text-slate-400 max-w-2xl mx-auto leading-relaxed px-4">
-            Feedback from supervisors, team leads, and colleagues I&apos;ve collaborated with.
+          <p className="text-[15px] sm:text-base text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
+            What supervisors, team leads, clients, and colleagues say about working with me.
           </p>
         </motion.div>
 
@@ -81,9 +66,7 @@ export default function Testimonials() {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 max-w-6xl mx-auto"
           >
             {Array.from({ length: 3 }, (_, i) => (
-              <div key={i}>
-                <TestimonialSkeleton />
-              </div>
+              <TestimonialSkeleton key={i} />
             ))}
           </motion.div>
         ) : error ? (
@@ -126,23 +109,10 @@ export default function Testimonials() {
             </p>
           </motion.div>
         ) : (
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: '-60px' }}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 max-w-6xl mx-auto items-stretch"
-          >
-            {testimonials.map((testimonial, index) => (
-              <div key={testimonial._id} className="flex">
-                <TestimonialCard
-                  testimonial={testimonial}
-                  index={index}
-                  shouldReduceMotion={shouldReduceMotion}
-                />
-              </div>
-            ))}
-          </motion.div>
+          <TestimonialCarousel
+            testimonials={testimonials}
+            shouldReduceMotion={shouldReduceMotion}
+          />
         )}
       </div>
     </section>
