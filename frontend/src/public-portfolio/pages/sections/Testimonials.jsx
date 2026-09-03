@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { BadgeCheck, RefreshCw } from 'lucide-react'
 import { getTestimonials } from '../../../shared/services/testimonialService'
-import TestimonialCard from '../../components/testimonials/TestimonialCard'
+import TestimonialCarousel from '../../components/testimonials/TestimonialCarousel'
 import TestimonialSkeleton from '../../components/testimonials/TestimonialSkeleton'
 
 export default function Testimonials() {
@@ -109,16 +109,10 @@ export default function Testimonials() {
             </p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 max-w-6xl mx-auto auto-rows-fr">
-            {testimonials.map((testimonial, index) => (
-              <TestimonialCard
-                key={testimonial._id}
-                testimonial={testimonial}
-                index={index}
-                shouldReduceMotion={shouldReduceMotion}
-              />
-            ))}
-          </div>
+          <TestimonialCarousel
+            testimonials={testimonials}
+            shouldReduceMotion={shouldReduceMotion}
+          />
         )}
       </div>
     </section>
