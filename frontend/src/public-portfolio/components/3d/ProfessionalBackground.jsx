@@ -210,6 +210,10 @@ export default function ProfessionalBackground({ darkMode, isMobile }) {
     }
   })
 
+  const setRingRef = useCallback((i) => (el) => { ringRefs.current[i] = el }, [])
+  const setShapeRef = useCallback((i) => (el) => { shapeRefs.current[i] = el }, [])
+  const setParticleRef = useCallback((i) => (el) => { particleRefs.current[i] = el }, [])
+
   if (isMobile) {
     return (
       <group ref={groupRef}>
@@ -219,10 +223,6 @@ export default function ProfessionalBackground({ darkMode, isMobile }) {
       </group>
     )
   }
-
-  const setRingRef = useCallback((i) => (el) => { ringRefs.current[i] = el }, [])
-  const setShapeRef = useCallback((i) => (el) => { shapeRefs.current[i] = el }, [])
-  const setParticleRef = useCallback((i) => (el) => { particleRefs.current[i] = el }, [])
 
   return (
     <group ref={groupRef}>

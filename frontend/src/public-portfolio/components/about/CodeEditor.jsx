@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback, memo, useMemo } from 'react'
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion'
+import ProfilePhotoScreen from './ProfilePhotoScreen'
 
 /**
  * CodeEditor
@@ -65,7 +66,7 @@ const colorMap = {
   fn: COLORS.function,
 }
 
-function CodeEditor({ fullName, roleTitle, locationText, skills, available }) {
+function CodeEditor({ fullName, roleTitle, locationText, skills, available, photoUrl }) {
   const codeLines = useMemo(
     () => buildCodeLines(fullName, roleTitle, locationText, skills, available),
     [fullName, roleTitle, locationText, skills, available]
@@ -320,6 +321,13 @@ function CodeEditor({ fullName, roleTitle, locationText, skills, available }) {
             }}
           />
         </div>
+
+        {/* ── Profile Photo ── */}
+        {photoUrl && (
+          <div className="flex-shrink-0 w-[42%] h-full">
+            <ProfilePhotoScreen fullName={fullName} photoUrl={photoUrl} />
+          </div>
+        )}
       </div>
 
       {/* ── Status Bar ── */}
