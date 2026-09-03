@@ -142,7 +142,7 @@ export default function SkillsScene({ children }) {
 
               <SkillsBackground />
               <EnvironmentLights />
-              <FloatingParticles key={isMobile ? 'mobile' : 'desktop'} count={particleCount} />
+              <FloatingParticles key={isMobile ? 'particles-mobile' : 'particles-desktop'} count={particleCount} />
 
               {!isMobile && (
                 <>
@@ -153,7 +153,7 @@ export default function SkillsScene({ children }) {
               )}
 
               <Stars
-                key={isMobile ? 'mobile' : 'desktop'}
+                key={isMobile ? 'stars-mobile' : 'stars-desktop'}
                 radius={50}
                 depth={50}
                 count={isMobile ? 200 : 800}
