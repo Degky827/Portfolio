@@ -1,21 +1,9 @@
 import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Menu, X, Mail, ChevronRight, MapPin, Phone, Download, Sun, Moon } from 'lucide-react'
+import { Menu, X, ChevronRight, Sun, Moon, FileText } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import Logo from '../../shared/components/Logo'
 import { getNavigation, getNavbarSettings } from '../../shared/services/navigationService'
-import { logPortfolioEngagement } from '../../shared/services/api'
-
-function getVisitorId() {
-  let id = localStorage.getItem('portfolio_visitor_id')
-  if (!id) {
-    const bytes = new Uint8Array(16)
-    crypto.getRandomValues(bytes)
-    id = Array.from(bytes).map((b) => b.toString(16).padStart(2, '0')).join('')
-    localStorage.setItem('portfolio_visitor_id', id)
-  }
-  return id
-}
 
 const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'experience', 'contact']
 
@@ -153,7 +141,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       transparent: !!s.transparent,
       fixed: s.fixed !== false,
       fullWidth: !!s.fullWidth,
-      bgColor: s.bgColor || '#080B14',
+      bgColor: s.bgColor || '#1a1a2e',
       textColor: s.textColor || '#ffffff',
       hoverColor: s.hoverColor || '#6366f1',
       activeLinkColor: s.activeLinkColor || '#6366f1',
@@ -167,20 +155,12 @@ export default function Navbar({ darkMode, onToggleDark }) {
       menuGap: s.menuGap ?? 24,
       navbarPadding: s.navbarPadding ?? 12,
       buttonPadding: s.buttonPadding ?? 10,
-      resumeEnabled: s.resumeEnabled !== false,
-      resumeText: s.resumeText || 'VIEW CV',
-      resumeFileUrl: s.resumeFileUrl || siteSettings?.resume?.url || '',
-      resumeBgColor: s.resumeBgColor || '#6366f1',
-      resumeTextColor: s.resumeTextColor || '#ffffff',
-      resumeHoverColor: s.resumeHoverColor || '#4f46e5',
-      resumeBorderRadius: s.resumeBorderRadius ?? 9999,
-      resumeButtonSize: s.resumeButtonSize || 'md',
       themeEnabled: s.themeEnabled !== false,
       themeMode: s.themeMode || 'auto',
       lightBg: s.lightTheme?.bgColor || '#ffffff',
       lightText: s.lightTheme?.textColor || '#1f2937',
       lightHover: s.lightTheme?.hoverColor || '#4f46e5',
-      darkBg: s.darkTheme?.bgColor || '#080B14',
+      darkBg: s.darkTheme?.bgColor || '#1a1a2e',
       darkText: s.darkTheme?.textColor || '#ffffff',
       darkHover: s.darkTheme?.hoverColor || '#818cf8',
       hamburgerColor: s.hamburgerColor || '#374151',
@@ -192,7 +172,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
       drawerShowLogo: s.drawerShowLogo !== false,
       drawerShowLinks: s.drawerShowLinks !== false,
       drawerShowSocial: s.drawerShowSocial !== false,
-      drawerShowResume: s.drawerShowResume !== false,
       drawerShowTheme: s.drawerShowTheme !== false,
       drawerShadow: s.drawerShadow !== false,
       drawerBlur: s.drawerBlur !== false,
@@ -262,7 +241,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
   const drawerBg = useMemo(() => {
     return darkMode
-      ? (ns?.darkTheme?.bgColor || '#080B14')
+      ? (ns?.darkTheme?.bgColor || '#1a1a2e')
       : settings.drawerBgColor
   }, [settings, ns, darkMode])
 
@@ -273,25 +252,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
   const hamburgerBtnStyle = useMemo(() => ({
     color: settings.hamburgerColor,
   }), [settings.hamburgerColor])
-
-  const resumeStyle = useMemo(() => {
-    const sizePadding = {
-      sm: { px: '12px', py: '6px', fontSize: '11px' },
-      md: { px: '16px', py: '8px', fontSize: '12px' },
-      lg: { px: '24px', py: '12px', fontSize: '14px' },
-    }
-    const pad = sizePadding[settings.resumeButtonSize] || sizePadding.md
-    return {
-      backgroundColor: settings.resumeBgColor,
-      color: settings.resumeTextColor,
-      borderRadius: settings.resumeBorderRadius + 'px',
-      paddingLeft: pad.px,
-      paddingRight: pad.px,
-      paddingTop: pad.py,
-      paddingBottom: pad.py,
-      fontSize: pad.fontSize,
-    }
-  }, [settings])
 
   const drawerVariants = useMemo(() => ({
     initial: { x: '100%', opacity: 0 },
@@ -341,7 +301,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
         className={`${settings.fullWidth ? 'w-full' : 'container'} mx-auto px-4 sm:px-6 flex justify-between items-center`}
         style={settings.fullWidth ? {} : { maxWidth: settings.containerWidth }}
       >
-        <div style={settings.logoMargin ? { marginLeft: settings.logoMargin + 'px', marginRight: settings.logoMargin + 'px' } : {}}>
+        {/* Logo — left */}
+        <div className="shrink-0" style={settings.logoMargin ? { marginLeft: settings.logoMargin + 'px', marginRight: settings.logoMargin + 'px' } : {}}>
           <Logo settings={mergedSettings} linkTo="/" onNavClick={(e) => { e.preventDefault(); window.scrollTo({ top: 0, behavior: 'smooth' }); setIsOpen(false) }} />
         </div>
 
@@ -355,115 +316,91 @@ export default function Navbar({ darkMode, onToggleDark }) {
           {isOpen ? <X size={20} /> : <Menu size={20} />}
         </button>
 
-        {/* Desktop Links + Right Controls */}
-        <div
-          className="hidden md:flex items-center"
+        {/* Desktop: center nav links */}
+        <ul
+          className="hidden md:flex items-center justify-center flex-1"
           style={{ gap: settings.menuGap + 'px' }}
         >
-          <ul
-            className="flex items-center"
-            style={{ gap: settings.menuGap + 'px' }}
-          >
-            {displayNavItems.map((item, idx) => (
-              <motion.li
-                key={item._id || item.sectionId}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 * idx + 0.2 }}
-              >
-                <a
-                  href="#"
-                  target={item.active && item.openNewTab ? '_blank' : undefined}
-                  rel={item.active && item.openNewTab ? 'noopener noreferrer' : undefined}
-                  className="text-xs font-bold uppercase tracking-widest transition-colors relative group"
-                  style={{
-                    color: item.active
-                      ? (activeSection === item.sectionId
-                        ? settings.activeLinkColor
-                        : linkTextColor)
-                      : linkTextColor,
-                  }}
-                  onMouseEnter={(e) => {
-                    if (item.active && linkHoverColor && activeSection !== item.sectionId) {
-                      e.currentTarget.style.color = linkHoverColor
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    if (item.active) {
-                      e.currentTarget.style.color = activeSection === item.sectionId
-                        ? settings.activeLinkColor
-                        : linkTextColor || ''
-                    }
-                  }}
-                  onClick={(e) => handleNavClick(e, item)}
-                >
-                  {item.title}
-                  {activeSection === item.sectionId ? (
-                    <motion.span
-                      layoutId="activeNavPill"
-                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 shadow-[0_0_12px_rgba(129,140,248,0.8)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  ) : (
-                    settings.hoverEffect === 'underline' && (
-                      <motion.span
-                        className="absolute -bottom-1.5 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300"
-                        style={hoverUnderlineStyle}
-                      />
-                    )
-                  )}
-                </a>
-              </motion.li>
-            ))}
-          </ul>
-          <div
-            className="flex items-center"
-            style={{ gap: rightControlsGap + 'px' }}
-          >
-            {settings.themeEnabled && (
-              <motion.button
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.4 }}
-                whileHover={{ scale: 1.08 }}
-                whileTap={{ scale: 0.92 }}
-                onClick={onToggleDark}
-                className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-indigo-600 hover:text-white transition-colors"
-                style={{ backgroundColor: controlBg, color: controlTextColor }}
-                aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
-              >
-                {darkMode ? <Sun size={16} /> : <Moon size={16} />}
-              </motion.button>
-            )}
-            {settings.resumeEnabled && (
-              <motion.a
-                href={settings.resumeFileUrl || '/resume.pdf'}
-                download
-                target="_blank"
-                rel="noopener noreferrer"
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.5 }}
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="group flex items-center gap-2 font-bold uppercase tracking-wider rounded-full hover:shadow-lg transition-all shadow-md cursor-pointer text-xs"
-                style={resumeStyle}
-                onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = settings.resumeHoverColor }}
-                onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = settings.resumeBgColor }}
-                onClick={() => {
-                  logPortfolioEngagement({
-                    action: 'cv_download',
-                    page: window.location.pathname,
-                    visitorId: getVisitorId(),
-                    referrer: document.referrer || 'Direct',
-                  })
+          {displayNavItems.map((item, idx) => (
+            <motion.li
+              key={item._id || item.sectionId}
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 * idx + 0.2 }}
+            >
+              <a
+                href="#"
+                target={item.active && item.openNewTab ? '_blank' : undefined}
+                rel={item.active && item.openNewTab ? 'noopener noreferrer' : undefined}
+                className="text-xs font-bold uppercase tracking-widest transition-colors relative group whitespace-nowrap"
+                style={{
+                  color: item.active
+                    ? (activeSection === item.sectionId
+                      ? settings.activeLinkColor
+                      : linkTextColor)
+                    : linkTextColor,
                 }}
+                onMouseEnter={(e) => {
+                  if (item.active && linkHoverColor && activeSection !== item.sectionId) {
+                    e.currentTarget.style.color = linkHoverColor
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (item.active) {
+                    e.currentTarget.style.color = activeSection === item.sectionId
+                      ? settings.activeLinkColor
+                      : linkTextColor || ''
+                  }
+                }}
+                onClick={(e) => handleNavClick(e, item)}
               >
-                <Download size={13} className="group-hover:animate-bounce" />
-                <span>{settings.resumeText}</span>
-              </motion.a>
-            )}
-          </div>
+                {item.title}
+                {activeSection === item.sectionId ? (
+                  <motion.span
+                    layoutId="activeNavPill"
+                    className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 shadow-[0_0_12px_rgba(129,140,248,0.8)]"
+                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                  />
+                ) : (
+                  settings.hoverEffect === 'underline' && (
+                    <motion.span
+                      className="absolute -bottom-1.5 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300"
+                      style={hoverUnderlineStyle}
+                    />
+                  )
+                )}
+              </a>
+            </motion.li>
+          ))}
+        </ul>
+
+        {/* Desktop: right controls — CV link + theme toggle */}
+        <div className="hidden md:flex items-center shrink-0" style={{ gap: rightControlsGap + 'px' }}>
+          <a
+            href="/#/cv"
+            className="text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5 whitespace-nowrap"
+            style={{ color: linkTextColor }}
+            onMouseEnter={(e) => { e.currentTarget.style.color = linkHoverColor }}
+            onMouseLeave={(e) => { e.currentTarget.style.color = linkTextColor }}
+          >
+            <FileText size={13} />
+            CV
+          </a>
+          {settings.themeEnabled && (
+            <motion.button
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.4 }}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.92 }}
+              onClick={onToggleDark}
+              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-indigo-600 hover:text-white transition-colors"
+              style={{ backgroundColor: controlBg, color: controlTextColor }}
+              aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+            >
+              {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+            </motion.button>
+          )}
         </div>
 
         {/* Mobile Sidebar */}
@@ -535,8 +472,24 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   ))}
                 </ul>
 
-                <div className="mt-auto space-y-6 pt-8">
-                  <div className="flex justify-center gap-3">
+                <a
+                  href="/#/cv"
+                  className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight mt-2"
+                  style={{ color: linkTextColor }}
+                  onClick={(e) => { e.preventDefault(); window.location.hash = '/cv'; setIsOpen(false) }}
+                >
+                  <span className="group-hover:translate-x-2 transition-transform duration-300 flex items-center gap-2">
+                    <FileText size={22} />
+                    CV
+                  </span>
+                  <ChevronRight
+                    className="opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5"
+                    style={{ color: linkHoverColor }}
+                  />
+                </a>
+
+                <div className="mt-auto pt-8">
+                  <div className="flex justify-center">
                     <button
                       onClick={onToggleDark}
                       className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all"
@@ -545,16 +498,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
                     >
                       {darkMode ? <Sun size={18} /> : <Moon size={18} />}
                     </button>
-                    <a
-                      href={settings.resumeFileUrl || '/resume.pdf'}
-                      download
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all"
-                      style={{ backgroundColor: controlBg, color: controlTextColor }}
-                    >
-                      <Download size={18} />
-                    </a>
                   </div>
                 </div>
               </motion.div>

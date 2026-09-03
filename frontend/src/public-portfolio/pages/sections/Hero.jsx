@@ -148,7 +148,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   return (
     <section
       id="home"
-      className="relative min-h-screen overflow-hidden bg-white dark:bg-[#080B14] text-slate-900 dark:text-white transition-colors duration-300"
+      className="relative min-h-screen overflow-hidden bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300"
       aria-label="Hero section"
     >
       {/* 3D Desktop Scene - visible on all screens */}
@@ -226,7 +226,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
             {/* Left text content */}
             <div className="w-full md:w-[52%] lg:max-w-xl pt-20 sm:pt-24 md:pt-0 pointer-events-auto relative">
               {/* Mobile text backdrop */}
-              <div className="md:hidden absolute -inset-x-6 -top-24 -bottom-6 bg-white/80 dark:bg-[#080B14]/85 backdrop-blur-sm -z-10 rounded-3xl" />
+              <div className="md:hidden absolute -inset-x-6 -top-24 -bottom-6 bg-white/80 dark:bg-[#1a1a2e]/85 backdrop-blur-sm -z-10 rounded-3xl" />
 
               {/* Eyebrow */}
               <motion.p
