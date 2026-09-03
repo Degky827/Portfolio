@@ -20,16 +20,17 @@ function normalizeTestimonials(data) {
   }))
 }
 
+const localFallback = normalizeTestimonials(testimonialsData)
+
 export async function getTestimonials({ published = true, featured = false } = {}) {
   try {
-    const response = await api.get('/testimonials')
+    const response = await api.get('/testimonials', { timeout: 3000 })
     const data = normalizeTestimonials(response.data)
     if (data.length > 0) {
       return { testimonials: data }
     }
-    // API returned empty or unrecognised structure — use local fallback
-    return { testimonials: normalizeTestimonials(testimonialsData) }
+    return { testimonials: localFallback }
   } catch {
-    return { testimonials: normalizeTestimonials(testimonialsData) }
+    return { testimonials: localFallback }
   }
 }
