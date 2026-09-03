@@ -3,7 +3,7 @@ import { motion, useMotionValue, useSpring } from 'framer-motion'
 import MonitorFrame from './MonitorFrame'
 import MonitorScreen from './MonitorScreen'
 import ScreenEffects from './ScreenEffects'
-import CodeEditor from './CodeEditor'
+import ProfilePhotoScreen from './ProfilePhotoScreen'
 
 /**
  * DeveloperWorkstation
@@ -24,8 +24,7 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
   fullName,
   roleTitle,
   locationText,
-  skills,
-  available,
+  photoUrl,
 }) {
   const containerRef = useRef(null)
   const [isDragging, setIsDragging] = useState(false)
@@ -163,12 +162,11 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
               <ScreenEffects />
               <MonitorFrame>
                 <MonitorScreen>
-                  <CodeEditor
+                  <ProfilePhotoScreen
                     fullName={fullName}
                     roleTitle={roleTitle}
                     locationText={locationText}
-                    skills={skills}
-                    available={available}
+                    photoUrl={photoUrl}
                   />
                 </MonitorScreen>
               </MonitorFrame>
