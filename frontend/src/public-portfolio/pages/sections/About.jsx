@@ -121,8 +121,6 @@ export default function About({ content, hero, aboutContent }) {
     : hardcodedSections(t)
 
   const ide = aboutContent?.idePresentation || {}
-  const skills = ide.skills?.length ? ide.skills : ['React', 'Node']
-  const available = ide.available !== undefined ? ide.available : true
   const locationText = ide.location || content?.location || hero?.location || t('about.location')
 
   const highlightMetrics = aboutContent?.highlightMetrics?.length
@@ -220,8 +218,7 @@ export default function About({ content, hero, aboutContent }) {
                 fullName={fullName}
                 roleTitle={roleTitle}
                 locationText={locationText}
-                skills={skills}
-                available={available}
+                photoUrl={hero?.profilePhoto?.url || '/BDU1601297.png'}
               />
             </div>
           </div>
