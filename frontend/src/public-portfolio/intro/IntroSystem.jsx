@@ -1,7 +1,8 @@
 import { lazy, useCallback, useEffect, useRef, memo, Suspense, useMemo } from 'react'
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { EffectComposer, Bloom, Vignette } from '@react-three/postprocessing'
+import { Bloom, Vignette } from '@react-three/postprocessing'
 import { BlendFunction } from 'postprocessing'
+import SafeEffectComposer from '../../components/projects3d/SafeEffectComposer'
 import { motion } from 'framer-motion'
 import { useLocation } from 'react-router-dom'
 import { useIntro } from './IntroContext'
@@ -177,7 +178,7 @@ function SceneRenderer() {
 
 function PostProcessing() {
   return (
-    <EffectComposer multisampling={0}>
+    <SafeEffectComposer multisampling={0}>
       <Bloom
         intensity={1.5}
         luminanceThreshold={0.08}
@@ -190,7 +191,7 @@ function PostProcessing() {
         darkness={0.75}
         blendFunction={BlendFunction.NORMAL}
       />
-    </EffectComposer>
+    </SafeEffectComposer>
   )
 }
 

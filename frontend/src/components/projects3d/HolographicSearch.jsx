@@ -51,7 +51,7 @@ function FloatingIcon({ isFocused, isHovered }) {
       >
         <Search
           size={16}
-          style={{ color: isFocused ? '#06b6d4' : '#94a3b8' }}
+          style={{ color: isFocused ? '#06b6d4' : '#ffffff' }}
           className="transition-colors duration-300"
         />
       </div>
@@ -268,7 +268,7 @@ export default function HolographicSearch({ value, onChange, onClear, placeholde
                 style={{
                   background: 'rgba(255,255,255,0.05)',
                   border: '1px solid rgba(255,255,255,0.1)',
-                  color: '#94a3b8',
+                  color: '#ffffff',
                 }}
                 whileHover={{
                   background: 'rgba(239,68,68,0.15)',
@@ -309,7 +309,7 @@ export default function HolographicSearch({ value, onChange, onClear, placeholde
               } : {}}
               transition={{ duration: 1.5, repeat: Infinity }}
             />
-            <span className="text-[10px] font-medium tracking-wider uppercase" style={{ color: isFocused ? '#94a3b8' : '#475569' }}>
+            <span className="text-[10px] font-medium tracking-wider uppercase" style={{ color: isFocused ? '#94a3b8' : '#ffffff' }}>
               {isFocused ? 'SEARCHING' : 'STANDBY'}
             </span>
           </div>

@@ -36,17 +36,4 @@ async function authenticateToken(req, res, next) {
   }
 }
 
-function authorizeSuperAdmin(req, res, next) {
-  if (!req.user) {
-    return res.status(401).json({ success: false, message: 'Authentication required.' })
-  }
-  if (req.user.role !== 'super_admin') {
-    return res.status(403).json({
-      success: false,
-      message: 'Access denied. Only super administrators can perform this action.',
-    })
-  }
-  next()
-}
-
-module.exports = { authenticateToken, authorizeSuperAdmin }
+module.exports = { authenticateToken }

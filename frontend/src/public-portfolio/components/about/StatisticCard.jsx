@@ -139,7 +139,7 @@ const StatisticCard = memo(function StatisticCard({
           {/* Title */}
           <h3
             className="text-[11px] sm:text-xs md:text-sm font-semibold uppercase tracking-[0.15em] sm:tracking-[0.2em] text-center leading-tight transition-colors duration-300"
-            style={{ color: `${color}cc` }}
+            style={{ color: 'var(--text-primary)' }}
           >
             {title}
           </h3>

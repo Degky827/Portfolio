@@ -4,10 +4,14 @@ import { useNavigate, useLocation } from 'react-router-dom'
 const WorkspaceContext = createContext(null)
 
 const SECTION_MAP = {
+  home: { object: 'mouse', hash: '#home' },
   about: { object: 'monitor', hash: '#about' },
   skills: { object: 'keyboard', hash: '#skills' },
+  experience: { object: 'speaker-right', hash: '#experience' },
   projects: { object: 'pc', hash: '#projects' },
+  testimonials: { object: 'floating-testimonials', hash: '#testimonials' },
   contact: { object: 'speaker', hash: '#contact' },
+  cv: { object: 'floating-cv', hash: '#cv' },
 }
 
 const OBJECT_TO_SECTION = Object.fromEntries(

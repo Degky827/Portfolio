@@ -202,14 +202,14 @@ export default function FuturisticButton({
         <Icon
           size={13}
           className="transition-colors duration-300"
-          style={{ color: isPrimary ? 'white' : isHovered ? color : '#94a3b8' }}
+          style={{ color: isPrimary ? 'white' : isHovered ? color : '#ffffff' }}
         />
       </motion.span>
 
       {/* Label */}
       <span
         className="relative z-10 transition-colors duration-300"
-        style={{ color: isPrimary ? 'white' : isHovered ? color : '#94a3b8' }}
+        style={{ color: isPrimary ? 'white' : isHovered ? color : '#ffffff' }}
       >
         {label}
       </span>

@@ -26,7 +26,7 @@ const totpLimiter = rateLimit({
 
 const googleLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
-  max: 5,
+  max: 15,
   message: { success: false, message: 'Too many Google sign-in attempts. Try again in 15 minutes.' },
   standardHeaders: true,
   legacyHeaders: false,

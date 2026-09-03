@@ -6,7 +6,6 @@ const navbarSettingsSchema = new mongoose.Schema({
   logoSvg: { type: String, default: '' },
   logoAlt: { type: String, default: 'Logo' },
   brandName: { type: String, default: 'DESALEGN' },
-  brandNameAm: { type: String, default: '' },
   logoWidth: { type: Number, default: 40 },
   logoHeight: { type: Number, default: 40 },
   logoBorderRadius: { type: Number, default: 8 },
@@ -55,7 +54,7 @@ const navbarSettingsSchema = new mongoose.Schema({
   resumeButtonSize: { type: String, enum: ['sm', 'md', 'lg'], default: 'md' },
 
   // Language
-  languageEnabled: { type: Boolean, default: true },
+  languageEnabled: { type: Boolean, default: false },
   defaultLanguage: { type: String, default: 'en' },
   availableLanguages: [{ code: String, name: String, flag: String }],
 
@@ -77,7 +76,7 @@ const navbarSettingsSchema = new mongoose.Schema({
   desktopShowFullMenu: { type: Boolean, default: true },
   desktopShowResume: { type: Boolean, default: true },
   desktopShowTheme: { type: Boolean, default: true },
-  desktopShowLanguage: { type: Boolean, default: true },
+  desktopShowLanguage: { type: Boolean, default: false },
   desktopLayout: { type: String, enum: ['logo-left-menu-center', 'logo-left-menu-right', 'centered', 'split'], default: 'logo-left-menu-right' },
   desktopNavbarHeight: { type: Number, default: 72 },
   desktopLogoSize: { type: Number, default: 40 },
@@ -136,7 +135,7 @@ const navbarSettingsSchema = new mongoose.Schema({
   drawerShowSocial: { type: Boolean, default: true },
   drawerShowResume: { type: Boolean, default: true },
   drawerShowTheme: { type: Boolean, default: true },
-  drawerShowLanguage: { type: Boolean, default: true },
+  drawerShowLanguage: { type: Boolean, default: false },
 
   // Animations
   navbarAnimation: { type: String, enum: ['fade-in', 'slide-down', 'slide-up', 'blur-reveal'], default: 'slide-down' },

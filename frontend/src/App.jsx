@@ -4,10 +4,12 @@ import { useDarkMode, usePageTracking } from './shared/hooks'
 import ErrorBoundary from './shared/components/ErrorBoundary'
 import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
 import IntroSystem from './public-portfolio/intro/IntroSystem'
+import CursorSystem from './components/cursor/CursorSystem'
 
 const Navbar = lazy(() => import('./public-portfolio/layout/Navbar'))
 const Footer = lazy(() => import('./public-portfolio/layout/Footer'))
 const HomePage = lazy(() => import('./public-portfolio/pages/HomePage'))
+const CVPage = lazy(() => import('./public-portfolio/pages/cv/CVPage'))
 const DynamicCustomPage = lazy(() => import('./public-portfolio/pages/DynamicCustomPage'))
 const AIButton = lazy(() => import('./ai/components/AIButton'))
 const ChatWindow = lazy(() => import('./ai/components/ChatWindow'))
@@ -67,6 +69,7 @@ function App() {
 
   return (
     <ErrorBoundary>
+      <CursorSystem />
       <ScrollToTop />
       <IntroSystem />
       <Suspense fallback={layoutSpinner}>
@@ -75,15 +78,20 @@ function App() {
           <Route path="/admin/*" element={<AdminRoutes />} />
           <Route element={<PublicLayout />}>
             <Route path="/" element={<HomePage />} />
+            <Route path="/cv" element={
+              <Suspense fallback={sectionSpinner}>
+                <CVPage />
+              </Suspense>
+            } />
             <Route path="/:customSlug" element={<DynamicCustomPage />} />
           </Route>
           <Route path="/workspace" element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a1a' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a2e' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
               <WorkspaceScene />
             </Suspense>
           } />
           <Route path="/workspace/:section" element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#0a0a1a' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
+            <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a2e' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
               <WorkspaceScene />
             </Suspense>
           } />

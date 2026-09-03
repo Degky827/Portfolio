@@ -1,20 +1,18 @@
 import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Award, GraduationCap, Briefcase, Cpu, Target } from 'lucide-react'
-import { useTranslation } from 'react-i18next'
 import AboutGlassCard from '../../components/about/AboutGlassCard'
 import DeveloperWorkstation from '../../components/about/DeveloperWorkstation'
-import StatisticsDashboard from '../../components/about/StatisticsDashboard'
 import CertificateGallery from '../../components/about/CertificateGallery'
 import CinematicLighting from '../../components/about/CinematicLighting'
 import GlobalAtmosphere from '../../components/about/GlobalAtmosphere'
 import { createContainerVariants, sectionHeaderVariants, defaultViewport } from '../../shared/animations'
 
-const hardcodedSections = (t) => [
-  { title: t('about.sectionEducation'), content: t('about.sectionEducationContent') },
-  { title: t('about.sectionProfessionalFocus'), content: t('about.sectionProfessionalFocusContent') },
-  { title: t('about.sectionExpertiseAreas'), content: t('about.sectionExpertiseAreasContent') },
-  { title: t('about.sectionMissionApproach'), content: t('about.sectionMissionApproachContent') },
+const hardcodedSections = [
+  { title: 'Education & Background', content: "I hold a Bachelor's degree in Computer Science, providing a deep foundation in both software systems and digital protection." },
+  { title: 'Professional Focus', content: 'I specialize in full-stack development and secure network architecture, bridging the gap between elegant user experiences and robust back-end security.' },
+  { title: 'Expertise Areas', content: 'From designing scalable cloud infrastructures to crafting interactive front-end applications, I focus on delivering performance-driven technology solutions.' },
+  { title: 'Mission & Approach', content: 'My approach combines clean code practices with a security-first mindset, ensuring that every digital product I build is as safe as it is functional.' },
 ]
 
 const hardcodedAchievements = [
@@ -88,50 +86,31 @@ const MemoizedCyberParticles = memo(CyberParticles)
 
 /* ─── Main About Component ─── */
 export default function About({ content, hero, aboutContent }) {
-  const { t, i18n } = useTranslation()
   const shouldReduceMotion = useReducedMotion()
-  const isAm = i18n.language === 'am'
 
-  const title = isAm
-    ? (aboutContent?.titleAm || aboutContent?.title || content?.title || t('about.title'))
-    : (aboutContent?.title || content?.title || t('about.title'))
-  const subtitle = isAm
-    ? (aboutContent?.subtitleAm || aboutContent?.subtitle || content?.subtitle || t('about.subtitle'))
-    : (aboutContent?.subtitle || content?.subtitle || t('about.subtitle'))
-  const fullName = isAm
-    ? (hero?.fullNameAm || hero?.fullName || t('about.fullName'))
-    : (hero?.fullName || t('about.fullName'))
-  const roleTitle = isAm
-    ? (hero?.professionalBadgeAm || hero?.professionalBadge || t('about.role'))
-    : (hero?.professionalBadge || t('about.role'))
+  const title = aboutContent?.title || content?.title || 'Who Am I'
+  const subtitle = aboutContent?.subtitle || content?.subtitle || 'A passionate developer and network designer dedicated to building secure and scalable digital experiences.'
+  const fullName = hero?.fullName || 'Desalegn'
+  const roleTitle = hero?.professionalBadge || 'Full-Stack Dev'
 
   const storyPillars = aboutContent?.storyPillars?.length
     ? aboutContent.storyPillars.filter((p) => {
         const enContent = p.content && p.content !== '<p><br></p>'
-        const amContent = p.contentAm && p.contentAm !== '<p><br></p>'
-        return isAm ? (amContent || enContent) : enContent
+        return enContent
       })
     : []
 
   const aboutSections = storyPillars.length > 0
     ? storyPillars.map((p) => ({
-        title: isAm ? (p.titleAm || p.title) : p.title,
-        content: isAm ? (p.contentAm || p.content) : p.content,
+        title: p.title,
+        content: p.content,
       }))
-    : hardcodedSections(t)
+    : hardcodedSections
 
   const ide = aboutContent?.idePresentation || {}
   const skills = ide.skills?.length ? ide.skills : ['React', 'Node']
   const available = ide.available !== undefined ? ide.available : true
-  const locationText = ide.location || content?.location || hero?.location || t('about.location')
-
-  const highlightMetrics = aboutContent?.highlightMetrics?.length
-    ? aboutContent.highlightMetrics
-    : [
-        { icon: 'Award', title: t('about.metricNetworkDesigner'), value: '' },
-        { icon: 'Users', title: t('about.metricHappyClients'), value: '50+' },
-        { icon: 'TrendingUp', title: t('about.metricYearsExperience'), value: '5+' },
-      ]
+  const locationText = ide.location || content?.location || hero?.location || 'Bahirdar'
 
   const certifications = aboutContent?.certifications?.length
     ? [...aboutContent.certifications].sort((a, b) => (a.displayOrder || 0) - (b.displayOrder || 0))
@@ -167,27 +146,27 @@ export default function About({ content, hero, aboutContent }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 mb-6 sm:mb-8 text-xs sm:text-sm font-bold tracking-[0.2em] text-[var(--accent-about)] uppercase rounded-full border border-[var(--accent-about)]/30 bg-[var(--accent-about)]/10"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-[10px] sm:text-xs font-bold tracking-[0.18em] text-[var(--accent-about)] uppercase rounded-full border border-[var(--accent-about)]/30 bg-[var(--accent-about)]/10"
           >
-            <span className="w-2 h-2 rounded-full bg-[var(--accent-about)] animate-pulse" />
-            {t('about.badge')}
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-about)] animate-pulse" />
+            About Me
           </motion.div>
 
           <h2
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-6 sm:mb-8 tracking-tight text-[var(--text-primary)]"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 tracking-tight text-[var(--text-primary)]"
           >
             {title}
           </h2>
 
-          <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-sm sm:text-base md:text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
             {subtitle}
           </p>
 
           {/* Clean decorative line */}
-          <div className="mt-8 sm:mt-10 flex items-center justify-center gap-3">
-            <div className="h-px w-16 bg-[var(--accent-about)]/30" />
-            <div className="w-2 h-2 rotate-45 border border-[var(--accent-about)]/30" />
-            <div className="h-px w-16 bg-[var(--accent-about)]/30" />
+          <div className="mt-6 sm:mt-8 flex items-center justify-center gap-3">
+            <div className="h-px w-12 bg-[var(--accent-about)]/30" />
+            <div className="w-1.5 h-1.5 rotate-45 border border-[var(--accent-about)]/30" />
+            <div className="h-px w-12 bg-[var(--accent-about)]/30" />
           </div>
         </motion.div>
 
@@ -222,24 +201,15 @@ export default function About({ content, hero, aboutContent }) {
                 locationText={locationText}
                 skills={skills}
                 available={available}
+                photoUrl={hero?.profilePhoto?.url || '/BDU1601297.png'}
               />
             </div>
-          </div>
-
-          {/* ── Statistics Dashboard ── */}
-          <div className="mt-12 sm:mt-16">
-            <StatisticsDashboard
-              metrics={highlightMetrics}
-              t={t}
-              isAm={isAm}
-            />
           </div>
 
           {/* ── Certificate Gallery (3D Wall) ── */}
           <div className="mt-12 sm:mt-16">
             <CertificateGallery
               certificates={achievementsList}
-              t={t}
             />
           </div>
         </div>

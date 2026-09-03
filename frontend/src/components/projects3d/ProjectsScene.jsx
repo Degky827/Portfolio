@@ -19,10 +19,11 @@ function SceneEnvironment({ isMobile, fogColor }) {
 
       <CinematicLighting isMobile={isMobile} />
       <HolographicLines />
-      <FloatingParticles count={isMobile ? 30 : 80} />
+      <FloatingParticles key={isMobile ? 'particles-mobile' : 'particles-desktop'} count={isMobile ? 30 : 80} />
       <CinematicLensFlare isMobile={isMobile} />
 
       <Stars
+        key={isMobile ? 'stars-mobile' : 'stars-desktop'}
         radius={40}
         depth={40}
         count={isMobile ? 150 : 600}
@@ -45,7 +46,7 @@ export default function ProjectsScene({ children }) {
 
   return (
     <div className="relative w-full min-h-screen" style={{ perspective: '1200px' }}>
-      <div className="fixed inset-0 z-0">
+      <div className="absolute inset-0 z-0">
         <ProjectsErrorBoundary>
           <Canvas
             camera={{ position: [0, 2, 10], fov: 50, near: 0.1, far: 100 }}

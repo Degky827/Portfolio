@@ -158,15 +158,15 @@ export default function ProfessionalBackground({ darkMode, isMobile }) {
   const shapeRefs = useRef([])
   const particleRefs = useRef([])
 
-  const pColor = darkMode ? '#6366f1' : '#3b82f6'
+  const pColor = darkMode ? '#6366f1' : '#4f46e5'
   const sColor = darkMode ? '#818cf8' : '#6366f1'
-  const pOpacity = darkMode ? 0.4 : 0.25
-  const sOpacity = darkMode ? 0.35 : 0.2
+  const pOpacity = darkMode ? 0.18 : 0.08
+  const sOpacity = darkMode ? 0.15 : 0.06
   const pMetalness = darkMode ? 0.3 : 0.1
   const sMetalness = darkMode ? 0.4 : 0.2
   const pRoughness = darkMode ? 0.6 : 0.8
   const sRoughness = darkMode ? 0.5 : 0.7
-  const ringOpacity = darkMode ? 0.15 : 0.08
+  const ringOpacity = darkMode ? 0.08 : 0.04
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
@@ -210,6 +210,10 @@ export default function ProfessionalBackground({ darkMode, isMobile }) {
     }
   })
 
+  const setRingRef = useCallback((i) => (el) => { ringRefs.current[i] = el }, [])
+  const setShapeRef = useCallback((i) => (el) => { shapeRefs.current[i] = el }, [])
+  const setParticleRef = useCallback((i) => (el) => { particleRefs.current[i] = el }, [])
+
   if (isMobile) {
     return (
       <group ref={groupRef}>
@@ -219,10 +223,6 @@ export default function ProfessionalBackground({ darkMode, isMobile }) {
       </group>
     )
   }
-
-  const setRingRef = useCallback((i) => (el) => { ringRefs.current[i] = el }, [])
-  const setShapeRef = useCallback((i) => (el) => { shapeRefs.current[i] = el }, [])
-  const setParticleRef = useCallback((i) => (el) => { particleRefs.current[i] = el }, [])
 
   return (
     <group ref={groupRef}>

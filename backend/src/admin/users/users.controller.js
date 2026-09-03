@@ -9,7 +9,6 @@ async function getUsers(req, res) {
     const page = Math.max(1, parseInt(req.query.page) || 1)
     const limit = Math.min(Math.max(1, parseInt(req.query.limit) || 10), 50)
     const search = req.query.search || ''
-    const role = req.query.role || ''
     const status = req.query.status || ''
 
     const skip = (page - 1) * limit
@@ -21,9 +20,6 @@ async function getUsers(req, res) {
         { name: { $regex: safeSearch, $options: 'i' } },
         { email: { $regex: safeSearch, $options: 'i' } },
       ]
-    }
-    if (role) {
-      query.role = role
     }
     if (status === 'active') {
       query.isActive = true
@@ -76,7 +72,7 @@ async function getUser(req, res) {
 
 async function createUser(req, res) {
   try {
-    const { name, email, password, role } = req.body
+    const { name, email, password } = req.body
 
     if (!name || !email || !password) {
       return res.status(400).json({ success: false, message: 'Name, email, and password are required.' })
@@ -102,7 +98,6 @@ async function createUser(req, res) {
       name: name.trim(),
       email: email.toLowerCase().trim(),
       password,
-      role: role || 'editor',
       twoFactorSecret: base32,
       twoFactorEnabled: false,
     })
@@ -140,7 +135,7 @@ async function updateUser(req, res) {
     }
 
     const {
-      name, email, role, isActive, password, currentPassword,
+      name, email, isActive, password, currentPassword,
       displayName, phone, bio, location, socialLinks, theme, avatar,
     } = req.body
     const changes = []
@@ -182,23 +177,6 @@ async function updateUser(req, res) {
     if (email !== undefined) {
       user.email = email.toLowerCase().trim()
       changes.push('email')
-    }
-    if (role !== undefined) {
-      if (!['super_admin', 'admin', 'editor'].includes(role)) {
-        return res.status(400).json({ success: false, message: 'Invalid role.' })
-      }
-      if (user.role !== role) {
-        await createAuditLog({
-          user: req.user._id,
-          action: 'ROLE_CHANGE',
-          resource: 'User',
-          resourceId: user._id,
-          details: { from: user.role, to: role },
-          req,
-        })
-        user.role = role
-        changes.push('role')
-      }
     }
     if (isActive !== undefined) {
       user.isActive = isActive

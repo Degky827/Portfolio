@@ -7,7 +7,6 @@ import {
   Globe, CheckCircle, Clock, AlertCircle,
   LayoutGrid, List, RefreshCw, MoreHorizontal,
 } from 'lucide-react'
-import { useAuth } from '../authentication/AuthContext'
 import PageHeader from '../shared/PageHeader'
 import ConfirmModal from '../shared/ConfirmModal'
 import Toast from '../shared/Toast'
@@ -38,8 +37,6 @@ const statusConfig = {
 
 export default function Projects() {
   const navigate = useNavigate()
-  const { userRole } = useAuth()
-  const canModify = userRole === 'super_admin' || userRole === 'admin'
   const [projects, setProjects] = useState([])
   const [totalCount, setTotalCount] = useState(0)
   const [categories, setCategories] = useState([])
@@ -256,9 +253,7 @@ export default function Projects() {
             >
               <Eye size={14} />
             </button>
-            {canModify && (
-              <>
-                <button
+              <button
                   onClick={() => navigate(`/admin/projects/${project._id}`)}
                   className="p-1.5 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
                   title="Edit"
@@ -280,8 +275,6 @@ export default function Projects() {
                 >
                   <Trash2 size={14} />
                 </button>
-              </>
-            )}
           </div>
         </div>
       </div>
@@ -614,8 +607,6 @@ export default function Projects() {
                                 <ExternalLink size={16} />
                               </a>
                             )}
-                            {canModify && (
-                              <>
                                 <button
                                   onClick={() => navigate(`/admin/projects/${project._id}`)}
                                   className="p-2 rounded-lg text-gray-400 hover:text-blue-500 hover:bg-blue-50 dark:hover:bg-blue-500/10 transition-colors"
@@ -646,8 +637,6 @@ export default function Projects() {
                                 >
                                   <Trash2 size={16} />
                                 </button>
-                              </>
-                            )}
                           </div>
                         </td>
                       </tr>

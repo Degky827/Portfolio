@@ -192,7 +192,7 @@ export default function FuturisticInput({
             {/* Animated placeholder glow */}
             {!value && (
               <motion.span
-                className="absolute pointer-events-none z-5"
+                className="absolute pointer-events-none z-0"
                 animate={{
                   opacity: isFocused ? [0.4, 0.7, 0.4] : 0.3,
                 }}
