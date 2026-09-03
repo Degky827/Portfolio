@@ -17,7 +17,7 @@ function getVisitorId() {
   return id
 }
 
-const FALLBACK_NAV_IDS = ['home', 'about', 'experience', 'skills', 'projects', 'contact']
+const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'experience', 'contact']
 
 function buildFallbackItems() {
   return FALLBACK_NAV_IDS.map((id) => ({
@@ -347,7 +347,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
         {/* Mobile Menu Toggle */}
         <button
-          className="md:hidden w-10 h-10 flex items-center justify-center cursor-pointer z-[1001] rounded-lg hover:bg-indigo-600 hover:text-white transition-colors"
+          className="md:hidden w-10 h-10 flex items-center justify-center cursor-pointer z-[1002] rounded-lg hover:bg-indigo-600 hover:text-white transition-colors relative"
           onClick={() => setIsOpen(!isOpen)}
           aria-label="Toggle menu"
           style={{ ...hamburgerBtnStyle, backgroundColor: controlBg }}
@@ -398,11 +398,19 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   onClick={(e) => handleNavClick(e, item)}
                 >
                   {item.title}
-                  {settings.hoverEffect === 'underline' && (
+                  {activeSection === item.sectionId ? (
                     <motion.span
-                      className="absolute -bottom-1.5 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300"
-                      style={hoverUnderlineStyle}
+                      layoutId="activeNavPill"
+                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 shadow-[0_0_12px_rgba(129,140,248,0.8)]"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
+                  ) : (
+                    settings.hoverEffect === 'underline' && (
+                      <motion.span
+                        className="absolute -bottom-1.5 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300"
+                        style={hoverUnderlineStyle}
+                      />
+                    )
                   )}
                 </a>
               </motion.li>
@@ -467,14 +475,14 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
                 onClick={() => setIsOpen(false)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1000] md:hidden"
+                className="fixed inset-0 bg-black/60 backdrop-blur-md z-[1001] md:hidden"
               />
               <motion.div
                 initial={drawerVariants.initial}
                 animate={drawerVariants.animate}
                 exit={drawerVariants.exit}
                 transition={drawerTransition}
-                className={`fixed top-0 right-0 h-full ${drawerWidthClass} backdrop-blur-2xl z-[1001] p-6 sm:p-8 flex flex-col`}
+                className={`fixed top-0 right-0 h-full ${drawerWidthClass} backdrop-blur-2xl z-[1003] p-6 sm:p-8 flex flex-col`}
                 style={{
                   backgroundColor: drawerBg,
                   boxShadow: `-4px 0 20px rgba(0,0,0,0.3)`,
