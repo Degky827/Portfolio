@@ -1,6 +1,7 @@
 import { useState, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, MapPin, ExternalLink, Layers, Code, Users, ChevronDown, ChevronUp } from 'lucide-react'
+import TechTile from '../../components/ui/TechTile'
 
 /* ─── Inline SVG Logos ─────────────────────────────────────────── */
 const AskualaLogo = () => (
@@ -341,24 +342,19 @@ export default function Experience() {
                       </p>
 
                       {/* Technology Pills */}
-                      <div className="flex flex-wrap items-center gap-2">
+                      <div className="flex flex-wrap items-start gap-2.5 sm:gap-3">
                         {item.primaryTags.map((tech) => (
-                          <span
-                            key={tech}
-                            className="px-2.5 py-1 rounded-lg text-xs font-medium bg-[var(--surface)] text-[var(--text-secondary)] border border-[var(--border-default)] hover:border-indigo-500/30 transition-colors"
-                          >
-                            {tech}
-                          </span>
+                          <TechTile key={tech} name={tech} size="sm" />
                         ))}
 
-                        {/* Expand/Collapse tag pill */}
                         {item.extraTags && item.extraTags.length > 0 && (
-                          <button
+                          <TechTile
+                            name="More"
+                            icon="more"
+                            size="sm"
+                            label={isExpanded ? 'Less' : `+${item.extraTags.length} More`}
                             onClick={() => toggleExpand(item.id)}
-                            className="px-2 py-1 rounded-lg text-xs font-bold text-indigo-600 dark:text-[#818CF8] bg-indigo-100 dark:bg-indigo-500/10 border border-indigo-200 dark:border-indigo-500/20 hover:bg-indigo-200 dark:hover:bg-indigo-500/20 transition-colors cursor-pointer"
-                          >
-                            +{item.extraTags.length}
-                          </button>
+                          />
                         )}
                       </div>
 
@@ -384,14 +380,9 @@ export default function Experience() {
                               ))}
                             </ul>
                             {item.extraTags && (
-                              <div className="flex flex-wrap gap-1.5 pt-1">
+                              <div className="flex flex-wrap gap-2.5 sm:gap-3 pt-1">
                                 {item.extraTags.map((tech) => (
-                                  <span
-                                    key={tech}
-                                    className="px-2 py-0.5 rounded text-[11px] font-medium bg-indigo-100 dark:bg-indigo-950/40 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800/40"
-                                  >
-                                    {tech}
-                                  </span>
+                                  <TechTile key={tech} name={tech} size="sm" />
                                 ))}
                               </div>
                             )}
