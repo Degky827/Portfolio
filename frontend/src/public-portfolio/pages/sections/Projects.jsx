@@ -147,14 +147,14 @@ export default function Projects() {
           <motion.span
             initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-block px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-xs sm:text-sm font-bold tracking-[0.2em] text-[var(--accent-projects)] uppercase bg-[var(--accent-projects)]/10 rounded-full border border-[var(--accent-projects)]/20"
+            className="inline-block px-3 sm:px-4 py-1.5 mb-3 sm:mb-4 text-[10px] sm:text-xs font-bold tracking-[0.18em] text-[var(--accent-projects)] uppercase bg-[var(--accent-projects)]/10 rounded-full border border-[var(--accent-projects)]/20"
           >
             Portfolio
           </motion.span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[var(--text-primary)] mb-4 sm:mb-6 tracking-tight">
+          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mb-3 sm:mb-4 tracking-tight">
             Featured Projects
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-xs sm:text-sm md:text-base text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
             A showcase of my recent work across web development and enterprise network architecture.
           </p>
         </motion.div>

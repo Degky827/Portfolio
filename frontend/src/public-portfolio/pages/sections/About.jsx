@@ -146,27 +146,27 @@ export default function About({ content, hero, aboutContent }) {
           <motion.div
             initial={{ opacity: 0, scale: 0.8 }}
             whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-flex items-center gap-2 px-5 sm:px-6 py-2.5 mb-6 sm:mb-8 text-xs sm:text-sm font-bold tracking-[0.2em] text-[var(--accent-about)] uppercase rounded-full border border-[var(--accent-about)]/30 bg-[var(--accent-about)]/10"
+            className="inline-flex items-center gap-2 px-4 sm:px-5 py-2 mb-4 sm:mb-6 text-[10px] sm:text-xs font-bold tracking-[0.18em] text-[var(--accent-about)] uppercase rounded-full border border-[var(--accent-about)]/30 bg-[var(--accent-about)]/10"
           >
-            <span className="w-2 h-2 rounded-full bg-[var(--accent-about)] animate-pulse" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[var(--accent-about)] animate-pulse" />
             About Me
           </motion.div>
 
           <h2
-            className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 sm:mb-8 tracking-tight text-[var(--text-primary)]"
+            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black mb-4 sm:mb-6 tracking-tight text-[var(--text-primary)]"
           >
             {title}
           </h2>
 
-          <p className="text-base sm:text-lg md:text-xl text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
+          <p className="text-sm sm:text-base md:text-lg text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
             {subtitle}
           </p>
 
           {/* Clean decorative line */}
-          <div className="mt-8 sm:mt-10 flex items-center justify-center gap-3">
-            <div className="h-px w-16 bg-[var(--accent-about)]/30" />
-            <div className="w-2 h-2 rotate-45 border border-[var(--accent-about)]/30" />
-            <div className="h-px w-16 bg-[var(--accent-about)]/30" />
+          <div className="mt-6 sm:mt-8 flex items-center justify-center gap-3">
+            <div className="h-px w-12 bg-[var(--accent-about)]/30" />
+            <div className="w-1.5 h-1.5 rotate-45 border border-[var(--accent-about)]/30" />
+            <div className="h-px w-12 bg-[var(--accent-about)]/30" />
           </div>
         </motion.div>
 
