@@ -241,12 +241,20 @@ async function updateHomeContent(req, res) {
       const ap = body.appearance
       if (ap.textColor !== undefined) content.appearance.textColor = ap.textColor
       if (ap.backgroundColor !== undefined) content.appearance.backgroundColor = ap.backgroundColor
+      if (ap.surfaceColor !== undefined) content.appearance.surfaceColor = ap.surfaceColor
+      if (ap.mutedTextColor !== undefined) content.appearance.mutedTextColor = ap.mutedTextColor
       if (ap.backgroundType !== undefined) content.appearance.backgroundType = ap.backgroundType
+      if (ap.backgroundImage !== undefined) content.appearance.backgroundImage = ap.backgroundImage
+      if (ap.backgroundOverlay !== undefined) content.appearance.backgroundOverlay = ap.backgroundOverlay
+      if (ap.backgroundOpacity !== undefined) content.appearance.backgroundOpacity = Number(ap.backgroundOpacity) || 0.5
+      if (ap.backgroundPosition !== undefined) content.appearance.backgroundPosition = ap.backgroundPosition
       if (ap.animations !== undefined) content.appearance.animations = Boolean(ap.animations)
       if (ap.glassmorphism !== undefined) content.appearance.glassmorphism = Boolean(ap.glassmorphism)
       if (ap.particles !== undefined) content.appearance.particles = Boolean(ap.particles)
       if (ap.cursorEffect !== undefined) content.appearance.cursorEffect = Boolean(ap.cursorEffect)
       if (ap.glowEffects !== undefined) content.appearance.glowEffects = Boolean(ap.glowEffects)
+      if (ap.scrollIndicator !== undefined) content.appearance.scrollIndicator = Boolean(ap.scrollIndicator)
+      if (ap.socialFloating !== undefined) content.appearance.socialFloating = Boolean(ap.socialFloating)
     }
 
     if (body.scene3D) {
