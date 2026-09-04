@@ -33,7 +33,7 @@ export default function Home() {
   return (
     <>
       <Hero
-        content={content?.hero}
+        content={content}
         contactButtonText={content?.contactButtonText}
         contactButtonLink={content?.contactButtonLink}
       />
