@@ -17,10 +17,47 @@ async function getHomeContent(_req, res) {
     if (!content) {
       content = await HomeContent.create({})
     }
-    res.json({ success: true, content })
+    const publicData = content.publishedContent || content.toObject()
+    res.json({ success: true, content: publicData })
   } catch (error) {
     console.error('[homepage] get error:', error)
     res.status(500).json({ success: false, message: 'Failed to fetch home content' })
+  }
+}
+
+async function getHomeContentDraft(_req, res) {
+  try {
+    let content = await HomeContent.findOne()
+    if (!content) {
+      content = await HomeContent.create({})
+    }
+    res.json({ success: true, content })
+  } catch (error) {
+    console.error('[homepage] get draft error:', error)
+    res.status(500).json({ success: false, message: 'Failed to fetch draft content' })
+  }
+}
+
+async function publishHomeContent(req, res) {
+  try {
+    let content = await HomeContent.findOne()
+    if (!content) {
+      return res.status(404).json({ success: false, message: 'No content found' })
+    }
+    const draft = content.toObject()
+    delete draft._id
+    delete draft.__v
+    delete draft.createdAt
+    delete draft.updatedAt
+    content.publishedContent = draft
+    content.published = true
+    content.lastPublishedAt = new Date()
+    await content.save()
+    res.json({ success: true, content, message: 'Content published successfully' })
+    await auditLog({ userId: req.user?._id, action: 'PUBLISH', resource: 'HomeContent', resourceId: content._id, details: { publishedAt: content.lastPublishedAt }, req })
+  } catch (error) {
+    console.error('[homepage] publish error:', error)
+    res.status(500).json({ success: false, message: 'Failed to publish content' })
   }
 }
 
@@ -112,6 +149,7 @@ async function updateHomeContent(req, res) {
         active: t.active !== false,
       }))
     }
+    if (body.technologiesEnabled !== undefined) content.technologiesEnabled = Boolean(body.technologiesEnabled)
 
     if (body.statistics !== undefined && Array.isArray(body.statistics)) {
       content.statistics = body.statistics.map((s, i) => ({
@@ -124,6 +162,8 @@ async function updateHomeContent(req, res) {
         context: s.context || '',
       }))
     }
+    if (body.statisticsEnabled !== undefined) content.statisticsEnabled = Boolean(body.statisticsEnabled)
+    if (body.socialLinksEnabled !== undefined) content.socialLinksEnabled = Boolean(body.socialLinksEnabled)
 
     if (body.availability) {
       const a = body.availability
@@ -316,4 +356,4 @@ async function updateHomeContent(req, res) {
   }
 }
 
-module.exports = { getHomeContent, updateHomeContent }
+module.exports = { getHomeContent, getHomeContentDraft, publishHomeContent, updateHomeContent }

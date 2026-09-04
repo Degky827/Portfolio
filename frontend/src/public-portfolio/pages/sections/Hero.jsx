@@ -1,6 +1,6 @@
 import { useEffect, useState, lazy, Suspense, useCallback, memo } from 'react'
 import { motion } from 'framer-motion'
-import { ArrowRight, MessageCircle, Mail, Download } from 'lucide-react'
+import { ArrowRight, MessageCircle, Mail, Download, Globe } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
 import TechTile from '../../components/ui/TechTile'
 
@@ -63,27 +63,31 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   const primaryCtaText = h.primaryCtaText || 'Explore My Work'
   const primaryCtaUrl = h.primaryCtaUrl || '#projects'
 
+  const DEFAULT_STATS = [
+    { label: 'Years Experience', value: '2+', icon: 'Award', color: '#6366f1' },
+    { label: 'Projects Completed', value: '12+', icon: 'BookOpen', color: '#6366f1' },
+    { label: 'Technologies', value: '10+', icon: 'Cpu', color: '#6366f1' },
+    { label: 'Happy Clients', value: '5+', icon: 'Users', color: '#6366f1' },
+  ]
+  const statsEnabled = content?.statisticsEnabled !== false
   const dbStats = content?.statistics?.filter(s => s.active !== false) || []
-  const stats = dbStats.length > 0
+  const stats = statsEnabled && dbStats.length > 0
     ? dbStats.sort((a, b) => (a.order || 0) - (b.order || 0))
-    : [
-        { label: 'Years Experience', value: '2+', icon: 'Award', color: '#6366f1' },
-        { label: 'Projects Completed', value: '12+', icon: 'BookOpen', color: '#6366f1' },
-        { label: 'Technologies', value: '10+', icon: 'Cpu', color: '#6366f1' },
-        { label: 'Happy Clients', value: '5+', icon: 'Users', color: '#6366f1' },
-      ]
+    : DEFAULT_STATS
 
+  const DEFAULT_TECHS = [
+    { name: 'React' },
+    { name: 'Node.js' },
+    { name: 'TypeScript' },
+    { name: 'MongoDB' },
+    { name: 'Express' },
+    { name: 'Flutter' },
+  ]
+  const techsEnabled = content?.technologiesEnabled !== false
   const dbTechs = content?.technologies?.filter(t => t.active !== false) || []
-  const technologies = dbTechs.length > 0
+  const technologies = techsEnabled && dbTechs.length > 0
     ? dbTechs.sort((a, b) => (a.order || 0) - (b.order || 0))
-    : [
-        { name: 'React' },
-        { name: 'Node.js' },
-        { name: 'TypeScript' },
-        { name: 'MongoDB' },
-        { name: 'Express' },
-        { name: 'Flutter' },
-      ]
+    : DEFAULT_TECHS
 
   const availability = content?.availability || { enabled: true, status: 'available', title: 'Available for Freelance', description: "Let's build something amazing together.", ctaText: 'Hire Me', ctaUrl: '/contact' }
 
@@ -110,6 +114,30 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
     ctaButtons: ctaButtons.filter(b => b.text || b.link),
     introduction,
   }
+
+  const SOCIAL_ICONS = {
+    github: <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>,
+    linkedin: <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>,
+    email: <Mail size={17} />,
+    cv: <Download size={17} />,
+  }
+
+  const DEFAULT_SOCIAL = [
+    { name: 'GitHub', url: profileData.socialLinks?.github || '#', icon: SOCIAL_ICONS.github, openNewTab: true },
+    { name: 'LinkedIn', url: profileData.socialLinks?.linkedin || '#', icon: SOCIAL_ICONS.linkedin, openNewTab: true },
+    { name: 'Email', url: `mailto:${profileData.socialLinks?.email || '#'}`, icon: SOCIAL_ICONS.email, openNewTab: false },
+    ...(profileData.socialLinks?.cv ? [{ name: 'Download CV', url: profileData.socialLinks.cv, icon: SOCIAL_ICONS.cv, openNewTab: true }] : []),
+  ]
+  const socialLinksEnabled = content?.socialLinksEnabled !== false
+  const dbSocialLinks = content?.socialLinksOrder?.filter(l => l.active !== false && l.visible !== false) || []
+  const socialItems = socialLinksEnabled && dbSocialLinks.length > 0
+    ? dbSocialLinks.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map(l => ({
+        name: l.tooltip || l.platform,
+        url: l.platform === 'email' ? `mailto:${l.url}` : l.url,
+        icon: SOCIAL_ICONS[l.platform?.toLowerCase()] || <Globe size={17} />,
+        openNewTab: l.openNewTab !== false,
+      }))
+    : DEFAULT_SOCIAL
 
   const scrollToWork = useCallback(() => {
     document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
@@ -140,7 +168,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
             <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
           </div>
         }>
-          <HeroDesktopScene className="w-full h-full" profileData={profileData} />
+          <HeroDesktopScene className="w-full h-full" profileData={profileData} scene3D={content?.scene3D} />
         </Suspense>
       </div>
 
@@ -149,41 +177,12 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         {...fadeIn(1.4)}
         className="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-3 pointer-events-auto"
       >
-        {[
-          {
-            name: 'GitHub',
-            url: profileData.socialLinks?.github || '#',
-            icon: (
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
-                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
-              </svg>
-            ),
-          },
-          {
-            name: 'LinkedIn',
-            url: profileData.socialLinks?.linkedin || '#',
-            icon: (
-              <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
-                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
-              </svg>
-            ),
-          },
-          {
-            name: 'Email',
-            url: `mailto:${profileData.socialLinks?.email || '#'}`,
-            icon: <Mail size={17} />,
-          },
-          ...(profileData.socialLinks?.cv ? [{
-            name: 'Download CV',
-            url: profileData.socialLinks.cv,
-            icon: <Download size={17} />,
-          }] : []),
-        ].map((social, i) => (
+        {socialItems.map((social, i) => (
           <motion.a
             key={social.name}
             href={social.url}
-            target={social.name !== 'Email' && social.name !== 'Download CV' ? '_blank' : undefined}
-            rel={social.name !== 'Email' && social.name !== 'Download CV' ? 'noopener noreferrer' : undefined}
+            target={social.openNewTab ? '_blank' : undefined}
+            rel={social.openNewTab ? 'noopener noreferrer' : undefined}
             initial={{ opacity: 0, x: 20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.4, delay: 1.2 + i * 0.1 }}
