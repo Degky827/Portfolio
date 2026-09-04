@@ -65,12 +65,15 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         { label: 'Technologies', value: '10+', icon: 'Cpu', color: '#6366f1' },
         { label: 'Happy Clients', value: '5+', icon: 'Users', color: '#6366f1' },
       ]
-  const contactBtnText = settings?.contactButtonText || contactButtonText || "Let's Work Together"
+  const contactBtnText = settings?.contactButtonText || contactButtonText || 'Get In Touch'
   const ctaButtons = content?.ctaButtons?.length > 0
     ? content.ctaButtons
     : [{ text: '', link: '', openNewTab: false, icon: 'ArrowRight' }]
 
   const typedText = useTypingEffect(fullText)
+  const splitAt = fullText.indexOf(' ')
+  const typedHead = splitAt === -1 ? typedText : typedText.slice(0, splitAt)
+  const typedTail = splitAt === -1 ? '' : typedText.slice(splitAt)
 
   const profileData = {
     name: fullName,
@@ -95,6 +98,10 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
   }, [])
 
+  const scrollToAbout = useCallback(() => {
+    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
+  }, [])
+
   const scrollToSkills = useCallback(() => {
     document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' })
   }, [])
@@ -102,11 +109,11 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   return (
     <section
       id="home"
-      className="relative min-h-0 md:min-h-screen overflow-hidden bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300"
+      className="relative -mt-28 sm:-mt-32 min-h-0 md:min-h-screen overflow-hidden bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300"
       aria-label="Hero section"
     >
       {/* 3D Desktop Scene - visible on all screens */}
-      <div className="md:absolute md:right-0 md:top-0 md:w-[50%] lg:md:w-[48%] md:h-full md:z-10 w-full h-[45vh] sm:h-[50vh] relative z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
+      <div className="md:absolute md:right-0 md:top-0 md:w-[58%] lg:w-[60%] md:h-full md:z-10 w-full h-[45vh] sm:h-[50vh] mt-28 sm:mt-32 md:mt-0 relative z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
@@ -173,12 +180,12 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       </motion.div>
 
       {/* Main content overlay */}
-      <div className="md:relative md:z-10 relative z-10 min-h-0 md:min-h-screen flex flex-col pointer-events-none">
+      <div className="md:relative md:z-20 relative z-10 min-h-0 md:min-h-screen flex flex-col pointer-events-none md:pt-20">
         {/* Hero content area */}
         <div className="flex-1 flex items-center">
-          <div className="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex items-center">
+          <div className="w-full px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex items-center">
             {/* Left text content */}
-            <div className="w-full md:w-[52%] lg:max-w-xl pt-6 sm:pt-8 md:pt-0 pointer-events-auto relative">
+            <div className="w-full md:w-[42%] lg:w-[40%] lg:max-w-md pt-6 sm:pt-8 md:pt-0 pb-6 md:pb-36 pointer-events-auto relative">
               {/* Mobile text backdrop */}
               <div className="md:hidden absolute -inset-x-6 -top-24 -bottom-6 bg-white/80 dark:bg-[#1a1a2e]/85 backdrop-blur-sm -z-10 rounded-3xl" />
 
@@ -211,9 +218,10 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                 {/* Role / typed text */}
                 <motion.span
                   {...fadeUp(0.55)}
-                  className="block text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight mt-1 text-indigo-600 dark:text-[#818CF8]"
+                  className="block text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight mt-1 text-slate-900 dark:text-white"
                 >
-                  {typedText}
+                  {typedHead}
+                  <span className="text-indigo-600 dark:text-[#818CF8]">{typedTail}</span>
                   <motion.span
                     animate={{ opacity: [1, 0] }}
                     transition={{ duration: 0.6, repeat: Infinity }}
@@ -283,80 +291,69 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
           </div>
         </div>
 
-        {/* Bottom stats panel */}
-        <motion.div
-          {...fadeUp(1.1)}
-          className="pointer-events-auto hidden md:block"
+      </div>
+
+      {/* Bottom stats panel - spans the full width over both halves */}
+      <motion.div
+        {...fadeUp(1.1)}
+        className="pointer-events-auto hidden md:block absolute inset-x-6 lg:inset-x-8 bottom-24 z-30"
+      >
+        <div
+          className="flex items-stretch rounded-2xl border bg-white/85 dark:bg-[#101522]/85 border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-xl shadow-slate-900/5 overflow-hidden"
+          role="region"
+          aria-label="Portfolio statistics"
         >
-          <div className="w-full px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 pb-12 sm:pb-16">
+          {/* Stats */}
+          {stats.map((stat, i) => (
             <div
-              className="flex flex-wrap items-center gap-2 sm:gap-4 py-2.5 sm:py-3 px-2.5 sm:px-4 rounded-xl border bg-slate-100/90 dark:bg-[#101522]/90 border-slate-200 dark:border-white/10 backdrop-blur-md"
-              role="region"
-              aria-label="Portfolio statistics"
+              key={i}
+              className="flex flex-col justify-center px-6 lg:px-8 py-4 border-r border-slate-200/80 dark:border-white/10"
             >
-              {/* Stats */}
-              {stats.map((stat, i) => (
-                <div
-                  key={i}
-                  className="flex items-center gap-2"
-                >
-                  <div
-                    className="w-6 h-6 sm:w-7 sm:h-7 flex items-center justify-center rounded-md shrink-0 bg-indigo-500/10 text-indigo-600 dark:text-indigo-400"
-                  >
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="10" />
-                    </svg>
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="text-xs sm:text-sm md:text-base font-bold leading-none text-slate-900 dark:text-white">
-                      {stat.value}
-                    </span>
-                    <span className="text-[7px] sm:text-[8px] md:text-[9px] font-medium mt-0.5 text-slate-500 dark:text-[#7a8599]">
-                      {stat.label}
-                    </span>
-                  </div>
-                </div>
-              ))}
-
-              {/* Divider */}
-              <div className="hidden sm:block w-px h-8 mx-1 bg-slate-200 dark:bg-white/10" />
-
-              {/* Available for freelance */}
-              <div className="hidden sm:flex items-center gap-2 ml-auto">
-                <div className="flex flex-col">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                      Available for freelance
-                    </span>
-                  </div>
-                  <span className="text-[8px] sm:text-[9px] mt-0.5 text-slate-500 dark:text-[#7a8599]">
-                    Let's build something amazing together.
-                  </span>
-                </div>
-                <button
-                  onClick={scrollToContact}
-                  className="group flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-[10px] sm:text-[11px] rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md"
-                >
-                  Hire Me
-                  <ArrowRight size={11} className="group-hover:translate-x-0.5 transition-transform duration-200" />
-                </button>
+              <div className="text-lg lg:text-xl font-extrabold leading-none text-indigo-600 dark:text-[#818CF8]">
+                {stat.value}
+              </div>
+              <div className="text-[10px] lg:text-[11px] font-medium mt-1.5 text-slate-500 dark:text-[#7a8599] whitespace-nowrap">
+                {stat.label}
               </div>
             </div>
+          ))}
+
+          {/* Available for freelance */}
+          <div className="flex items-center gap-4 ml-auto px-5 lg:px-6 py-4">
+            <div className="flex flex-col">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <div className="text-[11px] lg:text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                  Available for freelance
+                </div>
+              </div>
+              <div className="text-[10px] lg:text-[11px] mt-0.5 text-slate-500 dark:text-[#7a8599]">
+                Let's build something amazing together.
+              </div>
+            </div>
+            <button
+              onClick={scrollToContact}
+              className="group flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md shadow-indigo-600/25"
+            >
+              Hire Me
+              <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+            </button>
           </div>
-        </motion.div>
-      </div>
+        </div>
+      </motion.div>
 
       {/* Scroll indicator */}
       <motion.div
         {...fadeIn(1.6)}
-        className="absolute bottom-5 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1.5 cursor-pointer group z-20 pointer-events-auto text-slate-400 dark:text-[#7a8599]"
+        onClick={scrollToAbout}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') scrollToAbout() }}
+        className="hidden md:flex absolute bottom-5 left-1/2 -translate-x-1/2 flex-col items-center gap-1.5 cursor-pointer group z-30 pointer-events-auto text-slate-500 dark:text-[#7a8599]"
         role="button"
         tabIndex={0}
         aria-label="Scroll to explore"
       >
         <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
-          Scroll Down
+          Scroll to explore
         </span>
         <motion.div
           animate={{ y: [0, 5, 0] }}
