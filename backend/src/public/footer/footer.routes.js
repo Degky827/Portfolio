@@ -1,11 +1,11 @@
 const { Router } = require('express')
 const { authenticateToken } = require('../../shared/middleware/auth')
-const upload = require('../../infrastructure/storage/upload')
+const { uploadSingle } = require('../../infrastructure/storage/cloudinaryUpload')
 const { getFooterContent, updateFooterContent } = require('./footer.controller')
 
 const router = Router()
 
 router.get('/', getFooterContent)
-router.put('/', authenticateToken, upload.single('footerLogo'), updateFooterContent)
+router.put('/', authenticateToken, uploadSingle('footerLogo'), updateFooterContent)
 
 module.exports = router
