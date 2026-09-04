@@ -32,6 +32,7 @@
     "google-auth-library": "^10.7.0",
     "helmet": "^8.2.0",
     "jsonwebtoken": "^9.0.3",
+    "minio": "^8.0.7",
     "mongo-sanitize": "^1.1.0",
     "mongoose": "^9.6.3",
     "multer": "^2.1.1",
