@@ -50,8 +50,8 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   const badge = settings?.professionalBadge || content?.professionalBadge || h.professionalBadge || 'Full Stack Developer'
   const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords || h.typingWords)?.[0] || 'Fullstack Developer'
   const introduction = settings?.shortIntroduction || content?.shortIntroduction || h.shortIntroduction || h.description || 'I build scalable, high-performance web and mobile applications using modern technologies, robust architecture, and production-ready engineering practices.'
-  const contactBtnText = settings?.contactButtonText || contactButtonText || h.secondaryCtaText || 'Get In Touch'
-  const contactBtnLink = h.secondaryCtaUrl || contactButtonLink || '#contact'
+  const contactBtnText = h.secondaryCtaText || contactButtonText || settings?.contactButtonText || 'Get In Touch'
+  const contactBtnLink = h.secondaryCtaUrl || contactButtonLink || settings?.contactButtonLink || '#contact'
 
   const showEyebrow = h.showEyebrow !== false
   const showGreeting = h.showGreeting !== false
@@ -87,8 +87,8 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
 
   const availability = content?.availability || { enabled: true, status: 'available', title: 'Available for Freelance', description: "Let's build something amazing together.", ctaText: 'Hire Me', ctaUrl: '/contact' }
 
-  const ctaButtons = content?.ctaButtons?.length > 0
-    ? content.ctaButtons
+  const ctaButtons = h.ctaButtons?.length > 0
+    ? h.ctaButtons
     : [{ text: '', link: '', openNewTab: false, icon: 'ArrowRight' }]
 
   const typedText = useTypingEffect(fullText)
