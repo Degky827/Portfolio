@@ -40,32 +40,53 @@ const fadeIn = (delay = 0) => ({
   transition: { duration: 0.5, delay },
 })
 
-const technologies = [
-  { name: 'React' },
-  { name: 'Node.js' },
-  { name: 'TypeScript' },
-  { name: 'MongoDB' },
-  { name: 'Express' },
-  { name: 'Flutter' },
-]
-
 function Hero({ content, contactButtonText, contactButtonLink }) {
   const { settings } = useSiteSettings()
 
-  const greeting = settings?.greeting || content?.greeting || "Hi, I'm"
-  const fullName = settings?.brandName || content?.fullName || 'DESALEGN'
-  const badge = settings?.professionalBadge || content?.professionalBadge || 'Full Stack Developer'
-  const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords)?.[0] || 'Fullstack Developer'
-  const introduction = settings?.shortIntroduction || content?.shortIntroduction || 'I build scalable, high-performance web and mobile applications using modern technologies, robust architecture, and production-ready engineering practices.'
-  const stats = content?.statistics?.length > 0
-    ? content.statistics
+  const h = content?.hero || {}
+  const eyebrow = h.eyebrow || 'WELCOME TO MY DIGITAL SPACE'
+  const greeting = settings?.greeting || content?.greeting || h.greeting || "Hi, I'm"
+  const fullName = settings?.brandName || content?.fullName || h.fullName || 'DESALEGN'
+  const badge = settings?.professionalBadge || content?.professionalBadge || h.professionalBadge || 'Full Stack Developer'
+  const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords || h.typingWords)?.[0] || 'Fullstack Developer'
+  const introduction = settings?.shortIntroduction || content?.shortIntroduction || h.shortIntroduction || h.description || 'I build scalable, high-performance web and mobile applications using modern technologies, robust architecture, and production-ready engineering practices.'
+  const contactBtnText = settings?.contactButtonText || contactButtonText || h.secondaryCtaText || 'Get In Touch'
+  const contactBtnLink = h.secondaryCtaUrl || contactButtonLink || '#contact'
+
+  const showEyebrow = h.showEyebrow !== false
+  const showGreeting = h.showGreeting !== false
+  const showName = h.showName !== false
+  const showTitle = h.showTitle !== false
+  const showDescription = h.showDescription !== false
+  const showPrimaryCta = h.showPrimaryCta !== false
+  const showSecondaryCta = h.showSecondaryCta !== false
+  const primaryCtaText = h.primaryCtaText || 'Explore My Work'
+  const primaryCtaUrl = h.primaryCtaUrl || '#projects'
+
+  const dbStats = content?.statistics?.filter(s => s.active !== false) || []
+  const stats = dbStats.length > 0
+    ? dbStats.sort((a, b) => (a.order || 0) - (b.order || 0))
     : [
         { label: 'Years Experience', value: '2+', icon: 'Award', color: '#6366f1' },
         { label: 'Projects Completed', value: '12+', icon: 'BookOpen', color: '#6366f1' },
         { label: 'Technologies', value: '10+', icon: 'Cpu', color: '#6366f1' },
         { label: 'Happy Clients', value: '5+', icon: 'Users', color: '#6366f1' },
       ]
-  const contactBtnText = settings?.contactButtonText || contactButtonText || 'Get In Touch'
+
+  const dbTechs = content?.technologies?.filter(t => t.active !== false) || []
+  const technologies = dbTechs.length > 0
+    ? dbTechs.sort((a, b) => (a.order || 0) - (b.order || 0))
+    : [
+        { name: 'React' },
+        { name: 'Node.js' },
+        { name: 'TypeScript' },
+        { name: 'MongoDB' },
+        { name: 'Express' },
+        { name: 'Flutter' },
+      ]
+
+  const availability = content?.availability || { enabled: true, status: 'available', title: 'Available for Freelance', description: "Let's build something amazing together.", ctaText: 'Hire Me', ctaUrl: '/contact' }
+
   const ctaButtons = content?.ctaButtons?.length > 0
     ? content.ctaButtons
     : [{ text: '', link: '', openNewTab: false, icon: 'ArrowRight' }]
@@ -112,7 +133,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       className="relative -mt-28 sm:-mt-32 min-h-0 md:min-h-screen overflow-hidden bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300"
       aria-label="Hero section"
     >
-      {/* 3D Desktop Scene - visible on all screens */}
+      {/* 3D Desktop Scene */}
       <div className="md:absolute md:right-0 md:top-0 md:w-[58%] lg:w-[60%] md:h-full md:z-10 w-full h-[45vh] sm:h-[50vh] mt-28 sm:mt-32 md:mt-0 relative z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
@@ -123,7 +144,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         </Suspense>
       </div>
 
-      {/* Social media sidebar - right edge floating bar */}
+      {/* Social media sidebar */}
       <motion.div
         {...fadeIn(1.4)}
         className="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-3 pointer-events-auto"
@@ -131,7 +152,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         {[
           {
             name: 'GitHub',
-            url: profileData.socialLinks?.github || 'https://github.com/desalegn-tech',
+            url: profileData.socialLinks?.github || '#',
             icon: (
               <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
                 <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/>
@@ -140,7 +161,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
           },
           {
             name: 'LinkedIn',
-            url: profileData.socialLinks?.linkedin || 'https://linkedin.com/in/dk-cs-3rd',
+            url: profileData.socialLinks?.linkedin || '#',
             icon: (
               <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor">
                 <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
@@ -149,14 +170,14 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
           },
           {
             name: 'Email',
-            url: `mailto:${profileData.socialLinks?.email || 'desalegnky827@gmail.com'}`,
+            url: `mailto:${profileData.socialLinks?.email || '#'}`,
             icon: <Mail size={17} />,
           },
-          {
+          ...(profileData.socialLinks?.cv ? [{
             name: 'Download CV',
-            url: profileData.socialLinks?.cv || '#',
+            url: profileData.socialLinks.cv,
             icon: <Download size={17} />,
-          },
+          }] : []),
         ].map((social, i) => (
           <motion.a
             key={social.name}
@@ -181,88 +202,74 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
 
       {/* Main content overlay */}
       <div className="md:relative md:z-20 relative z-10 min-h-0 md:min-h-screen flex flex-col pointer-events-none md:pt-20">
-        {/* Hero content area */}
         <div className="flex-1 flex items-center">
           <div className="w-full px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex items-center">
-            {/* Left text content */}
             <div className="w-full md:w-[42%] lg:w-[40%] lg:max-w-md pt-6 sm:pt-8 md:pt-0 pb-6 md:pb-36 pointer-events-auto relative">
-              {/* Mobile text backdrop */}
               <div className="md:hidden absolute -inset-x-6 -top-24 -bottom-6 bg-white/80 dark:bg-[#1a1a2e]/85 backdrop-blur-sm -z-10 rounded-3xl" />
 
-              {/* Eyebrow */}
-              <motion.p
-                {...fadeIn(0.2)}
-                className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-indigo-600 dark:text-indigo-400"
-              >
-                Welcome to my digital space
-              </motion.p>
+              {showEyebrow && (
+                <motion.p {...fadeIn(0.2)} className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-indigo-600 dark:text-indigo-400">
+                  {eyebrow}
+                </motion.p>
+              )}
 
-              {/* Heading group */}
               <h1 className="mb-5">
-                {/* Greeting line */}
-                <motion.span
-                  {...fadeUp(0.35)}
-                  className="block text-sm sm:text-base md:text-lg font-semibold leading-tight text-slate-500 dark:text-[#A8B0C0]"
-                >
-                  {greeting}
-                </motion.span>
-
-                {/* Name */}
-                <motion.span
-                  {...fadeUp(0.45)}
-                  className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white my-0.5"
-                >
-                  {fullName}
-                </motion.span>
-
-                {/* Role / typed text */}
-                <motion.span
-                  {...fadeUp(0.55)}
-                  className="block text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight mt-1 text-slate-900 dark:text-white"
-                >
-                  {typedHead}
-                  <span className="text-indigo-600 dark:text-[#818CF8]">{typedTail}</span>
-                  <motion.span
-                    animate={{ opacity: [1, 0] }}
-                    transition={{ duration: 0.6, repeat: Infinity }}
-                    className="inline-block w-[2px] h-5 sm:h-6 md:h-7 lg:h-8 ml-1 bg-indigo-500 align-middle"
-                    aria-hidden="true"
-                  />
-                </motion.span>
+                {showGreeting && (
+                  <motion.span {...fadeUp(0.35)} className="block text-sm sm:text-base md:text-lg font-semibold leading-tight text-slate-500 dark:text-[#A8B0C0]">
+                    {greeting}
+                  </motion.span>
+                )}
+                {showName && (
+                  <motion.span {...fadeUp(0.45)} className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white my-0.5">
+                    {fullName}
+                  </motion.span>
+                )}
+                {showTitle && (
+                  <motion.span {...fadeUp(0.55)} className="block text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight mt-1 text-slate-900 dark:text-white">
+                    {typedHead}
+                    <span className="text-indigo-600 dark:text-[#818CF8]">{typedTail}</span>
+                    <motion.span
+                      animate={{ opacity: [1, 0] }}
+                      transition={{ duration: 0.6, repeat: Infinity }}
+                      className="inline-block w-[2px] h-5 sm:h-6 md:h-7 lg:h-8 ml-1 bg-indigo-500 align-middle"
+                      aria-hidden="true"
+                    />
+                  </motion.span>
+                )}
               </h1>
 
-              {/* Introduction */}
-              <motion.p
-                {...fadeUp(0.65)}
-                className="text-xs sm:text-sm md:text-base leading-relaxed mb-6 text-slate-600 dark:text-[#A8B0C0] max-w-lg font-normal"
-              >
-                {introduction}
-              </motion.p>
+              {showDescription && introduction && (
+                <motion.p {...fadeUp(0.65)} className="text-xs sm:text-sm md:text-base leading-relaxed mb-6 text-slate-600 dark:text-[#A8B0C0] max-w-lg font-normal">
+                  {introduction}
+                </motion.p>
+              )}
 
-              {/* CTA Buttons */}
-              <motion.div
-                {...fadeUp(0.75)}
-                className="flex flex-wrap items-center gap-3 mb-8"
-              >
-                <button
-                  onClick={scrollToWork}
-                  className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/25 cursor-pointer"
-                  aria-label="Explore my work"
-                >
-                  Explore My Work
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
-                </button>
-                <button
-                  onClick={scrollToContact}
-                  className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border border-slate-300 dark:border-white/10 hover:border-indigo-500/50 bg-slate-100/80 dark:bg-white/[0.04] backdrop-blur-md text-slate-800 dark:text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 cursor-pointer"
-                  aria-label={contactBtnText}
-                >
-                  {contactBtnText}
-                  <MessageCircle size={14} className="opacity-70 group-hover:opacity-100 transition-opacity" />
-                </button>
-              </motion.div>
+              {(showPrimaryCta || showSecondaryCta) && (
+                <motion.div {...fadeUp(0.75)} className="flex flex-wrap items-center gap-3 mb-8">
+                  {showPrimaryCta && (
+                    <button
+                      onClick={primaryCtaUrl.startsWith('#') ? scrollToWork : () => window.location.href = primaryCtaUrl}
+                      className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/25 cursor-pointer"
+                      aria-label={primaryCtaText}
+                    >
+                      {primaryCtaText}
+                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
+                    </button>
+                  )}
+                  {showSecondaryCta && (
+                    <button
+                      onClick={contactBtnLink.startsWith('#') ? scrollToContact : () => window.location.href = contactBtnLink}
+                      className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border border-slate-300 dark:border-white/10 hover:border-indigo-500/50 bg-slate-100/80 dark:bg-white/[0.04] backdrop-blur-md text-slate-800 dark:text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 cursor-pointer"
+                      aria-label={contactBtnText}
+                    >
+                      {contactBtnText}
+                      <MessageCircle size={14} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                    </button>
+                  )}
+                </motion.div>
+              )}
 
-              {/* Technologies Strip */}
+              {/* Technologies Strip — from database */}
               <motion.div {...fadeUp(0.85)}>
                 <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] mb-2.5 text-slate-500 dark:text-[#64748B]">
                   Technologies I work with
@@ -275,7 +282,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ duration: 0.35, delay: 0.95 + i * 0.05 }}
                     >
-                      <TechTile name={tech.name} />
+                      <TechTile name={tech.name} icon={tech.icon} />
                     </motion.div>
                   ))}
                   <motion.div
@@ -290,10 +297,9 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
             </div>
           </div>
         </div>
-
       </div>
 
-      {/* Bottom stats panel - spans the full width over both halves */}
+      {/* Bottom stats panel */}
       <motion.div
         {...fadeUp(1.1)}
         className="pointer-events-auto hidden md:block absolute inset-x-6 lg:inset-x-8 bottom-24 z-30"
@@ -318,27 +324,32 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
             </div>
           ))}
 
-          {/* Available for freelance */}
-          <div className="flex items-center gap-4 ml-auto px-5 lg:px-6 py-4">
-            <div className="flex flex-col">
-              <div className="flex items-center gap-2">
-                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                <div className="text-[11px] lg:text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                  Available for freelance
+          {/* Available for freelance — from database */}
+          {availability.enabled && (
+            <div className="flex items-center gap-4 ml-auto px-5 lg:px-6 py-4">
+              <div className="flex flex-col">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${
+                    availability.status === 'available' ? 'bg-emerald-500 animate-pulse' :
+                    availability.status === 'busy' ? 'bg-amber-500' : 'bg-gray-400'
+                  }`} />
+                  <div className="text-[11px] lg:text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                    {availability.title}
+                  </div>
+                </div>
+                <div className="text-[10px] lg:text-[11px] mt-0.5 text-slate-500 dark:text-[#7a8599]">
+                  {availability.description}
                 </div>
               </div>
-              <div className="text-[10px] lg:text-[11px] mt-0.5 text-slate-500 dark:text-[#7a8599]">
-                Let's build something amazing together.
-              </div>
+              <button
+                onClick={scrollToContact}
+                className="group flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md shadow-indigo-600/25"
+              >
+                {availability.ctaText}
+                <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+              </button>
             </div>
-            <button
-              onClick={scrollToContact}
-              className="group flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md shadow-indigo-600/25"
-            >
-              Hire Me
-              <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform duration-200" />
-            </button>
-          </div>
+          )}
         </div>
       </motion.div>
 
