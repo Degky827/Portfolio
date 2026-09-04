@@ -1,7 +1,6 @@
-const fs = require('fs')
-const path = require('path')
 const Settings = require('../../shared/models/Settings')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { deleteFile } = require('../../infrastructure/storage/storage.service')
 
 async function getSettings(_req, res) {
   try {
@@ -126,11 +125,10 @@ async function updateSettings(req, res) {
     const imageFields = ['logo', 'favicon']
     imageFields.forEach((field) => {
       if (req.files?.[field]?.[0]) {
-        const oldPath = settings[field] && settings[field].startsWith('/uploads/')
-          ? path.resolve(__dirname, '..', '..', '..', settings[field])
-          : null
-        if (oldPath) { try { fs.unlinkSync(oldPath) } catch { /* may not exist */ } }
-        settings[field] = `/uploads/${req.files[field][0].filename}`
+        if (settings[field]) {
+          deleteFile(settings[field])
+        }
+        settings[field] = req.files[field][0].path
       } else if (req.body[`${field}Url`]) {
         settings[field] = req.body[`${field}Url`]
       }

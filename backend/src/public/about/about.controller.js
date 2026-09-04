@@ -1,7 +1,6 @@
-const fs = require('fs')
-const path = require('path')
 const AboutContent = require('../../shared/models/AboutContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { deleteFile } = require('../../infrastructure/storage/storage.service')
 
 async function getAboutContent(_req, res) {
   try {
@@ -113,11 +112,10 @@ async function updateAboutContent(req, res) {
     }
 
     if (req.file) {
-      if (content.profileImage && content.profileImage.startsWith('/uploads/')) {
-        const oldPath = path.resolve(__dirname, '..', '..', '..', content.profileImage)
-        try { fs.unlinkSync(oldPath) } catch { /* file may not exist */ }
+      if (content.profileImage) {
+        await deleteFile(content.profileImage)
       }
-      content.profileImage = `/uploads/${req.file.filename}`
+      content.profileImage = req.file.path
     } else if (req.body.profileImageUrl) {
       content.profileImage = req.body.profileImageUrl
     }

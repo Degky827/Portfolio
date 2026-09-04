@@ -48,6 +48,33 @@ services:
       - dev
 
   # ──────────────────────────────────────────────
+  # MinIO — Object storage (dev only)
+  # ──────────────────────────────────────────────
+  minio:
+    image: minio/minio:latest
+    container_name: portkiro-minio
+    restart: unless-stopped
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:-minioadmin}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-minioadmin123}
+    volumes:
+      - minio_data:/data
+    command: server /data --console-address ":9001"
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+    networks:
+      - portkiro-net
+    profiles:
+      - dev
+
+  # ──────────────────────────────────────────────
   # Backend + Frontend (multi-stage Dockerfile)
   # ──────────────────────────────────────────────
   app:
@@ -72,6 +99,13 @@ services:
       GOOGLE_CLIENT_ID: ${GOOGLE_CLIENT_ID:-}
       GOOGLE_CLIENT_SECRET: ${GOOGLE_CLIENT_SECRET:-}
       ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      STORAGE_PROVIDER: ${STORAGE_PROVIDER:-cloudinary}
+      MINIO_ENDPOINT: ${MINIO_ENDPOINT:-minio}
+      MINIO_PORT: ${MINIO_PORT:-9000}
+      MINIO_ACCESS_KEY: ${MINIO_ACCESS_KEY:-minioadmin}
+      MINIO_SECRET_KEY: ${MINIO_SECRET_KEY:-minioadmin123}
+      MINIO_BUCKET: ${MINIO_BUCKET:-portfolio}
+      MINIO_USE_SSL: ${MINIO_USE_SSL:-false}
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
       CLOUDINARY_API_SECRET: ${CLOUDINARY_API_SECRET:-}
@@ -129,6 +163,8 @@ volumes:
   uploads:
     driver: local
   backups:
+    driver: local
+  minio_data:
     driver: local
 
 networks:
