@@ -1,5 +1,3 @@
-const fs = require('fs')
-const path = require('path')
 const FooterContent = require('../../shared/models/FooterContent')
 const NavbarSettings = require('../../shared/models/NavbarSettings')
 const HomeContent = require('../../shared/models/HomeContent')
@@ -8,6 +6,7 @@ const SiteSettings = require('../../shared/models/SiteSettings')
 const ContactContent = require('../../shared/models/ContactContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { syncFooterSocial } = require('../../shared/utilities/socialSync')
+const { deleteFile } = require('../../infrastructure/storage/storage.service')
 
 async function getFooterContent(_req, res) {
   try {
@@ -81,11 +80,10 @@ async function updateFooterContent(req, res) {
     }
 
     if (req.file) {
-      if (content.footerLogo && content.footerLogo.startsWith('/uploads/')) {
-        const oldPath = path.resolve(__dirname, '..', '..', '..', content.footerLogo)
-        try { fs.unlinkSync(oldPath) } catch { /* file may not exist */ }
+      if (content.footerLogo) {
+        await deleteFile(content.footerLogo)
       }
-      content.footerLogo = `/uploads/${req.file.filename}`
+      content.footerLogo = req.file.path
     } else if (req.body.footerLogoUrl) {
       content.footerLogo = req.body.footerLogoUrl
     }
