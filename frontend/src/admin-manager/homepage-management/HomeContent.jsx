@@ -9,7 +9,7 @@ import {
   Wifi, Globe, Mail, Download, Link2, Navigation,
   ArrowUpRight, ChevronRight, Box, Camera, Zap, Monitor as MonitorIcon, Eye, EyeOff,
   Move, RotateCw, Sliders, Smartphone, Tablet, Laptop, Gauge, Sun, Moon,
-  Send, Copy, FileText,
+  Send, Copy, FileText, Palette, Image,
 } from 'lucide-react'
 import PageHeader from '../shared/PageHeader'
 import Toast from '../shared/Toast'
@@ -39,6 +39,7 @@ const TABS = [
   { id: 'social', label: 'Social Links', icon: Globe },
   { id: 'navigation', label: 'Navigation', icon: Navigation },
   { id: '3dscene', label: '3D Scene', icon: Box },
+  { id: 'appearance', label: 'Appearance', icon: Palette },
 ]
 
 const defaultForm = {
@@ -79,6 +80,24 @@ const defaultForm = {
   },
   socialLinksOrder: [],
   socialLinksEnabled: true,
+  appearance: {
+    textColor: '',
+    backgroundColor: '',
+    surfaceColor: '',
+    mutedTextColor: '',
+    backgroundType: 'solid',
+    backgroundImage: '',
+    backgroundOverlay: '',
+    backgroundOpacity: 0.5,
+    backgroundPosition: 'center',
+    animations: true,
+    glassmorphism: true,
+    particles: true,
+    cursorEffect: true,
+    glowEffects: true,
+    scrollIndicator: true,
+    socialFloating: true,
+  },
   scene3D: {
     enabled: true,
     interaction: true,
@@ -1401,6 +1420,260 @@ function Scene3DPanel({ form, updateForm }) {
   )
 }
 
+/* ─── Appearance Panel ─── */
+
+const APPEARANCE_SUB_TABS = [
+  { id: 'colors', label: 'Colors', icon: Palette },
+  { id: 'background', label: 'Background', icon: Image },
+  { id: 'effects', label: 'Effects', icon: Zap },
+]
+
+function ColorField({ value, onChange, label, hint }) {
+  return (
+    <Field label={label} hint={hint}>
+      <div className="flex gap-3">
+        <input
+          type="color"
+          value={value || '#6366f1'}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-12 h-10 rounded-lg border border-gray-300 dark:border-slate-700 cursor-pointer"
+          aria-label={`Pick ${label}`}
+        />
+        <Input
+          value={value || ''}
+          onChange={(e) => onChange(e.target.value.toLowerCase())}
+          placeholder="#6366f1"
+          className="flex-1 font-mono text-sm"
+        />
+      </div>
+    </Field>
+  )
+}
+
+function AppearanceColorsTab({ form, updateForm }) {
+  const ap = form.appearance
+  return (
+    <div className="space-y-5">
+      <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
+        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+          Configure the color palette for the entire homepage. Empty values use default theme colors.
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <ColorField
+          label="Primary Color"
+          hint="Main brand color (buttons, links, accents)"
+          value={ap.primaryColor || form.theme?.primaryColor || '#6366f1'}
+          onChange={(v) => updateForm('theme.primaryColor', v)}
+        />
+        <ColorField
+          label="Secondary Color"
+          hint="Secondary brand color (gradients, hover states)"
+          value={ap.secondaryColor || form.theme?.secondaryColor || '#10b981'}
+          onChange={(v) => updateForm('theme.secondaryColor', v)}
+        />
+        <ColorField
+          label="Accent Color"
+          hint="Accent highlights (badges, notifications)"
+          value={ap.accentColor || form.theme?.accentColor || '#f59e0b'}
+          onChange={(v) => updateForm('theme.accentColor', v)}
+        />
+        <ColorField
+          label="Text Color"
+          hint="Main text color"
+          value={ap.textColor}
+          onChange={(v) => updateForm('appearance.textColor', v)}
+        />
+        <ColorField
+          label="Background Color"
+          hint="Page background"
+          value={ap.backgroundColor}
+          onChange={(v) => updateForm('appearance.backgroundColor', v)}
+        />
+        <ColorField
+          label="Surface Color"
+          hint="Card/surface backgrounds"
+          value={ap.surfaceColor}
+          onChange={(v) => updateForm('appearance.surfaceColor', v)}
+        />
+        <ColorField
+          label="Muted Text Color"
+          hint="Secondary/disabled text"
+          value={ap.mutedTextColor}
+          onChange={(v) => updateForm('appearance.mutedTextColor', v)}
+        />
+      </div>
+      <button
+        type="button"
+        onClick={() => {
+          updateForm('theme.primaryColor', '#6366f1')
+          updateForm('theme.secondaryColor', '#10b981')
+          updateForm('theme.accentColor', '#f59e0b')
+          updateForm('appearance.textColor', '')
+          updateForm('appearance.backgroundColor', '')
+          updateForm('appearance.surfaceColor', '')
+          updateForm('appearance.mutedTextColor', '')
+        }}
+        className="px-4 py-2 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 border border-gray-300 dark:border-slate-600 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+      >
+        <RotateCw size={14} className="inline mr-1" /> Reset to Defaults
+      </button>
+    </div>
+  )
+}
+
+function AppearanceBackgroundTab({ form, updateForm }) {
+  const ap = form.appearance
+  return (
+    <div className="space-y-5">
+      <Field label="Background Type" hint="Choose how the hero background is rendered">
+        <select
+          value={ap.backgroundType}
+          onChange={(e) => updateForm('appearance.backgroundType', e.target.value)}
+          className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+        >
+          <option value="solid">Solid Color</option>
+          <option value="gradient">Gradient</option>
+          <option value="image">Image</option>
+          <option value="3d">3D Environment</option>
+        </select>
+      </Field>
+
+      {(ap.backgroundType === 'image' || ap.backgroundType === '3d') && (
+        <>
+          <Field label="Background Image URL" hint="Upload or link to a background image">
+            <UrlInput
+              value={ap.backgroundImage}
+              onChange={(v) => updateForm('appearance.backgroundImage', v)}
+              placeholder="https://example.com/image.jpg"
+            />
+          </Field>
+          <Field label="Background Position" hint="CSS background-position value">
+            <select
+              value={ap.backgroundPosition}
+              onChange={(e) => updateForm('appearance.backgroundPosition', e.target.value)}
+              className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
+            >
+              <option value="center">Center</option>
+              <option value="top">Top</option>
+              <option value="bottom">Bottom</option>
+              <option value="left">Left</option>
+              <option value="right">Right</option>
+              <option value="top left">Top Left</option>
+              <option value="top right">Top Right</option>
+              <option value="bottom left">Bottom Left</option>
+              <option value="bottom right">Bottom Right</option>
+            </select>
+          </Field>
+        </>
+      )}
+
+      {ap.backgroundType !== 'solid' && (
+        <>
+          <Field label="Background Overlay" hint="Overlay color/gradient (e.g., rgba(0,0,0,0.5) or linear-gradient(...))">
+            <Input
+              value={ap.backgroundOverlay}
+              onChange={(v) => updateForm('appearance.backgroundOverlay', v)}
+              placeholder="rgba(0,0,0,0.5) or linear-gradient(135deg, #6366f1, #10b981)"
+            />
+          </Field>
+          <Field label="Overlay Opacity" hint="0 = transparent, 1 = fully opaque">
+            <input
+              type="range"
+              min="0"
+              max="1"
+              step="0.05"
+              value={ap.backgroundOpacity ?? 0.5}
+              onChange={(e) => updateForm('appearance.backgroundOpacity', parseFloat(e.target.value))}
+              className="w-full accent-primary"
+            />
+            <div className="flex justify-between text-xs text-gray-400 mt-1">
+              <span>0%</span>
+              <span className="font-medium text-primary">{(ap.backgroundOpacity * 100).toFixed(0)}%</span>
+              <span>100%</span>
+            </div>
+          </Field>
+        </>
+      )}
+
+      <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
+        <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
+          <strong>Tips:</strong> Solid uses the background color. Gradient creates a smooth transition between primary/secondary colors.
+          Image allows a custom background image with optional overlay. 3D uses the 3D scene as background.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function AppearanceEffectsTab({ form, updateForm }) {
+  const ap = form.appearance
+  return (
+    <div className="space-y-5">
+      <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
+        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+          Visual Effects
+        </h4>
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <Toggle checked={ap.animations} onChange={(v) => updateForm('appearance.animations', v)} label="Animations" />
+          <Toggle checked={ap.glassmorphism} onChange={(v) => updateForm('appearance.glassmorphism', v)} label="Glassmorphism" />
+          <Toggle checked={ap.particles} onChange={(v) => updateForm('appearance.particles', v)} label="Particles" />
+          <Toggle checked={ap.cursorEffect} onChange={(v) => updateForm('appearance.cursorEffect', v)} label="Custom Cursor" />
+          <Toggle checked={ap.glowEffects} onChange={(v) => updateForm('appearance.glowEffects', v)} label="Glow Effects" />
+          <Toggle checked={ap.scrollIndicator} onChange={(v) => updateForm('appearance.scrollIndicator', v)} label="Scroll Indicator" />
+          <Toggle checked={ap.socialFloating} onChange={(v) => updateForm('appearance.socialFloating', v)} label="Floating Social" />
+        </div>
+      </div>
+      <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4">
+        <p className="text-xs text-indigo-600 dark:text-indigo-400 leading-relaxed">
+          <strong>Performance note:</strong> Disabling particles, glow effects, and custom cursor on mobile devices
+          can significantly improve performance.
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function AppearancePanel({ form, updateForm }) {
+  const [subTab, setSubTab] = useState('colors')
+  return (
+    <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden">
+      <div className="p-6 pb-4 border-b border-gray-100 dark:border-slate-800">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+            <Palette size={18} />
+          </div>
+          <div className="text-left">
+            <h3 className="text-sm font-bold text-gray-900 dark:text-white">Appearance Settings</h3>
+            <p className="text-xs text-gray-400 mt-0.5">Configure colors, background, and visual effects for the entire homepage</p>
+          </div>
+        </div>
+      </div>
+      <div className="flex gap-1 p-2 mx-6 mt-4 bg-gray-100 dark:bg-slate-800 rounded-xl w-fit">
+        {APPEARANCE_SUB_TABS.map(({ id, label, icon: Icon }) => (
+          <button
+            key={id}
+            onClick={() => setSubTab(id)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+              subTab === id
+                ? 'bg-white dark:bg-slate-900 text-primary shadow-sm'
+                : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+            }`}
+          >
+            <Icon size={12} />
+            {label}
+          </button>
+        ))}
+      </div>
+      <div className="p-6">
+        {subTab === 'colors' && <AppearanceColorsTab form={form} updateForm={updateForm} />}
+        {subTab === 'background' && <AppearanceBackgroundTab form={form} updateForm={updateForm} />}
+        {subTab === 'effects' && <AppearanceEffectsTab form={form} updateForm={updateForm} />}
+      </div>
+    </div>
+  )
+}
+
 /* ─── Navigation Reference Tab ─── */
 
 function NavigationTab() {
@@ -1453,6 +1726,8 @@ export default function HomeContent() {
   const [confirmPublish, setConfirmPublish] = useState(false)
   const [activeTab, setActiveTab] = useState('hero')
   const [showPreview, setShowPreview] = useState(false)
+  const [lastSavedAt, setLastSavedAt] = useState(null)
+  const [lastSavedBy, setLastSavedBy] = useState(null)
   const [publishing, setPublishing] = useState(false)
   const [isPublished, setIsPublished] = useState(false)
   const [lastPublishedAt, setLastPublishedAt] = useState(null)
@@ -1533,6 +1808,24 @@ export default function HomeContent() {
             openNewTab: l.openNewTab !== false,
           })),
           socialLinksEnabled: content.socialLinksEnabled !== false,
+          appearance: {
+            textColor: content.appearance?.textColor || '',
+            backgroundColor: content.appearance?.backgroundColor || '',
+            surfaceColor: content.appearance?.surfaceColor || '',
+            mutedTextColor: content.appearance?.mutedTextColor || '',
+            backgroundType: content.appearance?.backgroundType || 'solid',
+            backgroundImage: content.appearance?.backgroundImage || '',
+            backgroundOverlay: content.appearance?.backgroundOverlay || '',
+            backgroundOpacity: content.appearance?.backgroundOpacity ?? 0.5,
+            backgroundPosition: content.appearance?.backgroundPosition || 'center',
+            animations: content.appearance?.animations !== false,
+            glassmorphism: content.appearance?.glassmorphism !== false,
+            particles: content.appearance?.particles !== false,
+            cursorEffect: content.appearance?.cursorEffect !== false,
+            glowEffects: content.appearance?.glowEffects !== false,
+            scrollIndicator: content.appearance?.scrollIndicator !== false,
+            socialFloating: content.appearance?.socialFloating !== false,
+          },
           scene3D: {
             enabled: content.scene3D?.enabled !== false,
             interaction: content.scene3D?.interaction !== false,
@@ -1632,6 +1925,7 @@ export default function HomeContent() {
         if (l.platform && l.url) acc[l.platform.toLowerCase()] = l.url
         return acc
       }, {}),
+      appearance: form.appearance,
       scene3D: form.scene3D,
       published: form.published,
       contactButtonText: form.hero.secondaryCtaText || 'Get In Touch',
@@ -1651,6 +1945,8 @@ export default function HomeContent() {
         },
       }))
       setInitialForm(JSON.parse(JSON.stringify(form)))
+      setLastSavedAt(new Date().toISOString())
+      setLastSavedBy(authUser?.name || authUser?.email || 'Admin')
       setToast({ message: 'Home content saved successfully', type: 'success' })
       try {
         await updateSiteSettings({
@@ -1781,6 +2077,11 @@ export default function HomeContent() {
               Last: {lastPublishedAt.toLocaleString()}
             </span>
           )}
+          {lastSavedAt && (
+            <span className="ml-2 text-[10px] opacity-70">
+              Saved: {new Date(lastSavedAt).toLocaleTimeString()} by {lastSavedBy}
+            </span>
+          )}
         </div>
         <p className="text-xs text-gray-400 mt-2 ml-1">
           {isPublished
@@ -1817,23 +2118,34 @@ export default function HomeContent() {
               </div>
               <div className="relative overflow-hidden" style={{ minHeight: '600px', background: 'transparent' }}>
                 <iframe
+                  key={JSON.stringify({
+                    hero: form.hero,
+                    technologies: form.technologies,
+                    statistics: form.statistics,
+                    availability: form.availability,
+                    appearance: form.appearance,
+                  })}
                   srcDoc={`
                     <!DOCTYPE html>
                     <html>
                     <head>
                       <style>
                         * { margin: 0; padding: 0; box-sizing: border-box; }
-                        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #fff; color: #1e293b; }
+                        body {
+                          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+                          background: ${form.appearance?.backgroundColor || '#fff'};
+                          color: ${form.appearance?.textColor || '#1e293b'};
+                        }
                         .section { padding: 40px; max-width: 1200px; margin: 0 auto; }
                         .hero-text h1 { font-size: 2.5rem; font-weight: 800; margin: 10px 0; }
-                        .hero-text p { font-size: 1.1rem; color: #64748b; }
+                        .hero-text p { font-size: 1.1rem; color: ${form.appearance?.mutedTextColor || '#64748b'}; }
                         .btn { display: inline-block; padding: 12px 24px; border-radius: 12px; font-weight: 600; margin: 5px; }
                         .btn-primary { background: #6366f1; color: white; border: none; }
                         .btn-secondary { background: transparent; color: #6366f1; border: 2px solid #6366f1; }
                         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 30px; }
-                        .card { padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; text-align: center; }
+                        .card { padding: 20px; border: 1px solid #e2e8f0; border-radius: 16px; text-align: center; background: ${form.appearance?.surfaceColor || '#f5f7fa'}; }
                         .card h3 { font-size: 1.5rem; font-weight: 700; color: #6366f1; }
-                        .card p { font-size: 0.85rem; color: #94a3b8; margin-top: 5px; }
+                        .card p { font-size: 0.85rem; color: ${form.appearance?.mutedTextColor || '#94a3b8'}; margin-top: 5px; }
                         .status-bar { padding: 8px 16px; background: #fef3c7; color: #92400e; font-size: 0.75rem; font-weight: 600; text-align: center; }
                         .tech { display: inline-block; padding: 4px 12px; background: #eef2ff; color: #4338ca; border-radius: 8px; margin: 3px; font-size: 0.8rem; }
                       </style>
@@ -1915,6 +2227,7 @@ export default function HomeContent() {
           {activeTab === 'social' && <SocialLinksPanel form={form} updateForm={updateForm} />}
           {activeTab === 'navigation' && <NavigationTab />}
           {activeTab === '3dscene' && <Scene3DPanel form={form} updateForm={updateForm} />}
+          {activeTab === 'appearance' && <AppearancePanel form={form} updateForm={updateForm} />}
         </motion.div>
       </AnimatePresence>
 

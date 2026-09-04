@@ -168,12 +168,20 @@ const homeContentSchema = new mongoose.Schema(
     appearance: {
       textColor: { type: String, default: '' },
       backgroundColor: { type: String, default: '' },
+      surfaceColor: { type: String, default: '' },
+      mutedTextColor: { type: String, default: '' },
       backgroundType: { type: String, enum: ['solid', 'gradient', 'image', '3d'], default: 'solid' },
+      backgroundImage: { type: String, default: '' },
+      backgroundOverlay: { type: String, default: '' },
+      backgroundOpacity: { type: Number, default: 0.5, min: 0, max: 1 },
+      backgroundPosition: { type: String, default: 'center' },
       animations: { type: Boolean, default: true },
       glassmorphism: { type: Boolean, default: true },
       particles: { type: Boolean, default: true },
       cursorEffect: { type: Boolean, default: true },
       glowEffects: { type: Boolean, default: true },
+      scrollIndicator: { type: Boolean, default: true },
+      socialFloating: { type: Boolean, default: true },
     },
 
     scene3D: {

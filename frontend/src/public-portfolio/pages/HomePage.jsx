@@ -30,6 +30,26 @@ export default function Home() {
       .catch(() => {})
   }, [])
 
+  // Apply appearance CSS variables
+  useEffect(() => {
+    const ap = content?.appearance
+    if (!ap) return
+    const root = document.documentElement
+    if (ap.textColor) root.style.setProperty('--color-text', ap.textColor)
+    if (ap.backgroundColor) root.style.setProperty('--color-bg', ap.backgroundColor)
+    if (ap.surfaceColor) root.style.setProperty('--color-surface', ap.surfaceColor)
+    if (ap.mutedTextColor) root.style.setProperty('--color-muted', ap.mutedTextColor)
+    if (ap.backgroundImage) {
+      root.style.setProperty('--bg-image', `url(${ap.backgroundImage})`)
+      root.style.setProperty('--bg-position', ap.backgroundPosition || 'center')
+    }
+    if (ap.backgroundOverlay) root.style.setProperty('--bg-overlay', ap.backgroundOverlay)
+    if (ap.backgroundOpacity != null) root.style.setProperty('--bg-opacity', ap.backgroundOpacity)
+    return () => {
+      ;['--color-text', '--color-bg', '--color-surface', '--color-muted', '--bg-image', '--bg-position', '--bg-overlay', '--bg-opacity'].forEach((v) => root.style.removeProperty(v))
+    }
+  }, [content?.appearance])
+
   return (
     <>
       <Hero
