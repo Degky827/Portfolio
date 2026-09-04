@@ -8,7 +8,7 @@ const { syncHomeSocial } = require('../../shared/utilities/socialSync')
 
 const socialKeys = [
   'github', 'linkedin', 'telegram', 'twitter',
-  'facebook', 'instagram', 'youtube', 'email',
+  'facebook', 'instagram', 'youtube', 'email', 'cv',
 ]
 
 async function getHomeContent(_req, res) {
@@ -24,6 +24,25 @@ async function getHomeContent(_req, res) {
   }
 }
 
+function sanitizeSceneObject(obj) {
+  return {
+    name: obj.name || '',
+    visible: obj.visible !== false,
+    position: {
+      x: Number(obj.position?.x) || 0,
+      y: Number(obj.position?.y) || 0,
+      z: Number(obj.position?.z) || 0,
+    },
+    rotation: {
+      x: Number(obj.rotation?.x) || 0,
+      y: Number(obj.rotation?.y) || 0,
+      z: Number(obj.rotation?.z) || 0,
+    },
+    scale: Number(obj.scale) || 1,
+    animate: obj.animate !== false,
+  }
+}
+
 async function updateHomeContent(req, res) {
   try {
     let content = await HomeContent.findOne()
@@ -35,6 +54,7 @@ async function updateHomeContent(req, res) {
 
     if (body.hero) {
       const h = body.hero
+      if (h.eyebrow !== undefined) content.hero.eyebrow = h.eyebrow
       if (h.greeting !== undefined) content.hero.greeting = h.greeting
       if (h.greetingAm !== undefined) content.hero.greetingAm = h.greetingAm
       if (h.fullName !== undefined) content.hero.fullName = h.fullName
@@ -42,6 +62,7 @@ async function updateHomeContent(req, res) {
       if (h.nameAmharic !== undefined) content.hero.nameAmharic = h.nameAmharic
       if (h.professionalBadge !== undefined) content.hero.professionalBadge = h.professionalBadge
       if (h.professionalBadgeAm !== undefined) content.hero.professionalBadgeAm = h.professionalBadgeAm
+      if (h.description !== undefined) content.hero.description = h.description
       if (h.shortIntroduction !== undefined) content.hero.shortIntroduction = h.shortIntroduction
       if (h.shortIntroductionAm !== undefined) content.hero.shortIntroductionAm = h.shortIntroductionAm
       if (h.typingWords !== undefined) {
@@ -54,14 +75,17 @@ async function updateHomeContent(req, res) {
           ? h.typingWordsAm.filter(Boolean).map(String)
           : content.hero.typingWordsAm
       }
-      if (h.statistics !== undefined && Array.isArray(h.statistics)) {
-        content.hero.statistics = h.statistics.map((s) => ({
-          label: s.label || '',
-          value: s.value || '',
-          icon: s.icon || 'Award',
-          color: s.color || '#6366f1',
-        }))
-      }
+      if (h.primaryCtaText !== undefined) content.hero.primaryCtaText = h.primaryCtaText
+      if (h.primaryCtaUrl !== undefined) content.hero.primaryCtaUrl = h.primaryCtaUrl
+      if (h.secondaryCtaText !== undefined) content.hero.secondaryCtaText = h.secondaryCtaText
+      if (h.secondaryCtaUrl !== undefined) content.hero.secondaryCtaUrl = h.secondaryCtaUrl
+      if (h.showEyebrow !== undefined) content.hero.showEyebrow = Boolean(h.showEyebrow)
+      if (h.showGreeting !== undefined) content.hero.showGreeting = Boolean(h.showGreeting)
+      if (h.showName !== undefined) content.hero.showName = Boolean(h.showName)
+      if (h.showTitle !== undefined) content.hero.showTitle = Boolean(h.showTitle)
+      if (h.showDescription !== undefined) content.hero.showDescription = Boolean(h.showDescription)
+      if (h.showPrimaryCta !== undefined) content.hero.showPrimaryCta = Boolean(h.showPrimaryCta)
+      if (h.showSecondaryCta !== undefined) content.hero.showSecondaryCta = Boolean(h.showSecondaryCta)
       if (h.ctaButtons !== undefined && Array.isArray(h.ctaButtons)) {
         content.hero.ctaButtons = h.ctaButtons.map((b) => ({
           text: b.text || '',
@@ -76,6 +100,59 @@ async function updateHomeContent(req, res) {
           alt: h.profilePhoto.alt !== undefined ? h.profilePhoto.alt : (content.hero.profilePhoto?.alt ?? ''),
         }
       }
+    }
+
+    if (body.technologies !== undefined && Array.isArray(body.technologies)) {
+      content.technologies = body.technologies.map((t, i) => ({
+        name: t.name || '',
+        icon: t.icon || '',
+        color: t.color || '',
+        url: t.url || '',
+        order: typeof t.order === 'number' ? t.order : i,
+        active: t.active !== false,
+      }))
+    }
+
+    if (body.statistics !== undefined && Array.isArray(body.statistics)) {
+      content.statistics = body.statistics.map((s, i) => ({
+        value: s.value || '',
+        label: s.label || '',
+        icon: s.icon || 'Award',
+        color: s.color || '#6366f1',
+        order: typeof s.order === 'number' ? s.order : i,
+        active: s.active !== false,
+        context: s.context || '',
+      }))
+    }
+
+    if (body.availability) {
+      const a = body.availability
+      if (a.enabled !== undefined) content.availability.enabled = Boolean(a.enabled)
+      if (a.status !== undefined) content.availability.status = a.status
+      if (a.title !== undefined) content.availability.title = a.title
+      if (a.description !== undefined) content.availability.description = a.description
+      if (a.ctaText !== undefined) content.availability.ctaText = a.ctaText
+      if (a.ctaUrl !== undefined) content.availability.ctaUrl = a.ctaUrl
+    }
+
+    if (body.socialLinks) {
+      socialKeys.forEach((key) => {
+        if (body.socialLinks[key] !== undefined) {
+          content.socialLinks[key] = body.socialLinks[key]
+        }
+      })
+    }
+
+    if (body.socialLinksOrder !== undefined && Array.isArray(body.socialLinksOrder)) {
+      content.socialLinksOrder = body.socialLinksOrder.map((s, i) => ({
+        platform: s.platform || '',
+        url: s.url || '',
+        icon: s.icon || '',
+        tooltip: s.tooltip || '',
+        order: typeof s.order === 'number' ? s.order : i,
+        visible: s.visible !== false,
+        active: s.active !== false,
+      }))
     }
 
     if (body.logoImage !== undefined) content.logoImage = body.logoImage
@@ -114,18 +191,61 @@ async function updateHomeContent(req, res) {
       if (c.backgroundImage !== undefined) content.cta.backgroundImage = c.backgroundImage
     }
 
-    if (body.socialLinks) {
-      socialKeys.forEach((key) => {
-        if (body.socialLinks[key] !== undefined) {
-          content.socialLinks[key] = body.socialLinks[key]
-        }
-      })
-    }
-
     if (body.theme) {
       if (body.theme.primaryColor !== undefined) content.theme.primaryColor = body.theme.primaryColor
       if (body.theme.secondaryColor !== undefined) content.theme.secondaryColor = body.theme.secondaryColor
       if (body.theme.accentColor !== undefined) content.theme.accentColor = body.theme.accentColor
+    }
+
+    if (body.appearance) {
+      const ap = body.appearance
+      if (ap.textColor !== undefined) content.appearance.textColor = ap.textColor
+      if (ap.backgroundColor !== undefined) content.appearance.backgroundColor = ap.backgroundColor
+      if (ap.backgroundType !== undefined) content.appearance.backgroundType = ap.backgroundType
+      if (ap.animations !== undefined) content.appearance.animations = Boolean(ap.animations)
+      if (ap.glassmorphism !== undefined) content.appearance.glassmorphism = Boolean(ap.glassmorphism)
+      if (ap.particles !== undefined) content.appearance.particles = Boolean(ap.particles)
+      if (ap.cursorEffect !== undefined) content.appearance.cursorEffect = Boolean(ap.cursorEffect)
+      if (ap.glowEffects !== undefined) content.appearance.glowEffects = Boolean(ap.glowEffects)
+    }
+
+    if (body.scene3D) {
+      const s3 = body.scene3D
+      if (s3.enabled !== undefined) content.scene3D.enabled = Boolean(s3.enabled)
+      if (s3.interaction !== undefined) content.scene3D.interaction = Boolean(s3.interaction)
+      if (s3.autoRotate !== undefined) content.scene3D.autoRotate = Boolean(s3.autoRotate)
+      if (s3.objectRotation !== undefined) content.scene3D.objectRotation = Boolean(s3.objectRotation)
+      if (s3.particles !== undefined) content.scene3D.particles = Boolean(s3.particles)
+      if (s3.shadows !== undefined) content.scene3D.shadows = Boolean(s3.shadows)
+      if (s3.postProcessing !== undefined) content.scene3D.postProcessing = Boolean(s3.postProcessing)
+      if (s3.cursorInteraction !== undefined) content.scene3D.cursorInteraction = Boolean(s3.cursorInteraction)
+
+      if (s3.performance) {
+        const p = s3.performance
+        if (p.desktop !== undefined) content.scene3D.performance.desktop = Boolean(p.desktop)
+        if (p.tablet !== undefined) content.scene3D.performance.tablet = Boolean(p.tablet)
+        if (p.mobile !== undefined) content.scene3D.performance.mobile = Boolean(p.mobile)
+        if (p.lightweightMobile !== undefined) content.scene3D.performance.lightweightMobile = Boolean(p.lightweightMobile)
+        if (p.maxDpr !== undefined) content.scene3D.performance.maxDpr = Number(p.maxDpr) || 2
+        if (p.shadowQuality !== undefined) content.scene3D.performance.shadowQuality = p.shadowQuality
+        if (p.particleCount !== undefined) content.scene3D.performance.particleCount = Number(p.particleCount) || 50
+      }
+
+      if (s3.camera) {
+        const cam = s3.camera
+        if (cam.positionX !== undefined) content.scene3D.camera.positionX = Number(cam.positionX)
+        if (cam.positionY !== undefined) content.scene3D.camera.positionY = Number(cam.positionY)
+        if (cam.positionZ !== undefined) content.scene3D.camera.positionZ = Number(cam.positionZ)
+        if (cam.rotationX !== undefined) content.scene3D.camera.rotationX = Number(cam.rotationX)
+        if (cam.rotationY !== undefined) content.scene3D.camera.rotationY = Number(cam.rotationY)
+        if (cam.rotationZ !== undefined) content.scene3D.camera.rotationZ = Number(cam.rotationZ)
+        if (cam.fov !== undefined) content.scene3D.camera.fov = Number(cam.fov) || 36
+        if (cam.zoom !== undefined) content.scene3D.camera.zoom = Number(cam.zoom) || 1
+      }
+
+      if (s3.objects !== undefined && Array.isArray(s3.objects)) {
+        content.scene3D.objects = s3.objects.map(sanitizeSceneObject)
+      }
     }
 
     if (body.seo) {
@@ -174,7 +294,6 @@ async function updateHomeContent(req, res) {
 
     if (body.hero?.profilePhoto?.url !== undefined) {
       const photoUrl = body.hero.profilePhoto.url
-      const logoSync = { logoImage: photoUrl, logo: photoUrl, footerLogo: photoUrl, avatar: photoUrl }
       try { await SiteSettings.findOneAndUpdate({}, { $set: { logoImage: photoUrl } }, { upsert: true }) } catch (e) { console.error('[homepage] sync SiteSettings.logoImage:', e.message) }
       try { await NavbarSettings.findOneAndUpdate({}, { $set: { logo: photoUrl } }, { upsert: true }) } catch (e) { console.error('[homepage] sync NavbarSettings.logo:', e.message) }
       try { await FooterContent.findOneAndUpdate({}, { $set: { footerLogo: photoUrl } }, { upsert: true }) } catch (e) { console.error('[homepage] sync FooterContent.footerLogo:', e.message) }
