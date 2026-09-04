@@ -93,8 +93,12 @@ const homeContentSchema = new mongoose.Schema(
     },
 
     technologies: [technologySchema],
+    technologiesEnabled: { type: Boolean, default: true },
 
     statistics: [homeStatSchema],
+    statisticsEnabled: { type: Boolean, default: true },
+
+    socialLinksEnabled: { type: Boolean, default: true },
 
     availability: {
       enabled: { type: Boolean, default: true },
@@ -210,6 +214,16 @@ const homeContentSchema = new mongoose.Schema(
     },
 
     published: { type: Boolean, default: false },
+
+    publishedContent: {
+      type: mongoose.Schema.Types.Mixed,
+      default: null,
+    },
+
+    lastPublishedAt: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,

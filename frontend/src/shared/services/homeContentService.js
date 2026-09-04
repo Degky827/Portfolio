@@ -5,6 +5,16 @@ export async function getHomeContent() {
   return data
 }
 
+export async function getHomeContentDraft() {
+  const { data } = await api.get('/home-content/admin')
+  return data
+}
+
+export async function publishHomeContent() {
+  const { data } = await api.post('/home-content/publish')
+  return data
+}
+
 export async function updateHomeContent(body) {
   const { data } = await api.put('/home-content', body)
   return data
