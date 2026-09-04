@@ -11,6 +11,7 @@ const { initSocket } = require('./infrastructure/socket')
 const { csrfProtection } = require('./shared/middleware/csrf')
 const { sanitizeMongo } = require('./shared/middleware/sanitize')
 const { globalLimiter } = require('./shared/middleware/globalRateLimiter')
+const { isMinioConfigured, minioClient, BUCKET, ensureBucket } = require('./infrastructure/storage/minio')
 const analyticsRoutes = require('./admin/analytics/analytics.routes')
 const authRoutes = require('./admin/auth/auth.routes')
 const userRoutes = require('./admin/users/users.routes')
@@ -50,7 +51,7 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", 'https://accounts.google.com', 'https://apis.google.com'],
       scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://accounts.google.com'],
-      imgSrc: ["'self'", 'data:', 'https:'],
+      imgSrc: ["'self'", 'data:', 'https:', ...(config.nodeEnv !== 'production' ? ['http://localhost:9000'] : [])],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
       connectSrc: ["'self'", config.frontendUrl, 'https://accounts.google.com', 'https://oauth2.googleapis.com', 'https://www.googleapis.com'].filter(Boolean),
       frameSrc: ["'self'", 'https://accounts.google.com'],
@@ -135,6 +136,19 @@ const path = require('path')
 
 app.use('/uploads', express.static('uploads'))
 
+if (isMinioConfigured) {
+  app.get('/minio/*key', async (req, res) => {
+    try {
+      const objectKey = Array.isArray(req.params.key) ? req.params.key.join('/') : req.params.key
+      const presignedUrl = await minioClient.presignedGetObject(BUCKET, objectKey, 7 * 24 * 60 * 60)
+      res.redirect(presignedUrl)
+    } catch (err) {
+      console.error('[minio-proxy] Error:', err.message)
+      res.status(404).json({ success: false, message: 'File not found' })
+    }
+  })
+}
+
 app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   customSiteTitle: 'Portkiro API Docs',
   customCss: '.swagger-ui .topbar { display: none }',
@@ -166,6 +180,10 @@ app.use((err, _req, res, _next) => {
 
 async function start() {
   await connectDB()
+
+  if (isMinioConfigured) {
+    await ensureBucket()
+  }
 
   const { migrateOldCategories } = require('./public/skills/skills.controller')
   await migrateOldCategories()
