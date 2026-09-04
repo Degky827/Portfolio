@@ -133,7 +133,7 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
         <Float speed={1.2} rotationIntensity={0} floatIntensity={0.05}>
           <group ref={desktopGroupRef} position={[0.2, -0.05, 0]} scale={0.82}>
             <Desk position={[0, 0, 0]} />
-            <Monitor position={[0, 0, -0.3]} screenMode="code" profileData={profileData} />
+            <Monitor position={[0, 0, -0.3]} screenMode="preview" profileData={profileData} />
             <Keyboard position={[0, 0, 0.25]} />
 
             {!isMobile && (
@@ -162,6 +162,7 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
 
       {/* Orbit Controls for interactive mouse drag & rotation */}
       <OrbitControls
+        target={[0.2, 1.0, -0.2]}
         enableZoom={false}
         enablePan={false}
         minPolarAngle={Math.PI / 4}
@@ -171,8 +172,7 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
         enableDamping
         dampingFactor={0.05}
         rotateSpeed={0.7}
-        autoRotate={!isMobile}
-        autoRotateSpeed={0.5}
+        autoRotate={false}
       />
     </>
   )
@@ -275,12 +275,12 @@ export default function HeroDesktopScene({ className = '', profileData }) {
 
   const inlineCamera = useMemo(() => {
     if (isMobile) {
-      return { position: [2.5, 1.5, 5.0], fov: 42, near: 0.1, far: 25 }
+      return { position: [0.2, 1.5, 5.6], fov: 42, near: 0.1, far: 25 }
     }
     if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      return { position: [3.0, 2.4, 5.5], fov: 38, near: 0.1, far: 25 }
+      return { position: [0.3, 1.7, 6.2], fov: 38, near: 0.1, far: 25 }
     }
-    return { position: [3.5, 2.8, 5.5], fov: 35, near: 0.1, far: 25 }
+    return { position: [0.35, 1.6, 5.1], fov: 36, near: 0.1, far: 25 }
   }, [isMobile])
 
   const inlineGl = useMemo(() => ({

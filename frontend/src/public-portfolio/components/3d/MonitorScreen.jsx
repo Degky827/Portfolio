@@ -2,6 +2,7 @@ import { useMemo, useState, useEffect } from 'react'
 import * as THREE from 'three'
 import CodeScreenCanvas from './CodeScreenCanvas'
 import PortfolioDashboardScreen from './PortfolioDashboardScreen'
+import PortfolioPreviewScreen from './PortfolioPreviewScreen'
 
 /**
  * MonitorScreen
@@ -10,6 +11,7 @@ import PortfolioDashboardScreen from './PortfolioDashboardScreen'
  * Supports two modes:
  * - 'code': VS Code-like code editor (default)
  * - 'dashboard': Portfolio dashboard with profile info
+ * - 'preview': Video-style preview of the portfolio website
  */
 export default function MonitorScreen({ position = [0, 0, 0], mode = 'code', profileData }) {
   const screenW = 2.48
@@ -57,6 +59,8 @@ export default function MonitorScreen({ position = [0, 0, 0], mode = 'code', pro
       {/* Screen content */}
       {mode === 'dashboard' ? (
         <PortfolioDashboardScreen screenW={screenW} screenH={screenH} profileData={profileData} />
+      ) : mode === 'preview' ? (
+        <PortfolioPreviewScreen screenW={screenW} screenH={screenH} profileData={profileData} />
       ) : (
         <CodeScreenCanvas screenW={screenW} screenH={screenH} />
       )}

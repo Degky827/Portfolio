@@ -1,11 +1,7 @@
-const fs = require('fs')
-const path = require('path')
 const Media = require('../../shared/models/Media')
-const { cloudinary, isCloudinaryConfigured } = require('../../infrastructure/storage/cloudinary')
+const { deleteFile } = require('../../infrastructure/storage/storage.service')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { escapeRegex } = require('../../shared/utilities/escapeRegex')
-
-const uploadDir = path.resolve(__dirname, '..', '..', '..', 'uploads')
 
 async function uploadMedia(req, res) {
   try {
@@ -14,16 +10,8 @@ async function uploadMedia(req, res) {
     }
 
     const file = req.file
-    let url = ''
-    let publicId = ''
-
-    if (isCloudinaryConfigured) {
-      url = file.path
-      publicId = file.filename
-    } else {
-      url = `/uploads/${file.filename}`
-      try { fs.unlinkSync(file.path) } catch { /* ok */ }
-    }
+    const url = file.path
+    const publicId = file.filename
 
     const media = await Media.create({
       filename: publicId || file.filename,
@@ -131,18 +119,7 @@ async function deleteMedia(req, res) {
       return res.status(404).json({ success: false, message: 'Media not found' })
     }
 
-    if (media.publicId && isCloudinaryConfigured) {
-      try {
-        await cloudinary.uploader.destroy(media.publicId)
-      } catch (cloudErr) {
-        console.error('[media] Cloudinary delete failed:', cloudErr.message)
-      }
-    }
-
-    if (!media.publicId && media.url.startsWith('/uploads/')) {
-      const filePath = path.resolve(__dirname, '..', '..', '..', media.url)
-      try { fs.unlinkSync(filePath) } catch { /* file may not exist */ }
-    }
+    await deleteFile(media.url)
 
     await Media.findByIdAndDelete(req.params.id)
     await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Media', resourceId: media._id, details: { filename: media.originalName }, req })
@@ -160,16 +137,8 @@ async function uploadDocument(req, res) {
     }
 
     const file = req.file
-    let url = ''
-    let publicId = ''
-
-    if (isCloudinaryConfigured) {
-      url = file.path
-      publicId = file.filename
-    } else {
-      url = `/uploads/${file.filename}`
-      try { fs.unlinkSync(file.path) } catch { /* ok */ }
-    }
+    const url = file.path
+    const publicId = file.filename
 
     res.status(201).json({ success: true, url, publicId, originalName: file.originalname })
   } catch (error) {

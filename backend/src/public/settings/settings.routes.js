@@ -1,6 +1,6 @@
 const { Router } = require('express')
 const { authenticateToken } = require('../../shared/middleware/auth')
-const upload = require('../../infrastructure/storage/upload')
+const { uploadFields } = require('../../infrastructure/storage/cloudinaryUpload')
 const { getSettings, updateSettings, getGlobalAppearance, updateGlobalAppearance } = require('./settings.controller')
 
 const router = Router()
@@ -9,7 +9,7 @@ router.get('/', getSettings)
 router.put(
   '/',
   authenticateToken,
-  upload.fields([
+  uploadFields([
     { name: 'logo', maxCount: 1 },
     { name: 'favicon', maxCount: 1 },
   ]),
