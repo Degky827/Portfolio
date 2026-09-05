@@ -1,4 +1,3 @@
-import { useRef } from 'react'
 import { Download, Printer, Loader2 } from 'lucide-react'
 import usePDFGenerator from '../hooks/usePDFGenerator'
 
@@ -7,7 +6,10 @@ export default function CVDownloadButton({ targetRef, name }) {
 
   const handleDownload = async () => {
     const element = targetRef?.current
-    if (!element) return
+    if (!element) {
+      alert('CV content not ready. Please wait a moment and try again.')
+      return
+    }
     const filename = name ? name.replace(/\s+/g, '_') + '_CV' : 'CV'
     await generatePDF(element, filename)
   }
