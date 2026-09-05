@@ -2,6 +2,7 @@ const Message = require('../../shared/models/Message')
 const { emitToAdmin } = require('../../infrastructure/socket')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { createNotification } = require('../../admin/notifications/notifications.controller')
+const { sendReplyEmail } = require('../../infrastructure/email/emailService')
 
 async function getMessages(req, res) {
   try {
@@ -145,4 +146,63 @@ async function deleteMessage(req, res) {
   }
 }
 
-module.exports = { getMessages, getMessage, createMessage, markRead, markUnread, getUnreadCount, deleteMessage }
+async function replyToMessage(req, res) {
+  try {
+    const { replyText } = req.body
+    if (!replyText || !replyText.trim()) {
+      return res.status(400).json({ success: false, message: 'Reply text is required' })
+    }
+
+    const msg = await Message.findById(req.params.id)
+    if (!msg) {
+      return res.status(404).json({ success: false, message: 'Message not found' })
+    }
+
+    const subject = `Re: ${msg.subject || 'Your message to our portfolio'}`
+
+    const html = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+        <p style="color: #666; font-size: 13px; border-bottom: 1px solid #eee; padding-bottom: 10px;">
+          Replying to: <strong>${msg.name}</strong> (${msg.email})
+          ${msg.subject ? `<br>Original subject: ${msg.subject}` : ''}
+        </p>
+        <div style="padding: 16px 0; line-height: 1.6; color: #333;">
+          ${replyText.trim().replace(/\n/g, '<br>')}
+        </div>
+        <hr style="border: none; border-top: 1px solid #eee; margin: 16px 0;">
+        <p style="color: #999; font-size: 11px;">
+          This reply was sent from your portfolio admin panel.
+        </p>
+      </div>
+    `
+
+    let emailResult = { sent: false }
+    try {
+      emailResult = await sendReplyEmail({
+        to: msg.email,
+        subject,
+        html,
+      })
+    } catch (emailErr) {
+      console.error('[contact-messages] email send error:', emailErr.message)
+    }
+
+    msg.replied = true
+    msg.replyText = replyText.trim()
+    msg.replyDate = new Date()
+    await msg.save()
+
+    await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Message', resourceId: msg._id, details: { action: 'reply', emailSent: emailResult.sent }, req })
+
+    res.json({
+      success: true,
+      message: { ...msg.toJSON(), read: msg.isRead },
+      emailSent: emailResult.sent,
+    })
+  } catch (error) {
+    console.error('[contact-messages] replyToMessage error:', error)
+    res.status(500).json({ success: false, message: 'Failed to send reply' })
+  }
+}
+
+module.exports = { getMessages, getMessage, createMessage, markRead, markUnread, getUnreadCount, deleteMessage, replyToMessage }

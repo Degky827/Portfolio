@@ -163,77 +163,107 @@ function SideButtons({ color, isHovered }) {
   )
 }
 
-function ScreenContent({ app, color, isHovered }) {
+function ScreenContent({ app, color, isHovered, thumbUrl }) {
   const features = app.features || []
 
   return (
     <div className="relative w-full h-full overflow-hidden bg-black">
-      {/* App background gradient */}
-      <div
-        className="absolute inset-0"
-        style={{
-          background: `linear-gradient(180deg, ${color}15 0%, ${color}08 30%, #0a0a14 100%)`,
-        }}
-      />
+      {/* Thumbnail image — full screen when available */}
+      {thumbUrl ? (
+        <motion.img
+          src={thumbUrl}
+          alt={app.title}
+          className="absolute inset-0 w-full h-full object-cover"
+          style={{
+            transform: isHovered ? 'scale(1.06)' : 'scale(1)',
+            filter: isHovered ? 'brightness(1.05)' : 'brightness(0.9)',
+          }}
+          animate={isHovered ? { scale: 1.06 } : { scale: 1 }}
+          transition={{ duration: 0.5 }}
+        />
+      ) : (
+        /* Fallback: generative gradient background */
+        <div
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(180deg, ${color}15 0%, ${color}08 30%, #0a0a14 100%)`,
+          }}
+        />
+      )}
 
       {/* Status bar */}
       <div className="relative z-10 flex items-center justify-between px-5 pt-3 pb-1">
-        <span className="text-[9px] font-semibold" style={{ color: 'var(--text-primary)' }}>9:41</span>
+        <span className="text-[9px] font-semibold" style={{ color: thumbUrl ? '#fff' : 'var(--text-primary)', textShadow: thumbUrl ? '0 1px 3px rgba(0,0,0,0.6)' : 'none' }}>9:41</span>
         <div className="flex items-center gap-1">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-primary)' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: thumbUrl ? '#fff' : 'var(--text-primary)', filter: thumbUrl ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' : 'none' }}>
             <path d="M5 12.55a11 11 0 0 1 14.08 0M1.42 9a16 16 0 0 1 21.16 0M8.53 16.11a6 6 0 0 1 6.95 0M12 20h.01" />
           </svg>
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: 'var(--text-primary)' }}>
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" style={{ color: thumbUrl ? '#fff' : 'var(--text-primary)', filter: thumbUrl ? 'drop-shadow(0 1px 2px rgba(0,0,0,0.5))' : 'none' }}>
             <rect x="1" y="6" width="18" height="12" rx="2" ry="2" />
             <line x1="23" y1="13" x2="23" y2="11" />
           </svg>
         </div>
       </div>
 
-      {/* App icon */}
-      <div className="relative z-10 flex flex-col items-center mt-6 px-4">
-        <motion.div
-          className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 relative overflow-hidden"
-          style={{
-            background: `linear-gradient(135deg, ${color} 0%, ${color}cc 100%)`,
-            boxShadow: `0 8px 24px ${color}40`,
-          }}
-          animate={isHovered ? {
-            scale: [1, 1.05, 1],
-          } : {}}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
+      {/* App icon — show only when NO thumbnail */}
+      {!thumbUrl && (
+        <div className="relative z-10 flex flex-col items-center mt-6 px-4">
           <motion.div
-            className="absolute inset-0"
+            className="w-16 h-16 rounded-2xl flex items-center justify-center mb-3 relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)',
+              background: `linear-gradient(135deg, ${color} 0%, ${color}cc 100%)`,
+              boxShadow: `0 8px 24px ${color}40`,
             }}
-            animate={{ x: ['-100%', '200%'] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
-          />
-          <span className="text-white text-xl font-bold relative z-10 drop-shadow-lg">
-            {app.title.charAt(0)}
-          </span>
-        </motion.div>
+            animate={isHovered ? {
+              scale: [1, 1.05, 1],
+            } : {}}
+            transition={{ duration: 2, repeat: Infinity }}
+          >
+            <motion.div
+              className="absolute inset-0"
+              style={{
+                background: 'linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.3) 50%, transparent 70%)',
+              }}
+              animate={{ x: ['-100%', '200%'] }}
+              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut', delay: 0.5 }}
+            />
+            <span className="text-white text-xl font-bold relative z-10 drop-shadow-lg">
+              {app.title.charAt(0)}
+            </span>
+          </motion.div>
 
-        <h4 className="text-[11px] font-bold text-center leading-tight mb-1 line-clamp-2" style={{ color: 'var(--text-primary)' }}>
-          {app.title}
-        </h4>
-        <p className="text-[9px] text-center line-clamp-1" style={{ color: 'var(--text-primary)' }}>
-          {app.description}
-        </p>
-      </div>
+          <h4 className="text-[11px] font-bold text-center leading-tight mb-1 line-clamp-2" style={{ color: 'var(--text-primary)' }}>
+            {app.title}
+          </h4>
+          <p className="text-[9px] text-center line-clamp-1" style={{ color: 'var(--text-primary)' }}>
+            {app.description}
+          </p>
+        </div>
+      )}
+
+      {/* Thumbnail overlay — title & features when thumbnail is present */}
+      {thumbUrl && (
+        <div className="absolute bottom-0 left-0 right-0 z-10 px-3 pb-8 pt-10" style={{ background: 'linear-gradient(transparent, rgba(0,0,0,0.7))' }}>
+          <h4 className="text-[11px] font-bold text-white text-center leading-tight mb-1 line-clamp-2 drop-shadow-lg">
+            {app.title}
+          </h4>
+          <p className="text-[9px] text-center line-clamp-1 text-white/70 drop-shadow">
+            {app.description}
+          </p>
+        </div>
+      )}
 
       {/* Feature pills */}
-      <div className="relative z-10 flex flex-wrap justify-center gap-1 mt-3 px-3">
+      <div className={`relative z-10 flex flex-wrap justify-center gap-1 mt-3 px-3 ${thumbUrl ? 'absolute bottom-20 left-0 right-0 mt-0' : ''}`}>
         {features.slice(0, 3).map((f, i) => (
           <span
             key={i}
             className="px-2 py-0.5 text-[7px] font-medium rounded-full"
             style={{
-              background: `${color}20`,
-              color: `${color}`,
-              border: `1px solid ${color}30`,
+              background: thumbUrl ? 'rgba(0,0,0,0.5)' : `${color}20`,
+              color: thumbUrl ? '#fff' : `${color}`,
+              border: `1px solid ${thumbUrl ? 'rgba(255,255,255,0.2)' : `${color}30`}`,
+              backdropFilter: thumbUrl ? 'blur(4px)' : 'none',
             }}
           >
             {f}
@@ -304,7 +334,7 @@ function HolographicGlow({ color, isHovered }) {
   )
 }
 
-export default function SmartphoneDevice({ app, isHovered, mouseX, mouseY, color }) {
+export default function SmartphoneDevice({ app, isHovered, mouseX, mouseY, color, thumbUrl }) {
   const phoneRef = useRef(null)
 
   return (
@@ -395,7 +425,7 @@ export default function SmartphoneDevice({ app, isHovered, mouseX, mouseY, color
             `,
           }}
         >
-          <ScreenContent app={app} color={color} isHovered={isHovered} />
+          <ScreenContent app={app} color={color} isHovered={isHovered} thumbUrl={thumbUrl} />
         </div>
 
         {/* Dynamic Island */}

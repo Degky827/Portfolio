@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronRight, Sun, Moon, FileText } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
@@ -62,18 +62,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
     } catch {}
   }
 
-  // ── Theme Mode Sync ────────────────────────────────────────────
-
-  const themeSynced = useRef(false)
-
-  useEffect(() => {
-    if (!ns?.themeMode || ns.themeMode === 'auto' || themeSynced.current) return
-    const shouldBeDark = ns.themeMode === 'dark'
-    if (shouldBeDark !== darkMode) {
-      onToggleDark()
-    }
-    themeSynced.current = true
-  }, [ns?.themeMode, darkMode, onToggleDark])
+  // Theme is controlled by useDarkMode hook (backend is default, user toggle persists)
 
   const displayNavItems = useMemo(() => {
     if (!navLoaded) return buildFallbackItems()
