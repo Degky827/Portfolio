@@ -6,6 +6,7 @@ import {
   GraduationCap, Award, Trophy, Globe,
 } from 'lucide-react'
 import Toast from '../shared/Toast'
+import ImageUpload from '../shared/ImageUpload'
 import { getCVContent, updateCVContent } from '../../shared/services/cvService'
 import defaultCVData from '../../shared/data/cvData'
 import CVSidebar from '../../public-portfolio/pages/cv/CVSidebar'
@@ -187,16 +188,23 @@ export default function CVManagement() {
               {/* Edit Content */}
               <div className="px-6 py-5 space-y-4">
                 {editTab === 'personal' && (
-                  <div className="grid grid-cols-2 gap-4">
-                    <Field label="Full Name"><Input value={cv.personal?.name || ''} onChange={e => updateField('personal.name', e.target.value)} /></Field>
-                    <Field label="Job Title"><Input value={cv.personal?.title || ''} onChange={e => updateField('personal.title', e.target.value)} /></Field>
-                    <Field label="Photo URL"><Input value={cv.personal?.photo || ''} onChange={e => updateField('personal.photo', e.target.value)} /></Field>
-                    <Field label="Location"><Input value={cv.personal?.location || ''} onChange={e => updateField('personal.location', e.target.value)} /></Field>
-                    <Field label="Phone"><Input value={cv.personal?.phone || ''} onChange={e => updateField('personal.phone', e.target.value)} /></Field>
-                    <Field label="Email"><Input value={cv.personal?.email || ''} onChange={e => updateField('personal.email', e.target.value)} /></Field>
-                    <Field label="GitHub"><Input value={cv.personal?.github || ''} onChange={e => updateField('personal.github', e.target.value)} /></Field>
-                    <Field label="LinkedIn"><Input value={cv.personal?.linkedin || ''} onChange={e => updateField('personal.linkedin', e.target.value)} /></Field>
-                    <Field label="Portfolio"><Input value={cv.personal?.portfolio || ''} onChange={e => updateField('personal.portfolio', e.target.value)} /></Field>
+                  <div className="space-y-4">
+                    <ImageUpload
+                      value={cv.personal?.photo || ''}
+                      onChange={url => updateField('personal.photo', url)}
+                      label="Profile Photo"
+                      folder="cv/photos"
+                    />
+                    <div className="grid grid-cols-2 gap-4">
+                      <Field label="Full Name"><Input value={cv.personal?.name || ''} onChange={e => updateField('personal.name', e.target.value)} /></Field>
+                      <Field label="Job Title"><Input value={cv.personal?.title || ''} onChange={e => updateField('personal.title', e.target.value)} /></Field>
+                      <Field label="Location"><Input value={cv.personal?.location || ''} onChange={e => updateField('personal.location', e.target.value)} /></Field>
+                      <Field label="Phone"><Input value={cv.personal?.phone || ''} onChange={e => updateField('personal.phone', e.target.value)} /></Field>
+                      <Field label="Email"><Input value={cv.personal?.email || ''} onChange={e => updateField('personal.email', e.target.value)} /></Field>
+                      <Field label="GitHub"><Input value={cv.personal?.github || ''} onChange={e => updateField('personal.github', e.target.value)} /></Field>
+                      <Field label="LinkedIn"><Input value={cv.personal?.linkedin || ''} onChange={e => updateField('personal.linkedin', e.target.value)} /></Field>
+                      <Field label="Portfolio"><Input value={cv.personal?.portfolio || ''} onChange={e => updateField('personal.portfolio', e.target.value)} /></Field>
+                    </div>
                   </div>
                 )}
 
