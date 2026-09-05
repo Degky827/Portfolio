@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, useReducedMotion, AnimatePresence } from 'framer-motion'
 import { createContainerVariants, defaultViewport } from '../../shared/animations'
 import {
@@ -40,6 +40,7 @@ import {
 } from 'react-icons/si'
 import { getSkills } from '../../../shared/services/skillService'
 import { getMediaUrl } from '../../../shared/services/api'
+import { useSocketRefresh } from '../../../shared/hooks/useSocketRefresh'
 import { SkillsScene } from '../../../components/skills3d'
 import GlassCard from '../../../components/skills3d/GlassCard'
 import StatsDashboard3D from '../../../components/skills3d/StatsDashboard3D'
@@ -214,7 +215,7 @@ export default function Skills() {
   const [loading, setLoading] = useState(true)
   const [selectedCert, setSelectedCert] = useState(null)
 
-  useEffect(() => {
+  const fetchSkills = useCallback(() => {
     getSkills({ status: 'active', limit: 100 })
       .then((data) => {
         setSkills(data.skills || [])
@@ -223,6 +224,13 @@ export default function Skills() {
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
+
+  useEffect(() => {
+    fetchSkills()
+  }, [fetchSkills])
+
+  useSocketRefresh('content:updated', fetchSkills, { type: 'skills' })
+  useSocketRefresh('content:updated', fetchSkills, { type: 'categories' })
 
   const skillCards = useMemo(() => {
     return categories
