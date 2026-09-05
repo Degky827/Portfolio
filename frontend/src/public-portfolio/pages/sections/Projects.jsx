@@ -1,10 +1,11 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play, CheckCircle, Clock, AlertCircle } from 'lucide-react'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import projectsData from '../../../shared/data/projects.json'
 import mobileAppsData from '../../../shared/data/mobileApps.json'
 import { getProjects } from '../../../shared/services/projectService'
 import { getMediaUrl } from '../../../shared/services/api'
+import { useSocketRefresh } from '../../../shared/hooks/useSocketRefresh'
 import { ProjectsScene } from '../../../components/projects3d'
 import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 import HolographicSearch from '../../../components/projects3d/HolographicSearch'
@@ -64,7 +65,7 @@ export default function Projects() {
   const [dbMobileApps, setDbMobileApps] = useState([])
   const [projectsLoading, setProjectsLoading] = useState(true)
 
-  useEffect(() => {
+  const fetchProjects = useCallback(() => {
     (async () => {
       try {
         const [webData, mobileData] = await Promise.all([
@@ -81,6 +82,12 @@ export default function Projects() {
       }
     })()
   }, [])
+
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
+
+  useSocketRefresh('content:updated', fetchProjects, { type: 'projects' })
 
   const hasDbProjects = dbProjects.length > 0
   const webOnlyProjects = dbProjects.filter(p => p.category !== 'Mobile App')
