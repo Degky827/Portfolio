@@ -83,7 +83,7 @@
   --surface: #f5f7fa;
   --surface-elevated: #ffffff;
   --surface-glass: rgba(255, 255, 255, 0.85);
-  --surface-glass-heavy: rgba(255, 255, 255, 0.95);
+  --surface-glass-heavy: #0f172a;
   --text-primary: #111827;
   --text-secondary: #5b6472;
   --text-tertiary: #6b7280;
@@ -268,7 +268,7 @@ p, span, li, label, td, th, dt, dd, figcaption, blockquote {
   background: var(--surface-glass-heavy);
   backdrop-filter: blur(16px);
   -webkit-backdrop-filter: blur(16px);
-  border-right: 1px solid var(--border-default);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .hover-lift {
