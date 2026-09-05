@@ -7,6 +7,7 @@ import {
 import PageHeader from '../shared/PageHeader'
 import ConfirmModal from '../shared/ConfirmModal'
 import Toast from '../shared/Toast'
+import ImageUpload from '../shared/ImageUpload'
 import {
   getExperiences, createExperience, updateExperience, deleteExperience,
 } from '../../shared/services/experienceService'
@@ -22,6 +23,7 @@ const emptyForm = {
   period: '', dateYear: '', dateSub: '', location: '', summary: '',
   primaryTags: [], extraTags: [], contributions: [],
   featured: false, status: 'DRAFT', displayOrder: 0,
+  analyticsEnabled: true, viewCount: 0,
 }
 
 export default function ExperienceList() {
@@ -78,6 +80,7 @@ export default function ExperienceList() {
       extraTags: exp.extraTags || [], contributions: exp.contributions || [],
       featured: exp.featured || false, status: exp.status || 'DRAFT',
       displayOrder: exp.displayOrder || 0,
+      analyticsEnabled: exp.analyticsEnabled ?? true, viewCount: exp.viewCount || 0,
     })
     setEditId(exp._id)
     setShowForm(true)
@@ -372,19 +375,25 @@ export default function ExperienceList() {
                         className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30" />
                     </div>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company *</label>
-                      <input required value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })}
-                        className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30" />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company URL</label>
-                      <input value={form.companyUrl} onChange={(e) => setForm({ ...form, companyUrl: e.target.value })}
-                        className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30" />
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-3 gap-4">
+<div className="grid grid-cols-2 gap-4">
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company *</label>
+                       <input required value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })}
+                         className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30" />
+                     </div>
+                     <div>
+                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company URL</label>
+                       <input value={form.companyUrl} onChange={(e) => setForm({ ...form, companyUrl: e.target.value })}
+                         className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30" />
+                     </div>
+                   </div>
+                   <ImageUpload
+                     value={form.logo || ''}
+                     onChange={url => setForm({ ...form, logo: url })}
+                     label="Company Logo"
+                     folder="experience/logos"
+                   />
+                   <div className="grid grid-cols-3 gap-4">
                     <div>
                       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Period *</label>
                       <input required value={form.period} onChange={(e) => setForm({ ...form, period: e.target.value })}
@@ -499,6 +508,19 @@ export default function ExperienceList() {
                       className="rounded border-gray-300 dark:border-slate-600 text-indigo-600 focus:ring-indigo-500" />
                     Featured
                   </label>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <label className="flex items-center gap-2 text-sm text-gray-700 dark:text-gray-300">
+                      <input type="checkbox" checked={form.analyticsEnabled ?? true} onChange={(e) => setForm({ ...form, analyticsEnabled: e.target.checked })}
+                        className="rounded border-gray-300 dark:border-slate-600 text-emerald-600 focus:ring-emerald-500" />
+                      Analytics Enabled
+                    </label>
+                    <div>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">View Count</label>
+                      <input type="number" min="0" value={form.viewCount ?? 0} onChange={(e) => setForm({ ...form, viewCount: Number(e.target.value) })}
+                        className="w-full px-3 py-2 text-sm rounded-xl border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-indigo-500/30" />
+                    </div>
+                  </div>
                 </div>
                 <div className="flex justify-end gap-3 p-5 border-t border-gray-200 dark:border-slate-700">
                   <button type="button" onClick={() => setShowForm(false)}
