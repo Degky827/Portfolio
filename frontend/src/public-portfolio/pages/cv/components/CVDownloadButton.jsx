@@ -1,7 +1,7 @@
 import { Download, Printer, Loader2 } from 'lucide-react'
 import usePDFGenerator from '../hooks/usePDFGenerator'
 
-export default function CVDownloadButton({ targetRef, name }) {
+export default function CVDownloadButton({ targetRef, name, showDownload = true, showPrint = true }) {
   const { generating, generatePDF } = usePDFGenerator()
 
   const handleDownload = async () => {
@@ -50,29 +50,35 @@ export default function CVDownloadButton({ targetRef, name }) {
     if (imgs.length === 0) setTimeout(() => { printWindow.print(); printWindow.close(); }, 300)
   }
 
+  if (!showDownload && !showPrint) return null
+
   return (
     <div className="cv-actions no-print">
-      <button
-        onClick={handleDownload}
-        disabled={generating}
-        className="cv-action-btn cv-action-btn-primary"
-        aria-label="Download CV as PDF"
-      >
-        {generating ? (
-          <Loader2 size={16} className="animate-spin" />
-        ) : (
-          <Download size={16} />
-        )}
-        <span>{generating ? 'Generating...' : 'Download PDF'}</span>
-      </button>
-      <button
-        onClick={handlePrint}
-        className="cv-action-btn cv-action-btn-secondary"
-        aria-label="Print CV"
-      >
-        <Printer size={16} />
-        <span>Print</span>
-      </button>
+      {showDownload && (
+        <button
+          onClick={handleDownload}
+          disabled={generating}
+          className="cv-action-btn cv-action-btn-primary"
+          aria-label="Download CV as PDF"
+        >
+          {generating ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Download size={16} />
+          )}
+          <span>{generating ? 'Generating...' : 'Download PDF'}</span>
+        </button>
+      )}
+      {showPrint && (
+        <button
+          onClick={handlePrint}
+          className="cv-action-btn cv-action-btn-secondary"
+          aria-label="Print CV"
+        >
+          <Printer size={16} />
+          <span>Print</span>
+        </button>
+      )}
     </div>
   )
 }

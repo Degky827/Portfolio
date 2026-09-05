@@ -669,6 +669,14 @@ export default function NavigationManagement() {
           </Card>
 
           <Card>
+            <CardHeader icon={Download} title="CV Page Actions" subtitle="Toggle download and print buttons on the CV page." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Toggle value={settings?.cvDownloadEnabled ?? true} onChange={(v) => updateSetting('cvDownloadEnabled', v)} label="Download PDF Button" />
+              <Toggle value={settings?.cvPrintEnabled ?? true} onChange={(v) => updateSetting('cvPrintEnabled', v)} label="Print Button" />
+            </div>
+          </Card>
+
+          <Card>
             <CardHeader icon={Sun} title="Theme" subtitle="Light and dark mode configuration for the navbar." />
             <Toggle value={settings?.themeEnabled} onChange={(v) => updateSetting('themeEnabled', v)} label="Enable Theme Toggle" />
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4">
