@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { lazy, Suspense } from 'react'
 import Hero from './sections/Hero'
 import About from './sections/About'
@@ -6,6 +6,7 @@ import Experience from './sections/Experience'
 import Skills from './sections/Skills'
 import { getHomeContent } from '../../shared/services/homeContentService'
 import { getAboutContent } from '../../shared/services/aboutService'
+import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 
 const Projects = lazy(() => import('./sections/Projects'))
 const Testimonials = lazy(() => import('./sections/Testimonials'))
@@ -21,14 +22,25 @@ export default function Home() {
   const [content, setContent] = useState(null)
   const [aboutContent, setAboutContent] = useState(null)
 
-  useEffect(() => {
+  const fetchHomeContent = useCallback(() => {
     getHomeContent()
       .then((res) => setContent(res.content))
       .catch(() => {})
+  }, [])
+
+  const fetchAboutContent = useCallback(() => {
     getAboutContent()
       .then((res) => setAboutContent(res.content))
       .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    fetchHomeContent()
+    fetchAboutContent()
+  }, [fetchHomeContent, fetchAboutContent])
+
+  useSocketRefresh('content:updated', fetchHomeContent, { type: 'homepage' })
+  useSocketRefresh('content:updated', fetchAboutContent, { type: 'about' })
 
   // Apply appearance CSS variables
   useEffect(() => {
