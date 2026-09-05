@@ -27,6 +27,8 @@ const Backup = lazy(() => import('../backup-management/Backup'))
 const Security = lazy(() => import('../security-management/Security'))
 const CustomPagesList = lazy(() => import('../custom-pages-management/CustomPagesList'))
 const CustomPageForm = lazy(() => import('../custom-pages-management/CustomPageForm'))
+const TestimonialsList = lazy(() => import('../testimonials-management/TestimonialsList'))
+const ExperienceList = lazy(() => import('../experience-management/ExperienceList'))
 
 export default function AdminRoutes() {
   return (
@@ -62,6 +64,8 @@ export default function AdminRoutes() {
           <Route path="system-config" element={<SystemConfig />} />
           <Route path="backup" element={<Backup />} />
           <Route path="security" element={<Security />} />
+          <Route path="testimonials" element={<TestimonialsList />} />
+          <Route path="experience" element={<ExperienceList />} />
         </Route>
       </Routes>
       </Suspense>
