@@ -93,4 +93,13 @@ const experienceSchema = new mongoose.Schema(
 
 experienceSchema.index({ status: 1, displayOrder: 1 })
 
+// Index for filtering by status and display order
+experienceSchema.index({ status: 1, displayOrder: 1 })
+
+// Index for analytics queries - commonly filters by analyticsEnabled
+experienceSchema.index({ analyticsEnabled: 1 })
+
+// Compound index for efficient queries filtering both analytics and status
+experienceSchema.index({ analyticsEnabled: 1, status: 1 })
+
 module.exports = mongoose.model('Experience', experienceSchema)
