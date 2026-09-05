@@ -5,6 +5,7 @@ const NavbarSettings = require('../../shared/models/NavbarSettings')
 const SiteSettings = require('../../shared/models/SiteSettings')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { syncHomeSocial } = require('../../shared/utilities/socialSync')
+const { emitToAll } = require('../../infrastructure/socket')
 
 const socialKeys = [
   'github', 'linkedin', 'telegram', 'twitter',
@@ -55,6 +56,8 @@ async function publishHomeContent(req, res) {
     await content.save()
     res.json({ success: true, content, message: 'Content published successfully' })
     await auditLog({ userId: req.user?._id, action: 'PUBLISH', resource: 'HomeContent', resourceId: content._id, details: { publishedAt: content.lastPublishedAt }, req })
+    emitToAll('content:updated', { type: 'homepage' })
+    emitToAll('home-content:updated')
   } catch (error) {
     console.error('[homepage] publish error:', error)
     res.status(500).json({ success: false, message: 'Failed to publish content' })
@@ -310,8 +313,19 @@ async function updateHomeContent(req, res) {
 
     await content.save()
 
+    // Sync draft to publishedContent so public site shows latest data
+    const draftForPublic = content.toObject()
+    delete draftForPublic._id
+    delete draftForPublic.__v
+    delete draftForPublic.createdAt
+    delete draftForPublic.updatedAt
+    content.publishedContent = draftForPublic
+    await content.save()
+
     res.json({ success: true, content })
     await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'HomeContent', resourceId: content._id, details: { updatedFields: Object.keys(body) }, req })
+    emitToAll('home-content:updated')
+    emitToAll('content:updated', { type: 'homepage' })
 
     const updatedName = body.hero?.fullName
     if (updatedName !== undefined) {
