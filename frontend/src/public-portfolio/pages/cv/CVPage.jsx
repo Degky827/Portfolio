@@ -1,14 +1,43 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { motion } from 'framer-motion'
 import defaultCVData from '../../../shared/data/cvData'
 import CVSidebar from './CVSidebar'
 import CVMain from './CVMain'
 import CVDownloadButton from './components/CVDownloadButton'
+import { getCVContent } from '../../../shared/services/cvService'
+import { usePublicSocket } from '../../../shared/context/PublicSocketContext'
 
 export default function CVPage({ data }) {
-  const cvData = data || defaultCVData
+  const [cvData, setCvData] = useState(data || defaultCVData)
   const { personal } = cvData
   const cvRef = useRef(null)
+  const { on, off } = usePublicSocket()
+
+  useEffect(() => {
+    if (!data) {
+      getCVContent()
+        .then(res => {
+          if (res.content && (res.content.personal?.name || res.content.summary)) {
+            setCvData(res.content)
+          }
+        })
+        .catch(() => {})
+    }
+  }, [data])
+
+  useEffect(() => {
+    const handler = () => {
+      getCVContent()
+        .then(res => {
+          if (res.content && (res.content.personal?.name || res.content.summary)) {
+            setCvData(res.content)
+          }
+        })
+        .catch(() => {})
+    }
+    on('content:updated', handler)
+    return () => off('content:updated', handler)
+  }, [on, off])
 
   useEffect(() => {
     document.title = `${personal.name} | ${personal.title} CV`
