@@ -5,10 +5,12 @@ import CVSidebar from './CVSidebar'
 import CVMain from './CVMain'
 import CVDownloadButton from './components/CVDownloadButton'
 import { getCVContent } from '../../../shared/services/cvService'
+import { getNavbarSettings } from '../../../shared/services/navigationService'
 import { usePublicSocket } from '../../../shared/context/PublicSocketContext'
 
 export default function CVPage({ data }) {
   const [cvData, setCvData] = useState(data || defaultCVData)
+  const [cvSettings, setCvSettings] = useState({ cvDownloadEnabled: true, cvPrintEnabled: true })
   const { personal } = cvData
   const cvRef = useRef(null)
   const { on, off } = usePublicSocket()
@@ -23,10 +25,26 @@ export default function CVPage({ data }) {
         })
         .catch(() => {})
     }
+    getNavbarSettings()
+      .then(res => {
+        const s = res.settings || res
+        setCvSettings({
+          cvDownloadEnabled: s.cvDownloadEnabled !== false,
+          cvPrintEnabled: s.cvPrintEnabled !== false,
+        })
+      })
+      .catch(() => {})
   }, [data])
 
   useEffect(() => {
-    const handler = () => {
+    const handler = (payload) => {
+      if (payload?.type === 'navbar-settings') {
+        setCvSettings({
+          cvDownloadEnabled: payload.data?.cvDownloadEnabled !== false,
+          cvPrintEnabled: payload.data?.cvPrintEnabled !== false,
+        })
+        return
+      }
       getCVContent()
         .then(res => {
           if (res.content && (res.content.personal?.name || res.content.summary)) {
@@ -50,6 +68,8 @@ export default function CVPage({ data }) {
     }
   }, [personal.name, personal.title])
 
+  const showActions = cvSettings.cvDownloadEnabled || cvSettings.cvPrintEnabled
+
   return (
     <motion.main
       initial={{ opacity: 0 }}
@@ -58,7 +78,14 @@ export default function CVPage({ data }) {
       className="cv-page"
       aria-label={`${personal.name} — Curriculum Vitae`}
     >
-      <CVDownloadButton targetRef={cvRef} name={personal.name} />
+      {showActions && (
+        <CVDownloadButton
+          targetRef={cvRef}
+          name={personal.name}
+          showDownload={cvSettings.cvDownloadEnabled}
+          showPrint={cvSettings.cvPrintEnabled}
+        />
+      )}
 
       <div className="cv-container" ref={cvRef}>
         <CVSidebar data={cvData} />
