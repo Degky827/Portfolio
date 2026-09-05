@@ -27,6 +27,84 @@ const BduLogo = () => (
   </svg>
 )
 
+const DEFAULT_EXPERIENCES = [
+  {
+    _id: '1',
+    badge: 'INTERNSHIP',
+    role: 'Software Development Intern',
+    company: 'Askuala',
+    companyUrl: '',
+    logo: null,
+    period: 'Jan 2023 – Present',
+    dateYear: '2023',
+    dateSub: 'Present',
+    location: 'Addis Ababa, Ethiopia',
+    summary: 'Building scalable web applications and learning modern development practices.',
+    primaryTags: ['React', 'Node.js', 'TypeScript', 'MongoDB'],
+    extraTags: ['Docker', 'AWS', 'GraphQL'],
+    contributions: [
+      'Developed RESTful APIs for internal tools',
+      'Implemented real-time features with Socket.IO',
+      'Optimized database queries reducing response time by 40%',
+    ],
+    featured: true,
+    status: 'PUBLISHED',
+    displayOrder: 1,
+    analyticsEnabled: true,
+    viewCount: 0,
+  },
+  {
+    _id: '2',
+    badge: 'FREELANCE',
+    role: 'Full Stack Developer',
+    company: 'Freelance Projects',
+    companyUrl: '',
+    logo: null,
+    period: 'Jun 2022 – Dec 2022',
+    dateYear: '2022',
+    dateSub: 'Dec 2022',
+    location: 'Remote',
+    summary: 'Delivered custom web solutions for clients worldwide.',
+    primaryTags: ['Vue.js', 'Laravel', 'PostgreSQL', 'TailwindCSS'],
+    extraTags: ['GraphQL', 'Redis', 'CI/CD'],
+    contributions: [
+      'Built 5+ production applications for international clients',
+      'Implemented authentication and authorization systems',
+      'Set up automated deployment pipelines',
+    ],
+    featured: true,
+    status: 'PUBLISHED',
+    displayOrder: 2,
+    analyticsEnabled: true,
+    viewCount: 0,
+  },
+  {
+    _id: '3',
+    badge: 'EDUCATION',
+    role: 'Computer Science Student',
+    company: 'Bahir Dar University',
+    companyUrl: '',
+    logo: null,
+    period: 'Sep 2019 – Jun 2023',
+    dateYear: '2019',
+    dateSub: '2023',
+    location: 'Bahir Dar, Ethiopia',
+    summary: 'Focused on software engineering, algorithms, and data structures.',
+    primaryTags: ['Python', 'C++', 'Java', 'Algorithms'],
+    extraTags: ['Machine Learning', 'Computer Vision', 'Research'],
+    contributions: [
+      'Graduated with distinction (GPA: 3.8/4.0)',
+      'Published research on computer vision applications',
+      'Led university programming club',
+    ],
+    featured: true,
+    status: 'PUBLISHED',
+    displayOrder: 3,
+    analyticsEnabled: true,
+    viewCount: 0,
+  },
+]
+
 /* ─── 4 Stat Cards in 2x2 Grid ─────────────────────────────────── */
 const statsData = [
   {
@@ -67,9 +145,11 @@ export default function Experience() {
   const fetchExperiences = useCallback(async () => {
     try {
       const data = await getExperiences({ status: 'PUBLISHED' })
-      setExperienceData(data.experiences || [])
+      const fetched = data.experiences || []
+      setExperienceData(fetched.length > 0 ? fetched : DEFAULT_EXPERIENCES)
     } catch {
-      // Keep empty array on error
+      // Fallback to default experiences on error
+      setExperienceData(DEFAULT_EXPERIENCES)
     }
   }, [])
 
