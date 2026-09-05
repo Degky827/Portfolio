@@ -118,6 +118,8 @@ async function updateAboutContent(req, res) {
       content.profileImage = req.file.path
     } else if (req.body.profileImageUrl) {
       content.profileImage = req.body.profileImageUrl
+    } else if (req.body.profileImage !== undefined) {
+      content.profileImage = req.body.profileImage
     }
 
     await content.save()
