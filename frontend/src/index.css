@@ -466,6 +466,96 @@ p, span, li, label, td, th, dt, dd, figcaption, blockquote {
   color: var(--text-secondary);
 }
 
+/* ── Quill Snow Dark Theme (About Page) ───────────────────────────── */
+.quill-editor-min-h .ql-toolbar.ql-snow {
+  border-color: var(--border-default);
+  border-radius: 12px 12px 0 0;
+  background: var(--surface);
+}
+
+.quill-editor-min-h .ql-container.ql-snow {
+  border-color: var(--border-default);
+  border-radius: 0 0 12px 12px;
+  background: var(--card-bg);
+  min-height: 120px;
+}
+
+.dark .quill-editor-min-h .ql-toolbar.ql-snow .ql-stroke {
+  stroke: var(--text-secondary);
+}
+
+.dark .quill-editor-min-h .ql-toolbar.ql-snow .ql-fill {
+  fill: var(--text-secondary);
+}
+
+.dark .quill-editor-min-h .ql-toolbar.ql-snow .ql-picker {
+  color: var(--text-secondary);
+}
+
+.dark .quill-editor-min-h .ql-toolbar.ql-snow button:hover .ql-stroke,
+.dark .quill-editor-min-h .ql-toolbar.ql-snow button.ql-active .ql-stroke {
+  stroke: var(--color-primary);
+}
+
+.dark .quill-editor-min-h .ql-toolbar.ql-snow button:hover .ql-fill,
+.dark .quill-editor-min-h .ql-toolbar.ql-snow button.ql-active .ql-fill {
+  fill: var(--color-primary);
+}
+
+.dark .quill-editor-min-h .ql-toolbar.ql-snow button:hover,
+.dark .quill-editor-min-h .ql-toolbar.ql-snow button.ql-active {
+  color: var(--color-primary);
+}
+
+.dark .quill-editor-min-h .ql-toolbar.ql-snow .ql-picker:hover .ql-picker-label,
+.dark .quill-editor-min-h .ql-toolbar.ql-snow .ql-picker.ql-expanded .ql-picker-label {
+  color: var(--color-primary);
+}
+
+.dark .quill-editor-min-h .ql-toolbar.ql-snow .ql-picker-options {
+  background: var(--surface);
+  border-color: var(--border-default);
+}
+
+.dark .quill-editor-min-h .ql-container.ql-snow .ql-editor {
+  color: var(--text-primary);
+}
+
+.dark .quill-editor-min-h .ql-container.ql-snow .ql-editor.ql-blank::before {
+  color: var(--text-tertiary);
+}
+
+.dark .quill-editor-min-h .ql-container.ql-snow .ql-editor code {
+  background: var(--surface-elevated);
+  color: #f472b6;
+  border-radius: 4px;
+  padding: 2px 6px;
+  font-size: 0.85em;
+}
+
+.dark .quill-editor-min-h .ql-container.ql-snow .ql-editor pre.ql-syntax {
+  background: var(--surface);
+  color: var(--text-primary);
+  border-radius: 8px;
+  padding: 1rem;
+  overflow-x: auto;
+  border: 1px solid var(--border-default);
+}
+
+.dark .quill-editor-min-h .ql-container.ql-snow .ql-editor blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 1rem;
+  color: var(--text-secondary);
+}
+
+.dark .quill-editor-min-h .ql-snow .ql-picker {
+  background: transparent;
+}
+
+.dark .quill-editor-min-h .ql-snow .ql-picker-label {
+  color: var(--text-secondary);
+}
+
 /* ── Holographic Badge Utilities ───────────────────────────── */
 @keyframes holo-sweep {
   0% { transform: translateX(-100%); }
@@ -843,6 +933,110 @@ p, span, li, label, td, th, dt, dd, figcaption, blockquote {
     animation: none !important;
     transition: none !important;
   }
+}
+
+/* ── About Card Rich Text Content ───────────────────────────── */
+.about-rich-content b,
+.about-rich-content strong {
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.about-rich-content i,
+.about-rich-content em {
+  font-style: italic;
+}
+
+.about-rich-content u {
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.about-rich-content s,
+.about-rich-content strike {
+  text-decoration: line-through;
+}
+
+.about-rich-content ul,
+.about-rich-content ol {
+  padding-left: 1.25em;
+  margin: 0.4em 0;
+}
+
+.about-rich-content li {
+  margin: 0.2em 0;
+  list-style-position: outside;
+}
+
+.about-rich-content a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: opacity 0.2s;
+}
+
+.about-rich-content a:hover {
+  opacity: 0.8;
+}
+
+.about-rich-content code {
+  background: rgba(99, 102, 241, 0.1);
+  color: var(--color-primary);
+  padding: 1px 5px;
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'Fira Code', 'Cascadia Code', monospace;
+}
+
+.about-rich-content pre {
+  background: var(--surface);
+  border: 1px solid var(--border-default);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  margin: 0.5em 0;
+  overflow-x: auto;
+}
+
+.about-rich-content pre code {
+  background: none;
+  color: var(--text-primary);
+  padding: 0;
+  font-size: 0.85em;
+  line-height: 1.6;
+}
+
+.about-rich-content blockquote {
+  border-left: 3px solid var(--color-primary);
+  padding-left: 0.75em;
+  margin: 0.5em 0;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.about-rich-content h2 {
+  font-size: 1.15em;
+  font-weight: 700;
+  margin: 0.6em 0 0.3em;
+  color: var(--text-primary);
+}
+
+.about-rich-content h3 {
+  font-size: 1.05em;
+  font-weight: 600;
+  margin: 0.5em 0 0.25em;
+  color: var(--text-primary);
+}
+
+.about-rich-content img {
+  max-width: 100%;
+  border-radius: 8px;
+  margin: 0.5em 0;
+}
+
+.about-rich-content hr {
+  border: none;
+  border-top: 1px solid var(--border-default);
+  margin: 0.75em 0;
 }
 
 /* ── Smooth Theme Transition ───────────────────────────── */

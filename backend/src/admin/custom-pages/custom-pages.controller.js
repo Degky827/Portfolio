@@ -3,6 +3,7 @@ const { auditLog } = require('../../shared/utilities/auditLogger')
 const { createNotification } = require('../notifications/notifications.controller')
 const { slugify, ensureUniqueSlug } = require('../../shared/utilities/slugify')
 const { escapeRegex } = require('../../shared/utilities/escapeRegex')
+const { emitToAll } = require('../../infrastructure/socket')
 
 async function getCustomPages(req, res) {
   try {
@@ -122,6 +123,7 @@ async function createCustomPage(req, res) {
     })
 
     res.status(201).json({ success: true, page })
+    emitToAll('content:updated', { type: 'custom-pages' })
   } catch (error) {
     console.error('[customPages] createCustomPage error:', error)
     if (error.name === 'ValidationError') {
@@ -190,6 +192,7 @@ async function updateCustomPage(req, res) {
     })
 
     res.json({ success: true, page })
+    emitToAll('content:updated', { type: 'custom-pages' })
   } catch (error) {
     console.error('[customPages] updateCustomPage error:', error)
     if (error.name === 'ValidationError') {
@@ -227,6 +230,7 @@ async function deleteCustomPage(req, res) {
     })
 
     res.json({ success: true, message: 'Custom page deleted successfully' })
+    emitToAll('content:updated', { type: 'custom-pages' })
   } catch (error) {
     console.error('[customPages] deleteCustomPage error:', error)
     res.status(500).json({ success: false, message: 'Failed to delete custom page' })
@@ -260,6 +264,7 @@ async function toggleCustomPageStatus(req, res) {
     })
 
     res.json({ success: true, page })
+    emitToAll('content:updated', { type: 'custom-pages' })
   } catch (error) {
     console.error('[customPages] toggleCustomPageStatus error:', error)
     res.status(500).json({ success: false, message: 'Failed to toggle page status' })

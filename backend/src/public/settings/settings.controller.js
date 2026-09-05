@@ -1,6 +1,7 @@
 const Settings = require('../../shared/models/Settings')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { deleteFile } = require('../../infrastructure/storage/storage.service')
+const { emitToAll } = require('../../infrastructure/socket')
 
 async function getSettings(_req, res) {
   try {
@@ -46,6 +47,8 @@ async function updateGlobalAppearance(req, res) {
     await settings.save()
     await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Settings', resourceId: settings._id, details: { updatedFields: Object.keys(req.body) }, req })
     res.json({ success: true, appearance: settings.globalAppearance })
+    emitToAll('settings:updated', { type: 'appearance', mode: settings.globalAppearance.mode })
+    emitToAll('content:updated', { type: 'settings' })
   } catch (error) {
     console.error('[settings] updateGlobalAppearance error:', error)
     res.status(500).json({ success: false, message: 'Failed to update global appearance' })
@@ -137,6 +140,8 @@ async function updateSettings(req, res) {
     await settings.save()
     await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Settings', resourceId: settings._id, details: { updatedFields: Object.keys(req.body) }, req })
     res.json({ success: true, settings })
+    emitToAll('settings:updated', { type: 'portfolio', settings: { projectsPerPage: settings.projectsPerPage, certificatesPerPage: settings.certificatesPerPage, enableAnalytics: settings.enableAnalytics, enableContactForm: settings.enableContactForm } })
+    emitToAll('content:updated', { type: 'settings' })
   } catch (error) {
     console.error('[settings] update error:', error)
     res.status(500).json({ success: false, message: 'Failed to update settings' })

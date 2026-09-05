@@ -1,29 +1,17 @@
 import { createContext, useContext, useEffect, useRef, useState, useCallback, useMemo } from 'react'
 import { io } from 'socket.io-client'
-import { useAuth } from '../../admin-manager/authentication/AuthContext'
 
-const SocketContext = createContext(null)
+const PublicSocketContext = createContext(null)
 
 const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin
 
-export function SocketProvider({ children }) {
-  const { token, isAuthenticated } = useAuth()
+export function PublicSocketProvider({ children }) {
   const socketRef = useRef(null)
   const [connected, setConnected] = useState(false)
   const listenersRef = useRef(new Map())
 
   useEffect(() => {
-    if (!isAuthenticated || !token) {
-      if (socketRef.current) {
-        socketRef.current.disconnect()
-        socketRef.current = null
-        setConnected(false)
-      }
-      return
-    }
-
     const socket = io(SOCKET_URL, {
-      auth: { token },
       withCredentials: true,
       reconnection: true,
       reconnectionAttempts: 10,
@@ -32,7 +20,7 @@ export function SocketProvider({ children }) {
 
     socket.on('connect', () => setConnected(true))
     socket.on('disconnect', () => setConnected(false))
-    socket.on('connect_error', (err) => console.warn('[socket] Connection error:', err.message))
+    socket.on('connect_error', () => {})
 
     socketRef.current = socket
 
@@ -41,7 +29,7 @@ export function SocketProvider({ children }) {
       socketRef.current = null
       setConnected(false)
     }
-  }, [isAuthenticated, token])
+  }, [])
 
   const on = useCallback((event, handler) => {
     if (socketRef.current) {
@@ -67,11 +55,11 @@ export function SocketProvider({ children }) {
 
   const value = useMemo(() => ({ socket: socketRef.current, connected, on, off }), [connected, on, off])
 
-  return <SocketContext.Provider value={value}>{children}</SocketContext.Provider>
+  return <PublicSocketContext.Provider value={value}>{children}</PublicSocketContext.Provider>
 }
 
-export function useSocket() {
-  const ctx = useContext(SocketContext)
-  if (!ctx) throw new Error('useSocket must be used within SocketProvider')
+export function usePublicSocket() {
+  const ctx = useContext(PublicSocketContext)
+  if (!ctx) throw new Error('usePublicSocket must be used within PublicSocketProvider')
   return ctx
 }

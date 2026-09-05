@@ -9,7 +9,7 @@ import PageHeader from '../shared/PageHeader'
 import ConfirmModal from '../shared/ConfirmModal'
 import Toast from '../shared/Toast'
 import {
-  listMessages, markMessageRead, markMessageUnread, deleteMessage,
+  listMessages, markMessageRead, markMessageUnread, deleteMessage, replyToMessage,
 } from '../../shared/services/contactService'
 import { useSocket } from '../../shared/context/SocketContext'
 
@@ -152,6 +152,26 @@ export default function MessageCenter() {
       setDeleting(false)
     }
   }, [deleteTarget, selected])
+
+  const handleReply = useCallback(async (id, replyText) => {
+    try {
+      const result = await replyToMessage(id, replyText)
+      setMessages((prev) => prev.map(m =>
+        m._id === id ? { ...m, replied: true, replyText, replyDate: new Date().toISOString() } : m
+      ))
+      if (selected?._id === id) {
+        setSelected((prev) => prev ? { ...prev, replied: true, replyText, replyDate: new Date().toISOString() } : prev)
+      }
+      setToast({
+        message: result.emailSent ? 'Reply sent via email' : 'Reply saved (email not sent — SMTP not configured)',
+        type: result.emailSent ? 'success' : 'info',
+      })
+      return result
+    } catch {
+      setToast({ message: 'Failed to send reply', type: 'error' })
+      throw new Error('Reply failed')
+    }
+  }, [selected])
 
   const handleFilterChange = useCallback((e) => {
     setReadFilter(e.target.value)
@@ -296,6 +316,9 @@ export default function MessageCenter() {
                           {!msg.read && (
                             <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-indigo-500 border-2 border-white dark:border-[#111111]" />
                           )}
+                          {msg.replied && (
+                            <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-green-500 border-2 border-white dark:border-[#111111]" title="Replied" />
+                          )}
                         </div>
 
                         {/* Content */}
@@ -371,6 +394,7 @@ export default function MessageCenter() {
               onMarkRead={() => handleMarkRead(selected._id)}
               onMarkUnread={() => handleMarkUnread(selected._id)}
               onDelete={() => setDeleteTarget(selected)}
+              onReply={handleReply}
             />
           ) : (
             <div className="flex-1 flex flex-col items-center justify-center text-center px-6 py-16">
@@ -402,7 +426,23 @@ export default function MessageCenter() {
   )
 }
 
-function MessageDetail({ message, onBack, onMarkRead, onMarkUnread, onDelete }) {
+function MessageDetail({ message, onBack, onMarkRead, onMarkUnread, onDelete, onReply }) {
+  const [replyText, setReplyText] = useState('')
+  const [sending, setSending] = useState(false)
+  const [replyExpanded, setReplyExpanded] = useState(false)
+
+  const handleSendReply = async () => {
+    if (!replyText.trim()) return
+    setSending(true)
+    try {
+      await onReply(message._id, replyText)
+      setReplyText('')
+      setReplyExpanded(false)
+    } catch { /* handled by parent */ } finally {
+      setSending(false)
+    }
+  }
+
   return (
     <div className="flex flex-col h-full">
       {/* Detail header */}
@@ -422,14 +462,14 @@ function MessageDetail({ message, onBack, onMarkRead, onMarkUnread, onDelete }) 
         <div className="flex items-center gap-1">
           {!message.read ? (
             <ActionButton
-              icon={CheckCheck}
+              icon={Eye}
               tooltip="Mark as read"
               onClick={onMarkRead}
-              className="hover:text-indigo-500 hover:bg-indigo-50 dark:hover:bg-indigo-500/10"
+              className="hover:text-green-500 hover:bg-green-50 dark:hover:bg-green-500/10"
             />
           ) : (
             <ActionButton
-              icon={Eye}
+              icon={CheckCheck}
               tooltip="Mark as unread"
               onClick={onMarkUnread}
               className="hover:text-amber-500 hover:bg-amber-50 dark:hover:bg-amber-500/10"
@@ -483,10 +523,10 @@ function MessageDetail({ message, onBack, onMarkRead, onMarkUnread, onDelete }) 
                   New
                 </span>
               )}
-              {message.read && message.readAt && (
-                <span className="inline-flex items-center gap-1">
-                  <CheckCheck size={12} />
-                  Read {formatDate(message.readAt)}
+              {message.replied && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-green-50 dark:bg-green-500/10 text-green-600 dark:text-green-400">
+                  <Reply size={10} />
+                  Replied
                 </span>
               )}
             </div>
@@ -507,28 +547,99 @@ function MessageDetail({ message, onBack, onMarkRead, onMarkUnread, onDelete }) 
             {message.message}
           </p>
         </div>
+
+        {/* Previous reply */}
+        {message.replied && message.replyText && (
+          <div className="mt-4 p-4 rounded-lg bg-green-50 dark:bg-green-500/5 border border-green-200 dark:border-green-500/20">
+            <div className="flex items-center gap-2 mb-2">
+              <Reply size={14} className="text-green-600 dark:text-green-400" />
+              <span className="text-xs font-medium text-green-700 dark:text-green-400">
+                Your reply {message.replyDate ? `— ${formatFullDate(message.replyDate)}` : ''}
+              </span>
+            </div>
+            <p className="text-sm text-green-800 dark:text-green-300 whitespace-pre-wrap leading-relaxed">
+              {message.replyText}
+            </p>
+          </div>
+        )}
       </div>
 
-      {/* Detail footer */}
-      <div className="px-4 py-3 border-t border-gray-200 dark:border-gray-800 flex items-center gap-2 shrink-0">
-        {message.email && (
-          <a
-            href={`mailto:${message.email}?subject=Re: ${message.subject || 'Your Message'}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors shadow-sm"
-          >
-            <Reply size={16} />
-            Reply via Email
-          </a>
+      {/* Reply area */}
+      <div className="border-t border-gray-200 dark:border-gray-800 shrink-0">
+        {/* Reply toggle / expand */}
+        {!replyExpanded && !message.replied && (
+          <div className="px-4 py-3 flex items-center gap-2">
+            <button
+              onClick={() => setReplyExpanded(true)}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium transition-colors shadow-sm"
+            >
+              <Reply size={16} />
+              Reply
+            </button>
+          </div>
         )}
-        <a
-          href={`mailto:${message.email}`}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700/60 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 text-sm font-medium transition-colors"
-        >
-          <MailIcon size={16} />
-          <span className="hidden sm:inline">Open in Mail</span>
-        </a>
+
+        {/* Reply form */}
+        {replyExpanded && (
+          <div className="p-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                Replying to {message.email}
+              </span>
+              <button
+                onClick={() => { setReplyExpanded(false); setReplyText('') }}
+                className="p-1 rounded text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
+              >
+                <X size={14} />
+              </button>
+            </div>
+            <textarea
+              value={replyText}
+              onChange={(e) => setReplyText(e.target.value)}
+              placeholder="Type your reply..."
+              rows={4}
+              className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-gray-700 bg-white dark:bg-slate-800 text-sm text-gray-800 dark:text-gray-200 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/40 focus:border-indigo-500 resize-none"
+            />
+            <div className="flex items-center gap-2">
+              <button
+                onClick={handleSendReply}
+                disabled={!replyText.trim() || sending}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed text-white text-sm font-medium transition-colors shadow-sm"
+              >
+                {sending ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    Sending...
+                  </>
+                ) : (
+                  <>
+                    <MailIcon size={16} />
+                    Send Reply
+                  </>
+                )}
+              </button>
+              <button
+                onClick={() => { setReplyExpanded(false); setReplyText('') }}
+                className="px-4 py-2 rounded-lg border border-gray-300 dark:border-gray-700/60 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-slate-800 text-sm font-medium transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Already replied — show option to reply again */}
+        {message.replied && !replyExpanded && (
+          <div className="px-4 pb-3">
+            <button
+              onClick={() => setReplyExpanded(true)}
+              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg border border-gray-300 dark:border-gray-700/60 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800 text-xs font-medium transition-colors"
+            >
+              <Reply size={13} />
+              Reply again
+            </button>
+          </div>
+        )}
       </div>
     </div>
   )

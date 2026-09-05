@@ -7,6 +7,9 @@ const messageSchema = new mongoose.Schema({
   subject: { type: String, default: '', trim: true, maxlength: 200 },
   message: { type: String, required: true, trim: true, maxlength: 5000 },
   isRead: { type: Boolean, default: false },
+  replied: { type: Boolean, default: false },
+  replyText: { type: String, default: '' },
+  replyDate: { type: Date },
   createdAt: { type: Date, default: Date.now },
 }, { versionKey: false })
 

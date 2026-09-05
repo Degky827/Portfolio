@@ -7,6 +7,7 @@ const ContactContent = require('../../shared/models/ContactContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { syncFooterSocial } = require('../../shared/utilities/socialSync')
 const { deleteFile } = require('../../infrastructure/storage/storage.service')
+const { emitToAll } = require('../../infrastructure/socket')
 
 async function getFooterContent(_req, res) {
   try {
@@ -130,6 +131,9 @@ async function updateFooterContent(req, res) {
     if (req.body.socialLinks) {
       try { await syncFooterSocial(content.socialLinks) } catch (e) { console.error('[footer] syncFooterSocial:', e.message) }
     }
+
+    emitToAll('footer:updated')
+    emitToAll('content:updated', { type: 'footer' })
   } catch (error) {
     console.error('[footer] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update footer content' })

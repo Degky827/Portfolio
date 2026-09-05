@@ -42,6 +42,11 @@ export async function deleteMessage(id) {
   return data
 }
 
+export async function replyToMessage(id, replyText) {
+  const { data } = await api.post(`/contact-messages/${id}/reply`, { replyText })
+  return data
+}
+
 export async function getUnreadMessageCount() {
   const { data } = await api.get('/contact-messages/unread-count')
   return data
