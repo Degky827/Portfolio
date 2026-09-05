@@ -130,6 +130,10 @@ const navbarSettingsSchema = new mongoose.Schema({
   drawerShowResume: { type: Boolean, default: true },
   drawerShowTheme: { type: Boolean, default: true },
 
+  // CV Page Actions
+  cvDownloadEnabled: { type: Boolean, default: true },
+  cvPrintEnabled: { type: Boolean, default: true },
+
   // Animations
   navbarAnimation: { type: String, enum: ['fade-in', 'slide-down', 'slide-up', 'blur-reveal'], default: 'slide-down' },
   hoverEffect: { type: String, enum: ['underline', 'border', 'glow', 'scale'], default: 'underline' },
