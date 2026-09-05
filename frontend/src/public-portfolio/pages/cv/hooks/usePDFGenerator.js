@@ -1,6 +1,4 @@
 import { useState, useCallback, useRef } from 'react'
-import html2canvas from 'html2canvas'
-import { jsPDF } from 'jspdf'
 
 export default function usePDFGenerator() {
   const [generating, setGenerating] = useState(false)
@@ -13,15 +11,45 @@ export default function usePDFGenerator() {
     setGenerating(true)
 
     try {
-      const canvas = await html2canvas(element, {
+      const { default: html2canvas } = await import('html2canvas')
+      const { jsPDF } = await import('jspdf')
+
+      const clone = element.cloneNode(true)
+      clone.style.position = 'fixed'
+      clone.style.top = '0'
+      clone.style.left = '0'
+      clone.style.width = '960px'
+      clone.style.zIndex = '-9999'
+      clone.style.opacity = '1'
+      clone.style.transform = 'none'
+      clone.style.overflow = 'visible'
+      clone.style.borderRadius = '0'
+      clone.style.boxShadow = 'none'
+      clone.style.border = 'none'
+      clone.style.margin = '0'
+      clone.style.background = '#ffffff'
+
+      const sidebar = clone.querySelector('.cv-sidebar')
+      if (sidebar) {
+        sidebar.style.background = '#1a1f36'
+        sidebar.style.color = '#ffffff'
+      }
+
+      document.body.appendChild(clone)
+
+      await new Promise(r => setTimeout(r, 200))
+
+      const canvas = await html2canvas(clone, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
-        windowWidth: element.scrollWidth,
-        windowHeight: element.scrollHeight,
+        width: 960,
+        windowWidth: 960,
       })
+
+      document.body.removeChild(clone)
 
       const imgData = canvas.toDataURL('image/png')
       const imgWidth = canvas.width
@@ -29,7 +57,6 @@ export default function usePDFGenerator() {
 
       const pdfWidth = 595.28
       const pdfHeight = 841.89
-
       const scale = pdfWidth / imgWidth
       const scaledHeight = imgHeight * scale
 
@@ -53,7 +80,6 @@ export default function usePDFGenerator() {
           pageCanvas.width = imgWidth
           pageCanvas.height = Math.min(pageContentHeight, imgHeight - yOffset)
           const ctx = pageCanvas.getContext('2d')
-
           ctx.drawImage(canvas, 0, yOffset, imgWidth, pageCanvas.height, 0, 0, imgWidth, pageCanvas.height)
 
           const pageImgData = pageCanvas.toDataURL('image/png')
