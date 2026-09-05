@@ -1,5 +1,25 @@
 import { useState, useCallback, useRef } from 'react'
 
+function buildPrintHTML(element, name) {
+  const styles = Array.from(document.querySelectorAll('style, link[rel="stylesheet"]'))
+    .map(s => s.outerHTML)
+    .join('\n')
+
+  return `<!DOCTYPE html>
+<html><head><title>${name || 'CV'}</title>${styles}
+<style>
+  @page { margin: 0; size: A4; }
+  body { margin: 0; padding: 0; background: #fff; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cv-page { padding: 0 !important; min-height: auto !important; background: #fff !important; }
+  .cv-actions, .no-print, nav, footer { display: none !important; }
+  .cv-container { box-shadow: none !important; border: none !important; border-radius: 0 !important; max-width: 100% !important; margin: 0 !important; transform: none !important; overflow: visible !important; }
+  .cv-sidebar { background: #1a1f36 !important; color: #fff !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .cv-main { background: #fff !important; }
+</style></head><body>
+<div class="cv-page">${element.outerHTML}</div>
+</body></html>`
+}
+
 export default function usePDFGenerator() {
   const [generating, setGenerating] = useState(false)
   const busyRef = useRef(false)
@@ -14,42 +34,30 @@ export default function usePDFGenerator() {
       const { default: html2canvas } = await import('html2canvas')
       const { jsPDF } = await import('jspdf')
 
-      const clone = element.cloneNode(true)
-      clone.style.position = 'fixed'
-      clone.style.top = '0'
-      clone.style.left = '0'
-      clone.style.width = '960px'
-      clone.style.zIndex = '-9999'
-      clone.style.opacity = '1'
-      clone.style.transform = 'none'
-      clone.style.overflow = 'visible'
-      clone.style.borderRadius = '0'
-      clone.style.boxShadow = 'none'
-      clone.style.border = 'none'
-      clone.style.margin = '0'
-      clone.style.background = '#ffffff'
+      const win = window.open('', '_blank', 'width=1024,height=768')
+      if (!win) throw new Error('Pop-up blocked')
 
-      const sidebar = clone.querySelector('.cv-sidebar')
-      if (sidebar) {
-        sidebar.style.background = '#1a1f36'
-        sidebar.style.color = '#ffffff'
-      }
+      win.document.write(buildPrintHTML(element, filename))
+      win.document.close()
 
-      document.body.appendChild(clone)
+      await new Promise(r => setTimeout(r, 500))
 
-      await new Promise(r => setTimeout(r, 200))
+      const imgs = win.document.querySelectorAll('img')
+      await Promise.all(Array.from(imgs).map(img =>
+        img.complete ? Promise.resolve() : new Promise(r => { img.onload = r; img.onerror = r })
+      ))
 
-      const canvas = await html2canvas(clone, {
+      await new Promise(r => setTimeout(r, 300))
+
+      const target = win.document.querySelector('.cv-container') || win.document.body
+
+      const canvas = await html2canvas(target, {
         scale: 2,
         useCORS: true,
         allowTaint: true,
         backgroundColor: '#ffffff',
         logging: false,
-        width: 960,
-        windowWidth: 960,
       })
-
-      document.body.removeChild(clone)
 
       const imgData = canvas.toDataURL('image/png')
       const imgWidth = canvas.width
@@ -84,7 +92,6 @@ export default function usePDFGenerator() {
 
           const pageImgData = pageCanvas.toDataURL('image/png')
           const pageImgHeight = pageCanvas.height * scale
-
           pdf.addImage(pageImgData, 'PNG', 0, 0, pdfWidth, pageImgHeight)
 
           yOffset += pageContentHeight
@@ -93,6 +100,7 @@ export default function usePDFGenerator() {
       }
 
       pdf.save(`${filename}.pdf`)
+      win.close()
     } catch (err) {
       console.error('[PDF] Generation failed:', err)
       alert('PDF generation failed. Please try again or use the Print button.')
