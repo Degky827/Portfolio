@@ -5,6 +5,7 @@ const FooterContent = require('../../shared/models/FooterContent')
 const HomeContent = require('../../shared/models/HomeContent')
 const User = require('../../shared/models/User')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { emitToAll } = require('../../infrastructure/socket')
 
 // ─── Navigation (Menu Items) ────────────────────────────────────────
 
@@ -29,6 +30,8 @@ async function createNavigation(req, res) {
     await syncNavigationToFooter()
 
     res.json({ success: true, item })
+    emitToAll('navigation:updated')
+    emitToAll('content:updated', { type: 'navigation' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to create navigation item' })
   }
@@ -43,6 +46,8 @@ async function updateNavigation(req, res) {
     await syncNavigationToFooter()
 
     res.json({ success: true, item })
+    emitToAll('navigation:updated')
+    emitToAll('content:updated', { type: 'navigation' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update navigation item' })
   }
@@ -57,6 +62,8 @@ async function deleteNavigation(req, res) {
     await syncNavigationToFooter()
 
     res.json({ success: true, message: 'Navigation item deleted' })
+    emitToAll('navigation:updated')
+    emitToAll('content:updated', { type: 'navigation' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to delete navigation item' })
   }
@@ -72,6 +79,8 @@ async function reorderNavigation(req, res) {
     await syncNavigationToFooter()
 
     res.json({ success: true, message: 'Navigation reordered' })
+    emitToAll('navigation:updated')
+    emitToAll('content:updated', { type: 'navigation' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to reorder navigation' })
   }
@@ -160,6 +169,8 @@ async function updateNavbarSettings(req, res) {
 
     res.json({ success: true, settings })
     await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'NavbarSettings', resourceId: settings._id, details: { updatedFields: Object.keys(req.body) }, req })
+    emitToAll('navbar-settings:updated')
+    emitToAll('content:updated', { type: 'navbar' })
   } catch (error) {
     res.status(500).json({ success: false, message: 'Failed to update navbar settings' })
   }
