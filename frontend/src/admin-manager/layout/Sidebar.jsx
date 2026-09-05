@@ -94,7 +94,7 @@ const navGroups = [
     collapsible: false,
     items: [
       { path: '/admin/profile', label: 'Profile', icon: User },
-      { path: '/admin/theme', label: 'Appearance', icon: Palette },
+      { path: '/admin/theme', label: 'Appearance & Portfolio', icon: Palette },
     ],
   },
 ]
