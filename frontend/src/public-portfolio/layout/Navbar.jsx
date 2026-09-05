@@ -388,16 +388,18 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
         {/* Desktop: right controls — CV link + theme toggle */}
         <div className="hidden md:flex items-center shrink-0" style={{ gap: rightControlsGap + 'px' }}>
-          <a
-            href="/#/cv"
-            className="text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5 whitespace-nowrap"
-            style={{ color: linkTextColor }}
-            onMouseEnter={(e) => { e.currentTarget.style.color = linkHoverColor }}
-            onMouseLeave={(e) => { e.currentTarget.style.color = linkTextColor }}
-          >
-            <FileText size={13} />
-            CV
-          </a>
+          {ns?.resumeEnabled !== false && (
+            <a
+              href={ns?.resumeFileUrl || '/#/cv'}
+              className="text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5 whitespace-nowrap"
+              style={{ color: linkTextColor }}
+              onMouseEnter={(e) => { e.currentTarget.style.color = linkHoverColor }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = linkTextColor }}
+            >
+              <FileText size={13} />
+              {ns?.resumeText || 'CV'}
+            </a>
+          )}
           {settings.themeEnabled && (
             <motion.button
               initial={{ opacity: 0, scale: 0.9 }}
@@ -484,21 +486,23 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   ))}
                 </ul>
 
+                {ns?.resumeEnabled !== false && (
                 <a
-                  href="/#/cv"
+                  href={ns?.resumeFileUrl || '/#/cv'}
                   className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight mt-2"
                   style={{ color: linkTextColor }}
                   onClick={(e) => { e.preventDefault(); window.location.hash = '/cv'; setIsOpen(false) }}
                 >
                   <span className="group-hover:translate-x-2 transition-transform duration-300 flex items-center gap-2">
                     <FileText size={22} />
-                    CV
+                    {ns?.resumeText || 'CV'}
                   </span>
                   <ChevronRight
                     className="opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5"
                     style={{ color: linkHoverColor }}
                   />
                 </a>
+                )}
 
                 <div className="mt-auto pt-8">
                   <div className="flex justify-center">
