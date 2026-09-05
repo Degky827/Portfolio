@@ -4,18 +4,20 @@ import { BadgeCheck, RefreshCw } from 'lucide-react'
 import { getTestimonials } from '../../../shared/services/testimonialService'
 import TestimonialCarousel from '../../components/testimonials/TestimonialCarousel'
 import TestimonialSkeleton from '../../components/testimonials/TestimonialSkeleton'
+import { usePublicSocket } from '../../../shared/context/PublicSocketContext'
 
 export default function Testimonials() {
   const shouldReduceMotion = useReducedMotion()
   const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const { on, off } = usePublicSocket()
 
   const fetchTestimonials = async () => {
     setLoading(true)
     setError(null)
     try {
-      const data = await getTestimonials({ published: true })
+      const data = await getTestimonials({ status: 'PUBLISHED' })
       setTestimonials(data.testimonials || [])
     } catch {
       setError('Unable to load recommendations. Please try again.')
@@ -27,6 +29,12 @@ export default function Testimonials() {
   useEffect(() => {
     fetchTestimonials()
   }, [])
+
+  useEffect(() => {
+    const handler = () => fetchTestimonials()
+    on('content:updated', handler)
+    return () => off('content:updated', handler)
+  }, [on, off])
 
   return (
     <section
