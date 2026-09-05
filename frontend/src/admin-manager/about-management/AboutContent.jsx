@@ -35,15 +35,20 @@ const quillModules = {
   toolbar: [
     [{ header: [2, 3, false] }],
     ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
     [{ list: 'ordered' }, { list: 'bullet' }],
-    ['link', 'code-block'],
+    ['blockquote', 'code-block'],
+    [{ align: [] }],
+    ['link', 'image'],
     ['clean'],
   ],
 }
 
 const quillFormats = [
   'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet', 'link', 'code-block',
+  'color', 'background',
+  'list', 'bullet', 'blockquote', 'code-block',
+  'align', 'link', 'image',
 ]
 
 /* ─── Shared Components ─── */
@@ -312,6 +317,18 @@ export default function AboutContent() {
                     .card .icon{font-size:18px;margin-bottom:8px}
                     .card h3{font-size:.85rem;font-weight:700;color:#f1f5f9;margin-bottom:6px}
                     .card p{font-size:.75rem;color:#94a3b8;line-height:1.5}
+                    .card .rich-content{font-size:.75rem;color:#94a3b8;line-height:1.6}
+                    .card .rich-content b,.card .rich-content strong{color:#e2e8f0;font-weight:700}
+                    .card .rich-content i,.card .rich-content em{font-style:italic}
+                    .card .rich-content u{text-decoration:underline}
+                    .card .rich-content s,.card .rich-content strike{text-decoration:line-through}
+                    .card .rich-content ul,.card .rich-content ol{padding-left:16px;margin:4px 0}
+                    .card .rich-content li{margin:2px 0}
+                    .card .rich-content a{color:#818cf8;text-decoration:underline}
+                    .card .rich-content code{background:rgba(99,102,241,.15);color:#818cf8;padding:1px 4px;border-radius:3px;font-size:.7rem}
+                    .card .rich-content pre{background:#1e1e1e;padding:8px;border-radius:6px;margin:6px 0;overflow-x:auto}
+                    .card .rich-content pre code{background:none;color:#d4d4d4;padding:0}
+                    .card .rich-content blockquote{border-left:3px solid #6366f1;padding-left:10px;margin:6px 0;color:#a5b4fc;font-style:italic}
                     .stitle{font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:12px;text-align:center}
                     .certs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:800px;margin:0 auto 24px}
                     .cert{padding:8px 14px;border-radius:8px;border:1px solid #1e293b;background:rgba(30,41,59,.4);font-size:.7rem;color:#e2e8f0;font-weight:600}
@@ -335,7 +352,7 @@ export default function AboutContent() {
                       <div class="line"><div></div><div></div><div></div></div>
                     </div>
                     <div class="grid">
-                      ${form.storyPillars.map((p, i) => '<div class="card"><div class="icon">' + PILLAR_ICONS_HTML[i] + '</div><h3>' + (p.title || STORY_PILLARS[i].title) + '</h3><p>' + (p.content || '').replace(/<[^>]+>/g, '').substring(0, 100) + '</p></div>').join('')}
+                      ${form.storyPillars.map((p, i) => '<div class="card"><div class="icon">' + PILLAR_ICONS_HTML[i] + '</div><h3>' + (p.title || STORY_PILLARS[i].title) + '</h3><div class="rich-content">' + (p.content || '').substring(0, 200) + '</div></div>').join('')}
                     </div>
                     ${form.idePresentation.skills.length ? '<div class="stitle">Skills</div><div style="text-align:center;margin-bottom:24px">' + form.idePresentation.skills.filter(Boolean).map(s => '<span style="display:inline-block;padding:3px 10px;background:rgba(99,102,241,.12);color:#818cf8;border-radius:6px;font-size:.7rem;margin:2px">' + s + '</span>').join('') + '</div>' : ''}
                     <div class="photo-wrap">${form.profileImage ? '<img class="photo" src="' + getMediaUrl(form.profileImage) + '" alt="Profile" />' : '<div class="photo" style="display:flex;align-items:center;justify-content:center;color:#64748b;font-size:24px">👤</div>'}</div>
@@ -403,7 +420,7 @@ export default function AboutContent() {
               </div>
               <div>
                 <h3 className="text-sm font-bold text-gray-900 dark:text-white">Story Cards</h3>
-                <p className="text-xs text-gray-400 mt-0.5">Four narrative cards on the public About page. Only plain text is shown (HTML is stripped).</p>
+                <p className="text-xs text-gray-400 mt-0.5">Four narrative cards on the public About page. Rich formatting (bold, italic, colors, lists, etc.) is preserved.</p>
               </div>
             </div>
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -429,7 +446,6 @@ export default function AboutContent() {
                           placeholder={`Write about ${pillar.title.toLowerCase()}...`}
                         />
                       </div>
-                      <p className="text-[10px] text-gray-400 mt-1">Note: HTML formatting is stripped on the public site. Only plain text is displayed.</p>
                     </div>
                   </div>
                 )
