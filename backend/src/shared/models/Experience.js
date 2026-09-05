@@ -77,6 +77,14 @@ const experienceSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    analyticsEnabled: {
+      type: Boolean,
+      default: true,
+    },
+    viewCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
