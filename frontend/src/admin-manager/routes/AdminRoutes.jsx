@@ -29,6 +29,7 @@ const CustomPagesList = lazy(() => import('../custom-pages-management/CustomPage
 const CustomPageForm = lazy(() => import('../custom-pages-management/CustomPageForm'))
 const TestimonialsList = lazy(() => import('../testimonials-management/TestimonialsList'))
 const ExperienceList = lazy(() => import('../experience-management/ExperienceList'))
+const CVManagement = lazy(() => import('../cv-management/CVManagement'))
 
 export default function AdminRoutes() {
   return (
@@ -66,6 +67,7 @@ export default function AdminRoutes() {
           <Route path="security" element={<Security />} />
           <Route path="testimonials" element={<TestimonialsList />} />
           <Route path="experience" element={<ExperienceList />} />
+          <Route path="cv" element={<CVManagement />} />
         </Route>
       </Routes>
       </Suspense>
