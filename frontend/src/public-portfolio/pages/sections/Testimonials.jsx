@@ -19,6 +19,9 @@ const DEFAULT_TESTIMONIALS = [
     featured: true,
     status: 'PUBLISHED',
     order: 1,
+    linkedinUrl: 'https://linkedin.com/in/sarahmitchell',
+    avatar: '',
+    organizationLogo: '',
   },
   {
     _id: '2',
@@ -32,6 +35,9 @@ const DEFAULT_TESTIMONIALS = [
     featured: true,
     status: 'PUBLISHED',
     order: 2,
+    linkedinUrl: 'https://linkedin.com/in/jameschen',
+    avatar: '',
+    organizationLogo: '',
   },
   {
     _id: '3',
@@ -45,6 +51,9 @@ const DEFAULT_TESTIMONIALS = [
     featured: true,
     status: 'PUBLISHED',
     order: 3,
+    linkedinUrl: 'https://linkedin.com/in/mariarodriguez',
+    avatar: '',
+    organizationLogo: '',
   },
   {
     _id: '4',
@@ -58,6 +67,9 @@ const DEFAULT_TESTIMONIALS = [
     featured: true,
     status: 'PUBLISHED',
     order: 4,
+    linkedinUrl: 'https://linkedin.com/in/davidpark',
+    avatar: '',
+    organizationLogo: '',
   },
 ]
 
