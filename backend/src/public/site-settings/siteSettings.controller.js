@@ -3,6 +3,7 @@ const FooterContent = require('../../shared/models/FooterContent')
 const ContactContent = require('../../shared/models/ContactContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { syncHomeSocial } = require('../../shared/utilities/socialSync')
+const { emitToAll } = require('../../infrastructure/socket')
 
 async function getSiteSettings(_req, res) {
   try {
@@ -21,10 +22,10 @@ const textFields = [
   'brandName', 'brandNameAm', 'nameAmharic', 'professionalBadge', 'professionalBadgeAm', 'logoText', 'logoImage', 'logoSubtitle',
   'greeting', 'greetingAm', 'shortIntroduction', 'shortIntroductionAm', 'email', 'phone',
   'contactButtonText', 'contactButtonLink',
-  'brandDescription', 'brandDescriptionAm', 'copyrightText', 'defaultLanguage',
+  'brandDescription', 'brandDescriptionAm', 'copyrightText',
 ]
 
-const booleanFields = ['logoEnabled', 'languageEnabled']
+const booleanFields = ['logoEnabled']
 
 const resumeKeys = ['url', 'fileName', 'buttonText']
 const socialKeys = ['github', 'linkedin', 'twitter', 'telegram', 'facebook', 'instagram', 'youtube']
@@ -89,6 +90,9 @@ async function updateSiteSettings(req, res) {
     if (body.socialLinks) {
       try { await syncHomeSocial(settings.socialLinks) } catch (e) { console.error('[site-settings] syncHomeSocial:', e.message) }
     }
+
+    emitToAll('site-settings:updated')
+    emitToAll('content:updated', { type: 'site-settings' })
   } catch (error) {
     console.error('[site-settings] update error:', error)
     res.status(500).json({ success: false, message: 'Failed to update site settings' })
