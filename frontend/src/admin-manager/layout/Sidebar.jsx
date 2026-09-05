@@ -7,6 +7,7 @@ import {
   Image, HardDrive, Activity, Download, Wrench,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
   Shield, LogOut, Eye, Menu, Globe, Lock, BadgeCheck, Briefcase,
+  ScrollText,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
@@ -72,6 +73,7 @@ const navGroups = [
       { path: '/admin/custom-pages', label: 'Custom Pages', icon: Globe },
       { path: '/admin/testimonials', label: 'Testimonials', icon: BadgeCheck },
       { path: '/admin/experience', label: 'Experience', icon: Briefcase },
+      { path: '/admin/cv', label: 'CV / Resume', icon: ScrollText },
     ],
   },
   {
