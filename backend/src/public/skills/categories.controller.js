@@ -1,6 +1,7 @@
 const Category = require('../../shared/models/Category')
 const Skill = require('../../shared/models/Skill')
 const { auditLog } = require('../../shared/utilities/auditLogger')
+const { emitToAll } = require('../../infrastructure/socket')
 
 async function createCategory(req, res) {
   try {
@@ -22,6 +23,7 @@ async function createCategory(req, res) {
     await auditLog({ userId: req.user?._id, action: 'CREATE', resource: 'Category', resourceId: category._id, details: { title: category.title }, req })
 
     res.status(201).json({ success: true, category })
+    emitToAll('content:updated', { type: 'categories' })
   } catch (error) {
     console.error('[categories] createCategory error:', error)
     if (error.name === 'ValidationError') {
@@ -105,6 +107,7 @@ async function updateCategory(req, res) {
     await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'Category', resourceId: category._id, details: { title: category.title }, req })
 
     res.json({ success: true, category })
+    emitToAll('content:updated', { type: 'categories' })
   } catch (error) {
     console.error('[categories] updateCategory error:', error)
     if (error.name === 'ValidationError') {
@@ -128,6 +131,7 @@ async function deleteCategory(req, res) {
     await auditLog({ userId: req.user?._id, action: 'DELETE', resource: 'Category', resourceId: category._id, details: { title: category.title }, req })
 
     res.json({ success: true, message: 'Category and its skills deleted successfully' })
+    emitToAll('content:updated', { type: 'categories' })
   } catch (error) {
     console.error('[categories] deleteCategory error:', error)
     res.status(500).json({ success: false, message: 'Failed to delete category' })
@@ -152,6 +156,7 @@ async function reorderCategories(req, res) {
 
     const categories = await Category.find().sort({ order: 1 }).lean()
     res.json({ success: true, categories })
+    emitToAll('content:updated', { type: 'categories' })
   } catch (error) {
     console.error('[categories] reorderCategories error:', error)
     res.status(500).json({ success: false, message: 'Failed to reorder categories' })
