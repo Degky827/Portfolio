@@ -1,4 +1,4 @@
-import { memo, useRef, useState, useCallback, useMemo } from 'react'
+import { memo, useRef, useState, useCallback } from 'react'
 import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 
 /**
@@ -61,11 +61,6 @@ const AboutGlassCard = memo(function AboutGlassCard({
     mouseX.set(0)
     mouseY.set(0)
   }, [mouseX, mouseY])
-
-  // Clean HTML tags
-  const cleanDescription = useMemo(() => {
-    return description?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim() || ''
-  }, [description])
 
   // Calculate alternating slide direction: even indices slide from left, odd from right
   const slideDirection = index % 2 === 0 ? -40 : 40
@@ -162,9 +157,11 @@ const AboutGlassCard = memo(function AboutGlassCard({
                 {title}
               </h3>
 
-              <p className="text-sm sm:text-[15px] leading-relaxed sm:leading-[1.7] transition-all duration-300 group-hover:opacity-100" style={{ color: 'var(--text-secondary)', opacity: 0.5 }}>
-                {cleanDescription}
-              </p>
+              <div
+                className="about-rich-content text-sm sm:text-[15px] leading-relaxed sm:leading-[1.7] transition-all duration-300 group-hover:opacity-100"
+                style={{ color: 'var(--text-secondary)', opacity: 0.5 }}
+                dangerouslySetInnerHTML={{ __html: description || '' }}
+              />
             </div>
           </div>
 

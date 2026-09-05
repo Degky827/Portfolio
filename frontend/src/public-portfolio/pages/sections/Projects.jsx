@@ -1,10 +1,11 @@
 import { motion, useReducedMotion } from 'framer-motion'
 import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play, CheckCircle, Clock, AlertCircle } from 'lucide-react'
-import { useState, useMemo, useEffect } from 'react'
+import { useState, useMemo, useEffect, useCallback } from 'react'
 import projectsData from '../../../shared/data/projects.json'
 import mobileAppsData from '../../../shared/data/mobileApps.json'
 import { getProjects } from '../../../shared/services/projectService'
 import { getMediaUrl } from '../../../shared/services/api'
+import { useSocketRefresh } from '../../../shared/hooks/useSocketRefresh'
 import { ProjectsScene } from '../../../components/projects3d'
 import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 import HolographicSearch from '../../../components/projects3d/HolographicSearch'
@@ -61,23 +62,36 @@ export default function Projects() {
   const [activeTab, setActiveTab] = useState('web')
   const [searchTerm, setSearchTerm] = useState('')
   const [dbProjects, setDbProjects] = useState([])
+  const [dbMobileApps, setDbMobileApps] = useState([])
   const [projectsLoading, setProjectsLoading] = useState(true)
 
-  useEffect(() => {
+  const fetchProjects = useCallback(() => {
     (async () => {
       try {
-        const data = await getProjects({ public: true, limit: 50 })
-        setDbProjects(data.projects || [])
+        const [webData, mobileData] = await Promise.all([
+          getProjects({ public: true, limit: 50 }),
+          getProjects({ public: true, category: 'Mobile App', limit: 50 }),
+        ])
+        setDbProjects(webData.projects || [])
+        setDbMobileApps(mobileData.projects || [])
       } catch {
         setDbProjects([])
+        setDbMobileApps([])
       } finally {
         setProjectsLoading(false)
       }
     })()
   }, [])
 
+  useEffect(() => {
+    fetchProjects()
+  }, [fetchProjects])
+
+  useSocketRefresh('content:updated', fetchProjects, { type: 'projects' })
+
   const hasDbProjects = dbProjects.length > 0
-  const displayProjects = hasDbProjects ? dbProjects : projectsData
+  const webOnlyProjects = dbProjects.filter(p => p.category !== 'Mobile App')
+  const displayProjects = hasDbProjects ? webOnlyProjects : projectsData
 
   const filteredProjects = useMemo(() => {
     return displayProjects.filter(project => {
@@ -122,16 +136,34 @@ export default function Projects() {
     return <IconComponent size={28} className="text-white" />
   }
 
+  // Map DB projects to the shape AppShowcaseCard expects
+  const mappedMobileApps = useMemo(() => {
+    if (dbMobileApps.length === 0) return mobileAppsData
+    return dbMobileApps.map((p) => ({
+      title: p.title || '',
+      description: p.shortDescription || '',
+      features: p.features?.length ? p.features : (p.technologies || []).slice(0, 4),
+      platform: p.platform || 'Web',
+      icon: p.icon || 'Smartphone',
+      color: p.accentColor || '#6366f1',
+      appUrl: p.appUrl || p.liveDemoUrl || '#',
+      repoUrl: p.githubUrl || '',
+      rating: p.rating || 0,
+      thumbnail: p.thumbnail || (p.images && p.images[0]) || '',
+      _id: p._id,
+    }))
+  }, [dbMobileApps])
+
   const filteredMobileApps = useMemo(() => {
-    if (!searchTerm) return mobileAppsData
+    if (!searchTerm) return mappedMobileApps
     const term = searchTerm.toLowerCase()
-    return mobileAppsData.filter(app =>
+    return mappedMobileApps.filter(app =>
       app.title.toLowerCase().includes(term) ||
       app.description.toLowerCase().includes(term) ||
       app.features.some(f => f.toLowerCase().includes(term)) ||
       app.platform.toLowerCase().includes(term)
     )
-  }, [searchTerm])
+  }, [searchTerm, mappedMobileApps])
 
   return (
     <ProjectsScene>
@@ -225,7 +257,7 @@ export default function Projects() {
           />
 
           <p className="text-center text-sm text-[var(--text-secondary)] mb-6">
-            Showing {filteredMobileApps.length} of {mobileAppsData.length} apps
+            Showing {filteredMobileApps.length} of {mappedMobileApps.length} apps
           </p>
 
           <motion.div
@@ -238,11 +270,12 @@ export default function Projects() {
             {filteredMobileApps.length > 0 ? (
               filteredMobileApps.map((app, index) => (
                 <AppShowcaseCard
-                  key={index}
+                  key={app._id || index}
                   app={app}
                   index={index}
                   shouldReduceMotion={shouldReduceMotion}
                   onOpen={() => window.open(app.appUrl, '_blank', 'noopener noreferrer')}
+                  getMediaUrl={getMediaUrl}
                 />
               ))
             ) : (

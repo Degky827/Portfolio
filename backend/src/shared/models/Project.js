@@ -83,6 +83,33 @@ const projectSchema = new mongoose.Schema(
       type: String,
       default: '',
     },
+    platform: {
+      type: String,
+      enum: ['iOS', 'Android', 'Web', 'Cross-platform', ''],
+      default: '',
+    },
+    features: {
+      type: [String],
+      default: [],
+    },
+    rating: {
+      type: Number,
+      min: 0,
+      max: 5,
+      default: 0,
+    },
+    appUrl: {
+      type: String,
+      default: '',
+    },
+    icon: {
+      type: String,
+      default: '',
+    },
+    accentColor: {
+      type: String,
+      default: '',
+    },
   },
   {
     timestamps: true,

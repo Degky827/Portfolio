@@ -1,94 +1,77 @@
 import { useState, useEffect, useCallback } from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import {
   Save, RefreshCw, Plus, Trash2, ArrowUp, ArrowDown,
-  Award, Users, TrendingUp, CheckCircle,
-  Link, GripVertical, Terminal, ToggleLeft, Hash,
-  BookOpen, Cpu, Globe, Shield, Zap, Star, Code2,
-  Rocket, Trophy, Wifi, Server, Palette, Video,
-  Sparkles, Download, MapPin, Heart, Briefcase, Coffee, Smile,
+  Award, Eye, EyeOff, Link, GripVertical, Terminal,
+  BookOpen, Cpu, Globe, Zap, Code2, X, GraduationCap, Target,
+  Briefcase, CheckCircle,
 } from 'lucide-react'
 import ReactQuill from 'react-quill'
 import 'react-quill/dist/quill.snow.css'
 import PageHeader from '../shared/PageHeader'
 import Toast from '../shared/Toast'
+import ConfirmModal from '../shared/ConfirmModal'
+import ImageUpload from '../shared/ImageUpload'
 import { getAboutContent, updateAboutContent } from '../../shared/services/aboutService'
+import { getMediaUrl } from '../../shared/services/api'
 
-const ICON_OPTIONS = [
-  'Award', 'BookOpen', 'Cpu', 'Code2', 'Globe', 'Rocket', 'Star', 'Zap',
-  'Users', 'Trophy', 'Shield', 'Wifi', 'Server', 'Palette', 'Video',
-  'Terminal', 'GraduationCap', 'Sparkles', 'Download', 'MapPin',
-  'Heart', 'Briefcase', 'Coffee', 'Smile',
+const STORY_PILLARS = [
+  { key: 'educationBackground', title: 'Education & Background', icon: GraduationCap, color: 'indigo' },
+  { key: 'professionalFocus', title: 'Professional Focus', icon: Briefcase, color: 'cyan' },
+  { key: 'expertiseAreas', title: 'Expertise Areas', icon: Cpu, color: 'violet' },
+  { key: 'missionApproach', title: 'Mission & Approach', icon: Target, color: 'emerald' },
 ]
 
-const iconMap = {
-  Award, BookOpen, Cpu, Code2, Globe, Rocket, Star, Zap,
-  Users, Trophy, Shield, Wifi, Server, Palette, Video,
-  Terminal, GraduationCap: () => null, Sparkles, Download, MapPin,
-  Heart, Briefcase, Coffee, Smile,
+const PILLAR_COLORS = {
+  indigo: { bg: 'bg-indigo-50 dark:bg-indigo-500/10', text: 'text-indigo-600 dark:text-indigo-400', border: 'border-indigo-200 dark:border-indigo-800' },
+  cyan: { bg: 'bg-cyan-50 dark:bg-cyan-500/10', text: 'text-cyan-600 dark:text-cyan-400', border: 'border-cyan-200 dark:border-cyan-800' },
+  violet: { bg: 'bg-violet-50 dark:bg-violet-500/10', text: 'text-violet-600 dark:text-violet-400', border: 'border-violet-200 dark:border-violet-800' },
+  emerald: { bg: 'bg-emerald-50 dark:bg-emerald-500/10', text: 'text-emerald-600 dark:text-emerald-400', border: 'border-emerald-200 dark:border-emerald-800' },
 }
 
-const STORY_PILLAR_TEMPLATES = [
-  { title: 'Education & Background', key: 'educationBackground', defaultContent: '' },
-  { title: 'Professional Focus', key: 'professionalFocus', defaultContent: '' },
-  { title: 'Expertise Areas', key: 'expertiseAreas', defaultContent: '' },
-  { title: 'Mission & Approach', key: 'missionApproach', defaultContent: '' },
-]
-
-function getIconComponent(name) {
-  const Icon = iconMap[name]
-  return Icon || Award
-}
+const PILLAR_ICONS_HTML = ['🎓', '💼', '⚡', '🎯']
 
 const quillModules = {
   toolbar: [
     [{ header: [2, 3, false] }],
     ['bold', 'italic', 'underline', 'strike'],
+    [{ color: [] }, { background: [] }],
     [{ list: 'ordered' }, { list: 'bullet' }],
-    ['link', 'code-block'],
+    ['blockquote', 'code-block'],
+    [{ align: [] }],
+    ['link', 'image'],
     ['clean'],
   ],
 }
 
 const quillFormats = [
   'header', 'bold', 'italic', 'underline', 'strike',
-  'list', 'bullet', 'link', 'code-block',
+  'color', 'background',
+  'list', 'bullet', 'blockquote', 'code-block',
+  'align', 'link', 'image',
 ]
 
-function SyncBadge({ synced }) {
-  if (synced) {
-    return (
-      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800">
-        <CheckCircle size={10} />
-        Saved
-      </span>
-    )
-  }
-  return null
-}
+/* ─── Shared Components ─── */
 
-function Card({ children, className = '' }) {
+function Field({ label, children, hint }) {
   return (
-    <div className={`bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5 ${className}`}>
+    <div>
+      <label className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+        {label}
+      </label>
       {children}
+      {hint && <p className="text-[10px] text-gray-400 mt-1">{hint}</p>}
     </div>
   )
 }
 
-function SectionHeader({ title, synced, badge }) {
+function Input({ className = '', ...props }) {
   return (
-    <div className="flex items-center justify-between flex-wrap gap-2">
-      <div className="flex items-center gap-2">
-        <h2 className="text-lg font-bold text-gray-900 dark:text-white">{title}</h2>
-        {synced !== undefined && <SyncBadge synced={synced} />}
-      </div>
-      {badge}
-    </div>
+    <input
+      className={`w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 transition-shadow ${className}`}
+      {...props}
+    />
   )
-}
-
-function EmptyState({ message }) {
-  return <p className="text-sm text-gray-400 italic">{message}</p>
 }
 
 function EntryActions({ onRemove, onMoveUp, onMoveDown, isFirst, isLast }) {
@@ -113,56 +96,43 @@ function EntryActions({ onRemove, onMoveUp, onMoveDown, isFirst, isLast }) {
   )
 }
 
+/* ─── Main Component ─── */
+
 export default function AboutContent() {
   const [form, setForm] = useState({
-    title: '',
-    titleAm: '',
+    title: 'Get to Know Me',
     subtitle: '',
-    subtitleAm: '',
-    yearsOfExperience: 0,
-    status: 'active',
-    education: [],
-    experience: [],
-    certifications: [],
-    storyPillars: STORY_PILLAR_TEMPLATES.map((t) => ({ title: t.title, titleAm: '', content: '', contentAm: '' })),
+    profileImage: '',
+    storyPillars: STORY_PILLARS.map((p) => ({ title: p.title, content: '' })),
     idePresentation: { skills: ['React', 'Node'], available: true, location: '' },
-    highlightMetrics: [
-      { icon: 'Award', title: 'Network Designer', titleAm: '', value: '' },
-      { icon: 'Users', title: 'Happy Clients', titleAm: '', value: '50+' },
-      { icon: 'TrendingUp', title: 'Years Experience', titleAm: '', value: '5+' },
-    ],
+    certifications: [],
   })
+  const [initialForm, setInitialForm] = useState(null)
   const [loading, setLoading] = useState(false)
   const [fetching, setFetching] = useState(true)
   const [toast, setToast] = useState(null)
+  const [showPreview, setShowPreview] = useState(false)
+  const [confirmSave, setConfirmSave] = useState(false)
+  const [confirmDiscard, setConfirmDiscard] = useState(false)
 
   useEffect(() => {
     ;(async () => {
       try {
         const { content } = await getAboutContent()
         if (content) {
-          setForm({
-            title: content.title || '',
-            titleAm: content.titleAm || '',
+          const loaded = {
+            title: content.title || 'Get to Know Me',
             subtitle: content.subtitle || '',
-            subtitleAm: content.subtitleAm || '',
-            yearsOfExperience: content.yearsOfExperience || 0,
-            status: content.status || 'active',
-            education: content.education || [],
-            experience: content.experience || [],
-            certifications: content.certifications || [],
-            storyPillars: content.storyPillars?.length
-              ? content.storyPillars
-              : STORY_PILLAR_TEMPLATES.map((t) => ({ title: t.title, titleAm: '', content: '', contentAm: '' })),
+            profileImage: content.profileImage || '',
+            storyPillars: STORY_PILLARS.map((tpl, i) => ({
+              title: content.storyPillars?.[i]?.title || tpl.title,
+              content: content.storyPillars?.[i]?.content || '',
+            })),
             idePresentation: content.idePresentation || { skills: ['React', 'Node'], available: true, location: '' },
-            highlightMetrics: content.highlightMetrics?.length
-              ? content.highlightMetrics
-              : [
-                  { icon: 'Award', title: 'Network Designer', titleAm: '', value: '' },
-                  { icon: 'Users', title: 'Happy Clients', titleAm: '', value: '50+' },
-                  { icon: 'TrendingUp', title: 'Years Experience', titleAm: '', value: '5+' },
-                ],
-          })
+            certifications: content.certifications || [],
+          }
+          setForm(loaded)
+          setInitialForm(JSON.parse(JSON.stringify(loaded)))
         }
       } catch {
         setToast({ message: 'Failed to load about content', type: 'error' })
@@ -172,45 +142,16 @@ export default function AboutContent() {
     })()
   }, [])
 
+  const isDirty = initialForm && JSON.stringify(form) !== JSON.stringify(initialForm)
+
   const set = useCallback((field) => (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
-    setForm((prev) => ({ ...prev, [field]: value }))
+    setForm((prev) => ({ ...prev, [field]: e.target.value }))
   }, [])
 
-  const addItem = useCallback((key, empty) => {
-    setForm((prev) => ({ ...prev, [key]: [...prev[key], { ...empty }] }))
-  }, [])
-
-  const removeItem = useCallback((key, idx) => {
-    setForm((prev) => ({
-      ...prev,
-      [key]: prev[key].filter((_, i) => i !== idx),
-    }))
-  }, [])
-
-  const updateItem = useCallback((key, idx, field) => (e) => {
-    const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
-    setForm((prev) => {
-      const items = [...prev[key]]
-      items[idx] = { ...items[idx], [field]: value }
-      return { ...prev, [key]: items }
-    })
-  }, [])
-
-  const moveItem = useCallback((key, idx, direction) => {
-    setForm((prev) => {
-      const items = [...prev[key]]
-      const target = idx + direction
-      if (target < 0 || target >= items.length) return prev
-      ;[items[idx], items[target]] = [items[target], items[idx]]
-      return { ...prev, [key]: items }
-    })
-  }, [])
-
-  const updatePillarContent = useCallback((idx, field, value) => {
+  const updatePillarContent = useCallback((idx, value) => {
     setForm((prev) => {
       const pillars = [...prev.storyPillars]
-      pillars[idx] = { ...pillars[idx], [field]: value }
+      pillars[idx] = { ...pillars[idx], content: value }
       return { ...prev, storyPillars: pillars }
     })
   }, [])
@@ -218,10 +159,7 @@ export default function AboutContent() {
   const addSkill = useCallback(() => {
     setForm((prev) => ({
       ...prev,
-      idePresentation: {
-        ...prev.idePresentation,
-        skills: [...prev.idePresentation.skills, ''],
-      },
+      idePresentation: { ...prev.idePresentation, skills: [...prev.idePresentation.skills, ''] },
     }))
   }, [])
 
@@ -236,59 +174,68 @@ export default function AboutContent() {
   const removeSkill = useCallback((idx) => {
     setForm((prev) => ({
       ...prev,
-      idePresentation: {
-        ...prev.idePresentation,
-        skills: prev.idePresentation.skills.filter((_, i) => i !== idx),
-      },
+      idePresentation: { ...prev.idePresentation, skills: prev.idePresentation.skills.filter((_, i) => i !== idx) },
     }))
   }, [])
 
-  const updateMetric = useCallback((idx, field) => (e) => {
-    const value = e.target.value
+  const addCert = useCallback(() => {
+    setForm((prev) => ({
+      ...prev,
+      certifications: [...prev.certifications, { title: '', verificationUrl: '', displayOrder: prev.certifications.length + 1 }],
+    }))
+  }, [])
+
+  const updateCert = useCallback((idx, field) => (e) => {
     setForm((prev) => {
-      const metrics = [...prev.highlightMetrics]
-      metrics[idx] = { ...metrics[idx], [field]: value }
-      return { ...prev, highlightMetrics: metrics }
+      const certs = [...prev.certifications]
+      certs[idx] = { ...certs[idx], [field]: field === 'displayOrder' ? parseInt(e.target.value) || 0 : e.target.value }
+      return { ...prev, certifications: certs }
     })
   }, [])
 
-  const storyPillarsSynced = form.storyPillars.some((p) => p.content && p.content !== '<p><br></p>')
+  const removeCert = useCallback((idx) => {
+    setForm((prev) => ({
+      ...prev,
+      certifications: prev.certifications.filter((_, i) => i !== idx),
+    }))
+  }, [])
 
-  const ideSkillsSynced = form.idePresentation.skills.length > 0 &&
-    (form.idePresentation.skills[0] !== 'React' || form.idePresentation.skills.length > 2 ||
-     form.idePresentation.skills.some((s) => s && s !== 'React' && s !== 'Node'))
+  const moveCert = useCallback((idx, dir) => {
+    setForm((prev) => {
+      const certs = [...prev.certifications]
+      const target = idx + dir
+      if (target < 0 || target >= certs.length) return prev
+      ;[certs[idx], certs[target]] = [certs[target], certs[idx]]
+      return { ...prev, certifications: certs }
+    })
+  }, [])
 
-  const metricsSynced = form.highlightMetrics.some((m) => m.value && m.value !== '50+' && m.value !== '5+')
+  const handleDiscard = useCallback(() => {
+    if (initialForm) setForm(JSON.parse(JSON.stringify(initialForm)))
+    setConfirmDiscard(false)
+    setToast({ message: 'Changes discarded', type: 'info' })
+  }, [initialForm])
 
-  const certsSynced = form.certifications.length > 0 && form.certifications.some((c) => c.title)
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const handleSubmit = async () => {
+    setConfirmSave(false)
     setLoading(true)
     const fd = new FormData()
     fd.append('title', form.title)
-    fd.append('titleAm', form.titleAm)
     fd.append('subtitle', form.subtitle)
-    fd.append('subtitleAm', form.subtitleAm)
-    fd.append('yearsOfExperience', form.yearsOfExperience)
-    fd.append('status', form.status)
-    fd.append('education', JSON.stringify(form.education))
-    fd.append('experience', JSON.stringify(form.experience))
-    fd.append('certifications', JSON.stringify(form.certifications))
+    fd.append('profileImage', form.profileImage)
     fd.append('storyPillars', JSON.stringify(form.storyPillars))
     fd.append('idePresentation', JSON.stringify(form.idePresentation))
-    fd.append('highlightMetrics', JSON.stringify(form.highlightMetrics))
+    fd.append('certifications', JSON.stringify(form.certifications))
     try {
       await updateAboutContent(fd)
-      setToast({ message: 'About content updated successfully', type: 'success' })
+      setInitialForm(JSON.parse(JSON.stringify(form)))
+      setToast({ message: 'About content saved successfully', type: 'success' })
     } catch (err) {
-      setToast({ message: err.response?.data?.message || 'Failed to update about content', type: 'error' })
+      setToast({ message: err.response?.data?.message || 'Failed to save', type: 'error' })
     } finally {
       setLoading(false)
     }
   }
-
-  const emptyCert = { title: '', verificationUrl: '', displayOrder: 0 }
 
   if (fetching) {
     return (
@@ -300,409 +247,340 @@ export default function AboutContent() {
 
   return (
     <div>
-      <PageHeader title="About Content" subtitle="Manage your about section information." />
-      <form onSubmit={handleSubmit}>
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* ────────────── LEFT COLUMN ────────────── */}
-          <div className="lg:col-span-2 space-y-6">
+      <PageHeader title="About Content" subtitle="Manage the About section — title, story cards, IDE presentation, and certifications." />
 
-            {/* ── 1. Story Pillars ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <Card>
-                <SectionHeader title="Story Pillars" synced={storyPillarsSynced} />
-                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3 leading-relaxed">
-                  These 4 narrative blocks map directly to the cards on your public About page.
-                  Write in your own voice — bold, italic, and lists are supported.
-                </p>
-                <div className="space-y-5">
-                  {STORY_PILLAR_TEMPLATES.map((tpl, idx) => (
-                    <div key={tpl.key} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
-                      <div className="flex items-center justify-between">
-                        <span className="text-sm font-bold text-indigo-600 dark:text-indigo-400 flex items-center gap-2">
-                          <span className="w-6 h-6 rounded-full bg-indigo-100 dark:bg-indigo-500/10 text-xs flex items-center justify-center font-black">
-                            {idx + 1}
-                          </span>
-                          {tpl.title}
-                        </span>
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">English Content</label>
-                        <div className="quill-editor-min-h">
-                          <ReactQuill
-                            theme="snow"
-                            value={form.storyPillars[idx]?.content || ''}
-                            onChange={(val) => updatePillarContent(idx, 'content', val)}
-                            modules={quillModules}
-                            formats={quillFormats}
-                            placeholder={`Write about your ${tpl.title.toLowerCase()}...`}
-                          />
-                        </div>
-                      </div>
-                      <div>
-                        <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Amharic Content (አማርኛ)</label>
-                        <div className="quill-editor-min-h">
-                          <ReactQuill
-                            theme="snow"
-                            value={form.storyPillars[idx]?.contentAm || ''}
-                            onChange={(val) => updatePillarContent(idx, 'contentAm', val)}
-                            modules={quillModules}
-                            formats={quillFormats}
-                            placeholder={`ስለ ${tpl.title.toLowerCase()} በአማርኛ ይፃፉ...`}
-                          />
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </Card>
-            </motion.div>
-
-            {/* ── 2. IDE Presentation ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-            >
-              <Card>
-                <SectionHeader
-                  title="IDE Presentation"
-                  synced={ideSkillsSynced}
-                  badge={
-                    <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-medium bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 border border-slate-200 dark:border-slate-700">
-                      <Terminal size={12} />
-                      Controls `const developer = {'{'}` block
-                    </span>
-                  }
-                />
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                      <Code2 size={12} className="inline mr-1" />
-                      Skills Array
-                    </label>
-                    <div className="space-y-1.5">
-                      {form.idePresentation.skills.map((skill, idx) => (
-                        <div key={idx} className="flex items-center gap-1.5">
-                          <GripVertical size={12} className="text-gray-300 shrink-0" />
-                          <input
-                            type="text"
-                            value={skill}
-                            onChange={(e) => updateSkill(idx, e.target.value)}
-                            placeholder="e.g. TypeScript"
-                            className="flex-1 px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                          />
-                          <button type="button" onClick={() => removeSkill(idx)} className="p-1 rounded text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
-                            <XIcon size={12} />
-                          </button>
-                        </div>
-                      ))}
-                      <button type="button" onClick={addSkill} className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80 transition-colors">
-                        <Plus size={12} /> Add Skill
-                      </button>
-                    </div>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                      <ToggleLeft size={12} className="inline mr-1" />
-                      Available Status
-                    </label>
-                    <select
-                      value={form.idePresentation.available ? 'true' : 'false'}
-                      onChange={(e) => setForm((prev) => ({
-                        ...prev,
-                        idePresentation: { ...prev.idePresentation, available: e.target.value === 'true' },
-                      }))}
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    >
-                      <option value="true">Available (true)</option>
-                      <option value="false">Unavailable (false)</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
-                      <Globe size={12} className="inline mr-1" />
-                      Location (override)
-                    </label>
-                    <input
-                      type="text"
-                      value={form.idePresentation.location}
-                      onChange={(e) => setForm((prev) => ({
-                        ...prev,
-                        idePresentation: { ...prev.idePresentation, location: e.target.value },
-                      }))}
-                      placeholder="Leave blank to use Profile location"
-                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                    />
-                    <p className="text-xs text-gray-400 mt-1">Overrides the location synced from Admin Profile.</p>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-
-            {/* ── 3. Education ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card>
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Education</h2>
-                  <button type="button" onClick={() => addItem('education', { degree: '', institution: '', year: '' })} className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                    <Plus size={16} /> Add Education
-                  </button>
-                </div>
-                {form.education.length === 0 && <EmptyState message="No education entries yet." />}
-                {form.education.map((edu, idx) => (
-                  <div key={idx} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Entry {idx + 1}</span>
-                      <EntryActions
-                        onRemove={() => removeItem('education', idx)}
-                        onMoveUp={() => moveItem('education', idx, -1)}
-                        onMoveDown={() => moveItem('education', idx, 1)}
-                        isFirst={idx === 0}
-                        isLast={idx === form.education.length - 1}
-                      />
-                    </div>
-                    <div className="grid grid-cols-3 gap-3">
-                      <input type="text" value={edu.degree} onChange={updateItem('education', idx, 'degree')} placeholder="Degree" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                      <input type="text" value={edu.institution} onChange={updateItem('education', idx, 'institution')} placeholder="Institution" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                      <input type="text" value={edu.year} onChange={updateItem('education', idx, 'year')} placeholder="Year" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                    </div>
-                  </div>
-                ))}
-              </Card>
-            </motion.div>
-
-            {/* ── 4. Experience ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.15 }}
-            >
-              <Card>
-                <div className="flex items-center justify-between">
-                  <h2 className="text-lg font-bold text-gray-900 dark:text-white">Experience</h2>
-                  <button type="button" onClick={() => addItem('experience', { role: '', company: '', duration: '', description: '' })} className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                    <Plus size={16} /> Add Experience
-                  </button>
-                </div>
-                {form.experience.length === 0 && <EmptyState message="No experience entries yet." />}
-                {form.experience.map((exp, idx) => (
-                  <div key={idx} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-gray-600 dark:text-gray-400">Entry {idx + 1}</span>
-                      <EntryActions
-                        onRemove={() => removeItem('experience', idx)}
-                        onMoveUp={() => moveItem('experience', idx, -1)}
-                        onMoveDown={() => moveItem('experience', idx, 1)}
-                        isFirst={idx === 0}
-                        isLast={idx === form.experience.length - 1}
-                      />
-                    </div>
-                    <div className="grid grid-cols-2 gap-3">
-                      <input type="text" value={exp.role} onChange={updateItem('experience', idx, 'role')} placeholder="Role" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                      <input type="text" value={exp.company} onChange={updateItem('experience', idx, 'company')} placeholder="Company" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                    </div>
-                    <input type="text" value={exp.duration} onChange={updateItem('experience', idx, 'duration')} placeholder="Duration" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                    <textarea value={exp.description} onChange={updateItem('experience', idx, 'description')} rows={2} placeholder="Description" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50 resize-none" />
-                  </div>
-                ))}
-              </Card>
-            </motion.div>
-
-            {/* ── 5. Certifications ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card>
-                <SectionHeader title="Professional Certifications & Badges" synced={certsSynced} />
-                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3 leading-relaxed">
-                  These appear as the bolded trailing list on the public About page.
-                </p>
-                {form.certifications.length === 0 && <EmptyState message="No certifications added yet." />}
-                {form.certifications.map((cert, idx) => (
-                  <div key={idx} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm font-bold text-gray-600 dark:text-gray-400 flex items-center gap-2">
-                        <Award size={14} className="text-amber-500" />
-                        Certification #{idx + 1}
-                      </span>
-                      <EntryActions
-                        onRemove={() => removeItem('certifications', idx)}
-                        onMoveUp={() => moveItem('certifications', idx, -1)}
-                        onMoveDown={() => moveItem('certifications', idx, 1)}
-                        isFirst={idx === 0}
-                        isLast={idx === form.certifications.length - 1}
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-                      <input type="text" value={cert.title} onChange={updateItem('certifications', idx, 'title')} placeholder="Certification title" className="w-full px-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                      <div className="relative">
-                        <Link size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                        <input type="url" value={cert.verificationUrl} onChange={updateItem('certifications', idx, 'verificationUrl')} placeholder="Verification URL (optional)" className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                      </div>
-                      <div className="relative">
-                        <Hash size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
-                        <input type="number" value={cert.displayOrder} onChange={updateItem('certifications', idx, 'displayOrder')} placeholder="Display order" className="w-full pl-8 pr-3 py-2 rounded-lg border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                      </div>
-                    </div>
-                  </div>
-                ))}
-                <button type="button" onClick={() => addItem('certifications', { ...emptyCert, displayOrder: form.certifications.length + 1 })} className="flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary/80 transition-colors">
-                  <Plus size={16} /> Add Certification
-                </button>
-              </Card>
-            </motion.div>
-          </div>
-
-          {/* ────────────── RIGHT COLUMN ────────────── */}
-          <div className="space-y-6">
-
-            {/* ── Highlight Metrics Row ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-            >
-              <Card>
-                <SectionHeader title="Highlight Metrics" synced={metricsSynced} />
-                <p className="text-xs text-gray-500 dark:text-gray-400 -mt-3 leading-relaxed">
-                  These 3 counters render at the bottom of the code terminal preview.
-                </p>
-                <div className="space-y-4">
-                  {form.highlightMetrics.map((metric, idx) => {
-                    const Icon = getIconComponent(metric.icon)
-                    return (
-                      <div key={idx} className="p-3 rounded-xl border border-gray-200 dark:border-slate-700 space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                            Metric #{idx + 1}
-                          </span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Icon</label>
-                            <select
-                              value={metric.icon}
-                              onChange={updateMetric(idx, 'icon')}
-                              className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            >
-                              {ICON_OPTIONS.map((opt) => (
-                                <option key={opt} value={opt}>{opt}</option>
-                              ))}
-                            </select>
-                          </div>
-                          <div>
-                            <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Title (English)</label>
-                            <input
-                              type="text"
-                              value={metric.title}
-                              onChange={updateMetric(idx, 'title')}
-                              placeholder="e.g. Network Designer"
-                              className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            />
-                          </div>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div>
-                            <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Title (Amharic / አማርኛ)</label>
-                            <input
-                              type="text"
-                              value={metric.titleAm}
-                              onChange={updateMetric(idx, 'titleAm')}
-                              placeholder="e.g. የኔትወርክ ዲዛይነር"
-                              className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-[10px] font-medium text-gray-400 mb-0.5">Value</label>
-                            <input
-                              type="text"
-                              value={metric.value}
-                              onChange={updateMetric(idx, 'value')}
-                              placeholder="e.g. 50+"
-                              className="w-full px-3 py-1.5 rounded-lg border border-gray-200 dark:border-slate-700 bg-gray-50 dark:bg-slate-800 text-sm text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-2 p-2 rounded-lg bg-slate-50 dark:bg-slate-800/50">
-                          <Icon size={16} className="text-primary shrink-0" />
-                          <span className="text-xs text-gray-500 dark:text-gray-400">
-                            Preview: <strong className="text-gray-700 dark:text-gray-200">{metric.title || 'Title'}</strong>
-                            {metric.value && <span className="ml-1 text-primary font-bold">{metric.value}</span>}
-                          </span>
-                        </div>
-                      </div>
-                    )
-                  })}
-                </div>
-              </Card>
-            </motion.div>
-
-            {/* ── Settings ── */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-            >
-              <Card>
-                <SectionHeader title="Settings" />
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Title (English)</label>
-                    <input type="text" value={form.title} onChange={set('title')} placeholder="e.g. Get to Know Me" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Title (Amharic / አማርኛ)</label>
-                    <input type="text" value={form.titleAm} onChange={set('titleAm')} placeholder="e.g. እኔን ይወቁ" className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Subtitle (English)</label>
-                    <input type="text" value={form.subtitle} onChange={set('subtitle')} placeholder="e.g. A passionate developer..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Subtitle (Amharic / አማርኛ)</label>
-                    <input type="text" value={form.subtitleAm} onChange={set('subtitleAm')} placeholder="e.g. ደህንነታቸው የተጠበቀ..." className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50" />
-                  </div>
-                  <div>
-                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Status</label>
-                    <select value={form.status} onChange={set('status')} className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50">
-                      <option value="active">Active</option>
-                      <option value="inactive">Inactive</option>
-                    </select>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="mt-6 flex justify-end gap-3"
-        >
-          <button type="submit" disabled={loading} className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2">
-            {loading ? <><RefreshCw size={18} className="animate-spin" /> Saving...</> : <><Save size={18} /> Save Changes</>}
+      {/* ── Action Bar ── */}
+      <div className="flex items-center justify-between mb-6 flex-wrap gap-3">
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => setShowPreview((p) => !p)}
+            className="flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 border border-gray-200 dark:border-slate-700 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors"
+          >
+            {showPreview ? <EyeOff size={16} /> : <Eye size={16} />}
+            {showPreview ? 'Hide Preview' : 'Preview'}
           </button>
+          {isDirty && (
+            <span className="px-2.5 py-1 text-xs font-bold rounded-full bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-800">
+              Unsaved Changes
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-3">
+          {isDirty && (
+            <button type="button" onClick={() => setConfirmDiscard(true)} className="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 transition-colors">
+              Discard
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={() => setConfirmSave(true)}
+            disabled={loading || !isDirty}
+            className="px-6 py-2.5 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {loading ? <RefreshCw size={16} className="animate-spin" /> : <Save size={16} />}
+            {loading ? 'Saving...' : 'Save Changes'}
+          </button>
+        </div>
+      </div>
+
+      {/* ── Live Preview ── */}
+      <AnimatePresence>
+        {showPreview && (
+          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }} transition={{ duration: 0.3 }} className="mb-6 overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-lg">
+              <div className="flex items-center justify-between px-6 py-3 bg-gray-50 dark:bg-slate-800 border-b border-gray-200 dark:border-slate-700">
+                <span className="text-sm font-bold text-gray-900 dark:text-white flex items-center gap-2">
+                  <Eye size={16} />
+                  About Section Preview
+                  <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">LIVE</span>
+                </span>
+                <button onClick={() => setShowPreview(false)} className="p-1.5 rounded-lg hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+                  <X size={16} className="text-gray-400" />
+                </button>
+              </div>
+              <div className="relative overflow-hidden" style={{ minHeight: '400px' }}>
+                <iframe
+                  key={JSON.stringify({ ...form, profileImageUrl: getMediaUrl(form.profileImage) })}
+                  srcDoc={`<!DOCTYPE html><html><head><style>
+                    *{margin:0;padding:0;box-sizing:border-box}
+                    body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#0f172a;color:#e2e8f0;padding:40px 20px}
+                    .h{text-align:center;margin-bottom:32px}
+                    .badge{display:inline-block;padding:4px 12px;background:rgba(99,102,241,.15);color:#818cf8;border-radius:20px;font-size:.65rem;font-weight:600;letter-spacing:.15em;text-transform:uppercase;margin-bottom:10px}
+                    h1{font-size:1.8rem;font-weight:800;color:#f8fafc;margin-bottom:6px}
+                    .sub{color:#94a3b8;font-size:.9rem;max-width:500px;margin:0 auto}
+                    .line{display:flex;align-items:center;justify-content:center;gap:10px;margin:20px 0}
+                    .line div:first-child,.line div:last-child{width:32px;height:1px;background:#334155}
+                    .line div:nth-child(2){width:5px;height:5px;background:#6366f1;transform:rotate(45deg)}
+                    .grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;max-width:800px;margin:0 auto 32px}
+                    .card{padding:18px;border-radius:14px;border:1px solid #1e293b;background:rgba(30,41,59,.5)}
+                    .card .icon{font-size:18px;margin-bottom:8px}
+                    .card h3{font-size:.85rem;font-weight:700;color:#f1f5f9;margin-bottom:6px}
+                    .card p{font-size:.75rem;color:#94a3b8;line-height:1.5}
+                    .card .rich-content{font-size:.75rem;color:#94a3b8;line-height:1.6}
+                    .card .rich-content b,.card .rich-content strong{color:#e2e8f0;font-weight:700}
+                    .card .rich-content i,.card .rich-content em{font-style:italic}
+                    .card .rich-content u{text-decoration:underline}
+                    .card .rich-content s,.card .rich-content strike{text-decoration:line-through}
+                    .card .rich-content ul,.card .rich-content ol{padding-left:16px;margin:4px 0}
+                    .card .rich-content li{margin:2px 0}
+                    .card .rich-content a{color:#818cf8;text-decoration:underline}
+                    .card .rich-content code{background:rgba(99,102,241,.15);color:#818cf8;padding:1px 4px;border-radius:3px;font-size:.7rem}
+                    .card .rich-content pre{background:#1e1e1e;padding:8px;border-radius:6px;margin:6px 0;overflow-x:auto}
+                    .card .rich-content pre code{background:none;color:#d4d4d4;padding:0}
+                    .card .rich-content blockquote{border-left:3px solid #6366f1;padding-left:10px;margin:6px 0;color:#a5b4fc;font-style:italic}
+                    .stitle{font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:12px;text-align:center}
+                    .certs{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:800px;margin:0 auto 24px}
+                    .cert{padding:8px 14px;border-radius:8px;border:1px solid #1e293b;background:rgba(30,41,59,.4);font-size:.7rem;color:#e2e8f0;font-weight:600}
+                    .metrics{display:flex;justify-content:center;gap:24px;margin:20px auto;max-width:500px}
+                    .metric{text-align:center}
+                    .metric .val{font-size:1.2rem;font-weight:800;color:#818cf8}
+                    .metric .lbl{font-size:.65rem;color:#64748b;margin-top:2px}
+                    .ide{max-width:500px;margin:20px auto;padding:16px;border-radius:12px;background:#1e1e1e;border:1px solid #333;font-family:'Fira Code',monospace}
+                    .ide .bar{display:flex;gap:5px;margin-bottom:10px}
+                    .ide .dot{width:8px;height:8px;border-radius:50%}
+                    .ide .dot.r{background:#ff5f57}.ide .dot.y{background:#febc2e}.ide .dot.g{background:#28c840}
+                    .ide .line{color:#94a3b8;font-size:.7rem;line-height:1.8}
+                    .ide .kw{color:#c586c0}.ide .str{color:#ce9178}.ide .fn{color:#dcdcaa}.ide .cm{color:#6a9955}.ide .var{color:#9cdcfe}
+                    .photo-wrap{display:flex;justify-content:center;margin:20px auto}
+                    .photo{width:80px;height:80px;border-radius:50%;border:2px solid #334155;object-fit:cover;background:#1e293b}
+                  </style></head><body>
+                    <div class="h">
+                      <div class="badge">ABOUT ME</div>
+                      <h1>${form.title || 'Get to Know Me'}</h1>
+                      <p class="sub">${form.subtitle || ''}</p>
+                      <div class="line"><div></div><div></div><div></div></div>
+                    </div>
+                    <div class="grid">
+                      ${form.storyPillars.map((p, i) => '<div class="card"><div class="icon">' + PILLAR_ICONS_HTML[i] + '</div><h3>' + (p.title || STORY_PILLARS[i].title) + '</h3><div class="rich-content">' + (p.content || '').substring(0, 200) + '</div></div>').join('')}
+                    </div>
+                    ${form.idePresentation.skills.length ? '<div class="stitle">Skills</div><div style="text-align:center;margin-bottom:24px">' + form.idePresentation.skills.filter(Boolean).map(s => '<span style="display:inline-block;padding:3px 10px;background:rgba(99,102,241,.12);color:#818cf8;border-radius:6px;font-size:.7rem;margin:2px">' + s + '</span>').join('') + '</div>' : ''}
+                    <div class="photo-wrap">${form.profileImage ? '<img class="photo" src="' + getMediaUrl(form.profileImage) + '" alt="Profile" />' : '<div class="photo" style="display:flex;align-items:center;justify-content:center;color:#64748b;font-size:24px">👤</div>'}</div>
+                    <div class="ide">
+                      <div class="bar"><div class="dot r"></div><div class="dot y"></div><div class="dot g"></div></div>
+                      <div class="line"><span class="kw">const</span> <span class="var">developer</span> = {</div>
+                      <div class="line">&nbsp;&nbsp;name: <span class="str">"Developer"</span>,</div>
+                      <div class="line">&nbsp;&nbsp;location: <span class="str">"${form.idePresentation.location || 'Location'}"</span>,</div>
+                      <div class="line">&nbsp;&nbsp;skills: [${form.idePresentation.skills.filter(Boolean).map(s => '<span class="str">"' + s + '"</span>').join(', ')}],</div>
+                      <div class="line">&nbsp;&nbsp;available: <span class="fn">${form.idePresentation.available}</span></div>
+                      <div class="line">}</div>
+                    </div>
+                    ${form.certifications.length ? '<div class="stitle" style="margin-top:24px">Certifications</div><div class="certs">' + form.certifications.map(c => '<div class="cert">🏆 ' + (c.title || 'Cert') + '</div>').join('') + '</div>' : ''}
+                  </body></html>`}
+                  style={{ width: '100%', border: 'none', minHeight: '400px' }}
+                  title="About Preview"
+                  sandbox="allow-same-origin"
+                />
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <div className="space-y-6">
+
+        {/* ═══════ 1. PAGE HEADER ═══════ */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
+            <div className="flex items-start gap-3 mb-5">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <BookOpen size={18} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Section Header</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Title and subtitle at the top of the About section</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <Field label="Title" hint="Main heading (e.g. Get to Know Me)">
+                <Input value={form.title} onChange={set('title')} placeholder="Get to Know Me" />
+              </Field>
+              <Field label="Subtitle" hint="Tagline below the title">
+                <Input value={form.subtitle} onChange={set('subtitle')} placeholder="A passionate developer crafting digital experiences" />
+              </Field>
+            </div>
+            <div className="mt-4">
+              <ImageUpload
+                value={form.profileImage}
+                onChange={(url) => setForm((prev) => ({ ...prev, profileImage: url }))}
+                label="Profile Photo"
+                folder="about"
+              />
+              <p className="text-[10px] text-gray-400 mt-1.5">This photo appears in the code terminal on the public About page.</p>
+            </div>
+          </div>
         </motion.div>
-      </form>
+
+        {/* ═══════ 2. STORY CARDS ═══════ */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.05 }}>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
+            <div className="flex items-start gap-3 mb-5">
+              <div className="w-9 h-9 rounded-xl bg-primary/10 text-primary flex items-center justify-center shrink-0">
+                <Zap size={18} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">Story Cards</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Four narrative cards on the public About page. Rich formatting (bold, italic, colors, lists, etc.) is preserved.</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              {STORY_PILLARS.map((pillar, idx) => {
+                const colors = PILLAR_COLORS[pillar.color]
+                return (
+                  <div key={pillar.key} className={`p-4 rounded-xl border ${colors.border} space-y-3`}>
+                    <div className="flex items-center gap-2">
+                      <div className={`w-7 h-7 rounded-lg ${colors.bg} ${colors.text} flex items-center justify-center text-sm`}>
+                        {PILLAR_ICONS_HTML[idx]}
+                      </div>
+                      <span className={`text-sm font-bold ${colors.text}`}>{pillar.title}</span>
+                    </div>
+                    <div>
+                      <label className="block text-[10px] font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1">Content</label>
+                      <div className="quill-editor-min-h">
+                        <ReactQuill
+                          theme="snow"
+                          value={form.storyPillars[idx]?.content || ''}
+                          onChange={(val) => updatePillarContent(idx, val)}
+                          modules={quillModules}
+                          formats={quillFormats}
+                          placeholder={`Write about ${pillar.title.toLowerCase()}...`}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ═══════ 3. IDE PRESENTATION ═══════ */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
+            <div className="flex items-start gap-3 mb-5">
+              <div className="w-9 h-9 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 flex items-center justify-center shrink-0">
+                <Terminal size={18} />
+              </div>
+              <div>
+                <h3 className="text-sm font-bold text-gray-900 dark:text-white">IDE Presentation</h3>
+                <p className="text-xs text-gray-400 mt-0.5">Controls the code terminal block shown on the public About page</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <Field label="Skills Array" hint="Displayed in the code block">
+                  <div className="space-y-1.5">
+                    {form.idePresentation.skills.map((skill, idx) => (
+                      <div key={idx} className="flex items-center gap-1.5">
+                        <GripVertical size={12} className="text-gray-300 shrink-0" />
+                        <Input value={skill} onChange={(e) => updateSkill(idx, e.target.value)} placeholder="e.g. TypeScript" className="!py-1.5 text-sm" />
+                        <button type="button" onClick={() => removeSkill(idx)} className="p-1 rounded text-red-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-500/10 transition-colors">
+                          <Trash2 size={12} />
+                        </button>
+                      </div>
+                    ))}
+                    <button type="button" onClick={addSkill} className="flex items-center gap-1 text-xs font-medium text-primary hover:text-primary/80 transition-colors">
+                      <Plus size={12} /> Add Skill
+                    </button>
+                  </div>
+                </Field>
+              </div>
+              <div>
+                <Field label="Available Status">
+                  <select
+                    value={form.idePresentation.available ? 'true' : 'false'}
+                    onChange={(e) => setForm((prev) => ({ ...prev, idePresentation: { ...prev.idePresentation, available: e.target.value === 'true' } }))}
+                    className="w-full px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
+                  >
+                    <option value="true">Available</option>
+                    <option value="false">Unavailable</option>
+                  </select>
+                </Field>
+              </div>
+              <div>
+                <Field label="Location" hint="Shown in the code block">
+                  <Input
+                    value={form.idePresentation.location}
+                    onChange={(e) => setForm((prev) => ({ ...prev, idePresentation: { ...prev.idePresentation, location: e.target.value } }))}
+                    placeholder="e.g. Bahirdar"
+                  />
+                </Field>
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
+        {/* ═══════ 4. CERTIFICATIONS ═══════ */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.15 }}>
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-start gap-3">
+                <div className="w-9 h-9 rounded-xl bg-amber-50 dark:bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
+                  <Award size={18} />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white">Certifications & Badges</h3>
+                  <p className="text-xs text-gray-400 mt-0.5">Displayed in the certificate gallery on the public About page</p>
+                </div>
+              </div>
+              <button type="button" onClick={addCert} className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium text-primary hover:bg-primary/10 transition-colors">
+                <Plus size={14} /> Add
+              </button>
+            </div>
+            {form.certifications.length === 0 && <p className="text-sm text-gray-400 italic">No certifications added yet.</p>}
+            <div className="space-y-3">
+              {form.certifications.map((cert, idx) => (
+                <div key={idx} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-bold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
+                      <Award size={12} className="text-amber-500" />
+                      #{idx + 1}
+                    </span>
+                    <EntryActions
+                      onRemove={() => removeCert(idx)}
+                      onMoveUp={() => moveCert(idx, -1)}
+                      onMoveDown={() => moveCert(idx, 1)}
+                      isFirst={idx === 0}
+                      isLast={idx === form.certifications.length - 1}
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <Input value={cert.title} onChange={updateCert(idx, 'title')} placeholder="Certification title" />
+                    <div className="relative">
+                      <Link size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+                      <input type="url" value={cert.verificationUrl} onChange={updateCert(idx, 'verificationUrl')} placeholder="Verification URL" className="w-full pl-9 pr-3 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/50" />
+                    </div>
+                    <Input type="number" value={cert.displayOrder} onChange={updateCert(idx, 'displayOrder')} placeholder="Display order" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* ── Modals ── */}
+      <ConfirmModal
+        open={confirmSave}
+        title="Save About Content"
+        message="Save all changes to the about section?"
+        onConfirm={handleSubmit}
+        onCancel={() => setConfirmSave(false)}
+        loading={loading}
+        confirmText="Save"
+        variant="primary"
+      />
+      <ConfirmModal
+        open={confirmDiscard}
+        title="Discard Changes"
+        message="All unsaved changes will be lost. Continue?"
+        onConfirm={handleDiscard}
+        onCancel={() => setConfirmDiscard(false)}
+        loading={false}
+        confirmText="Discard"
+        variant="danger"
+      />
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
-  )
-}
-
-function XIcon({ size }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
   )
 }

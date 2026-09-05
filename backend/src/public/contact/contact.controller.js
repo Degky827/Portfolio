@@ -3,6 +3,7 @@ const FooterContent = require('../../shared/models/FooterContent')
 const SiteSettings = require('../../shared/models/SiteSettings')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { syncContactSocial } = require('../../shared/utilities/socialSync')
+const { emitToAll } = require('../../infrastructure/socket')
 
 async function getContactContent(_req, res) {
   try {
@@ -86,6 +87,8 @@ async function updateContactContent(req, res) {
     if (req.body.socialChannels) {
       try { await syncContactSocial(content.socialChannels) } catch (e) { console.error('[contact] syncContactSocial:', e.message) }
     }
+
+    emitToAll('content:updated', { type: 'contact' })
   } catch (error) {
     console.error('[contact] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update contact content' })

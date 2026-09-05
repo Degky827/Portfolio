@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import {
   ArrowLeft, Save, X, Plus, Upload, ImageIcon,
-  Loader2, GripVertical, CheckCircle, AlertCircle,
+  Loader2, GripVertical, CheckCircle, AlertCircle, Smartphone,
 } from 'lucide-react'
 import RichTextEditor from '../shared/RichTextEditor'
 import MediaPicker from '../shared/MediaPicker'
@@ -55,6 +55,12 @@ export default function ProjectForm() {
     metaTitle: '',
     metaDescription: '',
     keywords: '',
+    platform: '',
+    features: [],
+    rating: 0,
+    appUrl: '',
+    icon: '',
+    accentColor: '#6366f1',
   })
   const [thumbnail, setThumbnail] = useState('')
   const [galleryImages, setGalleryImages] = useState([])
@@ -66,6 +72,7 @@ export default function ProjectForm() {
   const [pickerFor, setPickerFor] = useState(null)
   const [uploadingImage, setUploadingImage] = useState(false)
   const [toast, setToast] = useState(null)
+  const [featureInput, setFeatureInput] = useState('')
   const fileInputRef = useRef(null)
 
   useEffect(() => {
@@ -90,6 +97,12 @@ export default function ProjectForm() {
           metaTitle: project.metaTitle || '',
           metaDescription: project.metaDescription || '',
           keywords: project.keywords || '',
+          platform: project.platform || '',
+          features: project.features || [],
+          rating: project.rating || 0,
+          appUrl: project.appUrl || '',
+          icon: project.icon || '',
+          accentColor: project.accentColor || '#6366f1',
         })
         setThumbnail(project.thumbnail || '')
         setGalleryImages(project.images || [])
@@ -131,6 +144,12 @@ export default function ProjectForm() {
       shortDescription: form.shortDescription.trim(),
       thumbnail,
       images: galleryImages,
+      platform: form.platform || '',
+      features: form.features || [],
+      rating: Number(form.rating) || 0,
+      appUrl: form.appUrl || '',
+      icon: form.icon || '',
+      accentColor: form.accentColor || '',
     }
 
     console.log('Submitting Project:', body)
@@ -178,6 +197,28 @@ export default function ProjectForm() {
     }
     if (e.key === 'Backspace' && !techInput && form.technologies.length > 0) {
       removeTechTag(form.technologies[form.technologies.length - 1])
+    }
+  }
+
+  const addFeature = (feat) => {
+    const f = feat.trim()
+    if (!f) return
+    if (form.features.includes(f)) return
+    setForm((prev) => ({ ...prev, features: [...prev.features, f] }))
+    setFeatureInput('')
+  }
+
+  const removeFeature = (feat) => {
+    setForm((prev) => ({ ...prev, features: prev.features.filter((f) => f !== feat) }))
+  }
+
+  const handleFeatureKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault()
+      addFeature(featureInput)
+    }
+    if (e.key === 'Backspace' && !featureInput && form.features.length > 0) {
+      removeFeature(form.features[form.features.length - 1])
     }
   }
 
@@ -398,6 +439,149 @@ export default function ProjectForm() {
                 />
               </div>
             </motion.div>
+
+            {/* Mobile App Settings — only visible when category is Mobile App */}
+            {form.category === 'Mobile App' && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.12 }}
+                className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5"
+              >
+                <div className="flex items-center gap-3 mb-1">
+                  <div className="w-8 h-8 rounded-lg bg-violet-100 dark:bg-violet-500/10 flex items-center justify-center">
+                    <Smartphone size={16} className="text-violet-600 dark:text-violet-400" />
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">App Settings</h2>
+                    <p className="text-xs text-gray-400">Configure how this app appears in the Applications tab</p>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                      Platform
+                    </label>
+                    <select
+                      value={form.platform}
+                      onChange={set('platform')}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    >
+                      <option value="">Select platform...</option>
+                      <option value="iOS">iOS</option>
+                      <option value="Android">Android</option>
+                      <option value="Web">Web</option>
+                      <option value="Cross-platform">Cross-platform</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                      Rating (0-5)
+                    </label>
+                    <input
+                      type="number"
+                      value={form.rating}
+                      onChange={set('rating')}
+                      min={0}
+                      max={5}
+                      step={0.1}
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    App URL
+                  </label>
+                  <input
+                    type="url"
+                    value={form.appUrl}
+                    onChange={set('appUrl')}
+                    placeholder="https://play.google.com/store/apps/details?id=..."
+                    className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                    Features
+                  </label>
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      value={featureInput}
+                      onChange={(e) => setFeatureInput(e.target.value)}
+                      onKeyDown={handleFeatureKeyDown}
+                      placeholder="Type a feature and press Enter..."
+                      className="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => addFeature(featureInput)}
+                      disabled={!featureInput.trim()}
+                      className="px-4 py-3 rounded-xl bg-primary text-white text-sm font-medium hover:bg-primary/90 transition-colors disabled:opacity-50"
+                    >
+                      <Plus size={18} />
+                    </button>
+                  </div>
+                  {form.features.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      {form.features.map((feat) => (
+                        <span
+                          key={feat}
+                          className="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium rounded-full bg-violet-100 dark:bg-violet-500/10 text-violet-600 dark:text-violet-400 border border-violet-200 dark:border-violet-800"
+                        >
+                          {feat}
+                          <button type="button" onClick={() => removeFeature(feat)} className="hover:text-red-400 transition-colors">
+                            <X size={12} />
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                      Icon Name
+                    </label>
+                    <input
+                      type="text"
+                      value={form.icon}
+                      onChange={set('icon')}
+                      placeholder="e.g. Globe, Smartphone, Code"
+                      className="w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
+                    />
+                    <p className="text-[10px] text-gray-400 mt-1">Lucide icon name (Globe, Smartphone, Code, Heart, etc.)</p>
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">
+                      Accent Color
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="color"
+                        value={form.accentColor}
+                        onChange={(e) => setForm((prev) => ({ ...prev, accentColor: e.target.value }))}
+                        className="w-10 h-10 rounded-lg border border-gray-300 dark:border-slate-700 cursor-pointer"
+                      />
+                      <input
+                        type="text"
+                        value={form.accentColor}
+                        onChange={(e) => setForm((prev) => ({ ...prev, accentColor: e.target.value }))}
+                        placeholder="#6366f1"
+                        className="flex-1 px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all font-mono text-sm"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
 
             {/* SEO Section */}
             <motion.div
