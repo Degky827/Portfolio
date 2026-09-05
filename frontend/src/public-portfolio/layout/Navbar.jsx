@@ -4,6 +4,7 @@ import { Menu, X, ChevronRight, Sun, Moon, FileText } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import Logo from '../../shared/components/Logo'
 import { getNavigation, getNavbarSettings } from '../../shared/services/navigationService'
+import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 
 const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'experience', 'contact']
 
@@ -35,12 +36,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
   // ── Fetch Data ────────────────────────────────────────────────
 
-  useEffect(() => {
-    loadNavItems()
-    loadNavbarSettings()
-  }, [])
-
-  async function loadNavItems() {
+  const loadNavItems = useCallback(async () => {
     try {
       const res = await getNavigation()
       const items = (res.items || [])
@@ -53,14 +49,23 @@ export default function Navbar({ darkMode, onToggleDark }) {
     } finally {
       setNavLoaded(true)
     }
-  }
+  }, [])
 
-  async function loadNavbarSettings() {
+  const loadNavbarSettings = useCallback(async () => {
     try {
       const res = await getNavbarSettings()
       setNavbarSettings(res.settings || null)
     } catch {}
-  }
+  }, [])
+
+  useEffect(() => {
+    loadNavItems()
+    loadNavbarSettings()
+  }, [loadNavItems, loadNavbarSettings])
+
+  useSocketRefresh('content:updated', loadNavItems, { type: 'navigation' })
+  useSocketRefresh('content:updated', loadNavbarSettings, { type: 'navbar' })
+  useSocketRefresh('content:updated', loadNavbarSettings, { type: 'site-settings' })
 
   // Theme is controlled by useDarkMode hook (backend is default, user toggle persists)
 
