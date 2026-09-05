@@ -374,7 +374,6 @@ export default function Skills() {
                       onCertClick={(cert) => setSelectedCert(cert)}
                       SkillIcon={SkillIcon}
                       getMediaUrl={getMediaUrl}
-                      t={t}
                       index={index + topRow.length}
                     />
                   ))}
