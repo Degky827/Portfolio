@@ -7,7 +7,7 @@ import {
   Cpu, BarChart3, Plus, Trash2, GripVertical,
   Search, ArrowUp, ArrowDown, Award, X,
   Wifi, Globe, Mail, Download, Link2, Navigation,
-  ArrowUpRight, ChevronRight, Box, Camera, Zap, Monitor as MonitorIcon, Eye, EyeOff,
+  ArrowUpRight, ChevronRight, Box, Camera, Monitor as MonitorIcon, Eye, EyeOff,
   Move, RotateCw, Sliders, Smartphone, Tablet, Laptop, Gauge, Sun, Moon,
   Send, Copy, FileText, Palette, Image,
 } from 'lucide-react'
@@ -90,13 +90,6 @@ const defaultForm = {
     backgroundOverlay: '',
     backgroundOpacity: 0.5,
     backgroundPosition: 'center',
-    animations: true,
-    glassmorphism: true,
-    particles: true,
-    cursorEffect: true,
-    glowEffects: true,
-    scrollIndicator: true,
-    socialFloating: true,
   },
   scene3D: {
     enabled: true,
@@ -1425,7 +1418,6 @@ function Scene3DPanel({ form, updateForm }) {
 const APPEARANCE_SUB_TABS = [
   { id: 'colors', label: 'Colors', icon: Palette },
   { id: 'background', label: 'Background', icon: Image },
-  { id: 'effects', label: 'Effects', icon: Zap },
 ]
 
 function ColorField({ value, onChange, label, hint }) {
@@ -1535,11 +1527,10 @@ function AppearanceBackgroundTab({ form, updateForm }) {
           <option value="solid">Solid Color</option>
           <option value="gradient">Gradient</option>
           <option value="image">Image</option>
-          <option value="3d">3D Environment</option>
         </select>
       </Field>
 
-      {(ap.backgroundType === 'image' || ap.backgroundType === '3d') && (
+      {(ap.backgroundType === 'image') && (
         <>
           <Field label="Background Image URL" hint="Upload or link to a background image">
             <UrlInput
@@ -1606,34 +1597,6 @@ function AppearanceBackgroundTab({ form, updateForm }) {
   )
 }
 
-function AppearanceEffectsTab({ form, updateForm }) {
-  const ap = form.appearance
-  return (
-    <div className="space-y-5">
-      <div className="bg-gray-50 dark:bg-slate-800/50 rounded-xl p-4 border border-gray-200 dark:border-slate-700">
-        <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
-          Visual Effects
-        </h4>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <Toggle checked={ap.animations} onChange={(v) => updateForm('appearance.animations', v)} label="Animations" />
-          <Toggle checked={ap.glassmorphism} onChange={(v) => updateForm('appearance.glassmorphism', v)} label="Glassmorphism" />
-          <Toggle checked={ap.particles} onChange={(v) => updateForm('appearance.particles', v)} label="Particles" />
-          <Toggle checked={ap.cursorEffect} onChange={(v) => updateForm('appearance.cursorEffect', v)} label="Custom Cursor" />
-          <Toggle checked={ap.glowEffects} onChange={(v) => updateForm('appearance.glowEffects', v)} label="Glow Effects" />
-          <Toggle checked={ap.scrollIndicator} onChange={(v) => updateForm('appearance.scrollIndicator', v)} label="Scroll Indicator" />
-          <Toggle checked={ap.socialFloating} onChange={(v) => updateForm('appearance.socialFloating', v)} label="Floating Social" />
-        </div>
-      </div>
-      <div className="bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl p-4">
-        <p className="text-xs text-indigo-600 dark:text-indigo-400 leading-relaxed">
-          <strong>Performance note:</strong> Disabling particles, glow effects, and custom cursor on mobile devices
-          can significantly improve performance.
-        </p>
-      </div>
-    </div>
-  )
-}
-
 function AppearancePanel({ form, updateForm }) {
   const [subTab, setSubTab] = useState('colors')
   return (
@@ -1645,7 +1608,7 @@ function AppearancePanel({ form, updateForm }) {
           </div>
           <div className="text-left">
             <h3 className="text-sm font-bold text-gray-900 dark:text-white">Appearance Settings</h3>
-            <p className="text-xs text-gray-400 mt-0.5">Configure colors, background, and visual effects for the entire homepage</p>
+            <p className="text-xs text-gray-400 mt-0.5">Configure colors and background for the public site</p>
           </div>
         </div>
       </div>
@@ -1668,7 +1631,6 @@ function AppearancePanel({ form, updateForm }) {
       <div className="p-6">
         {subTab === 'colors' && <AppearanceColorsTab form={form} updateForm={updateForm} />}
         {subTab === 'background' && <AppearanceBackgroundTab form={form} updateForm={updateForm} />}
-        {subTab === 'effects' && <AppearanceEffectsTab form={form} updateForm={updateForm} />}
       </div>
     </div>
   )
