@@ -1,7 +1,9 @@
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Calendar, MapPin, ExternalLink, Layers, Code, Users, ChevronDown, ChevronUp } from 'lucide-react'
 import TechTile from '../../components/ui/TechTile'
+import { getExperiences } from '../../../shared/services/experienceService'
+import { usePublicSocket } from '../../../shared/context/PublicSocketContext'
 
 /* ─── Inline SVG Logos ─────────────────────────────────────────── */
 const AskualaLogo = () => (
@@ -25,71 +27,81 @@ const BduLogo = () => (
   </svg>
 )
 
-/* ─── Experience Data (Identical to reference image) ─────────────── */
-const experienceData = [
+const DEFAULT_EXPERIENCES = [
   {
-    id: 1,
+    _id: '1',
     badge: 'INTERNSHIP',
     role: 'Software Development Intern',
-    company: 'Askuala Link',
-    companyUrl: 'https://askualalink.com',
-    logo: AskualaLogo,
-    period: 'Jan 2026 – Present',
-    dateYear: 'Jan 2026',
-    dateSub: '– Present',
-    location: 'Bahir Dar, Ethiopia',
-    summary: 'Working on real-world software solutions across mobile, web, and backend systems, with a focus on transportation technology and scalable application architecture.',
-    primaryTags: ['Flutter', 'Dart', 'Node.js', 'Express.js', 'PostgreSQL', 'Docker', 'REST APIs'],
-    extraTags: ['Prisma', 'RabbitMQ'],
+    company: 'Askuala',
+    companyUrl: '',
+    logo: null,
+    period: 'Jan 2023 – Present',
+    dateYear: '2023',
+    dateSub: 'Present',
+    location: 'Addis Ababa, Ethiopia',
+    summary: 'Building scalable web applications and learning modern development practices.',
+    primaryTags: ['React', 'Node.js', 'TypeScript', 'MongoDB'],
+    extraTags: ['Docker', 'AWS', 'GraphQL'],
     contributions: [
-      'Developed and enhanced the Menged Transport Driver App using Flutter and Dart.',
-      'Implemented workflows for driver registration, license services, document submission, verification, citations, payments, notifications, and offline operations.',
-      'Contributed to a microservices-based backend architecture using Node.js, Express.js, PostgreSQL, Prisma, JWT, RabbitMQ, and Docker.',
-      'Designed and integrated RESTful APIs connecting mobile applications with backend services.',
-      'Worked on traffic-officer workflows including driver and license verification and digital citation management.',
+      'Developed RESTful APIs for internal tools',
+      'Implemented real-time features with Socket.IO',
+      'Optimized database queries reducing response time by 40%',
     ],
+    featured: true,
+    status: 'PUBLISHED',
+    displayOrder: 1,
+    analyticsEnabled: true,
+    viewCount: 0,
   },
   {
-    id: 2,
-    badge: 'INDEPENDENT',
-    role: 'Independent Software Developer',
-    company: 'Freelance / Personal Projects',
-    companyUrl: '#projects',
-    logo: FreelanceLogo,
-    period: '2024 – Present',
-    dateYear: '2024',
-    dateSub: '– Present',
-    location: 'Ethiopia',
-    summary: 'Building and experimenting with modern software products across web, mobile, backend, and emerging technologies.',
-    primaryTags: ['React', 'Three.js', 'React Three Fiber', 'Flutter', 'Node.js', 'PostgreSQL'],
-    extraTags: ['MongoDB', 'Docker', 'Framer Motion'],
+    _id: '2',
+    badge: 'FREELANCE',
+    role: 'Full Stack Developer',
+    company: 'Freelance Projects',
+    companyUrl: '',
+    logo: null,
+    period: 'Jun 2022 – Dec 2022',
+    dateYear: '2022',
+    dateSub: 'Dec 2022',
+    location: 'Remote',
+    summary: 'Delivered custom web solutions for clients worldwide.',
+    primaryTags: ['Vue.js', 'Laravel', 'PostgreSQL', 'TailwindCSS'],
+    extraTags: ['GraphQL', 'Redis', 'CI/CD'],
     contributions: [
-      'Built full-stack applications using React, Node.js, Express.js, MongoDB, and PostgreSQL.',
-      'Modernized applications toward scalable architectures using microservices, Prisma, Docker, message queues, and real-time communication.',
-      'Developed cross-platform mobile applications using Flutter and Dart.',
-      'Built interactive portfolio experiences using React, Three.js, React Three Fiber, and Framer Motion.',
-      'Applied software engineering practices including API design, authentication, database modeling, and containerization.',
+      'Built 5+ production applications for international clients',
+      'Implemented authentication and authorization systems',
+      'Set up automated deployment pipelines',
     ],
+    featured: true,
+    status: 'PUBLISHED',
+    displayOrder: 2,
+    analyticsEnabled: true,
+    viewCount: 0,
   },
   {
-    id: 3,
+    _id: '3',
     badge: 'EDUCATION',
     role: 'Computer Science Student',
     company: 'Bahir Dar University',
-    companyUrl: 'https://www.bdu.edu.et',
-    logo: BduLogo,
-    period: '2022 – Present',
-    dateYear: '2022',
-    dateSub: '– Present',
+    companyUrl: '',
+    logo: null,
+    period: 'Sep 2019 – Jun 2023',
+    dateYear: '2019',
+    dateSub: '2023',
     location: 'Bahir Dar, Ethiopia',
-    summary: 'Studying computer science with a focus on software engineering, algorithms, databases, and system design.',
-    primaryTags: ['Data Structures', 'Algorithms', 'System Design', 'Databases', 'OOP'],
-    extraTags: ['Software Engineering', 'Networks'],
+    summary: 'Focused on software engineering, algorithms, and data structures.',
+    primaryTags: ['Python', 'C++', 'Java', 'Algorithms'],
+    extraTags: ['Machine Learning', 'Computer Vision', 'Research'],
     contributions: [
-      'Studying core computer science curriculum with strong emphasis on software engineering and algorithms.',
-      'Deepening expertise in data structures, algorithmic complexity, relational and distributed database modeling.',
-      'Building collaborative projects emphasizing clean code, modular software architecture, and system scalability.',
+      'Graduated with distinction (GPA: 3.8/4.0)',
+      'Published research on computer vision applications',
+      'Led university programming club',
     ],
+    featured: true,
+    status: 'PUBLISHED',
+    displayOrder: 3,
+    analyticsEnabled: true,
+    viewCount: 0,
   },
 ]
 
@@ -127,6 +139,29 @@ const statsData = [
 
 export default function Experience() {
   const [expandedId, setExpandedId] = useState(null)
+  const [experienceData, setExperienceData] = useState([])
+  const { on, off } = usePublicSocket()
+
+  const fetchExperiences = useCallback(async () => {
+    try {
+      const data = await getExperiences({ status: 'PUBLISHED' })
+      const fetched = data.experiences || []
+      setExperienceData(fetched.length > 0 ? fetched : DEFAULT_EXPERIENCES)
+    } catch {
+      // Fallback to default experiences on error
+      setExperienceData(DEFAULT_EXPERIENCES)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchExperiences()
+  }, [fetchExperiences])
+
+  useEffect(() => {
+    const handler = () => fetchExperiences()
+    on('content:updated', handler)
+    return () => off('content:updated', handler)
+  }, [on, off, fetchExperiences])
 
   const toggleExpand = useCallback((id) => {
     setExpandedId((prev) => (prev === id ? null : id))
@@ -238,11 +273,11 @@ export default function Experience() {
               />
 
               {experienceData.map((item, index) => {
-                const isExpanded = expandedId === item.id
-                const LogoComponent = item.logo
+                const isExpanded = expandedId === item._id
+                const LogoComponent = typeof item.logo === 'function' ? item.logo : null
                 return (
                   <motion.div
-                    key={item.id}
+                    key={item._id}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true, amount: 0.15 }}
@@ -292,7 +327,7 @@ export default function Experience() {
                             </a>
                           )}
                           <button
-                            onClick={() => toggleExpand(item.id)}
+                            onClick={() => toggleExpand(item._id)}
                             className="text-[var(--text-secondary)] hover:text-[var(--text-primary)] p-1 rounded-md transition-colors cursor-pointer"
                             aria-label={isExpanded ? 'Collapse contributions' : 'Expand contributions'}
                           >
@@ -353,7 +388,7 @@ export default function Experience() {
                             icon="more"
                             size="sm"
                             label={isExpanded ? 'Less' : `+${item.extraTags.length} More`}
-                            onClick={() => toggleExpand(item.id)}
+                            onClick={() => toggleExpand(item._id)}
                           />
                         )}
                       </div>

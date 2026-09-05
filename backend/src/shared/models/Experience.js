@@ -80,19 +80,18 @@ const experienceSchema = new mongoose.Schema(
     analyticsEnabled: {
       type: Boolean,
       default: true,
-      description: 'Controls whether view counts and analytics are tracked for this experience',
     },
     viewCount: {
       type: Number,
       default: 0,
-      min: [0, 'View count cannot be negative'],
-      description: 'Number of times this experience has been viewed (only tracked if analyticsEnabled is true)',
     },
   },
   {
     timestamps: true,
   },
 )
+
+experienceSchema.index({ status: 1, displayOrder: 1 })
 
 // Index for filtering by status and display order
 experienceSchema.index({ status: 1, displayOrder: 1 })

@@ -1,8 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Save, RefreshCw, Layout, Plus, Trash2, Eye, EyeOff, Image,
-  Settings, ChevronDown, Info, GripVertical,
+  Settings, ChevronDown, Info, GripVertical, X,
   Sun, Moon, Globe, Download,
   Move, Type, Palette, Square, Layers, ExternalLink,
   Copy, ToggleLeft, ToggleRight, AlignLeft, AlignCenter, AlignRight,
@@ -180,6 +180,36 @@ export default function NavigationManagement() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
   const [form, setForm] = useState({ title: '', url: '#', sectionId: '', icon: '', visible: true, active: true, isExternal: false, openNewTab: false })
+  const modalRef = useRef(null)
+  const previousFocusRef = useRef(null)
+
+  // Handle Escape key to close modal
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && showForm) {
+        setShowForm(false)
+        setEditingItem(null)
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => document.removeEventListener('keydown', handleKeyDown)
+  }, [showForm])
+
+  // Focus management for modal
+  useEffect(() => {
+    if (showForm) {
+      // Store the previously focused element
+      previousFocusRef.current = document.activeElement
+      // Focus the modal after render
+      setTimeout(() => {
+        modalRef.current?.focus()
+      }, 0)
+    } else if (previousFocusRef.current) {
+      // Restore focus to previous element
+      previousFocusRef.current.focus()
+      previousFocusRef.current = null
+    }
+  }, [showForm])
 
   const tabs = [
     { id: 'menu-items', label: 'Menu Items', icon: Layout },
@@ -463,13 +493,33 @@ export default function NavigationManagement() {
           <AnimatePresence>
             {showForm && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+                onClick={() => { setShowForm(false); setEditingItem(null) }}
+                role="dialog"
+                aria-modal="true"
+                aria-labelledby="modal-title"
               >
-                <Card>
-                  <CardHeader icon={editingItem ? Settings : Plus} title={editingItem ? 'Edit Menu Item' : 'Add Menu Item'} />
-                  <form onSubmit={editingItem ? handleUpdateItem : handleCreateItem} className="space-y-4">
+                <motion.div
+                  ref={modalRef}
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-2xl overflow-hidden"
+                  tabIndex={-1}
+                >
+                  <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-slate-700">
+                    <h2 id="modal-title" className="text-lg font-bold text-gray-900 dark:text-white">
+                      {editingItem ? 'Edit Menu Item' : 'Add Menu Item'}
+                    </h2>
+                    <button type="button" onClick={() => { setShowForm(false); setEditingItem(null) }} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700" aria-label="Close modal">
+                      <X size={18} />
+                    </button>
+                  </div>
+                  <form onSubmit={editingItem ? handleUpdateItem : handleCreateItem} className="p-5 space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Field label="Menu Title">
                         <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Home" required />
@@ -516,7 +566,7 @@ export default function NavigationManagement() {
                       </button>
                     </div>
                   </form>
-                </Card>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
@@ -650,6 +700,14 @@ export default function NavigationManagement() {
               <Field label="Button Size">
                 <Select value={settings?.resumeButtonSize ?? 'md'} onChange={(e) => updateSetting('resumeButtonSize', e.target.value)} options={[{ value: 'sm', label: 'Small' }, { value: 'md', label: 'Medium' }, { value: 'lg', label: 'Large' }]} />
               </Field>
+            </div>
+          </Card>
+
+          <Card>
+            <CardHeader icon={Download} title="CV Page Actions" subtitle="Toggle download and print buttons on the CV page." />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <Toggle value={settings?.cvDownloadEnabled ?? true} onChange={(v) => updateSetting('cvDownloadEnabled', v)} label="Download PDF Button" />
+              <Toggle value={settings?.cvPrintEnabled ?? true} onChange={(v) => updateSetting('cvPrintEnabled', v)} label="Print Button" />
             </div>
           </Card>
 

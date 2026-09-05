@@ -6,7 +6,8 @@ import {
   Home, UserCircle, FileText, X, ChevronLeft, ChevronRight,
   Image, HardDrive, Activity, Download, Wrench,
   HeartPulse, Palette, User, ChevronDown, Search, MessageSquare,
-  Shield, LogOut, Eye, Menu, Globe, Lock,
+  Shield, LogOut, Eye, Menu, Globe, Lock, BadgeCheck, Briefcase,
+  ScrollText,
 } from 'lucide-react'
 import { useAdmin } from '../context/AdminContext'
 import { useAuth } from '../authentication/AuthContext'
@@ -70,6 +71,9 @@ const navGroups = [
       { path: '/admin/footer', label: 'Footer', icon: FileText },
       { path: '/admin/messages', label: 'Messages', icon: MessageSquare },
       { path: '/admin/custom-pages', label: 'Custom Pages', icon: Globe },
+      { path: '/admin/testimonials', label: 'Testimonials', icon: BadgeCheck },
+      { path: '/admin/experience', label: 'Experience', icon: Briefcase },
+      { path: '/admin/cv', label: 'CV / Resume', icon: ScrollText },
     ],
   },
   {
@@ -191,7 +195,7 @@ export default function Sidebar() {
         aria-label="Sidebar navigation"
       >
         {filteredGroups.length === 0 && isSearching && (
-          <div className="px-3 py-8 text-center text-sm text-gray-400 dark:text-gray-500">
+          <div className="px-3 py-8 text-center text-sm text-gray-500">
             No results found
           </div>
         )}
@@ -235,20 +239,20 @@ export default function Sidebar() {
               aria-modal="true"
               aria-label="Mobile navigation"
             >
-              <div className="flex items-center justify-between h-16 px-4 border-b border-gray-200/60 dark:border-slate-700/60 shrink-0">
+              <div className="flex items-center justify-between h-16 px-4 border-b border-white/10 shrink-0">
                   <div className="flex items-center gap-3">
                   <UserAvatar user={user} size="sm" className="rounded-lg" />
                   <motion.span
                     initial={{ opacity: 0, x: -8 }}
                     animate={{ opacity: 1, x: 0 }}
-                    className="font-bold text-gray-900 dark:text-white"
+                    className="font-bold text-white"
                   >
                     {user?.displayName || user?.name || 'Portfolio'}
                   </motion.span>
                 </div>
                 <button
                   onClick={closeMobile}
-                  className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-slate-800 transition-colors"
+                  className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
                   aria-label="Close menu"
                 >
                   <X size={18} />
@@ -314,25 +318,25 @@ const SearchBar = forwardRef(function SearchBar({ value, onChange }, ref) {
 
   return (
     <div className="relative">
-      <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" />
+      <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" />
       <input
         ref={inputRef}
         type="text"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder="Quick search..."
-        className="w-full h-9 pl-9 pr-3 text-sm rounded-xl border border-gray-200/60 dark:border-slate-700/60 bg-gray-50/50 dark:bg-slate-800/50 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 transition-all duration-200"
+        className="w-full h-9 pl-9 pr-3 text-sm rounded-xl border border-white/10 bg-white/5 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500/50 transition-all duration-200"
         aria-label="Search navigation"
       />
       {!value && (
-        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-gray-400 bg-gray-100/50 dark:bg-slate-800/50 rounded border border-gray-200/60 dark:border-slate-700/60 pointer-events-none">
+        <kbd className="absolute right-3 top-1/2 -translate-y-1/2 hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-medium text-gray-500 bg-white/5 rounded border border-white/10 pointer-events-none">
           <span>⌘</span>K
         </kbd>
       )}
       {value && (
         <button
           onClick={() => onChange('')}
-          className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
+          className="absolute right-2 top-1/2 -translate-y-1/2 p-0.5 text-gray-500 hover:text-white"
           aria-label="Clear search"
         >
           <X size={14} />
@@ -403,8 +407,8 @@ function NavGroup({ group, collapsed, isOpen, onToggle, onItemClick, unreadMessa
         onClick={onToggle}
         className={`flex items-center justify-between w-full px-3 py-2 rounded-xl text-sm font-medium transition-colors ${
           hasActiveChild
-            ? 'text-indigo-600 dark:text-indigo-400'
-            : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-800/50'
+            ? 'text-indigo-400'
+            : 'text-gray-400 hover:text-white hover:bg-white/10'
         }`}
         aria-expanded={isOpen}
         aria-controls={`section-${group.id}`}
@@ -466,7 +470,7 @@ function SectionLabel({ label }) {
       animate={{ opacity: 1 }}
       className="px-3 pt-3 pb-1"
     >
-      <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-400/70 dark:text-gray-500/70">
+      <span className="text-[10px] font-semibold uppercase tracking-widest text-gray-500">
         {label}
       </span>
     </motion.div>
@@ -499,8 +503,8 @@ function NavItem({ item, collapsed, onItemClick, badge }) {
           whileTap={{ scale: 0.9 }}
           className={`relative flex items-center justify-center w-full h-10 rounded-xl text-sm font-medium transition-colors duration-200 ${
             isActive
-              ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
-              : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 hover:text-gray-700 dark:hover:text-gray-200'
+              ? 'bg-indigo-500/20 text-indigo-400'
+              : 'text-gray-400 hover:bg-white/10 hover:text-white'
           }`}
         >
           {isActive && (
@@ -530,8 +534,8 @@ function NavItem({ item, collapsed, onItemClick, badge }) {
         whileTap={{ scale: 0.97 }}
         className={`relative flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-colors duration-200 ${
           isActive
-            ? 'bg-indigo-50 dark:bg-indigo-500/10 text-indigo-600 dark:text-indigo-400'
-            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white'
+            ? 'bg-indigo-500/20 text-indigo-400'
+            : 'text-gray-400 hover:bg-white/10 hover:text-white'
         }`}
       >
         {isActive && (
@@ -565,7 +569,7 @@ function DesktopHeader({ collapsed, onToggle, user }) {
   return (
     <motion.div
       layout
-      className="flex items-center h-16 border-b border-gray-200/60 dark:border-slate-700/60 shrink-0 overflow-hidden px-4"
+      className="flex items-center h-16 border-b border-white/10 shrink-0 overflow-hidden px-4"
     >
       {collapsed ? (
         <div className="flex items-center justify-center w-full">
@@ -577,7 +581,7 @@ function DesktopHeader({ collapsed, onToggle, user }) {
             <UserAvatar user={user} size="sm" className="rounded-lg" />
             <motion.span
               layout
-              className="font-bold text-gray-900 dark:text-white whitespace-nowrap text-base"
+              className="font-bold text-white whitespace-nowrap text-base"
             >
               {user?.displayName || user?.name || 'Portfolio'}
             </motion.span>
@@ -586,7 +590,7 @@ function DesktopHeader({ collapsed, onToggle, user }) {
             whileHover={{ scale: 1.05, rotate: -5 }}
             whileTap={{ scale: 0.95 }}
             onClick={onToggle}
-            className="p-1.5 rounded-lg text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 transition-colors"
+            className="p-1.5 rounded-lg text-gray-400 hover:text-white hover:bg-white/10 transition-colors"
             title="Collapse sidebar"
             aria-label="Collapse sidebar"
           >
@@ -601,7 +605,7 @@ function DesktopHeader({ collapsed, onToggle, user }) {
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
           onClick={onToggle}
-          className="absolute -right-3 top-14 p-1 rounded-full bg-white dark:bg-slate-900 border border-gray-200/60 dark:border-slate-700/60 text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 shadow-lg"
+          className="absolute -right-3 top-14 p-1 rounded-full bg-slate-800 border border-white/10 text-gray-400 hover:text-white shadow-lg"
           title="Expand sidebar"
           aria-label="Expand sidebar"
         >
@@ -630,13 +634,13 @@ function ProfileFooter({ collapsed, user, onLogout }) {
 
   if (collapsed) {
     return (
-      <div className="border-t border-gray-200/60 dark:border-slate-700/60 p-3 shrink-0">
+      <div className="border-t border-white/10 p-3 shrink-0">
         <div className="relative" ref={menuRef}>
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setOpen((prev) => !prev)}
-            className="flex items-center justify-center w-full h-10 rounded-xl text-gray-500 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 hover:text-gray-700 dark:hover:text-gray-200 transition-colors"
+            className="flex items-center justify-center w-full h-10 rounded-xl text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
             aria-label="Account menu"
             aria-expanded={open}
           >
@@ -649,19 +653,19 @@ function ProfileFooter({ collapsed, user, onLogout }) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -8, scale: 0.96 }}
                 transition={{ duration: 0.15 }}
-                className="absolute left-0 bottom-full mb-2 w-48 bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-xl shadow-premium-lg dark:shadow-premium-lg-dark border border-gray-200/60 dark:border-slate-700/60 overflow-hidden"
+                className="absolute left-0 bottom-full mb-2 w-48 bg-slate-800/95 backdrop-blur-xl rounded-xl shadow-premium-lg dark:shadow-premium-lg-dark border border-white/10 overflow-hidden"
               >
                 <NavLink
                   to="/admin/profile"
                   onClick={() => setOpen(false)}
-                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 font-medium transition-colors"
+                  className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white font-medium transition-colors"
                 >
                   <User size={16} />
                   Profile
                 </NavLink>
                 <button
                   onClick={() => { setOpen(false); onLogout() }}
-                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 font-medium transition-colors"
+                  className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/20 hover:text-red-300 font-medium transition-colors"
                 >
                   <LogOut size={16} />
                   Sign Out
@@ -675,19 +679,19 @@ function ProfileFooter({ collapsed, user, onLogout }) {
   }
 
   return (
-    <div className="border-t border-gray-200/60 dark:border-slate-700/60 p-3 shrink-0">
+    <div className="border-t border-white/10 p-3 shrink-0">
       <div className="relative" ref={menuRef}>
         <motion.button
-          whileHover={{ backgroundColor: 'rgba(0,0,0,0.02)' }}
+          whileHover={{ backgroundColor: 'rgba(255,255,255,0.05)' }}
           whileTap={{ scale: 0.98 }}
           onClick={() => setOpen((prev) => !prev)}
-          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 hover:text-gray-900 dark:hover:text-white transition-colors"
+          className="flex items-center gap-3 w-full px-3 py-2.5 rounded-xl text-sm font-medium text-gray-400 hover:bg-white/10 hover:text-white transition-colors"
           aria-label="Account menu"
           aria-expanded={open}
         >
           <UserAvatar user={user} size="sm" />
           <div className="flex-1 text-left min-w-0">
-            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">
+            <p className="text-sm font-medium text-white truncate">
               {user?.displayName || user?.name || 'Account'}
             </p>
           </div>
@@ -706,19 +710,19 @@ function ProfileFooter({ collapsed, user, onLogout }) {
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -8, scale: 0.96 }}
               transition={{ duration: 0.15 }}
-              className="absolute left-0 bottom-full mb-2 w-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl rounded-xl shadow-premium-lg dark:shadow-premium-lg-dark border border-gray-200/60 dark:border-slate-700/60 overflow-hidden"
+              className="absolute left-0 bottom-full mb-2 w-full bg-slate-800/95 backdrop-blur-xl rounded-xl shadow-premium-lg dark:shadow-premium-lg-dark border border-white/10 overflow-hidden"
             >
               <NavLink
                 to="/admin/profile"
                 onClick={() => setOpen(false)}
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100/50 dark:hover:bg-slate-800/50 font-medium transition-colors"
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-gray-300 hover:bg-white/10 hover:text-white font-medium transition-colors"
               >
                 <User size={16} />
                 Profile
               </NavLink>
               <button
                 onClick={() => { setOpen(false); onLogout() }}
-                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50/50 dark:hover:bg-red-900/20 font-medium transition-colors"
+                className="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/20 hover:text-red-300 font-medium transition-colors"
               >
                 <LogOut size={16} />
                 Sign Out
