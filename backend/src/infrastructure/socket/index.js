@@ -27,19 +27,26 @@ function initSocket(server) {
   io.use((socket, next) => {
     const token = socket.handshake.auth?.token || socket.handshake.query?.token
     if (!token) {
-      return next(new Error('Authentication required'))
+      socket.isAdmin = false
+      return next()
     }
     try {
       const decoded = jwt.verify(token, config.jwtSecret)
       socket.adminUser = { id: decoded.id, email: decoded.email, role: decoded.role }
+      socket.isAdmin = true
       next()
     } catch {
-      next(new Error('Invalid or expired token'))
+      socket.isAdmin = false
+      next()
     }
   })
 
   io.on('connection', (socket) => {
-    socket.join('admin')
+    if (socket.isAdmin) {
+      socket.join('admin')
+    } else {
+      socket.join('public')
+    }
 
     socket.on('disconnect', () => {
     })
@@ -60,4 +67,14 @@ function emitToAdmin(event, data) {
   io.to('admin').emit(event, data)
 }
 
-module.exports = { initSocket, getIO, emitToAdmin }
+function emitToAll(event, data) {
+  if (!io) return
+  io.emit(event, data)
+}
+
+function emitToPublic(event, data) {
+  if (!io) return
+  io.to('public').emit(event, data)
+}
+
+module.exports = { initSocket, getIO, emitToAdmin, emitToAll, emitToPublic }

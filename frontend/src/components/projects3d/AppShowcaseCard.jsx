@@ -53,7 +53,7 @@ function FeaturePills({ features, color, isHovered }) {
   )
 }
 
-export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen }) {
+export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen, getMediaUrl }) {
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
 
@@ -82,6 +82,7 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
   }, [mouseX, mouseY])
 
   const color = '#6366f1'
+  const thumbUrl = app.thumbnail ? (getMediaUrl ? getMediaUrl(app.thumbnail) : app.thumbnail) : ''
   const floatDelay = useMemo(() => index * 0.4, [index])
 
   const platformIcon = app.platform === 'iOS' ? Apple : app.platform === 'Android' ? Play : Globe
@@ -158,6 +159,7 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
               mouseX={mouseX}
               mouseY={mouseY}
               color={color}
+              thumbUrl={thumbUrl}
             />
           </div>
 

@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo, useCallback, useRef } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronRight, Sun, Moon, FileText } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import Logo from '../../shared/components/Logo'
 import { getNavigation, getNavbarSettings } from '../../shared/services/navigationService'
+import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 
 const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'experience', 'contact']
 
@@ -35,12 +36,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
   // ── Fetch Data ────────────────────────────────────────────────
 
-  useEffect(() => {
-    loadNavItems()
-    loadNavbarSettings()
-  }, [])
-
-  async function loadNavItems() {
+  const loadNavItems = useCallback(async () => {
     try {
       const res = await getNavigation()
       const items = (res.items || [])
@@ -53,27 +49,25 @@ export default function Navbar({ darkMode, onToggleDark }) {
     } finally {
       setNavLoaded(true)
     }
-  }
+  }, [])
 
-  async function loadNavbarSettings() {
+  const loadNavbarSettings = useCallback(async () => {
     try {
       const res = await getNavbarSettings()
       setNavbarSettings(res.settings || null)
     } catch {}
-  }
-
-  // ── Theme Mode Sync ────────────────────────────────────────────
-
-  const themeSynced = useRef(false)
+  }, [])
 
   useEffect(() => {
-    if (!ns?.themeMode || ns.themeMode === 'auto' || themeSynced.current) return
-    const shouldBeDark = ns.themeMode === 'dark'
-    if (shouldBeDark !== darkMode) {
-      onToggleDark()
-    }
-    themeSynced.current = true
-  }, [ns?.themeMode, darkMode, onToggleDark])
+    loadNavItems()
+    loadNavbarSettings()
+  }, [loadNavItems, loadNavbarSettings])
+
+  useSocketRefresh('content:updated', loadNavItems, { type: 'navigation' })
+  useSocketRefresh('content:updated', loadNavbarSettings, { type: 'navbar' })
+  useSocketRefresh('content:updated', loadNavbarSettings, { type: 'site-settings' })
+
+  // Theme is controlled by useDarkMode hook (backend is default, user toggle persists)
 
   const displayNavItems = useMemo(() => {
     if (!navLoaded) return buildFallbackItems()

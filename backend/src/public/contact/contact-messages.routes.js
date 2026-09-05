@@ -4,7 +4,7 @@ const rateLimit = require('express-rate-limit')
 const { authenticateToken } = require('../../shared/middleware/auth')
 const { handleValidation } = require('../../shared/middleware/validate')
 const {
-  getMessages, getMessage, createMessage, markRead, markUnread, getUnreadCount, deleteMessage,
+  getMessages, getMessage, createMessage, markRead, markUnread, getUnreadCount, deleteMessage, replyToMessage,
 } = require('./contact-messages.controller')
 
 const router = Router()
@@ -30,6 +30,9 @@ router.get('/:id', authenticateToken, getMessage)
 router.post('/', messageCreateLimiter, messageValidation, handleValidation, createMessage)
 router.patch('/:id/read', authenticateToken, markRead)
 router.patch('/:id/unread', authenticateToken, markUnread)
+router.post('/:id/reply', authenticateToken, [
+  body('replyText').trim().notEmpty().withMessage('Reply text is required').isLength({ max: 5000 }).withMessage('Reply too long'),
+], handleValidation, replyToMessage)
 router.delete('/:id', authenticateToken, deleteMessage)
 
 module.exports = router

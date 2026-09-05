@@ -1,6 +1,7 @@
 const AboutContent = require('../../shared/models/AboutContent')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const { deleteFile } = require('../../infrastructure/storage/storage.service')
+const { emitToAll } = require('../../infrastructure/socket')
 
 async function getAboutContent(_req, res) {
   try {
@@ -118,11 +119,14 @@ async function updateAboutContent(req, res) {
       content.profileImage = req.file.path
     } else if (req.body.profileImageUrl) {
       content.profileImage = req.body.profileImageUrl
+    } else if (req.body.profileImage !== undefined) {
+      content.profileImage = req.body.profileImage
     }
 
     await content.save()
     res.json({ success: true, content })
     await auditLog({ userId: req.user?._id, action: 'UPDATE', resource: 'AboutContent', resourceId: content._id, details: { updatedFields: Object.keys(req.body) }, req })
+    emitToAll('content:updated', { type: 'about' })
   } catch (error) {
     console.error('[about] update error:', error.message, error.errors || '')
     res.status(500).json({ success: false, message: 'Failed to update about content' })

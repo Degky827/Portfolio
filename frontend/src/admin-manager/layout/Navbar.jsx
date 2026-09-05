@@ -33,7 +33,7 @@ const breadcrumbMap = {
   '/admin/system-config': { parent: 'System', label: 'System Config' },
   '/admin/users': { parent: 'System', label: 'Users' },
   '/admin/profile': { parent: 'Account', label: 'Profile' },
-  '/admin/theme': { parent: 'Account', label: 'Appearance' },
+  '/admin/theme': { parent: 'Account', label: 'Appearance & Portfolio' },
 }
 
 const searchableRoutes = [
@@ -55,7 +55,7 @@ const searchableRoutes = [
   { path: '/admin/maintenance', label: 'Maintenance', keywords: 'maintenance tools' },
   { path: '/admin/system-config', label: 'System Config', keywords: 'system configuration' },
   { path: '/admin/profile', label: 'Profile', keywords: 'profile account' },
-  { path: '/admin/theme', label: 'Appearance', keywords: 'theme appearance dark light' },
+  { path: '/admin/theme', label: 'Appearance & Portfolio', keywords: 'theme appearance dark light portfolio settings analytics contact' },
 ]
 
 export default function Navbar() {
@@ -302,7 +302,7 @@ export default function Navbar() {
                       <div className="py-1">
                         {[
                           { label: 'My Profile', icon: User, onClick: () => { setDropdownOpen(false); navigate('/admin/profile') } },
-                          { label: 'Appearance', icon: Palette, onClick: () => { setDropdownOpen(false); navigate('/admin/theme') } },
+                              { label: 'Appearance & Portfolio', icon: Palette, onClick: () => { setDropdownOpen(false); navigate('/admin/theme') } },
                           { label: 'Messages', icon: Bell, onClick: () => { setDropdownOpen(false); navigate('/admin/messages') } },
                         ].map((item) => (
                           <motion.button

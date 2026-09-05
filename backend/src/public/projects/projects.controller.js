@@ -3,6 +3,7 @@ const AuditLog = require('../../shared/models/AuditLog')
 const { createNotification } = require('../../admin/notifications/notifications.controller')
 const { slugify, ensureUniqueSlug } = require('../../shared/utilities/slugify')
 const { escapeRegex } = require('../../shared/utilities/escapeRegex')
+const { emitToAll } = require('../../infrastructure/socket')
 
 async function logActivity({ userId, action, resource, resourceId, details, req }) {
   try {
@@ -75,6 +76,7 @@ async function createProject(req, res) {
     })
 
     res.status(201).json({ success: true, project })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     if (error.name === 'ValidationError') {
       const messages = Object.values(error.errors).map((e) => e.message)
@@ -273,6 +275,7 @@ async function updateProject(req, res) {
     })
 
     res.json({ success: true, project })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     console.error('[projects] updateProject error:', error)
     if (error.name === 'ValidationError') {
@@ -310,6 +313,7 @@ async function deleteProject(req, res) {
     })
 
     res.json({ success: true, message: 'Project deleted successfully' })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     console.error('[projects] deleteProject error:', error)
     res.status(500).json({ success: false, message: 'Failed to delete project' })
@@ -366,6 +370,7 @@ async function duplicateProject(req, res) {
     })
 
     res.status(201).json({ success: true, project: duplicate })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     console.error('[projects] duplicateProject error:', error)
     res.status(500).json({ success: false, message: 'Failed to duplicate project' })
@@ -391,6 +396,7 @@ async function toggleFeatured(req, res) {
     })
 
     res.json({ success: true, project })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     console.error('[projects] toggleFeatured error:', error)
     res.status(500).json({ success: false, message: 'Failed to toggle featured' })
@@ -424,6 +430,7 @@ async function togglePublish(req, res) {
     })
 
     res.json({ success: true, project })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     console.error('[projects] togglePublish error:', error)
     res.status(500).json({ success: false, message: 'Failed to toggle publish status' })
@@ -457,6 +464,7 @@ async function toggleArchive(req, res) {
     })
 
     res.json({ success: true, project })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     console.error('[projects] toggleArchive error:', error)
     res.status(500).json({ success: false, message: 'Failed to toggle archive status' })
@@ -489,6 +497,7 @@ async function reorderProjects(req, res) {
     })
 
     res.json({ success: true, message: 'Projects reordered successfully' })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     console.error('[projects] reorderProjects error:', error)
     res.status(500).json({ success: false, message: 'Failed to reorder projects' })
@@ -523,6 +532,7 @@ async function updateImages(req, res) {
     })
 
     res.json({ success: true, project })
+    emitToAll('content:updated', { type: 'projects' })
   } catch (error) {
     console.error('[projects] updateImages error:', error)
     res.status(500).json({ success: false, message: 'Failed to update images' })

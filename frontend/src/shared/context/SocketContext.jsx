@@ -4,13 +4,7 @@ import { useAuth } from '../../admin-manager/authentication/AuthContext'
 
 const SocketContext = createContext(null)
 
-const localHosts = ['localhost', '127.0.0.1', '[::1]']
-const isProduction = import.meta.env.PROD || !localHosts.includes(window.location.hostname)
-const SOCKET_URL = isProduction
-  ? 'https://portfolio-backend-lgvk.onrender.com'
-  : import.meta.env.VITE_API_URL
-    ? import.meta.env.VITE_API_URL.replace('/api', '')
-    : 'http://localhost:5000'
+const SOCKET_URL = import.meta.env.VITE_SOCKET_URL || window.location.origin
 
 export function SocketProvider({ children }) {
   const { token, isAuthenticated } = useAuth()
