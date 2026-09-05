@@ -39,6 +39,7 @@ const customPageAdminRoutes = require('./admin/custom-pages/custom-pages.routes'
 const customPagePublicRoutes = require('./public/custom-pages/custom-pages-public.routes')
 const testimonialRoutes = require('./public/testimonials/testimonials.routes')
 const experienceRoutes = require('./public/experience/experience.routes')
+const cvRoutes = require('./public/cv/cv.routes')
 
 const app = express()
 
@@ -135,6 +136,7 @@ app.use('/api', customPageAdminRoutes)
 app.use('/api', customPagePublicRoutes)
 app.use('/api/testimonials', testimonialRoutes)
 app.use('/api/experiences', experienceRoutes)
+app.use('/api/cv', cvRoutes)
 
 const path = require('path')
 
