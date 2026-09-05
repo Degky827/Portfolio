@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
   Save, RefreshCw, Layout, Plus, Trash2, Eye, EyeOff, Image,
-  Settings, ChevronDown, Info, GripVertical,
+  Settings, ChevronDown, Info, GripVertical, X,
   Sun, Moon, Globe, Download,
   Move, Type, Palette, Square, Layers, ExternalLink,
   Copy, ToggleLeft, ToggleRight, AlignLeft, AlignCenter, AlignRight,
@@ -463,13 +463,28 @@ export default function NavigationManagement() {
           <AnimatePresence>
             {showForm && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50"
+                onClick={() => { setShowForm(false); setEditingItem(null) }}
               >
-                <Card>
-                  <CardHeader icon={editingItem ? Settings : Plus} title={editingItem ? 'Edit Menu Item' : 'Add Menu Item'} />
-                  <form onSubmit={editingItem ? handleUpdateItem : handleCreateItem} className="space-y-4">
+                <motion.div
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  exit={{ scale: 0.95, opacity: 0 }}
+                  onClick={(e) => e.stopPropagation()}
+                  className="w-full max-w-lg rounded-2xl bg-white dark:bg-slate-800 border border-gray-200 dark:border-slate-700 shadow-2xl overflow-hidden"
+                >
+                  <div className="flex items-center justify-between p-5 border-b border-gray-200 dark:border-slate-700">
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                      {editingItem ? 'Edit Menu Item' : 'Add Menu Item'}
+                    </h2>
+                    <button type="button" onClick={() => { setShowForm(false); setEditingItem(null) }} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700">
+                      <X size={18} />
+                    </button>
+                  </div>
+                  <form onSubmit={editingItem ? handleUpdateItem : handleCreateItem} className="p-5 space-y-4">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <Field label="Menu Title">
                         <Input value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} placeholder="e.g. Home" required />
@@ -516,7 +531,7 @@ export default function NavigationManagement() {
                       </button>
                     </div>
                   </form>
-                </Card>
+                </motion.div>
               </motion.div>
             )}
           </AnimatePresence>
