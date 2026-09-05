@@ -53,11 +53,6 @@ const navbarSettingsSchema = new mongoose.Schema({
   resumeBorderRadius: { type: Number, default: 9999 },
   resumeButtonSize: { type: String, enum: ['sm', 'md', 'lg'], default: 'md' },
 
-  // Language
-  languageEnabled: { type: Boolean, default: false },
-  defaultLanguage: { type: String, default: 'en' },
-  availableLanguages: [{ code: String, name: String, flag: String }],
-
   // Theme
   themeEnabled: { type: Boolean, default: true },
   themeMode: { type: String, enum: ['light', 'dark', 'auto'], default: 'auto' },
@@ -76,7 +71,6 @@ const navbarSettingsSchema = new mongoose.Schema({
   desktopShowFullMenu: { type: Boolean, default: true },
   desktopShowResume: { type: Boolean, default: true },
   desktopShowTheme: { type: Boolean, default: true },
-  desktopShowLanguage: { type: Boolean, default: false },
   desktopLayout: { type: String, enum: ['logo-left-menu-center', 'logo-left-menu-right', 'centered', 'split'], default: 'logo-left-menu-right' },
   desktopNavbarHeight: { type: Number, default: 72 },
   desktopLogoSize: { type: Number, default: 40 },
@@ -135,7 +129,6 @@ const navbarSettingsSchema = new mongoose.Schema({
   drawerShowSocial: { type: Boolean, default: true },
   drawerShowResume: { type: Boolean, default: true },
   drawerShowTheme: { type: Boolean, default: true },
-  drawerShowLanguage: { type: Boolean, default: false },
 
   // Animations
   navbarAnimation: { type: String, enum: ['fade-in', 'slide-down', 'slide-up', 'blur-reveal'], default: 'slide-down' },
