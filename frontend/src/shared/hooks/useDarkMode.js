@@ -1,17 +1,17 @@
 import { useState, useEffect, useCallback } from 'react'
+import { usePublicSocket } from '../context/PublicSocketContext'
 
 export function useDarkMode() {
+  const { on } = usePublicSocket()
+
   const [darkMode, setDarkMode] = useState(() => {
-    // If user explicitly toggled before, honor their choice
     const userChoice = localStorage.getItem('darkModeUserChoice')
     if (userChoice !== null) return JSON.parse(userChoice)
-    // Otherwise, start with system preference (will be overridden by backend if available)
     return window.matchMedia('(prefers-color-scheme: dark)').matches
   })
 
   const [loaded, setLoaded] = useState(false)
 
-  // On first load: fetch backend setting and use it as default
   useEffect(() => {
     const userChoice = localStorage.getItem('darkModeUserChoice')
     if (userChoice !== null) {
@@ -33,12 +33,22 @@ export function useDarkMode() {
     })
   }, [])
 
-  // Apply dark class and persist
+  useEffect(() => {
+    const cleanup = on('settings:updated', (data) => {
+      if (data.type === 'appearance' && data.mode) {
+        const userChoice = localStorage.getItem('darkModeUserChoice')
+        if (userChoice !== null) return
+        const isDark = data.mode === 'dark' || (data.mode === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches)
+        setDarkMode(isDark)
+      }
+    })
+    return cleanup
+  }, [on])
+
   useEffect(() => {
     document.documentElement.classList.toggle('dark', darkMode)
   }, [darkMode])
 
-  // Toggle: user explicitly chose, so persist their choice
   const toggleDarkMode = useCallback(() => {
     setDarkMode((prev) => {
       const next = !prev
@@ -47,7 +57,6 @@ export function useDarkMode() {
     })
   }, [])
 
-  // Reset: clear user choice, fall back to backend default
   const resetDarkMode = useCallback(() => {
     localStorage.removeItem('darkModeUserChoice')
     import('../services/api').then(({ default: api }) => {
