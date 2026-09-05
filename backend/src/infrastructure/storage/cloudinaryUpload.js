@@ -22,11 +22,11 @@ const localImageStorage = multer.diskStorage({
 })
 
 const imageFilter = (_req, file, cb) => {
-  const allowed = /\.(jpg|jpeg|png|gif|webp|svg)$/i
+  const allowed = /\.(jpg|jpeg|png|gif|webp|svg|avif)$/i
   if (allowed.test(file.originalname)) {
     cb(null, true)
   } else {
-    cb(new Error('Only image files (jpg, jpeg, png, gif, webp, svg) are allowed'), false)
+    cb(new Error('Only image files (jpg, jpeg, png, gif, webp, svg, avif) are allowed'), false)
   }
 }
 
@@ -57,12 +57,38 @@ function createUploadMiddleware(type = 'image') {
   })
 }
 
-const imageUpload = createUploadMiddleware('image')
-const documentUpload = createUploadMiddleware('document')
-
-function wrapMulter(uploadInstance) {
+function wrapMulter(fieldName, type = 'image') {
   return (req, res, next) => {
-    uploadInstance(req, res, (err) => {
+    const upload = createUploadMiddleware(type)
+    upload.single(fieldName)(req, res, (err) => {
+      if (err instanceof multer.MulterError) {
+        if (err.code === 'LIMIT_FILE_SIZE') {
+          return res.status(400).json({ success: false, message: 'File exceeds size limit' })
+        }
+        return res.status(400).json({ success: false, message: err.message })
+      }
+      if (err) {
+        return res.status(400).json({ success: false, message: err.message })
+      }
+
+      if (req.file) {
+        req.file.path = getFileUrl(req.file)
+      }
+      if (req.files) {
+        Object.values(req.files).flat().forEach((f) => {
+          f.path = getFileUrl(f)
+        })
+      }
+
+      next()
+    })
+  }
+}
+
+function wrapMulterFields(fieldConfig, type = 'image') {
+  return (req, res, next) => {
+    const upload = createUploadMiddleware(type)
+    upload.fields(fieldConfig)(req, res, (err) => {
       if (err instanceof multer.MulterError) {
         if (err.code === 'LIMIT_FILE_SIZE') {
           return res.status(400).json({ success: false, message: 'File exceeds size limit' })
@@ -88,15 +114,15 @@ function wrapMulter(uploadInstance) {
 }
 
 function uploadSingle(fieldName) {
-  return wrapMulter(imageUpload.single(fieldName))
+  return wrapMulter(fieldName, 'image')
 }
 
 function uploadFields(fieldConfig) {
-  return wrapMulter(imageUpload.fields(fieldConfig))
+  return wrapMulterFields(fieldConfig, 'image')
 }
 
 function uploadSingleDocument(fieldName) {
-  return wrapMulter(documentUpload.single(fieldName))
+  return wrapMulter(fieldName, 'document')
 }
 
 module.exports = { uploadSingle, uploadFields, uploadSingleDocument, getStorageProvider }

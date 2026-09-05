@@ -51,9 +51,9 @@ app.use(helmet({
       scriptSrc: ["'self'", "'unsafe-inline'", 'https://accounts.google.com', 'https://apis.google.com'],
       scriptSrcAttr: ["'unsafe-inline'"],
       styleSrc: ["'self'", "'unsafe-inline'", 'https://fonts.googleapis.com', 'https://accounts.google.com'],
-      imgSrc: ["'self'", 'data:', 'https:', ...(config.nodeEnv !== 'production' ? ['http://localhost:9000'] : [])],
+      imgSrc: ["'self'", 'data:', 'https:', ...(config.nodeEnv !== 'production' ? ['http://localhost:9000', 'http://localhost:*'] : [])],
       fontSrc: ["'self'", 'https://fonts.gstatic.com'],
-      connectSrc: ["'self'", config.frontendUrl, 'https://accounts.google.com', 'https://oauth2.googleapis.com', 'https://www.googleapis.com'].filter(Boolean),
+      connectSrc: ["'self'", config.frontendUrl, ...(config.nodeEnv !== 'production' ? ['http://localhost:9000', 'http://localhost:*'] : []), 'https://accounts.google.com', 'https://oauth2.googleapis.com', 'https://www.googleapis.com'].filter(Boolean),
       frameSrc: ["'self'", 'https://accounts.google.com'],
       objectSrc: ["'none'"],
       baseUri: ["'self'"],
@@ -139,9 +139,15 @@ app.use('/uploads', express.static('uploads'))
 if (isMinioConfigured) {
   app.get('/minio/*key', async (req, res) => {
     try {
-      const objectKey = Array.isArray(req.params.key) ? req.params.key.join('/') : req.params.key
-      const presignedUrl = await minioClient.presignedGetObject(BUCKET, objectKey, 7 * 24 * 60 * 60)
-      res.redirect(presignedUrl)
+      const fullKey = Array.isArray(req.params.key) ? req.params.key.join('/') : req.params.key
+      const prefix = BUCKET + '/'
+      const objectKey = fullKey.startsWith(prefix) ? fullKey.slice(prefix.length) : fullKey
+      const stream = await minioClient.getObject(BUCKET, objectKey)
+      const stat = await minioClient.statObject(BUCKET, objectKey)
+      res.setHeader('Content-Type', stat.metaData['content-type'] || 'application/octet-stream')
+      res.setHeader('Content-Length', stat.size)
+      res.setHeader('Cache-Control', 'public, max-age=86400')
+      stream.pipe(res)
     } catch (err) {
       console.error('[minio-proxy] Error:', err.message)
       res.status(404).json({ success: false, message: 'File not found' })
