@@ -5,6 +5,7 @@ import emailjs from '@emailjs/browser'
 import { logPortfolioVisit, logPortfolioEngagement } from '../../../shared/services/api'
 import { getContactContent, createMessage } from '../../../shared/services/contactService'
 import { getSettings } from '../../../shared/services/settingsService'
+import { useSocketRefresh } from '../../../shared/hooks/useSocketRefresh'
 import { MouseParallaxProvider, useMouseParallaxSubscribe } from '../../../components/contact3d/MouseParallaxProvider'
 import { createContainerVariants, defaultViewport } from '../../shared/animations'
 
@@ -509,26 +510,29 @@ export default function Contact() {
   const [touched, setTouched] = useState({})
   const [contactFormEnabled, setContactFormEnabled] = useState(true)
 
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const { content } = await getContactContent()
-        setContent(content)
-      } catch {
-        // fall back to hardcoded
-      }
-    })()
-    ;(async () => {
-      try {
-        const { settings } = await getSettings()
+  const fetchContactContent = useCallback(() => {
+    getContactContent()
+      .then(({ content }) => setContent(content))
+      .catch(() => {})
+  }, [])
+
+  const fetchSettings = useCallback(() => {
+    getSettings()
+      .then(({ settings }) => {
         if (settings?.enableContactForm !== undefined) {
           setContactFormEnabled(settings.enableContactForm)
         }
-      } catch {
-        // default to enabled
-      }
-    })()
+      })
+      .catch(() => {})
   }, [])
+
+  useEffect(() => {
+    fetchContactContent()
+    fetchSettings()
+  }, [fetchContactContent, fetchSettings])
+
+  useSocketRefresh('content:updated', fetchContactContent, { type: 'contact' })
+  useSocketRefresh('content:updated', fetchSettings, { type: 'settings' })
 
   const validationErrors = validate(values)
   const isValid = Object.keys(validationErrors).length === 0
