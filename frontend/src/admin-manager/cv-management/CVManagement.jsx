@@ -1,37 +1,31 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import {
-  Save, RefreshCw, User, FileText, Code2, Briefcase, FolderKanban,
-  GraduationCap, Award, Trophy, Globe, Plus, Trash2, X, ChevronDown,
+  Save, RefreshCw, Edit2, X, Plus, Trash2, ChevronDown,
+  User, FileText, Code2, Briefcase, FolderKanban,
+  GraduationCap, Award, Trophy, Globe,
 } from 'lucide-react'
-import PageHeader from '../shared/PageHeader'
 import Toast from '../shared/Toast'
 import { getCVContent, updateCVContent } from '../../shared/services/cvService'
+import defaultCVData from '../../shared/data/cvData'
+import CVSidebar from '../../public-portfolio/pages/cv/CVSidebar'
+import CVMain from '../../public-portfolio/pages/cv/CVMain'
 
-const tabs = [
+const editTabs = [
   { id: 'personal', label: 'Personal', icon: User },
   { id: 'summary', label: 'Summary', icon: FileText },
   { id: 'skills', label: 'Skills', icon: Code2 },
   { id: 'experience', label: 'Experience', icon: Briefcase },
   { id: 'projects', label: 'Projects', icon: FolderKanban },
   { id: 'education', label: 'Education', icon: GraduationCap },
-  { id: 'certifications', label: 'Certifications', icon: Award },
-  { id: 'achievements', label: 'Achievements', icon: Trophy },
+  { id: 'certifications', label: 'Certs', icon: Award },
+  { id: 'achievements', label: 'Awards', icon: Trophy },
   { id: 'languages', label: 'Languages', icon: Globe },
 ]
 
-function Field({ label, children }) {
+function Input({ value, onChange, placeholder, className = '' }) {
   return (
-    <div>
-      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">{label}</label>
-      {children}
-    </div>
-  )
-}
-
-function Input({ value, onChange, placeholder, type = 'text', className = '' }) {
-  return (
-    <input type={type} value={value} onChange={onChange} placeholder={placeholder}
+    <input type="text" value={value} onChange={onChange} placeholder={placeholder}
       className={`w-full px-4 py-3 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${className}`} />
   )
 }
@@ -43,9 +37,12 @@ function Textarea({ value, onChange, placeholder, rows = 4 }) {
   )
 }
 
-function Card({ children, className = '' }) {
+function Field({ label, children }) {
   return (
-    <div className={`bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 p-6 space-y-5 ${className}`}>{children}</div>
+    <div>
+      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">{label}</label>
+      {children}
+    </div>
   )
 }
 
@@ -54,18 +51,17 @@ export default function CVManagement() {
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [toast, setToast] = useState(null)
-  const [activeTab, setActiveTab] = useState('personal')
+  const [editing, setEditing] = useState(false)
+  const [editTab, setEditTab] = useState('personal')
 
-  useEffect(() => {
-    fetchData()
-  }, [])
+  useEffect(() => { fetchData() }, [])
 
   async function fetchData() {
     try {
       const data = await getCVContent()
-      setCV(data.content || {})
+      setCV(data.content && data.content.personal?.name ? data.content : defaultCVData)
     } catch {
-      setToast({ message: 'Failed to load CV data', type: 'error' })
+      setCV(defaultCVData)
     } finally {
       setLoading(false)
     }
@@ -77,11 +73,8 @@ export default function CVManagement() {
       const next = { ...prev }
       let obj = next
       for (let i = 0; i < keys.length - 1; i++) {
-        if (Array.isArray(obj[keys[i]])) {
-          obj[keys[i]] = [...obj[keys[i]]]
-        } else {
-          obj[keys[i]] = { ...obj[keys[i]] }
-        }
+        if (Array.isArray(obj[keys[i]])) obj[keys[i]] = [...obj[keys[i]]]
+        else obj[keys[i]] = { ...obj[keys[i]] }
         obj = obj[keys[i]]
       }
       obj[keys[keys.length - 1]] = value
@@ -109,7 +102,8 @@ export default function CVManagement() {
     setSaving(true)
     try {
       await updateCVContent(cv)
-      setToast({ message: 'CV content saved successfully', type: 'success' })
+      setToast({ message: 'CV saved successfully', type: 'success' })
+      setEditing(false)
     } catch (err) {
       setToast({ message: err.response?.data?.message || 'Failed to save', type: 'error' })
     } finally {
@@ -129,407 +123,307 @@ export default function CVManagement() {
 
   return (
     <div className="space-y-6">
-      <PageHeader title="CV / Resume Management" subtitle="Manage your CV content displayed on the public CV page." />
-
-      {/* Tabs */}
-      <div className="flex flex-wrap gap-2">
-        {tabs.map(tab => (
-          <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold uppercase tracking-wider transition-all ${
-              activeTab === tab.id ? 'bg-primary text-white shadow-lg' : 'bg-white dark:bg-slate-900 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-slate-800 hover:border-primary/30'
-            }`}>
-            <tab.icon size={14} />
-            {tab.label}
+      {/* Top bar with Edit button */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-xl font-bold text-gray-900 dark:text-white">CV / Resume</h1>
+          <p className="text-sm text-gray-500 dark:text-gray-400">Preview your public CV page. Click Edit to make changes.</p>
+        </div>
+        <div className="flex gap-3">
+          <a href="/#/cv" target="_blank" rel="noopener noreferrer"
+            className="px-4 py-2.5 rounded-xl text-sm font-medium text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-slate-800 hover:bg-gray-200 dark:hover:bg-slate-700 transition-colors">
+            View Public Page
+          </a>
+          <button onClick={() => setEditing(true)}
+            className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors">
+            <Edit2 size={16} /> Edit CV
           </button>
-        ))}
+        </div>
       </div>
 
-      {/* Personal Info */}
-      {activeTab === 'personal' && (
-        <Card>
-          <h3 className="text-sm font-bold text-gray-900 dark:text-white">Personal Information</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <Field label="Full Name"><Input value={cv.personal?.name || ''} onChange={e => updateField('personal.name', e.target.value)} /></Field>
-            <Field label="Job Title"><Input value={cv.personal?.title || ''} onChange={e => updateField('personal.title', e.target.value)} /></Field>
-            <Field label="Photo URL"><Input value={cv.personal?.photo || ''} onChange={e => updateField('personal.photo', e.target.value)} placeholder="/path or URL" /></Field>
-            <Field label="Location"><Input value={cv.personal?.location || ''} onChange={e => updateField('personal.location', e.target.value)} /></Field>
-            <Field label="Phone"><Input value={cv.personal?.phone || ''} onChange={e => updateField('personal.phone', e.target.value)} /></Field>
-            <Field label="Email"><Input value={cv.personal?.email || ''} onChange={e => updateField('personal.email', e.target.value)} /></Field>
-            <Field label="GitHub URL"><Input value={cv.personal?.github || ''} onChange={e => updateField('personal.github', e.target.value)} /></Field>
-            <Field label="LinkedIn URL"><Input value={cv.personal?.linkedin || ''} onChange={e => updateField('personal.linkedin', e.target.value)} /></Field>
-            <Field label="Portfolio URL"><Input value={cv.personal?.portfolio || ''} onChange={e => updateField('personal.portfolio', e.target.value)} /></Field>
-          </div>
-        </Card>
-      )}
-
-      {/* Summary */}
-      {activeTab === 'summary' && (
-        <Card>
-          <h3 className="text-sm font-bold text-gray-900 dark:text-white">Professional Summary</h3>
-          <Textarea rows={6} value={cv.summary || ''} onChange={e => updateField('summary', e.target.value)} placeholder="Write your professional summary..." />
-        </Card>
-      )}
-
-      {/* Skills */}
-      {activeTab === 'skills' && (
-        <div className="space-y-4">
-          {['frontend', 'backend', 'mobile', 'databases', 'devops'].map(cat => (
-            <SkillCategory key={cat} category={cat} skills={cv.skills?.[cat] || []}
-              onUpdate={(skills) => updateField(`skills.${cat}`, skills)} />
-          ))}
+      {/* CV Preview */}
+      <div className="bg-white dark:bg-slate-900 rounded-2xl border border-gray-200 dark:border-slate-800 overflow-hidden shadow-lg">
+        <div className="cv-container" style={{ transform: 'scale(0.75)', transformOrigin: 'top center', minHeight: 600 }}>
+          <CVSidebar data={cv} />
+          <CVMain data={cv} />
         </div>
-      )}
-
-      {/* Experience */}
-      {activeTab === 'experience' && (
-        <div className="space-y-4">
-          {(cv.experience || []).map((exp, i) => (
-            <ExperienceItem key={i} item={exp} index={i}
-              onUpdate={(field, val) => updateArrayItem('experience', i, field, val)}
-              onRemove={() => removeArrayItem('experience', i)} />
-          ))}
-          <button onClick={() => addArrayItem('experience', { title: '', company: '', location: '', startDate: '', endDate: '', current: false, bullets: [] })}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors">
-            <Plus size={16} /> Add Experience
-          </button>
-        </div>
-      )}
-
-      {/* Projects */}
-      {activeTab === 'projects' && (
-        <div className="space-y-4">
-          {(cv.projects || []).map((proj, i) => (
-            <ProjectItem key={i} item={proj} index={i}
-              onUpdate={(field, val) => updateArrayItem('projects', i, field, val)}
-              onRemove={() => removeArrayItem('projects', i)} />
-          ))}
-          <button onClick={() => addArrayItem('projects', { name: '', description: '', technologies: [], highlights: [], url: null, github: null, featured: false })}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors">
-            <Plus size={16} /> Add Project
-          </button>
-        </div>
-      )}
-
-      {/* Education */}
-      {activeTab === 'education' && (
-        <div className="space-y-4">
-          {(cv.education || []).map((edu, i) => (
-            <EducationItem key={i} item={edu} index={i}
-              onUpdate={(field, val) => updateArrayItem('education', i, field, val)}
-              onRemove={() => removeArrayItem('education', i)} />
-          ))}
-          <button onClick={() => addArrayItem('education', { degree: '', institution: '', location: '', startDate: '', endDate: '', expected: false, description: null })}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors">
-            <Plus size={16} /> Add Education
-          </button>
-        </div>
-      )}
-
-      {/* Certifications */}
-      {activeTab === 'certifications' && (
-        <div className="space-y-4">
-          {(cv.certifications || []).map((cert, i) => (
-            <CertificationItem key={i} item={cert} index={i}
-              onUpdate={(field, val) => updateArrayItem('certifications', i, field, val)}
-              onRemove={() => removeArrayItem('certifications', i)} />
-          ))}
-          <button onClick={() => addArrayItem('certifications', { name: '', organization: '', track: '', date: null, url: null })}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors">
-            <Plus size={16} /> Add Certification
-          </button>
-        </div>
-      )}
-
-      {/* Achievements */}
-      {activeTab === 'achievements' && (
-        <div className="space-y-4">
-          {(cv.achievements || []).map((ach, i) => (
-            <AchievementItem key={i} item={ach} index={i}
-              onUpdate={(field, val) => updateArrayItem('achievements', i, field, val)}
-              onRemove={() => removeArrayItem('achievements', i)} />
-          ))}
-          <button onClick={() => addArrayItem('achievements', { title: '', description: '' })}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors">
-            <Plus size={16} /> Add Achievement
-          </button>
-        </div>
-      )}
-
-      {/* Languages */}
-      {activeTab === 'languages' && (
-        <div className="space-y-4">
-          {(cv.languages || []).map((lang, i) => (
-            <LanguageItem key={i} item={lang} index={i}
-              onUpdate={(field, val) => updateArrayItem('languages', i, field, val)}
-              onRemove={() => removeArrayItem('languages', i)} />
-          ))}
-          <button onClick={() => addArrayItem('languages', { language: '', proficiency: '' })}
-            className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-primary hover:bg-primary/5 rounded-xl transition-colors">
-            <Plus size={16} /> Add Language
-          </button>
-        </div>
-      )}
-
-      {/* Save Button */}
-      <div className="flex justify-end gap-3 pt-6 border-t border-gray-200 dark:border-slate-800">
-        <button onClick={handleSave} disabled={saving}
-          className="px-6 py-3 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 transition-colors disabled:opacity-50 flex items-center gap-2">
-          {saving ? <><RefreshCw size={18} className="animate-spin" /> Saving...</> : <><Save size={18} /> Save All Changes</>}
-        </button>
       </div>
+
+      {/* Edit Modal */}
+      <AnimatePresence>
+        {editing && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex bg-black/60 backdrop-blur-sm" onClick={() => setEditing(false)}>
+            {/* Left: Edit Form */}
+            <motion.div initial={{ x: -400 }} animate={{ x: 0 }} exit={{ x: -400 }}
+              onClick={e => e.stopPropagation()}
+              className="w-full max-w-2xl h-full overflow-y-auto bg-white dark:bg-slate-900 shadow-2xl">
+              <div className="sticky top-0 z-10 bg-white dark:bg-slate-900 border-b border-gray-200 dark:border-slate-700 px-6 py-4 flex items-center justify-between">
+                <h2 className="text-lg font-bold text-gray-900 dark:text-white">Edit CV Content</h2>
+                <div className="flex items-center gap-3">
+                  <button onClick={() => setEditing(false)}
+                    className="px-4 py-2 text-sm rounded-xl text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800">
+                    Cancel
+                  </button>
+                  <button onClick={handleSave} disabled={saving}
+                    className="flex items-center gap-2 px-5 py-2 rounded-xl text-sm font-medium text-white bg-primary hover:bg-primary/90 disabled:opacity-50">
+                    {saving ? <><RefreshCw size={16} className="animate-spin" /> Saving...</> : <><Save size={16} /> Save</>}
+                  </button>
+                </div>
+              </div>
+
+              {/* Edit Tabs */}
+              <div className="flex flex-wrap gap-1.5 px-6 py-3 border-b border-gray-200 dark:border-slate-700">
+                {editTabs.map(tab => (
+                  <button key={tab.id} onClick={() => setEditTab(tab.id)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      editTab === tab.id ? 'bg-primary text-white' : 'text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-slate-800'
+                    }`}>
+                    <tab.icon size={12} /> {tab.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* Edit Content */}
+              <div className="px-6 py-5 space-y-4">
+                {editTab === 'personal' && (
+                  <div className="grid grid-cols-2 gap-4">
+                    <Field label="Full Name"><Input value={cv.personal?.name || ''} onChange={e => updateField('personal.name', e.target.value)} /></Field>
+                    <Field label="Job Title"><Input value={cv.personal?.title || ''} onChange={e => updateField('personal.title', e.target.value)} /></Field>
+                    <Field label="Photo URL"><Input value={cv.personal?.photo || ''} onChange={e => updateField('personal.photo', e.target.value)} /></Field>
+                    <Field label="Location"><Input value={cv.personal?.location || ''} onChange={e => updateField('personal.location', e.target.value)} /></Field>
+                    <Field label="Phone"><Input value={cv.personal?.phone || ''} onChange={e => updateField('personal.phone', e.target.value)} /></Field>
+                    <Field label="Email"><Input value={cv.personal?.email || ''} onChange={e => updateField('personal.email', e.target.value)} /></Field>
+                    <Field label="GitHub"><Input value={cv.personal?.github || ''} onChange={e => updateField('personal.github', e.target.value)} /></Field>
+                    <Field label="LinkedIn"><Input value={cv.personal?.linkedin || ''} onChange={e => updateField('personal.linkedin', e.target.value)} /></Field>
+                    <Field label="Portfolio"><Input value={cv.personal?.portfolio || ''} onChange={e => updateField('personal.portfolio', e.target.value)} /></Field>
+                  </div>
+                )}
+
+                {editTab === 'summary' && (
+                  <Field label="Professional Summary">
+                    <Textarea rows={6} value={cv.summary || ''} onChange={e => updateField('summary', e.target.value)} />
+                  </Field>
+                )}
+
+                {editTab === 'skills' && (
+                  <div className="space-y-4">
+                    {['frontend', 'backend', 'mobile', 'databases', 'devops'].map(cat => (
+                      <SkillEditor key={cat} category={cat} skills={cv.skills?.[cat] || []}
+                        onUpdate={s => updateField(`skills.${cat}`, s)} />
+                    ))}
+                  </div>
+                )}
+
+                {editTab === 'experience' && (
+                  <div className="space-y-3">
+                    {(cv.experience || []).map((exp, i) => (
+                      <ExpandableItem key={i} title={exp.title || 'New Experience'}>
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <Input value={exp.title} onChange={e => updateArrayItem('experience', i, 'title', e.target.value)} placeholder="Job Title" />
+                            <Input value={exp.company} onChange={e => updateArrayItem('experience', i, 'company', e.target.value)} placeholder="Company" />
+                            <Input value={exp.location} onChange={e => updateArrayItem('experience', i, 'location', e.target.value)} placeholder="Location" />
+                            <Input value={exp.startDate} onChange={e => updateArrayItem('experience', i, 'startDate', e.target.value)} placeholder="Start (e.g. 2026-01)" />
+                            <Input value={exp.endDate || ''} onChange={e => updateArrayItem('experience', i, 'endDate', e.target.value || null)} placeholder="End Date" />
+                            <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                              <input type="checkbox" checked={exp.current} onChange={e => updateArrayItem('experience', i, 'current', e.target.checked)} className="rounded" />
+                              Current
+                            </label>
+                          </div>
+                          <TagEditor label="Bullet Points" items={exp.bullets || []} onAdd={b => updateArrayItem('experience', i, 'bullets', [...(exp.bullets || []), b])}
+                            onRemove={idx => updateArrayItem('experience', i, 'bullets', exp.bullets.filter((_, j) => j !== idx))} />
+                        </div>
+                        <button onClick={() => removeArrayItem('experience', i)} className="mt-3 text-xs text-red-500 hover:text-red-700">Remove</button>
+                      </ExpandableItem>
+                    ))}
+                    <button onClick={() => addArrayItem('experience', { title: '', company: '', location: '', startDate: '', endDate: '', current: false, bullets: [] })}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary/5 rounded-xl"><Plus size={14} /> Add Experience</button>
+                  </div>
+                )}
+
+                {editTab === 'projects' && (
+                  <div className="space-y-3">
+                    {(cv.projects || []).map((proj, i) => (
+                      <ExpandableItem key={i} title={proj.name || 'New Project'}>
+                        <div className="space-y-3">
+                          <Input value={proj.name} onChange={e => updateArrayItem('projects', i, 'name', e.target.value)} placeholder="Project Name" />
+                          <Textarea rows={2} value={proj.description} onChange={e => updateArrayItem('projects', i, 'description', e.target.value)} placeholder="Description" />
+                          <div className="grid grid-cols-2 gap-3">
+                            <Input value={proj.url || ''} onChange={e => updateArrayItem('projects', i, 'url', e.target.value || null)} placeholder="Live URL" />
+                            <Input value={proj.github || ''} onChange={e => updateArrayItem('projects', i, 'github', e.target.value || null)} placeholder="GitHub URL" />
+                          </div>
+                          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <input type="checkbox" checked={proj.featured} onChange={e => updateArrayItem('projects', i, 'featured', e.target.checked)} className="rounded" />
+                            Featured
+                          </label>
+                          <TagEditor label="Technologies" items={proj.technologies || []} onAdd={t => updateArrayItem('projects', i, 'technologies', [...(proj.technologies || []), t])}
+                            onRemove={idx => updateArrayItem('projects', i, 'technologies', proj.technologies.filter((_, j) => j !== idx))} />
+                          <TagEditor label="Highlights" items={proj.highlights || []} onAdd={h => updateArrayItem('projects', i, 'highlights', [...(proj.highlights || []), h])}
+                            onRemove={idx => updateArrayItem('projects', i, 'highlights', proj.highlights.filter((_, j) => j !== idx))} />
+                        </div>
+                        <button onClick={() => removeArrayItem('projects', i)} className="mt-3 text-xs text-red-500 hover:text-red-700">Remove</button>
+                      </ExpandableItem>
+                    ))}
+                    <button onClick={() => addArrayItem('projects', { name: '', description: '', technologies: [], highlights: [], url: null, github: null, featured: false })}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary/5 rounded-xl"><Plus size={14} /> Add Project</button>
+                  </div>
+                )}
+
+                {editTab === 'education' && (
+                  <div className="space-y-3">
+                    {(cv.education || []).map((edu, i) => (
+                      <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <Input value={edu.degree} onChange={e => updateArrayItem('education', i, 'degree', e.target.value)} placeholder="Degree" />
+                          <Input value={edu.institution} onChange={e => updateArrayItem('education', i, 'institution', e.target.value)} placeholder="Institution" />
+                          <Input value={edu.location} onChange={e => updateArrayItem('education', i, 'location', e.target.value)} placeholder="Location" />
+                          <Input value={edu.startDate} onChange={e => updateArrayItem('education', i, 'startDate', e.target.value)} placeholder="Start Year" />
+                          <Input value={edu.endDate} onChange={e => updateArrayItem('education', i, 'endDate', e.target.value)} placeholder="End Year" />
+                          <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
+                            <input type="checkbox" checked={edu.expected} onChange={e => updateArrayItem('education', i, 'expected', e.target.checked)} className="rounded" />
+                            Expected
+                          </label>
+                        </div>
+                        <button onClick={() => removeArrayItem('education', i)} className="text-xs text-red-500 hover:text-red-700">Remove</button>
+                      </div>
+                    ))}
+                    <button onClick={() => addArrayItem('education', { degree: '', institution: '', location: '', startDate: '', endDate: '', expected: false })}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary/5 rounded-xl"><Plus size={14} /> Add Education</button>
+                  </div>
+                )}
+
+                {editTab === 'certifications' && (
+                  <div className="space-y-3">
+                    {(cv.certifications || []).map((cert, i) => (
+                      <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
+                        <div className="grid grid-cols-2 gap-3">
+                          <Input value={cert.name} onChange={e => updateArrayItem('certifications', i, 'name', e.target.value)} placeholder="Certification Name" />
+                          <Input value={cert.organization} onChange={e => updateArrayItem('certifications', i, 'organization', e.target.value)} placeholder="Organization" />
+                          <Input value={cert.track} onChange={e => updateArrayItem('certifications', i, 'track', e.target.value)} placeholder="Track / Program" />
+                          <Input value={cert.date || ''} onChange={e => updateArrayItem('certifications', i, 'date', e.target.value || null)} placeholder="Date" />
+                        </div>
+                        <button onClick={() => removeArrayItem('certifications', i)} className="text-xs text-red-500 hover:text-red-700">Remove</button>
+                      </div>
+                    ))}
+                    <button onClick={() => addArrayItem('certifications', { name: '', organization: '', track: '', date: null, url: null })}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary/5 rounded-xl"><Plus size={14} /> Add Certification</button>
+                  </div>
+                )}
+
+                {editTab === 'achievements' && (
+                  <div className="space-y-3">
+                    {(cv.achievements || []).map((ach, i) => (
+                      <div key={i} className="p-4 rounded-xl border border-gray-200 dark:border-slate-700 space-y-3">
+                        <Input value={ach.title} onChange={e => updateArrayItem('achievements', i, 'title', e.target.value)} placeholder="Achievement Title" />
+                        <Textarea rows={2} value={ach.description} onChange={e => updateArrayItem('achievements', i, 'description', e.target.value)} placeholder="Description" />
+                        <button onClick={() => removeArrayItem('achievements', i)} className="text-xs text-red-500 hover:text-red-700">Remove</button>
+                      </div>
+                    ))}
+                    <button onClick={() => addArrayItem('achievements', { title: '', description: '' })}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary/5 rounded-xl"><Plus size={14} /> Add Achievement</button>
+                  </div>
+                )}
+
+                {editTab === 'languages' && (
+                  <div className="space-y-3">
+                    {(cv.languages || []).map((lang, i) => (
+                      <div key={i} className="flex items-center gap-3">
+                        <div className="flex-1"><Input value={lang.language} onChange={e => updateArrayItem('languages', i, 'language', e.target.value)} placeholder="Language" /></div>
+                        <div className="flex-1"><Input value={lang.proficiency} onChange={e => updateArrayItem('languages', i, 'proficiency', e.target.value)} placeholder="Proficiency" /></div>
+                        <button onClick={() => removeArrayItem('languages', i)} className="p-2 text-red-400 hover:text-red-600"><Trash2 size={14} /></button>
+                      </div>
+                    ))}
+                    <button onClick={() => addArrayItem('languages', { language: '', proficiency: '' })}
+                      className="flex items-center gap-2 px-4 py-2 text-sm text-primary hover:bg-primary/5 rounded-xl"><Plus size={14} /> Add Language</button>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+
+            {/* Right: Live Preview */}
+            <div className="hidden lg:block flex-1 overflow-y-auto p-8 bg-gray-100 dark:bg-slate-800">
+              <div className="bg-white rounded-2xl shadow-2xl overflow-hidden max-w-4xl mx-auto" style={{ transform: 'scale(0.85)', transformOrigin: 'top center' }}>
+                <div className="cv-container">
+                  <CVSidebar data={cv} />
+                  <CVMain data={cv} />
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
     </div>
   )
 }
 
-function SkillCategory({ category, skills, onUpdate }) {
-  const [input, setInput] = useState('')
-  const label = category.charAt(0).toUpperCase() + category.slice(1)
-
-  function add() {
-    if (input.trim()) {
-      onUpdate([...skills, input.trim()])
-      setInput('')
-    }
-  }
-
-  function remove(idx) {
-    onUpdate(skills.filter((_, i) => i !== idx))
-  }
-
+function ExpandableItem({ title, children }) {
+  const [open, setOpen] = useState(false)
   return (
-    <Card>
-      <h3 className="text-sm font-bold text-gray-900 dark:text-white">{label} Skills</h3>
+    <div className="rounded-xl border border-gray-200 dark:border-slate-700 overflow-hidden">
+      <button onClick={() => setOpen(!open)}
+        className="w-full flex items-center justify-between px-4 py-3 text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-slate-800/50">
+        <span className="truncate">{title || 'Untitled'}</span>
+        <ChevronDown size={16} className={`shrink-0 transition-transform ${open ? 'rotate-180' : ''}`} />
+      </button>
+      <AnimatePresence>
+        {open && (
+          <motion.div initial={{ height: 0 }} animate={{ height: 'auto' }} exit={{ height: 0 }} className="overflow-hidden">
+            <div className="px-4 pb-4 space-y-3 border-t border-gray-100 dark:border-slate-800 pt-3">{children}</div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  )
+}
+
+function TagEditor({ label, items, onAdd, onRemove }) {
+  const [input, setInput] = useState('')
+  return (
+    <div>
+      <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">{label}</label>
       <div className="flex gap-2">
-        <Input value={input} onChange={e => setInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), add())} placeholder={`Add ${label} skill`} />
-        <button onClick={add} className="px-4 py-2 text-sm rounded-xl bg-primary text-white hover:bg-primary/90">Add</button>
+        <Input value={input} onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), input.trim() && (onAdd(input.trim()), setInput('')))}
+          placeholder={`Add ${label.toLowerCase()}`} />
       </div>
-      {skills.length > 0 && (
-        <div className="flex flex-wrap gap-2">
-          {skills.map((s, i) => (
-            <span key={i} className="inline-flex items-center gap-1 px-3 py-1 text-xs rounded-full bg-primary/10 text-primary">
-              {s}
-              <button onClick={() => remove(i)} className="hover:text-red-500"><X size={12} /></button>
+      {items.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {items.map((t, i) => (
+            <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-primary/10 text-primary">
+              {t}
+              <button onClick={() => onRemove(i)} className="hover:text-red-500"><X size={11} /></button>
             </span>
           ))}
         </div>
       )}
-    </Card>
+    </div>
   )
 }
 
-function ExperienceItem({ item, index, onUpdate, onRemove }) {
-  const [expanded, setExpanded] = useState(false)
-  const [bulletInput, setBulletInput] = useState('')
-
-  function addBullet() {
-    if (bulletInput.trim()) {
-      onUpdate('bullets', [...(item.bullets || []), bulletInput.trim()])
-      setBulletInput('')
-    }
-  }
-
+function SkillEditor({ category, skills, onUpdate }) {
+  const [input, setInput] = useState('')
+  const label = category.charAt(0).toUpperCase() + category.slice(1)
   return (
-    <Card>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <Input value={item.title} onChange={e => onUpdate('title', e.target.value)} placeholder="Job Title" />
+    <div className="p-4 rounded-xl border border-gray-200 dark:border-slate-700">
+      <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">{label}</h4>
+      <div className="flex gap-2">
+        <Input value={input} onChange={e => setInput(e.target.value)}
+          onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), input.trim() && (onUpdate([...skills, input.trim()]), setInput('')))}
+          placeholder={`Add ${label} skill`} />
+      </div>
+      {skills.length > 0 && (
+        <div className="flex flex-wrap gap-1.5 mt-2">
+          {skills.map((s, i) => (
+            <span key={i} className="inline-flex items-center gap-1 px-2.5 py-1 text-xs rounded-full bg-primary/10 text-primary">
+              {s}
+              <button onClick={() => onUpdate(skills.filter((_, j) => j !== i))} className="hover:text-red-500"><X size={11} /></button>
+            </span>
+          ))}
         </div>
-        <div className="flex items-center gap-1 ml-3 shrink-0">
-          <button onClick={() => setExpanded(!expanded)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400">
-            <ChevronDown size={16} className={expanded ? 'rotate-180' : ''} />
-          </button>
-          <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-red-400 hover:text-red-600">
-            <Trash2 size={16} />
-          </button>
-        </div>
-      </div>
-      <AnimatePresence>
-        {expanded && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden space-y-3">
-            <div className="grid grid-cols-2 gap-3">
-              <Input value={item.company} onChange={e => onUpdate('company', e.target.value)} placeholder="Company" />
-              <Input value={item.location} onChange={e => onUpdate('location', e.target.value)} placeholder="Location" />
-              <Input value={item.startDate} onChange={e => onUpdate('startDate', e.target.value)} placeholder="Start Date (e.g. 2026-01)" />
-              <Input value={item.endDate || ''} onChange={e => onUpdate('endDate', e.target.value || null)} placeholder="End Date or leave empty" />
-            </div>
-            <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <input type="checkbox" checked={item.current} onChange={e => onUpdate('current', e.target.checked)} className="rounded" />
-              Currently working here
-            </label>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Bullet Points</label>
-              <div className="flex gap-2">
-                <Input value={bulletInput} onChange={e => setBulletInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), addBullet())} placeholder="Add bullet point" />
-                <button onClick={addBullet} className="px-3 py-2 text-sm rounded-xl bg-primary text-white hover:bg-primary/90">Add</button>
-              </div>
-              {(item.bullets || []).length > 0 && (
-                <ul className="mt-2 space-y-1">
-                  {item.bullets.map((b, i) => (
-                    <li key={i} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
-                      <span className="text-primary">•</span>
-                      <span className="flex-1">{b}</span>
-                      <button onClick={() => onUpdate('bullets', item.bullets.filter((_, j) => j !== i))} className="hover:text-red-500"><X size={12} /></button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </Card>
-  )
-}
-
-function ProjectItem({ item, index, onUpdate, onRemove }) {
-  const [expanded, setExpanded] = useState(false)
-  const [techInput, setTechInput] = useState('')
-  const [highlightInput, setHighlightInput] = useState('')
-
-  return (
-    <Card>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <Input value={item.name} onChange={e => onUpdate('name', e.target.value)} placeholder="Project Name" />
-        </div>
-        <div className="flex items-center gap-1 ml-3 shrink-0">
-          <button onClick={() => setExpanded(!expanded)} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-gray-400">
-            <ChevronDown size={16} className={expanded ? 'rotate-180' : ''} />
-          </button>
-          <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-red-400 hover:text-red-600">
-            <Trash2 size={16} />
-          </button>
-        </div>
-      </div>
-      <AnimatePresence>
-        {expanded && (
-          <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: 'auto', opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-            className="overflow-hidden space-y-3">
-            <Textarea rows={3} value={item.description} onChange={e => onUpdate('description', e.target.value)} placeholder="Project description" />
-            <div className="grid grid-cols-2 gap-3">
-              <Input value={item.url || ''} onChange={e => onUpdate('url', e.target.value || null)} placeholder="Live URL" />
-              <Input value={item.github || ''} onChange={e => onUpdate('github', e.target.value || null)} placeholder="GitHub URL" />
-            </div>
-            <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-              <input type="checkbox" checked={item.featured} onChange={e => onUpdate('featured', e.target.checked)} className="rounded" />
-              Featured Project
-            </label>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Technologies</label>
-              <div className="flex gap-2">
-                <Input value={techInput} onChange={e => setTechInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), techInput.trim() && (onUpdate('technologies', [...(item.technologies || []), techInput.trim()]), setTechInput('')))} placeholder="Add technology" />
-              </div>
-              {(item.technologies || []).length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {item.technologies.map((t, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300">
-                      {t}
-                      <button onClick={() => onUpdate('technologies', item.technologies.filter((_, j) => j !== i))} className="hover:text-red-500"><X size={12} /></button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-1.5">Highlights</label>
-              <div className="flex gap-2">
-                <Input value={highlightInput} onChange={e => setHighlightInput(e.target.value)} onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), highlightInput.trim() && (onUpdate('highlights', [...(item.highlights || []), highlightInput.trim()]), setHighlightInput('')))} placeholder="Add highlight" />
-              </div>
-              {(item.highlights || []).length > 0 && (
-                <div className="flex flex-wrap gap-1.5 mt-2">
-                  {item.highlights.map((h, i) => (
-                    <span key={i} className="inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full bg-purple-100 dark:bg-purple-900/30 text-purple-700 dark:text-purple-300">
-                      {h}
-                      <button onClick={() => onUpdate('highlights', item.highlights.filter((_, j) => j !== i))} className="hover:text-red-500"><X size={12} /></button>
-                    </span>
-                  ))}
-                </div>
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </Card>
-  )
-}
-
-function EducationItem({ item, index, onUpdate, onRemove }) {
-  return (
-    <Card>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <Input value={item.degree} onChange={e => onUpdate('degree', e.target.value)} placeholder="Degree" />
-        </div>
-        <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-red-400 hover:text-red-600 ml-3 shrink-0">
-          <Trash2 size={16} />
-        </button>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <Input value={item.institution} onChange={e => onUpdate('institution', e.target.value)} placeholder="Institution" />
-        <Input value={item.location} onChange={e => onUpdate('location', e.target.value)} placeholder="Location" />
-        <Input value={item.startDate} onChange={e => onUpdate('startDate', e.target.value)} placeholder="Start Year" />
-        <Input value={item.endDate} onChange={e => onUpdate('endDate', e.target.value)} placeholder="End Year" />
-      </div>
-      <label className="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400">
-        <input type="checkbox" checked={item.expected} onChange={e => onUpdate('expected', e.target.checked)} className="rounded" />
-        Expected (not yet completed)
-      </label>
-    </Card>
-  )
-}
-
-function CertificationItem({ item, index, onUpdate, onRemove }) {
-  return (
-    <Card>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <Input value={item.name} onChange={e => onUpdate('name', e.target.value)} placeholder="Certification Name" />
-        </div>
-        <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-red-400 hover:text-red-600 ml-3 shrink-0">
-          <Trash2 size={16} />
-        </button>
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <Input value={item.organization} onChange={e => onUpdate('organization', e.target.value)} placeholder="Organization" />
-        <Input value={item.track} onChange={e => onUpdate('track', e.target.value)} placeholder="Track / Program" />
-        <Input value={item.date || ''} onChange={e => onUpdate('date', e.target.value || null)} placeholder="Date (optional)" />
-        <Input value={item.url || ''} onChange={e => onUpdate('url', e.target.value || null)} placeholder="URL (optional)" />
-      </div>
-    </Card>
-  )
-}
-
-function AchievementItem({ item, index, onUpdate, onRemove }) {
-  return (
-    <Card>
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <Input value={item.title} onChange={e => onUpdate('title', e.target.value)} placeholder="Achievement Title" />
-        </div>
-        <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-red-400 hover:text-red-600 ml-3 shrink-0">
-          <Trash2 size={16} />
-        </button>
-      </div>
-      <Textarea rows={2} value={item.description} onChange={e => onUpdate('description', e.target.value)} placeholder="Description (optional)" />
-    </Card>
-  )
-}
-
-function LanguageItem({ item, index, onUpdate, onRemove }) {
-  return (
-    <div className="flex items-center gap-3">
-      <div className="flex-1">
-        <Input value={item.language} onChange={e => onUpdate('language', e.target.value)} placeholder="Language" />
-      </div>
-      <div className="flex-1">
-        <Input value={item.proficiency} onChange={e => onUpdate('proficiency', e.target.value)} placeholder="Proficiency (e.g. Native, Fluent)" />
-      </div>
-      <button onClick={onRemove} className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-slate-700 text-red-400 hover:text-red-600 shrink-0">
-        <Trash2 size={16} />
-      </button>
+      )}
     </div>
   )
 }
