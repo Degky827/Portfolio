@@ -1,9 +1,10 @@
-import { useState, useEffect, useMemo, memo } from 'react'
+import { useState, useEffect, useMemo, useCallback, memo } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowUp, MapPin, Mail, Phone } from 'lucide-react'
 import { getFooterContent } from '../../shared/services/footerService'
 import { getNavbarSettings } from '../../shared/services/navigationService'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
+import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 import Logo from '../../shared/components/Logo'
 import { createContainerVariants, defaultViewport } from '../shared/animations'
 import {
@@ -53,22 +54,26 @@ export default function Footer() {
   const [content, setContent] = useState(null)
   const [ns, setNs] = useState(null)
 
-  useEffect(() => {
-    ;(async () => {
-      try {
-        const { content } = await getFooterContent()
-        setContent(content)
-      } catch {
-        /* fall back to hardcoded */
-      }
-    })()
-    ;(async () => {
-      try {
-        const res = await getNavbarSettings()
-        setNs(res.settings || null)
-      } catch {}
-    })()
+  const fetchFooterContent = useCallback(() => {
+    getFooterContent()
+      .then(({ content }) => setContent(content))
+      .catch(() => {})
   }, [])
+
+  const fetchNavbarSettings = useCallback(() => {
+    getNavbarSettings()
+      .then((res) => setNs(res.settings || null))
+      .catch(() => {})
+  }, [])
+
+  useEffect(() => {
+    fetchFooterContent()
+    fetchNavbarSettings()
+  }, [fetchFooterContent, fetchNavbarSettings])
+
+  useSocketRefresh('content:updated', fetchFooterContent, { type: 'footer' })
+  useSocketRefresh('content:updated', fetchNavbarSettings, { type: 'navbar' })
+  useSocketRefresh('content:updated', fetchNavbarSettings, { type: 'navigation' })
 
   const mergedSettings = useMemo(() => ({
     ...settings,
