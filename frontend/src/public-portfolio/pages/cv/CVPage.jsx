@@ -38,11 +38,16 @@ export default function CVPage({ data }) {
 
   useEffect(() => {
     const handler = (payload) => {
-      if (payload?.type === 'navbar-settings') {
-        setCvSettings({
-          cvDownloadEnabled: payload.data?.cvDownloadEnabled !== false,
-          cvPrintEnabled: payload.data?.cvPrintEnabled !== false,
-        })
+      if (payload?.type === 'navbar') {
+        getNavbarSettings()
+          .then(res => {
+            const s = res.settings || res
+            setCvSettings({
+              cvDownloadEnabled: s.cvDownloadEnabled !== false,
+              cvPrintEnabled: s.cvPrintEnabled !== false,
+            })
+          })
+          .catch(() => {})
         return
       }
       getCVContent()
