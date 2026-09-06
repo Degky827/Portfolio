@@ -158,24 +158,123 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   return (
     <section
       id="home"
-      className="relative -mt-28 sm:-mt-32 min-h-0 md:min-h-screen overflow-hidden bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300"
+      className="flex flex-col min-h-[100svh] min-h-screen bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
       aria-label="Hero section"
     >
-      {/* 3D Desktop Scene */}
-      <div className="md:absolute md:right-0 md:top-0 md:w-[58%] lg:w-[60%] md:h-full md:z-10 w-full h-[45vh] sm:h-[50vh] mt-28 sm:mt-32 md:mt-0 relative z-0 pointer-events-auto cursor-grab active:cursor-grabbing">
-        <Suspense fallback={
-          <div className="w-full h-full flex items-center justify-center">
-            <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+      {/* ── Zone 0: Navbar spacer ── */}
+      <div className="h-20 shrink-0" />
+
+      {/* ── Zone 1: Hero row (text + 3D scene) ── */}
+      <div className="flex-1 min-h-0 flex flex-col md:flex-row">
+        {/* Left: hero content */}
+        <div className="w-full md:w-[42%] lg:w-[40%] px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-6 sm:py-8 md:py-0 md:flex md:items-center pointer-events-none">
+          <div className="pointer-events-auto w-full">
+            {showEyebrow && (
+              <motion.p {...fadeIn(0.2)} className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-indigo-600 dark:text-indigo-400">
+                {eyebrow}
+              </motion.p>
+            )}
+
+            <h1 className="mb-5">
+              {showGreeting && (
+                <motion.span {...fadeUp(0.35)} className="block text-sm sm:text-base md:text-lg font-semibold leading-tight text-slate-500 dark:text-[#A8B0C0]">
+                  {greeting}
+                </motion.span>
+              )}
+              {showName && (
+                <motion.span {...fadeUp(0.45)} className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white my-0.5">
+                  {fullName}
+                </motion.span>
+              )}
+              {showTitle && (
+                <motion.span {...fadeUp(0.55)} className="block text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight mt-1 text-slate-900 dark:text-white">
+                  {typedHead}
+                  <span className="text-indigo-600 dark:text-[#818CF8]">{typedTail}</span>
+                  <motion.span
+                    animate={{ opacity: [1, 0] }}
+                    transition={{ duration: 0.6, repeat: Infinity }}
+                    className="inline-block w-[2px] h-5 sm:h-6 md:h-7 lg:h-8 ml-1 bg-indigo-500 align-middle"
+                    aria-hidden="true"
+                  />
+                </motion.span>
+              )}
+            </h1>
+
+            {showDescription && introduction && (
+              <motion.p {...fadeUp(0.65)} className="text-xs sm:text-sm md:text-base leading-relaxed mb-6 text-slate-600 dark:text-[#A8B0C0] max-w-lg font-normal">
+                {introduction}
+              </motion.p>
+            )}
+
+            {(showPrimaryCta || showSecondaryCta) && (
+              <motion.div {...fadeUp(0.75)} className="flex flex-wrap items-center gap-3 mb-8">
+                {showPrimaryCta && (
+                  <button
+                    onClick={primaryCtaUrl.startsWith('#') ? scrollToWork : () => window.location.href = primaryCtaUrl}
+                    className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/25 cursor-pointer"
+                    aria-label={primaryCtaText}
+                  >
+                    {primaryCtaText}
+                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
+                  </button>
+                )}
+                {showSecondaryCta && (
+                  <button
+                    onClick={contactBtnLink.startsWith('#') ? scrollToContact : () => window.location.href = contactBtnLink}
+                    className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border border-slate-300 dark:border-white/10 hover:border-indigo-500/50 bg-slate-100/80 dark:bg-white/[0.04] backdrop-blur-md text-slate-800 dark:text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 cursor-pointer"
+                    aria-label={contactBtnText}
+                  >
+                    {contactBtnText}
+                    <MessageCircle size={14} className="opacity-70 group-hover:opacity-100 transition-opacity" />
+                  </button>
+                )}
+              </motion.div>
+            )}
+
+            {/* Technologies Strip */}
+            <motion.div {...fadeUp(0.85)}>
+              <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] mb-2.5 text-slate-500 dark:text-[#64748B]">
+                Technologies I work with
+              </p>
+              <div className="flex flex-wrap gap-3 sm:gap-4">
+                {technologies.map((tech, i) => (
+                  <motion.div
+                    key={tech.name}
+                    initial={{ opacity: 0, y: 8 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.35, delay: 0.95 + i * 0.05 }}
+                  >
+                    <TechTile name={tech.name} icon={tech.icon} />
+                  </motion.div>
+                ))}
+                <motion.div
+                  initial={{ opacity: 0, y: 8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, delay: 0.95 + technologies.length * 0.05 }}
+                >
+                  <TechTile name="More" icon="more" label="More" onClick={scrollToSkills} />
+                </motion.div>
+              </div>
+            </motion.div>
           </div>
-        }>
-          <HeroDesktopScene className="w-full h-full" profileData={profileData} scene3D={content?.scene3D} />
-        </Suspense>
+        </div>
+
+        {/* Right: 3D Desktop Scene */}
+        <div className="w-full md:flex-1 h-[45vh] sm:h-[50vh] md:h-auto relative z-0 pointer-events-none md:pointer-events-auto cursor-grab active:cursor-grabbing overflow-hidden">
+          <Suspense fallback={
+            <div className="w-full h-full flex items-center justify-center">
+              <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+            </div>
+          }>
+            <HeroDesktopScene className="w-full h-full" profileData={profileData} scene3D={content?.scene3D} />
+          </Suspense>
+        </div>
       </div>
 
-      {/* Social media sidebar */}
+      {/* ── Zone 2: Social media sidebar (fixed, desktop only) ── */}
       <motion.div
         {...fadeIn(1.4)}
-        className="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-30 flex-col items-center gap-3 pointer-events-auto"
+        className="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-3 pointer-events-auto"
       >
         {socialItems.map((social, i) => (
           <motion.a
@@ -199,150 +298,49 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         ))}
       </motion.div>
 
-      {/* Main content overlay */}
-      <div className="md:relative md:z-20 relative z-10 min-h-0 md:min-h-screen flex flex-col pointer-events-none md:pt-20">
-        <div className="flex-1 flex items-center">
-          <div className="w-full px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 flex items-center">
-            <div className="w-full md:w-[42%] lg:w-[40%] lg:max-w-md pt-6 sm:pt-8 md:pt-0 pb-6 md:pb-36 pointer-events-auto relative">
-              <div className="md:hidden absolute -inset-x-6 -top-24 -bottom-6 bg-white/80 dark:bg-[#1a1a2e]/85 backdrop-blur-sm -z-10 rounded-3xl" />
-
-              {showEyebrow && (
-                <motion.p {...fadeIn(0.2)} className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-indigo-600 dark:text-indigo-400">
-                  {eyebrow}
-                </motion.p>
-              )}
-
-              <h1 className="mb-5">
-                {showGreeting && (
-                  <motion.span {...fadeUp(0.35)} className="block text-sm sm:text-base md:text-lg font-semibold leading-tight text-slate-500 dark:text-[#A8B0C0]">
-                    {greeting}
-                  </motion.span>
-                )}
-                {showName && (
-                  <motion.span {...fadeUp(0.45)} className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white my-0.5">
-                    {fullName}
-                  </motion.span>
-                )}
-                {showTitle && (
-                  <motion.span {...fadeUp(0.55)} className="block text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight mt-1 text-slate-900 dark:text-white">
-                    {typedHead}
-                    <span className="text-indigo-600 dark:text-[#818CF8]">{typedTail}</span>
-                    <motion.span
-                      animate={{ opacity: [1, 0] }}
-                      transition={{ duration: 0.6, repeat: Infinity }}
-                      className="inline-block w-[2px] h-5 sm:h-6 md:h-7 lg:h-8 ml-1 bg-indigo-500 align-middle"
-                      aria-hidden="true"
-                    />
-                  </motion.span>
-                )}
-              </h1>
-
-              {showDescription && introduction && (
-                <motion.p {...fadeUp(0.65)} className="text-xs sm:text-sm md:text-base leading-relaxed mb-6 text-slate-600 dark:text-[#A8B0C0] max-w-lg font-normal">
-                  {introduction}
-                </motion.p>
-              )}
-
-              {(showPrimaryCta || showSecondaryCta) && (
-                <motion.div {...fadeUp(0.75)} className="flex flex-wrap items-center gap-3 mb-8">
-                  {showPrimaryCta && (
-                    <button
-                      onClick={primaryCtaUrl.startsWith('#') ? scrollToWork : () => window.location.href = primaryCtaUrl}
-                      className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/25 cursor-pointer"
-                      aria-label={primaryCtaText}
-                    >
-                      {primaryCtaText}
-                      <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
-                    </button>
-                  )}
-                  {showSecondaryCta && (
-                    <button
-                      onClick={contactBtnLink.startsWith('#') ? scrollToContact : () => window.location.href = contactBtnLink}
-                      className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border border-slate-300 dark:border-white/10 hover:border-indigo-500/50 bg-slate-100/80 dark:bg-white/[0.04] backdrop-blur-md text-slate-800 dark:text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 cursor-pointer"
-                      aria-label={contactBtnText}
-                    >
-                      {contactBtnText}
-                      <MessageCircle size={14} className="opacity-70 group-hover:opacity-100 transition-opacity" />
-                    </button>
-                  )}
-                </motion.div>
-              )}
-
-              {/* Technologies Strip — from database */}
-              <motion.div {...fadeUp(0.85)}>
-                <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] mb-2.5 text-slate-500 dark:text-[#64748B]">
-                  Technologies I work with
-                </p>
-                <div className="flex flex-wrap gap-3 sm:gap-4">
-                  {technologies.map((tech, i) => (
-                    <motion.div
-                      key={tech.name}
-                      initial={{ opacity: 0, y: 8 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      transition={{ duration: 0.35, delay: 0.95 + i * 0.05 }}
-                    >
-                      <TechTile name={tech.name} icon={tech.icon} />
-                    </motion.div>
-                  ))}
-                  <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: 0.95 + technologies.length * 0.05 }}
-                  >
-                    <TechTile name="More" icon="more" label="More" onClick={scrollToSkills} />
-                  </motion.div>
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom stats panel */}
+      {/* ── Zone 3: Statistics / Freelance card (desktop) ── */}
       <motion.div
         {...fadeUp(1.1)}
-        className="pointer-events-auto hidden md:block absolute inset-x-6 lg:inset-x-8 bottom-24 z-30"
+        className="pointer-events-auto hidden md:block px-6 lg:px-8 pb-4 shrink-0"
       >
         <div
           className="flex items-stretch rounded-2xl border bg-white/85 dark:bg-[#101522]/85 border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-xl shadow-slate-900/5 overflow-hidden"
           role="region"
           aria-label="Portfolio statistics"
         >
-          {/* Stats */}
           {stats.map((stat, i) => (
             <div
               key={i}
-              className="flex flex-col justify-center px-6 lg:px-8 py-4 border-r border-slate-200/80 dark:border-white/10"
+              className="flex flex-col justify-center px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-r border-slate-200/80 dark:border-white/10"
             >
-              <div className="text-lg lg:text-xl font-extrabold leading-none text-indigo-600 dark:text-[#818CF8]">
+              <div className="text-base sm:text-lg lg:text-xl font-extrabold leading-none text-indigo-600 dark:text-[#818CF8]">
                 {stat.value}
               </div>
-              <div className="text-[10px] lg:text-[11px] font-medium mt-1.5 text-slate-500 dark:text-[#7a8599] whitespace-nowrap">
+              <div className="text-[9px] sm:text-[10px] lg:text-[11px] font-medium mt-1 sm:mt-1.5 text-slate-500 dark:text-[#7a8599] whitespace-nowrap">
                 {stat.label}
               </div>
             </div>
           ))}
 
-          {/* Available for freelance — from database */}
           {availability.enabled && (
-            <div className="flex items-center gap-4 ml-auto px-5 lg:px-6 py-4">
+            <div className="flex items-center gap-3 sm:gap-4 ml-auto px-4 sm:px-5 lg:px-6 py-3 sm:py-4">
               <div className="flex flex-col">
                 <div className="flex items-center gap-2">
                   <span className={`w-2 h-2 rounded-full ${
                     availability.status === 'available' ? 'bg-emerald-500 animate-pulse' :
                     availability.status === 'busy' ? 'bg-amber-500' : 'bg-gray-400'
                   }`} />
-                  <div className="text-[11px] lg:text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                  <div className="text-[10px] sm:text-[11px] lg:text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                     {availability.title}
                   </div>
                 </div>
-                <div className="text-[10px] lg:text-[11px] mt-0.5 text-slate-500 dark:text-[#7a8599]">
+                <div className="text-[9px] sm:text-[10px] lg:text-[11px] mt-0.5 text-slate-500 dark:text-[#7a8599] hidden sm:block">
                   {availability.description}
                 </div>
               </div>
               <button
                 onClick={scrollToContact}
-                className="group flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md shadow-indigo-600/25"
+                className="group flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-[11px] sm:text-xs rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md shadow-indigo-600/25"
               >
                 {availability.ctaText}
                 <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform duration-200" />
@@ -352,30 +350,75 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         </div>
       </motion.div>
 
-      {/* Scroll indicator */}
+      {/* ── Zone 3: Statistics / Freelance card (mobile) ── */}
+      <div className="md:hidden px-4 pb-3 pt-2 shrink-0 pointer-events-auto">
+        <div
+          className="flex flex-col rounded-xl border bg-white/85 dark:bg-[#101522]/85 border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-lg overflow-hidden"
+          role="region"
+          aria-label="Portfolio statistics"
+        >
+          <div className="flex flex-wrap justify-around py-3 px-3">
+            {stats.map((stat, i) => (
+              <div key={i} className="flex flex-col items-center px-3 py-1">
+                <div className="text-sm font-extrabold leading-none text-indigo-600 dark:text-[#818CF8]">
+                  {stat.value}
+                </div>
+                <div className="text-[9px] font-medium mt-1 text-slate-500 dark:text-[#7a8599] whitespace-nowrap">
+                  {stat.label}
+                </div>
+              </div>
+            ))}
+          </div>
+
+          {availability.enabled && (
+            <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-t border-slate-200/80 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02]">
+              <div className="flex items-center gap-2">
+                <span className={`w-1.5 h-1.5 rounded-full ${
+                  availability.status === 'available' ? 'bg-emerald-500 animate-pulse' :
+                  availability.status === 'busy' ? 'bg-amber-500' : 'bg-gray-400'
+                }`} />
+                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-900 dark:text-white">
+                  {availability.title}
+                </span>
+              </div>
+              <button
+                onClick={scrollToContact}
+                className="group flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-[11px] rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md shadow-indigo-600/25"
+              >
+                {availability.ctaText}
+                <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform duration-200" />
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* ── Zone 4: Scroll indicator ── */}
       <motion.div
         {...fadeIn(1.6)}
         onClick={scrollToAbout}
         onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') scrollToAbout() }}
-        className="hidden md:flex absolute bottom-5 left-1/2 -translate-x-1/2 flex-col items-center gap-1.5 cursor-pointer group z-30 pointer-events-auto text-slate-500 dark:text-[#7a8599]"
+        className="hidden md:flex justify-center py-5 shrink-0 cursor-pointer group pointer-events-auto text-slate-500 dark:text-[#7a8599]"
         role="button"
         tabIndex={0}
         aria-label="Scroll to explore"
       >
-        <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
-          Scroll to explore
-        </span>
-        <motion.div
-          animate={{ y: [0, 5, 0] }}
-          transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-          className="w-[18px] h-[28px] border-[1.5px] border-slate-300 dark:border-[#2a3454] rounded-full flex justify-center pt-1.5 group-hover:border-indigo-600 dark:group-hover:border-indigo-400 transition-colors duration-200"
-        >
+        <div className="flex flex-col items-center gap-1.5">
+          <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
+            Scroll to explore
+          </span>
           <motion.div
-            animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
+            animate={{ y: [0, 5, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-[2px] h-[6px] bg-indigo-600 dark:bg-indigo-400 rounded-full"
-          />
-        </motion.div>
+            className="w-[18px] h-[28px] border-[1.5px] border-slate-300 dark:border-[#2a3454] rounded-full flex justify-center pt-1.5 group-hover:border-indigo-600 dark:group-hover:border-indigo-400 transition-colors duration-200"
+          >
+            <motion.div
+              animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+              className="w-[2px] h-[6px] bg-indigo-600 dark:bg-indigo-400 rounded-full"
+            />
+          </motion.div>
+        </div>
       </motion.div>
     </section>
   )
