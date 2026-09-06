@@ -162,7 +162,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       aria-label="Hero section"
     >
       {/* ── Zone 0: Navbar spacer ── */}
-      <div className="h-20 shrink-0" />
+      <div className="h-16 shrink-0" />
 
       {/* ── Zone 1: Hero row (text + 3D scene) ── */}
       <div className="flex-1 min-h-0 flex flex-col md:flex-row">
