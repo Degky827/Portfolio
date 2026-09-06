@@ -9,67 +9,63 @@ import { usePublicSocket } from '../../../shared/context/PublicSocketContext'
 const DEFAULT_TESTIMONIALS = [
   {
     _id: '1',
-    authorName: 'Sarah Mitchell',
-    authorTitle: 'Engineering Manager',
-    authorCompany: 'TechCorp Inc.',
-    authorPhoto: '',
-    content: 'Desalegn is an exceptional developer who consistently delivers high-quality code. His ability to understand complex requirements and translate them into scalable solutions is remarkable. He\'s a true team player who elevates everyone around him.',
-    rating: 5,
-    relationship: 'supervisor',
-    featured: true,
-    status: 'PUBLISHED',
-    order: 1,
+    name: 'Sarah Mitchell',
+    role: 'Engineering Manager',
+    organization: 'TechCorp Inc.',
+    organizationUrl: 'https://techcorp.com',
     linkedinUrl: 'https://linkedin.com/in/sarahmitchell',
+    relationship: 'Supervisor',
     avatar: '',
-    organizationLogo: '',
+    content: 'Desalegn is an exceptional developer who consistently delivers high-quality code. His ability to understand complex requirements and translate them into scalable solutions is remarkable. He\'s a true team player who elevates everyone around him.',
+    verified: true,
+    featured: true,
+    publishedAt: '2025-11-15',
+    project: 'E-Commerce Platform',
   },
   {
     _id: '2',
-    authorName: 'James Chen',
-    authorTitle: 'Senior Frontend Developer',
-    authorCompany: 'StartupXYZ',
-    authorPhoto: '',
-    content: 'Working with Desalegn was a fantastic experience. He has deep expertise in React and TypeScript, and his code reviews were always insightful. He mentored junior developers and helped establish best practices that we still use today.',
-    rating: 5,
-    relationship: 'colleague',
-    featured: true,
-    status: 'PUBLISHED',
-    order: 2,
+    name: 'James Chen',
+    role: 'Senior Frontend Developer',
+    organization: 'StartupXYZ',
+    organizationUrl: 'https://startupxyz.io',
     linkedinUrl: 'https://linkedin.com/in/jameschen',
+    relationship: 'Colleague',
     avatar: '',
-    organizationLogo: '',
+    content: 'Working with Desalegn was a fantastic experience. He has deep expertise in React and TypeScript, and his code reviews were always insightful. He mentored junior developers and helped establish best practices that we still use today.',
+    verified: true,
+    featured: true,
+    publishedAt: '2025-09-22',
+    project: 'Internal Dashboard',
   },
   {
     _id: '3',
-    authorName: 'Maria Rodriguez',
-    authorTitle: 'Product Manager',
-    authorCompany: 'InnovateLabs',
-    authorPhoto: '',
-    content: 'Desalegn has a rare combination of technical excellence and product intuition. He doesn\'t just build features — he understands the "why" behind them and suggests improvements that genuinely improve user experience. Highly recommended.',
-    rating: 5,
-    relationship: 'client',
-    featured: true,
-    status: 'PUBLISHED',
-    order: 3,
+    name: 'Maria Rodriguez',
+    role: 'Product Manager',
+    organization: 'InnovateLabs',
+    organizationUrl: 'https://innovatelabs.co',
     linkedinUrl: 'https://linkedin.com/in/mariarodriguez',
+    relationship: 'Client',
     avatar: '',
-    organizationLogo: '',
+    content: 'Desalegn has a rare combination of technical excellence and product intuition. He doesn\'t just build features — he understands the "why" behind them and suggests improvements that genuinely improve user experience. Highly recommended.',
+    verified: true,
+    featured: true,
+    publishedAt: '2025-08-10',
+    project: 'Mobile App Redesign',
   },
   {
     _id: '4',
-    authorName: 'David Park',
-    authorTitle: 'DevOps Lead',
-    authorCompany: 'CloudScale',
-    authorPhoto: '',
-    content: 'Desalegn\'s full-stack capabilities are impressive. He can navigate from database optimization to pixel-perfect UI implementation seamlessly. His work on our CI/CD pipelines reduced deployment times by 60%. A true asset to any engineering team.',
-    rating: 5,
-    relationship: 'supervisor',
-    featured: true,
-    status: 'PUBLISHED',
-    order: 4,
+    name: 'David Park',
+    role: 'DevOps Lead',
+    organization: 'CloudScale',
+    organizationUrl: 'https://cloudscale.dev',
     linkedinUrl: 'https://linkedin.com/in/davidpark',
+    relationship: 'Supervisor',
     avatar: '',
-    organizationLogo: '',
+    content: 'Desalegn\'s full-stack capabilities are impressive. He can navigate from database optimization to pixel-perfect UI implementation seamlessly. His work on our CI/CD pipelines reduced deployment times by 60%. A true asset to any engineering team.',
+    verified: true,
+    featured: true,
+    publishedAt: '2025-12-01',
+    project: 'CI/CD Pipeline Optimization',
   },
 ]
 
@@ -123,15 +119,15 @@ export default function Testimonials() {
           <div className="inline-flex items-center gap-2 px-3 py-1 mb-3 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/50">
             <BadgeCheck size={14} className="text-[#0a66c2] dark:text-[#70b5f9]" aria-hidden="true" />
             <span className="text-[11px] font-semibold tracking-wider text-slate-600 dark:text-slate-300 uppercase">
-              Recommendations
+              Professional Network
             </span>
           </div>
 
           <h2 className="text-3xl sm:text-4xl font-bold text-[#0f172a] dark:text-white mb-2 tracking-tight leading-tight">
-            Professional Recommendations
+            Recommendations
           </h2>
           <p className="text-[15px] sm:text-base text-slate-500 dark:text-slate-400 max-w-xl mx-auto leading-relaxed">
-            What supervisors, team leads, clients, and colleagues say about working with me.
+            What supervisors, colleagues, and clients say about working with me.
           </p>
         </motion.div>
 
