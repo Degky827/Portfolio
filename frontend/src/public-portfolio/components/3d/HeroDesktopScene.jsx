@@ -1,9 +1,10 @@
 import { Suspense, useMemo, useState, useCallback, useRef, useEffect } from 'react'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { Float, OrbitControls } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Maximize2, Minimize2, RotateCcw } from 'lucide-react'
+import { Maximize2, Minimize2, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
 import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
+import { getHeroScrollProgress } from '../../shared/heroScrollStore'
 import * as THREE from 'three'
 import Desk from './Desk'
 import Monitor from './Monitor'
@@ -35,7 +36,7 @@ const SAFE_DEFAULTS = {
   camera: {
     positionX: 0.35, positionY: 1.6, positionZ: 5.1,
     rotationX: 0, rotationY: 0, rotationZ: 0,
-    fov: 36, zoom: 1,
+    fov: 30, zoom: 1,
   },
   objects: [],
 }
@@ -57,8 +58,34 @@ function DemandRenderer() {
   return null
 }
 
+/* ─── Scroll-driven camera movement ─── */
+function ScrollCamera() {
+  const { camera } = useThree()
+  const targetRef = useRef({ x: 0, y: 0, z: 0 })
+
+  useFrame(() => {
+    const scrollProgress = getHeroScrollProgress()
+
+    // Subtle camera movement based on scroll
+    const targetX = scrollProgress * 0.3
+    const targetY = 1.6 - scrollProgress * 0.5
+    const targetZ = 5.1 + scrollProgress * 1.5
+
+    targetRef.current.x += (targetX - targetRef.current.x) * 0.03
+    targetRef.current.y += (targetY - targetRef.current.y) * 0.03
+    targetRef.current.z += (targetZ - targetRef.current.z) * 0.03
+
+    camera.position.x = targetRef.current.x
+    camera.position.y = targetRef.current.y
+    camera.position.z = targetRef.current.z
+    camera.lookAt(0.2, 1.0, -0.2)
+  })
+
+  return null
+}
+
 /* ─── Scene Content ─── */
-function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackground = true, s3 }) {
+function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackground = true, s3, controlsRef }) {
   const desktopGroupRef = useRef()
 
   const bgColor = darkMode ? '#1a1a2e' : '#ffffff'
@@ -196,18 +223,24 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
       </Suspense>
 
       <OrbitControls
+        ref={controlsRef}
         target={[0.2, 1.0, -0.2]}
-        enableZoom={false}
+        enableZoom={true}
         enablePan={false}
         minPolarAngle={Math.PI / 4}
         maxPolarAngle={Math.PI / 2 + 0.1}
         minAzimuthAngle={-Math.PI / 2.5}
         maxAzimuthAngle={Math.PI / 2.5}
+        minDistance={3}
+        maxDistance={10}
         enableDamping
         dampingFactor={0.05}
         rotateSpeed={0.7}
         autoRotate={s3.autoRotate}
+        zoomSpeed={0.8}
       />
+
+      {getHeroScrollProgress() > 0 && <ScrollCamera />}
     </>
   )
 }
@@ -270,6 +303,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
   const [expanded, setExpanded] = useState(false)
   const [cameraKey, setCameraKey] = useState(0)
   const canvasRef = useRef(null)
+  const controlsRef = useRef(null)
   const [webglSupported] = useState(() => checkWebGL())
 
   const s3 = useMemo(() => getS3(scene3D), [scene3D])
@@ -301,6 +335,20 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     setCameraKey((k) => k + 1)
   }, [])
 
+  const handleZoomIn = useCallback(() => {
+    if (controlsRef.current) {
+      controlsRef.current.object.position.multiplyScalar(0.85)
+      controlsRef.current.update()
+    }
+  }, [])
+
+  const handleZoomOut = useCallback(() => {
+    if (controlsRef.current) {
+      controlsRef.current.object.position.multiplyScalar(1.18)
+      controlsRef.current.update()
+    }
+  }, [])
+
   useEffect(() => {
     if (!expanded) return
     const handleKeyDown = (e) => { if (e.key === 'Escape') { setExpanded(false); setCameraKey((k) => k + 1) } }
@@ -311,12 +359,12 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
   const cam = s3.camera
   const inlineCamera = useMemo(() => {
     if (isMobile) {
-      return { position: [cam.positionX || 0.2, cam.positionY || 1.5, cam.positionZ || 5.6], fov: cam.fov || 42, near: 0.1, far: 25 }
+      return { position: [cam.positionX || 0.2, cam.positionY || 1.5, cam.positionZ || 5.6], fov: cam.fov || 36, near: 0.1, far: 25 }
     }
     if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      return { position: [cam.positionX || 0.3, cam.positionY || 1.7, cam.positionZ || 6.2], fov: cam.fov || 38, near: 0.1, far: 25 }
+      return { position: [cam.positionX || 0.3, cam.positionY || 1.7, cam.positionZ || 6.2], fov: cam.fov || 32, near: 0.1, far: 25 }
     }
-    return { position: [cam.positionX || 0.35, cam.positionY || 1.6, cam.positionZ || 5.1], fov: cam.fov || 36, near: 0.1, far: 25 }
+    return { position: [cam.positionX || 0.35, cam.positionY || 1.6, cam.positionZ || 5.1], fov: cam.fov || 30, near: 0.1, far: 25 }
   }, [isMobile, cam.positionX, cam.positionY, cam.positionZ, cam.fov])
 
   const maxDpr = s3.performance.maxDpr || 2
@@ -350,11 +398,16 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
             canvasRef={canvasRef}
             showBackground={false}
             s3={s3}
+            controlsRef={controlsRef}
           />
         </Canvas>
 
         {!isMobile && s3.interaction && (
-          <ExpandButton onClick={handleToggle} icon={Maximize2} label="Expand 3D workspace" darkMode={darkMode} />
+          <div className="absolute top-3 right-3 z-30 flex flex-col gap-2">
+            <ExpandButton onClick={handleToggle} icon={Maximize2} label="Expand 3D workspace" darkMode={darkMode} />
+            <ExpandButton onClick={handleZoomIn} icon={ZoomIn} label="Zoom in" darkMode={darkMode} />
+            <ExpandButton onClick={handleZoomOut} icon={ZoomOut} label="Zoom out" darkMode={darkMode} />
+          </div>
         )}
       </div>
 
@@ -372,6 +425,12 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
             <div className="absolute top-0 left-0 right-0 z-[100000] flex items-center justify-between px-6 py-4 bg-slate-900/60 dark:bg-black/60 backdrop-blur-md border-b border-white/10 text-white">
               <span className="text-xs font-bold uppercase tracking-[0.2em]">3D Workspace (Interactive View)</span>
               <div className="flex items-center gap-2">
+                <motion.button onClick={handleZoomIn} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer" title="Zoom in" aria-label="Zoom in">
+                  <ZoomIn size={16} />
+                </motion.button>
+                <motion.button onClick={handleZoomOut} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer" title="Zoom out" aria-label="Zoom out">
+                  <ZoomOut size={16} />
+                </motion.button>
                 <motion.button onClick={handleResetCamera} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer" title="Reset camera" aria-label="Reset camera">
                   <RotateCcw size={16} />
                 </motion.button>
@@ -383,7 +442,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
 
             <Canvas
               key={`expanded-${cameraKey}`}
-              camera={{ position: [cam.positionX || 0, 2.2, 8], fov: cam.fov || 40, near: 0.1, far: 100 }}
+              camera={{ position: [cam.positionX || 0, 2.2, 8], fov: cam.fov || 32, near: 0.1, far: 100 }}
               dpr={[1, Math.min(maxDpr, 1.5)]}
               gl={{
                 antialias: true,
@@ -397,7 +456,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
               frameloop="demand"
               style={{ background: darkMode ? '#1a1a2e' : '#ffffff', width: '100%', height: '100%' }}
             >
-              <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} canvasRef={canvasRef} s3={s3} />
+              <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} canvasRef={canvasRef} s3={s3} controlsRef={controlsRef} />
             </Canvas>
           </motion.div>
         )}
