@@ -54,10 +54,6 @@ export default function FuturisticInput({
         className="relative group"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        style={{
-          perspective: '800px',
-          transformStyle: 'preserve-3d',
-        }}
       >
         <motion.div
           className="relative"
@@ -66,7 +62,6 @@ export default function FuturisticInput({
             rotateY: rotate.y,
           }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          style={{ transformStyle: 'preserve-3d' }}
         >
             {/* Outer glow on focus */}
             <motion.div
