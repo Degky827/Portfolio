@@ -177,6 +177,40 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* GPU-accelerated transforms for scroll effects */
+.gpu-accelerated {
+  will-change: transform;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* 3D depth container */
+.preserve-3d {
+  transform-style: preserve-3d;
+  perspective: 1200px;
+}
+
+/* Section depth wrapper */
+.section-depth {
+  transform-style: preserve-3d;
+  will-change: transform;
+  transform-origin: center center;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .gpu-accelerated,
+  .preserve-3d,
+  .section-depth {
+    will-change: auto;
+    transform: none !important;
+  }
+}
+
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-display);
   letter-spacing: -0.02em;

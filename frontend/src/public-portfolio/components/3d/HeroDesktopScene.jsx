@@ -1,9 +1,10 @@
 import { Suspense, useMemo, useState, useCallback, useRef, useEffect } from 'react'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { Float, OrbitControls } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Maximize2, Minimize2, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
 import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
+import { getHeroScrollProgress } from '../../shared/heroScrollStore'
 import * as THREE from 'three'
 import Desk from './Desk'
 import Monitor from './Monitor'
@@ -54,6 +55,32 @@ function DemandRenderer() {
   const { invalidate, gl } = useThree()
   useEffect(() => { gl.setAnimationLoop(null) }, [gl])
   useFrame(() => { invalidate() })
+  return null
+}
+
+/* ─── Scroll-driven camera movement ─── */
+function ScrollCamera() {
+  const { camera } = useThree()
+  const targetRef = useRef({ x: 0, y: 0, z: 0 })
+
+  useFrame(() => {
+    const scrollProgress = getHeroScrollProgress()
+
+    // Subtle camera movement based on scroll
+    const targetX = scrollProgress * 0.3
+    const targetY = 1.6 - scrollProgress * 0.5
+    const targetZ = 5.1 + scrollProgress * 1.5
+
+    targetRef.current.x += (targetX - targetRef.current.x) * 0.03
+    targetRef.current.y += (targetY - targetRef.current.y) * 0.03
+    targetRef.current.z += (targetZ - targetRef.current.z) * 0.03
+
+    camera.position.x = targetRef.current.x
+    camera.position.y = targetRef.current.y
+    camera.position.z = targetRef.current.z
+    camera.lookAt(0.2, 1.0, -0.2)
+  })
+
   return null
 }
 
@@ -212,6 +239,8 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
         autoRotate={s3.autoRotate}
         zoomSpeed={0.8}
       />
+
+      {getHeroScrollProgress() > 0 && <ScrollCamera />}
     </>
   )
 }
