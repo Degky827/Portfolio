@@ -1,7 +1,9 @@
-import { useEffect, useState, lazy, Suspense, useCallback, memo } from 'react'
+import { useEffect, useState, lazy, Suspense, useCallback, memo, useRef } from 'react'
 import { motion } from 'framer-motion'
 import { ArrowRight, MessageCircle, Mail, Download, Globe } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
+import { useScrollData } from '../../../shared/context/ScrollContext'
+import { setHeroScrollProgress } from '../../shared/heroScrollStore'
 import TechTile from '../../components/ui/TechTile'
 
 const HeroDesktopScene = lazy(() =>
@@ -42,6 +44,67 @@ const fadeIn = (delay = 0) => ({
 
 function Hero({ content, contactButtonText, contactButtonLink }) {
   const { settings } = useSiteSettings()
+  const scrollData = useScrollData()
+  const heroRef = useRef(null)
+  const contentRef = useRef(null)
+  const rafRef = useRef(null)
+  const reducedMotion = useRef(false)
+  const stateRef = useRef({ parallaxY: 0, opacity: 1, scale: 1 })
+
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    reducedMotion.current = mq.matches
+    const handler = () => { reducedMotion.current = mq.matches }
+    mq.addEventListener('change', handler)
+    return () => mq.removeEventListener('change', handler)
+  }, [])
+
+  // Scroll-driven hero effects
+  useEffect(() => {
+    if (!scrollData) return
+
+    const update = () => {
+      const el = heroRef.current
+      const content = contentRef.current
+      if (!el || !content || reducedMotion.current) {
+        rafRef.current = null
+        return
+      }
+
+      const rect = el.getBoundingClientRect()
+      const heroProgress = Math.max(0, Math.min(1, -rect.top / rect.height))
+      const s = stateRef.current
+      const sm = 0.08
+
+      // Parallax
+      s.parallaxY += (heroProgress * -30 - s.parallaxY) * sm
+      // Opacity
+      s.opacity += (Math.max(0, 1 - heroProgress * 2.2) - s.opacity) * sm
+      // Scale
+      s.scale += (Math.max(0.97, 1 - heroProgress * 0.03) - s.scale) * sm
+      // Progress for 3D scene
+      s.progress = heroProgress
+
+      content.style.transform = `translate3d(0, ${s.parallaxY}px, 0) scale(${s.scale})`
+      content.style.opacity = Math.max(0, s.opacity)
+
+      // Update global store for 3D scene
+      setHeroScrollProgress(heroProgress)
+
+      rafRef.current = requestAnimationFrame(update)
+    }
+
+    rafRef.current = requestAnimationFrame(update)
+
+    return () => {
+      if (rafRef.current) cancelAnimationFrame(rafRef.current)
+      setHeroScrollProgress(0)
+      if (contentRef.current) {
+        contentRef.current.style.transform = ''
+        contentRef.current.style.opacity = ''
+      }
+    }
+  }, [scrollData])
 
   const h = content?.hero || {}
   const eyebrow = h.eyebrow || 'WELCOME TO MY DIGITAL SPACE'
@@ -158,6 +221,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   return (
     <section
       id="home"
+      ref={heroRef}
       className="flex flex-col min-h-[100svh] min-h-screen bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
       aria-label="Hero section"
     >
@@ -165,7 +229,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       <div className="h-16 shrink-0" />
 
       {/* ── Zone 1: Hero row (text + 3D scene) ── */}
-      <div className="flex-1 min-h-0 flex flex-col md:flex-row">
+      <div ref={contentRef} className="flex-1 min-h-0 flex flex-col md:flex-row" style={{ willChange: 'transform, opacity' }}>
         {/* Left: hero content */}
         <div className="w-full md:w-[42%] lg:w-[40%] px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-6 sm:py-8 md:py-0 md:flex md:items-center pointer-events-none">
           <div className="pointer-events-auto w-full">

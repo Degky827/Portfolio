@@ -4,6 +4,7 @@ import Hero from './sections/Hero'
 import About from './sections/About'
 import Experience from './sections/Experience'
 import Skills from './sections/Skills'
+import SectionDepth from '../shared/SectionDepth'
 import { getHomeContent } from '../../shared/services/homeContentService'
 import { getAboutContent } from '../../shared/services/aboutService'
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
@@ -64,24 +65,38 @@ export default function Home() {
 
   return (
     <>
-      <Hero
-        content={content}
-        contactButtonText={content?.contactButtonText}
-        contactButtonLink={content?.contactButtonLink}
-      />
+      <SectionDepth sectionId="hero">
+        <Hero
+          content={content}
+          contactButtonText={content?.contactButtonText}
+          contactButtonLink={content?.contactButtonLink}
+        />
+      </SectionDepth>
       {aboutContent?.status !== 'inactive' && (
-        <About content={content?.about} hero={content?.hero} aboutContent={aboutContent} />
+        <SectionDepth sectionId="about">
+          <About content={content?.about} hero={content?.hero} aboutContent={aboutContent} />
+        </SectionDepth>
       )}
-      <Experience />
-      <Skills />
+      <SectionDepth sectionId="experience">
+        <Experience />
+      </SectionDepth>
+      <SectionDepth sectionId="skills">
+        <Skills />
+      </SectionDepth>
       <Suspense fallback={spinner}>
-        <Projects />
+        <SectionDepth sectionId="projects">
+          <Projects />
+        </SectionDepth>
       </Suspense>
       <Suspense fallback={spinner}>
-        <Testimonials />
+        <SectionDepth sectionId="testimonials">
+          <Testimonials />
+        </SectionDepth>
       </Suspense>
       <Suspense fallback={spinner}>
-        <Contact />
+        <SectionDepth sectionId="contact">
+          <Contact />
+        </SectionDepth>
       </Suspense>
     </>
   )

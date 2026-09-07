@@ -3,8 +3,10 @@ import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './shared/hooks'
 import ErrorBoundary from './shared/components/ErrorBoundary'
 import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
+import ScrollDrivenEffects from './public-portfolio/shared/ScrollDrivenEffects'
 import IntroSystem from './public-portfolio/intro/IntroSystem'
 import CursorSystem from './components/cursor/CursorSystem'
+import { ScrollProvider } from './shared/context/ScrollContext'
 
 const Navbar = lazy(() => import('./public-portfolio/layout/Navbar'))
 const Footer = lazy(() => import('./public-portfolio/layout/Footer'))
@@ -50,9 +52,11 @@ function PublicLayout() {
       <Suspense fallback={null}>
         <Navbar darkMode={darkMode} onToggleDark={toggleDarkMode} />
       </Suspense>
-      <main className="pt-28 sm:pt-32">
-        <Outlet />
-      </main>
+      <ScrollDrivenEffects>
+        <main className="pt-28 sm:pt-32">
+          <Outlet />
+        </main>
+      </ScrollDrivenEffects>
       <Suspense fallback={null}>
         <Footer />
       </Suspense>
@@ -69,34 +73,36 @@ function App() {
 
   return (
     <ErrorBoundary>
-      <CursorSystem />
-      <ScrollToTop />
-      <IntroSystem />
-      <Suspense fallback={layoutSpinner}>
-        <Routes>
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin/*" element={<AdminRoutes />} />
-          <Route element={<PublicLayout />}>
-            <Route path="/" element={<HomePage />} />
-            <Route path="/cv" element={
-              <Suspense fallback={sectionSpinner}>
-                <CVPage />
+      <ScrollProvider>
+        <CursorSystem />
+        <ScrollToTop />
+        <IntroSystem />
+        <Suspense fallback={layoutSpinner}>
+          <Routes>
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/admin/*" element={<AdminRoutes />} />
+            <Route element={<PublicLayout />}>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/cv" element={
+                <Suspense fallback={sectionSpinner}>
+                  <CVPage />
+                </Suspense>
+              } />
+              <Route path="/:customSlug" element={<DynamicCustomPage />} />
+            </Route>
+            <Route path="/workspace" element={
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a2e' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
+                <WorkspaceScene />
               </Suspense>
             } />
-            <Route path="/:customSlug" element={<DynamicCustomPage />} />
-          </Route>
-          <Route path="/workspace" element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a2e' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
-              <WorkspaceScene />
-            </Suspense>
-          } />
-          <Route path="/workspace/:section" element={
-            <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a2e' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
-              <WorkspaceScene />
-            </Suspense>
-          } />
-        </Routes>
-      </Suspense>
+            <Route path="/workspace/:section" element={
+              <Suspense fallback={<div className="min-h-screen flex items-center justify-center" style={{ backgroundColor: '#1a1a2e' }}><div className="w-10 h-10 border-4 border-purple-500/30 border-t-purple-500 rounded-full animate-spin" /></div>}>
+                <WorkspaceScene />
+              </Suspense>
+            } />
+          </Routes>
+        </Suspense>
+      </ScrollProvider>
     </ErrorBoundary>
   )
 }
