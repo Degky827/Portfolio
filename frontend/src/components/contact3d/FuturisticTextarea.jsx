@@ -75,10 +75,6 @@ export default function FuturisticTextarea({
         className="relative group"
         onMouseMove={handleMouseMove}
         onMouseLeave={handleMouseLeave}
-        style={{
-          perspective: '800px',
-          transformStyle: 'preserve-3d',
-        }}
       >
         <motion.div
           className="relative"
@@ -87,7 +83,6 @@ export default function FuturisticTextarea({
             rotateY: rotate.y,
           }}
           transition={{ type: 'spring', stiffness: 300, damping: 25 }}
-          style={{ transformStyle: 'preserve-3d' }}
         >
           {/* Outer glow on focus / typing */}
           <motion.div
