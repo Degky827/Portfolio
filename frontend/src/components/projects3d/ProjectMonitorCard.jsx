@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate } from 'framer-motion'
-import { ExternalLink } from 'lucide-react'
+import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion'
+import { ExternalLink, ChevronDown, ChevronUp, Info, X } from 'lucide-react'
 import HolographicBadge from '../HolographicBadge'
 import FuturisticButton from './FuturisticButton'
 
@@ -232,6 +232,7 @@ function ScreenContent({ thumbUrl, title, isHovered, getMediaUrl }) {
 export default function ProjectMonitorCard({ project, index, shouldReduceMotion, getMediaUrl: getMediaUrlFn }) {
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -301,7 +302,6 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
         translateZ,
         scale,
         transformStyle: 'preserve-3d',
-        perspective: '1200px',
       }}
       animate={{ y: [0, -6, 0] }}
       transition={{
@@ -373,22 +373,20 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
         <div className="relative z-10">
           {/* Title + Status */}
           <div className="flex items-start justify-between gap-2 mb-2">
-            <motion.h3
-              className="text-base sm:text-lg font-bold leading-tight font-display"
-              animate={{ color: isHovered ? color : '#ffffff' }}
-              transition={{ duration: 0.3 }}
-            >
+            <h3 className="text-base sm:text-lg font-bold leading-tight font-display text-white">
               {title}
-            </motion.h3>
+            </h3>
             {status && (
               <HolographicBadge status={status} size="sm" />
             )}
           </div>
 
           {/* Description */}
-          <p className="text-xs mb-3 leading-relaxed line-clamp-2" style={{ color: 'var(--text-primary)' }}>
-            {desc}
-          </p>
+          <div className="mb-3">
+            <p className="text-xs leading-relaxed line-clamp-2" style={{ color: '#d1d5db' }}>
+              {desc}
+            </p>
+          </div>
 
           {/* Technologies */}
           <div className="flex flex-wrap gap-1 mb-3" role="list" aria-label="Project technologies">
@@ -399,9 +397,9 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
                 whileHover={{ scale: 1.08, y: -1 }}
                 className="px-2 py-0.5 text-[10px] font-medium rounded-md transition-all duration-200"
                 style={{
-                  background: isHovered ? `${color}15` : 'rgba(255,255,255,0.05)',
-                  color: isHovered ? `${color}dd` : '#ffffff',
-                  border: `1px solid ${isHovered ? `${color}25` : 'rgba(255,255,255,0.08)'}`,
+                  background: `${color}15`,
+                  color: `${color}dd`,
+                  border: `1px solid ${color}25`,
                 }}
               >
                 {tag}
@@ -429,8 +427,80 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
                 variant="primary"
               />
             )}
+            <button
+              onClick={(e) => { e.stopPropagation(); setShowDetails(!showDetails) }}
+              className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+              style={{
+                background: showDetails ? `${color}25` : `${color}15`,
+                color: color,
+                border: `1px solid ${showDetails ? `${color}40` : `${color}25`}`,
+              }}
+            >
+              {showDetails ? <X size={12} /> : <Info size={12} />}
+              {showDetails ? 'Close' : 'Details'}
+            </button>
           </div>
         </div>
+
+        {/* Expanded Details Card */}
+        <AnimatePresence>
+          {showDetails && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="relative z-10 overflow-hidden"
+            >
+              <div className="pt-4 mt-4 border-t border-white/10">
+                {/* Full Screenshot */}
+                <div className="relative rounded-xl overflow-hidden mb-4 aspect-[16/10]">
+                  <img
+                    src={thumbUrl ? (getMediaUrlFn ? getMediaUrlFn(thumbUrl) : thumbUrl) : DEFAULT_THUMBNAIL}
+                    alt={title}
+                    className="w-full h-full object-cover"
+                    onError={(e) => { e.target.src = DEFAULT_THUMBNAIL }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                </div>
+
+                {/* Full Description */}
+                <div className="mb-4">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: color }}>
+                    Full Description
+                  </h4>
+                  <p className="text-xs leading-relaxed whitespace-pre-wrap" style={{ color: '#d1d5db' }}>
+                    {project.description || desc}
+                  </p>
+                </div>
+
+                {/* All Technologies */}
+                {techs.length > 5 && (
+                  <div>
+                    <h4 className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: color }}>
+                      All Technologies
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {techs.map((tag, i) => (
+                        <span
+                          key={i}
+                          className="px-2 py-0.5 text-[10px] font-medium rounded-md"
+                          style={{
+                            background: `${color}15`,
+                            color: `${color}dd`,
+                            border: `1px solid ${color}25`,
+                          }}
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </motion.div>
   )

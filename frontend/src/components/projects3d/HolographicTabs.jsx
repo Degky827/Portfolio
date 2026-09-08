@@ -159,7 +159,6 @@ function HolographicTab({ label, icon: Icon, isActive, onClick, count, color }) 
         scale,
         translateZ,
         transformStyle: 'preserve-3d',
-        perspective: '800px',
       }}
       className="relative group"
     >
