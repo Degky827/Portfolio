@@ -72,7 +72,6 @@ export default function FuturisticButton({
         handleClick(e)
       }}
       style={{
-        perspective: '600px',
         rotateX,
         rotateY,
         translateZ,
