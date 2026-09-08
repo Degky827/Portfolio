@@ -173,7 +173,6 @@ export default function HolographicSearch({ value, onChange, onClear, placeholde
         rotateX,
         rotateY,
         transformStyle: 'preserve-3d',
-        perspective: '1000px',
       }}
       className="relative max-w-lg mx-auto mb-8 sm:mb-10"
     >
