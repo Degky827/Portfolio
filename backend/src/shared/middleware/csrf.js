@@ -11,6 +11,11 @@ const CSRF_SKIP_PATHS = [
   '/api/auth/logout',
   '/api/analytics/log-visit',
   '/api/analytics/log-engagement',
+  '/auth/login',
+  '/auth/verify-2fa',
+  '/auth/google',
+  '/auth/refresh',
+  '/auth/logout',
 ]
 
 function getSecret() {
@@ -37,7 +42,10 @@ function verify(token, secret, signature) {
 }
 
 function csrfProtection(req, res, next) {
-  if (CSRF_SKIP_PATHS.includes(req.path)) {
+  const path = req.path
+
+  const isSkipped = CSRF_SKIP_PATHS.some(skip => path === skip || path.endsWith(skip.replace('/api', '')))
+  if (isSkipped) {
     return next()
   }
 
