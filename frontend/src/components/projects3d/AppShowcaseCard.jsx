@@ -1,6 +1,6 @@
 import { useRef, useState, useCallback, useMemo } from 'react'
 import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion'
-import { Star, Download, Globe, Play, Apple, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet } from 'lucide-react'
+import { Star, Download, Globe, Play, Apple, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Info, X, ExternalLink } from 'lucide-react'
 import SmartphoneDevice from './SmartphoneDevice'
 import RotatingShowcasePlatform from './RotatingShowcasePlatform'
 import HolographicLighting from './HolographicLighting'
@@ -29,7 +29,7 @@ function RatingStars({ rating, color }) {
   )
 }
 
-function FeaturePills({ features, color, isHovered }) {
+function FeaturePills({ features, color }) {
   return (
     <div className="flex flex-wrap justify-center gap-1.5" role="list" aria-label="App features">
       {features.map((feature, i) => (
@@ -41,9 +41,9 @@ function FeaturePills({ features, color, isHovered }) {
           transition={{ delay: i * 0.05 }}
           className="px-2 py-0.5 text-[9px] font-medium rounded-full border transition-all duration-200"
           style={{
-            background: isHovered ? `${color}12` : 'rgba(255,255,255,0.05)',
-            color: isHovered ? `${color}cc` : '#ffffff',
-            borderColor: isHovered ? `${color}25` : 'rgba(255,255,255,0.08)',
+            background: `${color}12`,
+            color: `${color}cc`,
+            borderColor: `${color}25`,
           }}
         >
           {feature}
@@ -56,6 +56,7 @@ function FeaturePills({ features, color, isHovered }) {
 export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen, getMediaUrl }) {
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
+  const [showDetails, setShowDetails] = useState(false)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
@@ -116,14 +117,12 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
       onMouseMove={handleMouseMove}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onClick={onOpen}
       style={{
         rotateX,
         rotateY,
         scale,
         translateZ,
         transformStyle: 'preserve-3d',
-        perspective: '1200px',
       }}
       animate={{ y: [0, -6, 0] }}
       transition={{
@@ -133,17 +132,17 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
       role="button"
       tabIndex={0}
       aria-label={app.title}
-      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onOpen() } }}
     >
       {/* Card container */}
       <div
         className="relative rounded-3xl overflow-hidden transition-all duration-500 w-full max-w-[280px]"
         style={{
-          background: isHovered
-            ? `linear-gradient(145deg, ${color}08 0%, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.03) 70%, ${color}05 100%)`
-            : 'linear-gradient(145deg, rgba(255,255,255,0.04) 0%, rgba(255,255,255,0.01) 100%)',
+          background: `linear-gradient(145deg, ${color}08 0%, rgba(255,255,255,0.06) 30%, rgba(255,255,255,0.03) 70%, ${color}05 100%)`,
           backdropFilter: 'blur(20px)',
-          border: `1px solid ${isHovered ? `${color}30` : 'rgba(255,255,255,0.06)'}`,
+          border: `1px solid ${isHovered ? `${color}30` : 'rgba(255,255,255,0.08)'}`,
+          boxShadow: isHovered
+            ? `0 20px 60px rgba(0,0,0,0.3), 0 0 30px ${color}10`
+            : '0 8px 32px rgba(0,0,0,0.2)',
         }}
       >
         {/* Holographic lighting */}
@@ -171,13 +170,9 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
           {/* App info */}
           <div className="text-center space-y-3 w-full">
             {/* Title */}
-            <motion.h3
-              className="text-sm sm:text-base font-bold leading-tight font-display line-clamp-2"
-              animate={{ color: isHovered ? color : '#ffffff' }}
-              transition={{ duration: 0.3 }}
-            >
+            <h3 className="text-sm sm:text-base font-bold leading-tight font-display line-clamp-2 text-white">
               {app.title}
-            </motion.h3>
+            </h3>
 
             {/* Platform badge */}
             <div className="flex items-center justify-center gap-2">
@@ -200,7 +195,42 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
             <RatingStars rating={app.rating} color={color} />
 
             {/* Features */}
-            <FeaturePills features={app.features} color={color} isHovered={isHovered} />
+            <FeaturePills features={app.features} color={color} />
+
+            {/* Action buttons */}
+            <div className="flex items-center justify-center gap-2 mt-3">
+              {app.repoUrl && app.repoUrl !== '#' && (
+                <a
+                  href={app.repoUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+                  style={{
+                    background: `${color}15`,
+                    color: color,
+                    border: `1px solid ${color}25`,
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+                  </svg>
+                  GitHub
+                </a>
+              )}
+              <button
+                className="flex items-center gap-1.5 px-3 py-1.5 text-[10px] font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+                style={{
+                  background: showDetails ? `${color}25` : `${color}15`,
+                  color: color,
+                  border: `1px solid ${showDetails ? `${color}40` : `${color}25`}`,
+                }}
+                onClick={(e) => { e.stopPropagation(); setShowDetails(!showDetails) }}
+              >
+                {showDetails ? <X size={12} /> : <Info size={12} />}
+                {showDetails ? 'Close' : 'Details'}
+              </button>
+            </div>
 
             {/* CTA button */}
             <motion.a
@@ -223,6 +253,90 @@ export default function AppShowcaseCard({ app, index, shouldReduceMotion, onOpen
             </motion.a>
           </div>
         </div>
+
+        {/* Expanded Details Card */}
+        <AnimatePresence>
+          {showDetails && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              transition={{ duration: 0.3, ease: 'easeInOut' }}
+              className="relative z-10 overflow-hidden"
+            >
+              <div className="px-4 pb-6 pt-4 border-t border-white/10">
+                {/* Full Description */}
+                <div className="mb-4">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: color }}>
+                    Description
+                  </h4>
+                  <p className="text-[11px] leading-relaxed whitespace-pre-wrap" style={{ color: '#d1d5db' }}>
+                    {app.description}
+                  </p>
+                </div>
+
+                {/* All Features */}
+                {app.features && app.features.length > 0 && (
+                  <div className="mb-4">
+                    <h4 className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: color }}>
+                      Features
+                    </h4>
+                    <div className="flex flex-wrap gap-1">
+                      {app.features.map((feature, i) => (
+                        <span
+                          key={i}
+                          className="px-2 py-0.5 text-[9px] font-medium rounded-full"
+                          style={{
+                            background: `${color}12`,
+                            color: `${color}cc`,
+                            border: `1px solid ${color}25`,
+                          }}
+                        >
+                          {feature}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* App Links */}
+                <div className="flex items-center gap-2">
+                  {app.repoUrl && app.repoUrl !== '#' && (
+                    <a
+                      href={app.repoUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+                      style={{
+                        background: `${color}15`,
+                        color: color,
+                        border: `1px solid ${color}25`,
+                      }}
+                    >
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+                      </svg>
+                      GitHub
+                    </a>
+                  )}
+                  <a
+                    href={app.appUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-1 px-3 py-1.5 text-[10px] font-semibold rounded-lg transition-all duration-200 hover:scale-105"
+                    style={{
+                      background: `linear-gradient(135deg, ${color} 0%, ${color}cc 100%)`,
+                      color: 'white',
+                    }}
+                  >
+                    <ExternalLink size={12} />
+                    Open App
+                  </a>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         {/* Bottom ambient glow */}
         <motion.div
