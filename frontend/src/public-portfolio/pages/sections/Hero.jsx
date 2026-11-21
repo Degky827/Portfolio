@@ -1,4 +1,5 @@
 import { useEffect, useState, lazy, Suspense, useCallback, memo, useRef } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowRight, MessageCircle, Mail, Download, Globe } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
@@ -202,21 +203,23 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       }))
     : DEFAULT_SOCIAL
 
+  const navigate = useNavigate()
+
   const scrollToWork = useCallback(() => {
-    document.getElementById('projects')?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
+    navigate('/projects')
+  }, [navigate])
 
   const scrollToContact = useCallback(() => {
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
+    navigate('/contact')
+  }, [navigate])
 
   const scrollToAbout = useCallback(() => {
-    document.getElementById('about')?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
+    navigate('/about')
+  }, [navigate])
 
   const scrollToSkills = useCallback(() => {
-    document.getElementById('skills')?.scrollIntoView({ behavior: 'smooth' })
-  }, [])
+    navigate('/skills')
+  }, [navigate])
 
   return (
     <section

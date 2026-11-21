@@ -11,6 +11,11 @@ import { ScrollProvider } from './shared/context/ScrollContext'
 const Navbar = lazy(() => import('./public-portfolio/layout/Navbar'))
 const Footer = lazy(() => import('./public-portfolio/layout/Footer'))
 const HomePage = lazy(() => import('./public-portfolio/pages/HomePage'))
+const AboutPage = lazy(() => import('./public-portfolio/pages/AboutPage'))
+const SkillsPage = lazy(() => import('./public-portfolio/pages/SkillsPage'))
+const ProjectsPage = lazy(() => import('./public-portfolio/pages/ProjectsPage'))
+const ExperiencePage = lazy(() => import('./public-portfolio/pages/ExperiencePage'))
+const ContactPage = lazy(() => import('./public-portfolio/pages/ContactPage'))
 const CVPage = lazy(() => import('./public-portfolio/pages/cv/CVPage'))
 const DynamicCustomPage = lazy(() => import('./public-portfolio/pages/DynamicCustomPage'))
 const AIButton = lazy(() => import('./ai/components/AIButton'))
@@ -33,9 +38,11 @@ const sectionSpinner = (
 
 function ScrollToTop() {
   const { pathname } = useLocation()
-  if (typeof window !== 'undefined') {
-    window.scrollTo({ top: 0, behavior: 'instant' })
-  }
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'instant' })
+    }
+  }, [pathname])
   return null
 }
 
@@ -83,6 +90,31 @@ function App() {
             <Route path="/admin/*" element={<AdminRoutes />} />
             <Route element={<PublicLayout />}>
               <Route path="/" element={<HomePage />} />
+              <Route path="/about" element={
+                <Suspense fallback={sectionSpinner}>
+                  <AboutPage />
+                </Suspense>
+              } />
+              <Route path="/skills" element={
+                <Suspense fallback={sectionSpinner}>
+                  <SkillsPage />
+                </Suspense>
+              } />
+              <Route path="/projects" element={
+                <Suspense fallback={sectionSpinner}>
+                  <ProjectsPage />
+                </Suspense>
+              } />
+              <Route path="/experience" element={
+                <Suspense fallback={sectionSpinner}>
+                  <ExperiencePage />
+                </Suspense>
+              } />
+              <Route path="/contact" element={
+                <Suspense fallback={sectionSpinner}>
+                  <ContactPage />
+                </Suspense>
+              } />
               <Route path="/cv" element={
                 <Suspense fallback={sectionSpinner}>
                   <CVPage />
