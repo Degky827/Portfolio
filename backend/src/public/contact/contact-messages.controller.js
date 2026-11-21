@@ -11,15 +11,12 @@ async function getMessages(req, res) {
     const skip = (page - 1) * limit
 
     const query = {}
-    // support both read and isRead query params
     if (req.query.read === 'true' || req.query.isRead === 'true') query.isRead = true
     if (req.query.read === 'false' || req.query.isRead === 'false') query.isRead = false
 
-    // prefer new Message model; fallback to ContactMessage for legacy docs
-    const Model = Message
     const [totalCount, messages] = await Promise.all([
-      Model.countDocuments(query),
-      Model.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+      Message.countDocuments(query),
+      Message.find(query).sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
     ])
 
     res.json({
@@ -66,7 +63,7 @@ async function createMessage(req, res) {
       type: 'contact_submission',
       title: `New Message from ${name}`,
       message: subject ? `${subject} — ${message.substring(0, 100)}` : message.substring(0, 100),
-      link: '/admin/inbox',
+      link: '/admin/messages',
       metadata: { messageId: newMessage._id, name, email },
     })
 
