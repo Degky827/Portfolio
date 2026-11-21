@@ -1,4 +1,4 @@
-import { Suspense, useCallback, useState, lazy } from 'react'
+import { Suspense, useCallback, useState, useEffect, lazy } from 'react'
 import { Routes, Route, useLocation, Outlet } from 'react-router-dom'
 import { useDarkMode, usePageTracking } from './shared/hooks'
 import ErrorBoundary from './shared/components/ErrorBoundary'
