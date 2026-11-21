@@ -198,7 +198,11 @@ async function updateUser(req, res) {
           message: 'Password must be at least 8 characters with uppercase, lowercase, number, and special character.',
         })
       }
-      if (req.user._id.toString() === req.params.id && currentPassword) {
+      const isSelf = req.user._id.toString() === req.params.id
+      if (isSelf) {
+        if (!currentPassword) {
+          return res.status(400).json({ success: false, message: 'Current password is required to change your password.' })
+        }
         const isMatch = await user.comparePassword(currentPassword)
         if (!isMatch) {
           return res.status(400).json({ success: false, message: 'Current password is incorrect.' })
@@ -288,12 +292,24 @@ async function updateMe(req, res) {
       }
     }
 
-    if (req.body.currentPassword && req.body.password) {
+    if (req.body.password) {
+      if (!req.body.currentPassword) {
+        return res.status(400).json({ success: false, message: 'Current password is required to change your password.' })
+      }
+      const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?]).{8,}$/
+      if (!passwordRegex.test(req.body.password)) {
+        return res.status(400).json({
+          success: false,
+          message: 'Password must be at least 8 characters with uppercase, lowercase, number, and special character.',
+        })
+      }
       const isMatch = await user.comparePassword(req.body.currentPassword)
       if (!isMatch) {
         return res.status(400).json({ success: false, message: 'Current password is incorrect.' })
       }
       user.password = req.body.password
+      user.failedLoginAttempts = 0
+      user.lockedUntil = null
       changes.push('password')
     }
 
