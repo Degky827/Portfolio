@@ -11,6 +11,8 @@ const CSRF_SKIP_PATHS = [
   '/api/auth/logout',
   '/api/analytics/log-visit',
   '/api/analytics/log-engagement',
+  '/api/chat',
+  '/api/contact-messages',
   '/auth/login',
   '/auth/verify-2fa',
   '/auth/google',
