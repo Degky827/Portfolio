@@ -2,7 +2,12 @@ const UAParser = require('ua-parser-js')
 
 function parseUserAgent(uaString) {
   if (!uaString) {
-    return { browser: null, os: null, device: 'Unknown Device', deviceType: null }
+    return {
+      browser: 'Unknown Browser',
+      os: 'Unknown OS',
+      device: 'Desktop',
+      deviceType: 'desktop',
+    }
   }
 
   const parser = new UAParser(uaString)
@@ -10,14 +15,16 @@ function parseUserAgent(uaString) {
   const os = parser.getOS()
   const deviceInfo = parser.getDevice()
 
-  const deviceType = deviceInfo.type || 'desktop'
-  const device = deviceType === 'desktop' ? 'Desktop' : deviceType === 'tablet' ? 'Tablet' : 'Mobile'
+  const rawType = deviceInfo.type || 'desktop'
+  const deviceName = rawType.charAt(0).toUpperCase() + rawType.slice(1)
+  const browserName = browser.name || 'Unknown Browser'
+  const osName = os.name ? `${os.name}${os.version ? ' ' + os.version : ''}` : 'Unknown OS'
 
   return {
-    browser: browser.name || null,
-    os: os.name || null,
-    device,
-    deviceType,
+    browser: browserName,
+    os: osName,
+    device: deviceName,
+    deviceType: rawType,
   }
 }
 
