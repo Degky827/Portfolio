@@ -6,6 +6,12 @@ const AboutContent = require('../../shared/models/AboutContent')
 const ContactContent = require('../../shared/models/ContactContent')
 const FooterContent = require('../../shared/models/FooterContent')
 const Settings = require('../../shared/models/Settings')
+const SiteSettings = require('../../shared/models/SiteSettings')
+const CustomPage = require('../../shared/models/CustomPage')
+const Navigation = require('../../shared/models/Navigation')
+const NavbarSettings = require('../../shared/models/NavbarSettings')
+const Category = require('../../shared/models/Category')
+const Media = require('../../shared/models/Media')
 const { createNotification } = require('../notifications/notifications.controller')
 const { auditLog } = require('../../shared/utilities/auditLogger')
 const mongoose = require('mongoose')
@@ -17,11 +23,17 @@ const BACKUPS_DIR = path.resolve(__dirname, '..', '..', '..', 'backups')
 const COLLECTIONS = [
   { model: Project, key: 'projects' },
   { model: Skill, key: 'skills' },
+  { model: Category, key: 'categories' },
   { model: HomeContent, key: 'homeContent' },
   { model: AboutContent, key: 'aboutContent' },
   { model: ContactContent, key: 'contactContent' },
   { model: FooterContent, key: 'footerContent' },
   { model: Settings, key: 'settings' },
+  { model: SiteSettings, key: 'siteSettings' },
+  { model: CustomPage, key: 'customPages' },
+  { model: Navigation, key: 'navigation' },
+  { model: NavbarSettings, key: 'navbarSettings' },
+  { model: Media, key: 'media' },
 ]
 
 async function gatherAllData() {
