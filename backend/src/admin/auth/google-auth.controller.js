@@ -3,29 +3,15 @@ const { OAuth2Client } = require('google-auth-library')
 const User = require('../../shared/models/User')
 const AuditLog = require('../../shared/models/AuditLog')
 const config = require('../../infrastructure/config')
-const { generateAccessToken, generateRefreshToken } = require('../../shared/utilities/tokenUtils')
+const { generateAccessToken, generateRefreshToken, hashToken } = require('../../shared/utilities/tokenUtils')
 
 const googleClient = new OAuth2Client(
   config.googleClientId,
   config.googleClientSecret,
 )
 
-async function createAuditLog({ user, action, resource, resourceId, details, req, success }) {
-  try {
-    await AuditLog.create({
-      user: user?._id || user,
-      action,
-      resource: resource || '',
-      resourceId: resourceId || '',
-      details: details || {},
-      ipAddress: req?.ip || req?.headers?.['x-forwarded-for'] || '',
-      userAgent: req?.headers?.['user-agent'] || '',
-      success: success !== false,
-    })
-  } catch (err) {
-    console.error('[audit] Failed to create audit log:', err.message)
-  }
-}
+const { auditLog } = require('../../shared/utilities/auditLogger')
+const createAuditLog = auditLog
 
 async function googleLogin(req, res) {
   try {
@@ -130,7 +116,7 @@ async function googleLogin(req, res) {
 
     const refreshToken = generateRefreshToken(user)
     user.refreshTokens = user.refreshTokens || []
-    user.refreshTokens.push({ token: refreshToken })
+    user.refreshTokens.push({ token: hashToken(refreshToken) })
     if (user.refreshTokens.length > 5) {
       user.refreshTokens = user.refreshTokens.slice(-5)
     }

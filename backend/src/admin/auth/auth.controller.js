@@ -4,7 +4,7 @@ const qrcode = require('qrcode')
 const User = require('../../shared/models/User')
 const AuditLog = require('../../shared/models/AuditLog')
 const config = require('../../infrastructure/config')
-const { generateAccessToken, generateRefreshToken } = require('../../shared/utilities/tokenUtils')
+const { generateAccessToken, generateRefreshToken, hashToken } = require('../../shared/utilities/tokenUtils')
 const { parseUserAgent } = require('../../shared/utilities/parseUserAgent')
 
 const MAX_FAILED_ATTEMPTS = 5
@@ -28,22 +28,8 @@ async function generateQRCodeDataURL(otpauthUrl) {
   }
 }
 
-async function createAuditLog({ user, action, resource, resourceId, details, req, success }) {
-  try {
-    await AuditLog.create({
-      user: user?._id || user,
-      action,
-      resource: resource || '',
-      resourceId: resourceId || '',
-      details: details || {},
-      ipAddress: req?.ip || req?.headers?.['x-forwarded-for'] || '',
-      userAgent: req?.headers?.['user-agent'] || '',
-      success: success !== false,
-    })
-  } catch (err) {
-    console.error('[audit] Failed to create audit log:', err.message)
-  }
-}
+const { auditLog } = require('../../shared/utilities/auditLogger')
+const createAuditLog = auditLog
 
 async function loginStep1(req, res) {
   try {
@@ -133,7 +119,7 @@ async function loginStep1(req, res) {
           $push: {
             refreshTokens: {
               $each: [{
-                token: refreshToken,
+                token: hashToken(refreshToken),
                 device: parsed.device,
                 browser: parsed.browser,
                 os: parsed.os,
@@ -316,7 +302,7 @@ async function verify2FA(req, res) {
         $push: {
           refreshTokens: {
             $each: [{
-              token: refreshToken,
+              token: hashToken(refreshToken),
               device: parsed.device,
               browser: parsed.browser,
               os: parsed.os,
@@ -370,8 +356,9 @@ async function verify2FA(req, res) {
 async function logout(req, res) {
   try {
     if (req.body.refreshToken && req.user) {
+      const hashed = hashToken(req.body.refreshToken)
       req.user.refreshTokens = (req.user.refreshTokens || []).filter(
-        (rt) => rt.token !== req.body.refreshToken,
+        (rt) => rt.token !== hashed && rt.token !== req.body.refreshToken,
       )
       await req.user.save()
     }
@@ -418,12 +405,13 @@ async function refresh(req, res) {
       return res.status(401).json({ success: false, message: 'User not found or disabled.' })
     }
 
-    const storedToken = (user.refreshTokens || []).find((rt) => rt.token === refreshToken)
+    const hashed = hashToken(refreshToken)
+    const storedToken = (user.refreshTokens || []).find((rt) => rt.token === hashed || rt.token === refreshToken)
     if (!storedToken) {
       return res.status(401).json({ success: false, message: 'Refresh token not recognized.' })
     }
 
-    user.refreshTokens = (user.refreshTokens || []).filter((rt) => rt.token !== refreshToken)
+    user.refreshTokens = (user.refreshTokens || []).filter((rt) => rt.token !== hashed && rt.token !== refreshToken)
 
     const newAccessToken = generateAccessToken(user)
     const newRefreshToken = generateRefreshToken(user)
@@ -433,7 +421,7 @@ async function refresh(req, res) {
     const ipAddress = req.ip || req.headers['x-forwarded-for'] || ''
 
     user.refreshTokens.push({
-      token: newRefreshToken,
+      token: hashToken(newRefreshToken),
       device: parsed.device,
       browser: parsed.browser,
       os: parsed.os,
