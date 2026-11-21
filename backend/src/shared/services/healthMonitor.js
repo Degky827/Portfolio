@@ -14,16 +14,28 @@ async function performHealthCheck() {
     if (!monitor?.enabled) return
 
     const start = Date.now()
-    await mongoose.connection.db.admin().ping()
-    const latency = Date.now() - start
-
     const readyState = mongoose.connection.readyState
-    const isHealthy = readyState === 1 && latency <= (monitor.latencyThresholdMs || 500)
+    let latency = 0
+    let pingOk = false
+
+    if (readyState === 1 && mongoose.connection.db) {
+      try {
+        await mongoose.connection.db.admin().ping()
+        latency = Date.now() - start
+        pingOk = true
+      } catch {
+        pingOk = false
+        latency = Date.now() - start
+      }
+    }
+
+    const isHealthy = readyState === 1 && pingOk && latency <= (monitor.latencyThresholdMs || 500)
 
     if (!isHealthy) {
       consecutiveFailures++
       const issues = []
       if (readyState !== 1) issues.push(`MongoDB readyState is ${readyState} (expected 1)`)
+      if (!pingOk) issues.push('MongoDB ping failed or connection is unavailable')
       if (latency > (monitor.latencyThresholdMs || 500)) {
         issues.push(`Latency ${latency}ms exceeds threshold ${monitor.latencyThresholdMs}ms`)
       }
