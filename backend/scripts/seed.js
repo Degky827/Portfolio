@@ -4,7 +4,7 @@ const mongoose = require('mongoose')
 const User = require('../src/shared/models/User')
 
 async function seed() {
-  const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/portkiro'
+  const uri = process.env.MONGO_URI || 'mongodb://localhost:27017/portfolio'
   await mongoose.connect(uri)
   console.log(`Connected to MongoDB at ${uri}`)
 
