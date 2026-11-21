@@ -9,6 +9,7 @@ import PageHeader from '../shared/PageHeader'
 import ConfirmModal from '../shared/ConfirmModal'
 import Toast from '../shared/Toast'
 import { getSkills, deleteSkill } from '../../shared/services/skillService'
+import { getCategories } from '../../shared/services/categoryService'
 
 const FIXED_CATEGORIES = [
   { title: 'Frontend Development', color: '#6366f1' },
@@ -44,6 +45,24 @@ export default function Skills() {
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [deleting, setDeleting] = useState(false)
   const [toast, setToast] = useState(null)
+  const [categories, setCategories] = useState(FIXED_CATEGORIES)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const data = await getCategories()
+        const fetched = data?.categories || (Array.isArray(data) ? data : [])
+        if (fetched.length > 0) {
+          setCategories(fetched.map((c) => ({
+            title: c.name || c.title,
+            color: c.color || '#6366f1',
+          })))
+        }
+      } catch {
+        // keep fallback
+      }
+    })()
+  }, [])
 
   const fetchData = useCallback(async () => {
     setLoading(true)
@@ -107,7 +126,7 @@ export default function Skills() {
   }
 
   const getCategoryColor = (name) => {
-    const cat = FIXED_CATEGORIES.find((c) => c.title.toLowerCase() === name?.toLowerCase())
+    const cat = categories.find((c) => c.title.toLowerCase() === name?.toLowerCase())
     return cat?.color || '#6366f1'
   }
 
@@ -115,7 +134,7 @@ export default function Skills() {
     <div>
       <PageHeader
         title="Skills CMS"
-        subtitle={`${totalCount} skill${totalCount !== 1 ? 's' : ''} · ${FIXED_CATEGORIES.length} categories`}
+        subtitle={`${totalCount} skill${totalCount !== 1 ? 's' : ''} · ${categories.length} categories`}
         actions={
           <button
             onClick={() => navigate('/admin/skills/new')}
@@ -156,7 +175,7 @@ export default function Skills() {
             className="px-4 py-2.5 rounded-xl border border-gray-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-gray-900 dark:text-white text-sm focus:outline-none focus:ring-2 focus:ring-primary/50"
           >
             <option value="">All Categories</option>
-            {FIXED_CATEGORIES.map((cat) => (
+            {categories.map((cat) => (
               <option key={cat.title} value={cat.title}>{cat.title}</option>
             ))}
           </select>

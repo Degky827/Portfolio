@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowLeft, Save } from 'lucide-react'
 import { createSkill, updateSkill, getSkill } from '../../shared/services/skillService'
+import { getCategories } from '../../shared/services/categoryService'
 import ImageUpload from '../shared/ImageUpload'
 
 const FIXED_CATEGORIES = [
@@ -44,8 +45,26 @@ export default function SkillForm() {
   const [errors, setErrors] = useState({})
   const [serverError, setServerError] = useState('')
 
+  const [categories, setCategories] = useState(FIXED_CATEGORIES)
   const isCert = form.category?.toLowerCase() === 'certificates'
-  const selectedCat = FIXED_CATEGORIES.find((c) => c.title === form.category)
+  const selectedCat = categories.find((c) => c.title === form.category)
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const data = await getCategories()
+        const fetched = data?.categories || (Array.isArray(data) ? data : [])
+        if (fetched.length > 0) {
+          setCategories(fetched.map((c) => ({
+            title: c.name || c.title,
+            color: c.color || '#6366f1',
+          })))
+        }
+      } catch {
+        // keep fallback
+      }
+    })()
+  }, [])
 
   useEffect(() => {
     if (!isEditing) return
@@ -332,7 +351,7 @@ export default function SkillForm() {
                   className={`w-full px-4 py-3 rounded-xl border bg-white dark:bg-slate-800 text-gray-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all ${errors.category ? 'border-red-400' : 'border-gray-300 dark:border-slate-700'}`}
                 >
                   <option value="">Select a category...</option>
-                  {FIXED_CATEGORIES.map((cat) => (
+                  {categories.map((cat) => (
                     <option key={cat.title} value={cat.title}>{cat.title}</option>
                   ))}
                 </select>
