@@ -8,6 +8,12 @@ const AboutContent = require('../models/AboutContent')
 const ContactContent = require('../models/ContactContent')
 const FooterContent = require('../models/FooterContent')
 const Settings = require('../models/Settings')
+const SiteSettings = require('../models/SiteSettings')
+const CustomPage = require('../models/CustomPage')
+const Navigation = require('../models/Navigation')
+const NavbarSettings = require('../models/NavbarSettings')
+const Category = require('../models/Category')
+const Media = require('../models/Media')
 const { createNotification } = require('../../admin/notifications/notifications.controller')
 const { uploadToCloud } = require('./s3Uploader')
 const fs = require('fs')
@@ -18,11 +24,17 @@ const BACKUPS_DIR = path.resolve(__dirname, '..', '..', '..', 'backups')
 const COLLECTIONS = [
   { model: Project, key: 'projects' },
   { model: Skill, key: 'skills' },
+  { model: Category, key: 'categories' },
   { model: HomeContent, key: 'homeContent' },
   { model: AboutContent, key: 'aboutContent' },
   { model: ContactContent, key: 'contactContent' },
   { model: FooterContent, key: 'footerContent' },
   { model: Settings, key: 'settings' },
+  { model: SiteSettings, key: 'siteSettings' },
+  { model: CustomPage, key: 'customPages' },
+  { model: Navigation, key: 'navigation' },
+  { model: NavbarSettings, key: 'navbarSettings' },
+  { model: Media, key: 'media' },
 ]
 
 const FREQUENCY_MAP = {
