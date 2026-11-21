@@ -44,7 +44,7 @@ export default function ContactScene({ children }) {
 
   return (
     <div className="relative w-full" style={{ perspective: '1200px' }}>
-      <div className="absolute inset-0 z-0">
+      <div className="absolute inset-0 z-0 pointer-events-none">
         <ContactErrorBoundary>
           <Canvas
             camera={{ position: [0, 2, 10], fov: 50, near: 0.1, far: 100 }}

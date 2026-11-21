@@ -45,7 +45,7 @@ export default function ProjectsScene({ children }) {
   const fogColor = darkMode ? '#070B14' : '#ffffff'
 
   return (
-    <div className="relative w-full min-h-screen">
+    <div className="relative w-full min-h-screen" style={{ perspective: '1200px' }}>
       <div className="absolute inset-0 z-0 pointer-events-none">
         <ProjectsErrorBoundary>
           <Canvas
