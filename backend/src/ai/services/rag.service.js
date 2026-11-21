@@ -158,11 +158,31 @@ async function buildPortfolioContext() {
   return parts.join("\n\n");
 }
 
-const processRAGQuery = async (userMessage) => {
-  try {
-    const context = await buildPortfolioContext();
+// In-memory cache for portfolio context to prevent 7 DB queries on every message
+let cachedPortfolioContext = null;
+let lastCacheTimestamp = 0;
+const CONTEXT_CACHE_TTL_MS = 5 * 60 * 1000; // 5 minutes
 
-    const finalPrompt = [
+async function getCachedPortfolioContext() {
+  const now = Date.now();
+  if (cachedPortfolioContext && (now - lastCacheTimestamp < CONTEXT_CACHE_TTL_MS)) {
+    return cachedPortfolioContext;
+  }
+  cachedPortfolioContext = await buildPortfolioContext();
+  lastCacheTimestamp = now;
+  return cachedPortfolioContext;
+}
+
+function invalidatePortfolioContextCache() {
+  cachedPortfolioContext = null;
+  lastCacheTimestamp = 0;
+}
+
+const processRAGQuery = async (userMessage, history = []) => {
+  try {
+    const context = await getCachedPortfolioContext();
+
+    const promptParts = [
       SYSTEM_PROMPT,
       "",
       "==============================",
@@ -171,6 +191,23 @@ const processRAGQuery = async (userMessage) => {
       "",
       context || "(No portfolio data available yet)",
       "",
+    ];
+
+    if (Array.isArray(history) && history.length > 0) {
+      const formattedHistory = history
+        .map((h) => `${h.role === "user" ? "Visitor" : "Assistant"}: ${h.content}`)
+        .join("\n");
+
+      promptParts.push(
+        "==============================",
+        "CONVERSATION HISTORY:",
+        "==============================",
+        formattedHistory,
+        ""
+      );
+    }
+
+    promptParts.push(
       "==============================",
       "VISITOR QUESTION:",
       "==============================",
@@ -179,8 +216,10 @@ const processRAGQuery = async (userMessage) => {
       "",
       "==============================",
       "AI ANSWER:",
-      "==============================",
-    ].join("\n");
+      "=============================="
+    );
+
+    const finalPrompt = promptParts.join("\n");
 
     const answer = await generateGeminiResponse(finalPrompt);
     return answer;
@@ -191,5 +230,8 @@ const processRAGQuery = async (userMessage) => {
 };
 
 module.exports = {
+  buildPortfolioContext,
+  getCachedPortfolioContext,
+  invalidatePortfolioContextCache,
   processRAGQuery,
 };

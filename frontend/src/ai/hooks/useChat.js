@@ -13,13 +13,17 @@ export default function useChat() {
     if (!trimmed || isLoading) return
 
     const userMessage = { id: Date.now().toString(), role: 'user', content: trimmed }
+    const historyPayload = messagesRef.current.slice(-10).map((m) => ({
+      role: m.role === 'assistant' ? 'assistant' : 'user',
+      content: m.content,
+    }))
 
     setMessages((prev) => [...prev, userMessage])
     setIsLoading(true)
     setError(null)
 
     try {
-      const response = await sendChatMessage(trimmed)
+      const response = await sendChatMessage(trimmed, historyPayload)
 
       if (response.success && response.answer) {
         const aiMessage = {
