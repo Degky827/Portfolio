@@ -4,6 +4,7 @@ const config = require('../../infrastructure/config')
 const backupScheduler = require('../../shared/services/backupScheduler')
 const healthMonitor = require('../../shared/services/healthMonitor')
 const { createNotification } = require('../notifications/notifications.controller')
+const { setMaintenanceCache } = require('../../shared/middleware/maintenance')
 
 function getEnvironmentInfo() {
   return {
@@ -110,6 +111,7 @@ async function updateConfig(req, res) {
     }
 
     await settings.save()
+    setMaintenanceCache(settings.maintenanceMode, settings.maintenanceMessage)
 
     const updated = await SystemConfig.findOne().lean()
 

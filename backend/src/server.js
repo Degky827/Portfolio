@@ -1,4 +1,6 @@
 const http = require('http')
+const path = require('path')
+const fs = require('fs')
 const express = require('express')
 const helmet = require('helmet')
 const cookieParser = require('cookie-parser')
@@ -12,6 +14,7 @@ const { csrfProtection } = require('./shared/middleware/csrf')
 const { sanitizeMongo } = require('./shared/middleware/sanitize')
 const { globalLimiter } = require('./shared/middleware/globalRateLimiter')
 const { isMinioConfigured, minioClient, BUCKET, ensureBucket } = require('./infrastructure/storage/minio')
+const { maintenanceMiddleware } = require('./shared/middleware/maintenance')
 const analyticsRoutes = require('./admin/analytics/analytics.routes')
 const authRoutes = require('./admin/auth/auth.routes')
 const userRoutes = require('./admin/users/users.routes')
@@ -101,6 +104,7 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }))
 app.use(sanitizeMongo)
 app.use(globalLimiter)
 app.use(csrfProtection)
+app.use(maintenanceMiddleware)
 
 app.get('/api/health', (_req, res) => {
   res.json({
@@ -166,14 +170,25 @@ app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument, {
   customCss: '.swagger-ui .topbar { display: none }',
 }))
 
-const publicDir = path.join(__dirname, '..', 'public')
-app.use(express.static(publicDir))
+const publicDir = path.resolve(__dirname, '..', 'public')
+if (fs.existsSync(publicDir)) {
+  app.use(express.static(publicDir))
+  app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api') || req.path.startsWith('/uploads')) {
+      return next()
+    }
+    res.sendFile(path.join(publicDir, 'index.html'))
+  })
+}
 
 app.use((_req, res) => {
   if (_req.path.startsWith('/api')) {
     return res.status(404).json({ error: 'Route not found' })
   }
-  res.sendFile(path.join(publicDir, 'index.html'))
+  if (fs.existsSync(publicDir)) {
+    return res.sendFile(path.join(publicDir, 'index.html'))
+  }
+  res.status(404).json({ error: 'Route not found' })
 })
 
 app.use((err, _req, res, _next) => {
