@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion'
 import { getMediaUrl } from '../services/api'
+import { sanitizeSvg } from '../utils/sanitize'
 
 export default function Logo({ settings, showText = true, linkTo = '#home', onNavClick, className = '' }) {
   const logoImage = settings?.logoImage || ''
@@ -35,7 +36,7 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
         style={iconStyle}
       >
         {logoSvg ? (
-          <div className="w-full h-full flex items-center justify-center" dangerouslySetInnerHTML={{ __html: logoSvg }} />
+          <div className="w-full h-full flex items-center justify-center" dangerouslySetInnerHTML={{ __html: sanitizeSvg(logoSvg) }} />
         ) : logoImage ? (
           <img
             src={getMediaUrl(logoImage)}

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import api, { getMediaUrl } from '../../shared/services/api'
+import { sanitizeHtml } from '../../shared/utils/sanitize'
 
 export default function DynamicCustomPage() {
   const { customSlug } = useParams()
@@ -107,7 +108,7 @@ function SectionRenderer({ section }) {
           {sectionData.body && (
             <div
               className="prose prose-lg dark:prose-invert max-w-none" style={{ color: 'var(--text-primary)' }}
-              dangerouslySetInnerHTML={{ __html: sectionData.body }}
+              dangerouslySetInnerHTML={{ __html: sanitizeHtml(sectionData.body) }}
             />
           )}
         </div>
@@ -198,7 +199,7 @@ function SectionRenderer({ section }) {
       return (
         <div
           className="prose prose-lg dark:prose-invert max-w-none"
-          dangerouslySetInnerHTML={{ __html: sectionData.htmlContent || '' }}
+          dangerouslySetInnerHTML={{ __html: sanitizeHtml(sectionData.htmlContent || '') }}
         />
       )
 

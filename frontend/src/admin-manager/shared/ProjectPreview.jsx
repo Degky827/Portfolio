@@ -5,6 +5,7 @@ import {
   Star,
 } from 'lucide-react'
 import { getMediaUrl } from '../../shared/services/api'
+import { sanitizeHtml } from '../../shared/utils/sanitize'
 import HolographicBadge from '../../components/HolographicBadge'
 
 function GithubIcon({ size = 24 }) {
@@ -120,7 +121,7 @@ export default function ProjectPreview({ project, onClose }) {
               {project.fullDescription && (
                 <div>
                   <h4 className="text-xs font-bold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-2">Full Description</h4>
-                  <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: project.fullDescription }} />
+                  <div className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed prose prose-sm dark:prose-invert max-w-none" dangerouslySetInnerHTML={{ __html: sanitizeHtml(project.fullDescription) }} />
                 </div>
               )}
 
