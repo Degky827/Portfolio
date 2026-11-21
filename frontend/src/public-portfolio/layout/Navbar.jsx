@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Menu, X, ChevronRight, Sun, Moon, FileText } from 'lucide-react'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
@@ -13,7 +14,7 @@ function buildFallbackItems() {
     _id: id,
     title: id.charAt(0).toUpperCase() + id.slice(1),
     sectionId: id,
-    url: `#${id}`,
+    url: id === 'home' ? '/' : `/${id}`,
     order: 0,
     visible: true,
     active: true,
@@ -23,13 +24,14 @@ function buildFallbackItems() {
 }
 
 export default function Navbar({ darkMode, onToggleDark }) {
+  const navigate = useNavigate()
+  const location = useLocation()
   const { settings: siteSettings } = useSiteSettings()
   const [isOpen, setIsOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
   const [navItems, setNavItems] = useState(null)
   const [navLoaded, setNavLoaded] = useState(false)
   const [navbarSettings, setNavbarSettings] = useState(null)
-  const [activeSection, setActiveSection] = useState('')
   const [breakpoint, setBreakpoint] = useState('desktop')
 
   const ns = navbarSettings
@@ -76,28 +78,11 @@ export default function Navbar({ darkMode, onToggleDark }) {
   }, [navItems, navLoaded])
 
   // ── Active Section Detection ──────────────────────────────────
-
-  useEffect(() => {
-    const sectionIds = displayNavItems
-      .map((item) => item.sectionId)
-      .filter(Boolean)
-    if (sectionIds.length === 0) return
-    const observer = new IntersectionObserver(
-      (entries) => {
-        for (const entry of entries) {
-          if (entry.isIntersecting) {
-            setActiveSection(entry.target.id)
-          }
-        }
-      },
-      { rootMargin: '-40% 0px -55% 0px' }
-    )
-    sectionIds.forEach((id) => {
-      const el = document.getElementById(id)
-      if (el) observer.observe(el)
-    })
-    return () => observer.disconnect()
-  }, [displayNavItems])
+  const activeSection = useMemo(() => {
+    const rawPath = location.pathname.replace(/^\//, '').trim()
+    if (!rawPath || rawPath === 'home') return 'home'
+    return rawPath
+  }, [location.pathname])
 
   // ── Scroll Handler ────────────────────────────────────────────
 
@@ -265,21 +250,16 @@ export default function Navbar({ darkMode, onToggleDark }) {
     if (!item.active) return
     if (item.isExternal || item.openNewTab) return
     e.preventDefault()
-    const targetId = item.sectionId || item.url?.replace('#', '')
-    if (!targetId) return
-
-    const target = document.getElementById(targetId)
-    if (target) {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    } else {
-      window.location.hash = '/' + (targetId === 'home' ? '' : '#' + targetId)
-      setTimeout(() => {
-        const el = document.getElementById(targetId)
-        if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, 100)
-    }
     setIsOpen(false)
-  }, [])
+
+    const rawId = item.sectionId || (item.url || '').replace(/^#\/?/, '').replace(/^\//, '')
+    const targetPath = rawId === 'home' || item.url === '/' || item.url === '#home' || item.url === '#' ? '/' : `/${rawId}`
+
+    navigate(targetPath)
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' })
+    }
+  }, [navigate])
 
   const hoverUnderlineStyle = useMemo(() => ({
     backgroundColor: linkHoverColor || '#6366f1',
@@ -309,9 +289,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
         <div className="shrink-0" style={settings.logoMargin ? { marginLeft: settings.logoMargin + 'px', marginRight: settings.logoMargin + 'px' } : {}}>
           <Logo settings={mergedSettings} linkTo="/" onNavClick={(e) => {
             e.preventDefault()
-            if (window.location.hash !== '#/' && window.location.hash !== '#') {
-              window.location.hash = '/'
-            } else {
+            navigate('/')
+            if (typeof window !== 'undefined') {
               window.scrollTo({ top: 0, behavior: 'smooth' })
             }
             setIsOpen(false)
@@ -390,7 +369,14 @@ export default function Navbar({ darkMode, onToggleDark }) {
         <div className="hidden md:flex items-center shrink-0" style={{ gap: rightControlsGap + 'px' }}>
           {ns?.resumeEnabled !== false && (
             <a
-              href={ns?.resumeFileUrl || '/#/cv'}
+              href="#/cv"
+              onClick={(e) => {
+                e.preventDefault()
+                navigate('/cv')
+                if (typeof window !== 'undefined') {
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }
+              }}
               className="text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5 whitespace-nowrap"
               style={{ color: linkTextColor }}
               onMouseEnter={(e) => { e.currentTarget.style.color = linkHoverColor }}
@@ -488,10 +474,14 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
                 {ns?.resumeEnabled !== false && (
                 <a
-                  href={ns?.resumeFileUrl || '/#/cv'}
+                  href="#/cv"
                   className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight mt-2"
                   style={{ color: linkTextColor }}
-                  onClick={(e) => { e.preventDefault(); window.location.hash = '/cv'; setIsOpen(false) }}
+                  onClick={(e) => {
+                    e.preventDefault()
+                    navigate('/cv')
+                    setIsOpen(false)
+                  }}
                 >
                   <span className="group-hover:translate-x-2 transition-transform duration-300 flex items-center gap-2">
                     <FileText size={22} />

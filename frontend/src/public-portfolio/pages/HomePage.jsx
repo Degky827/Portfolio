@@ -1,27 +1,11 @@
 import { useEffect, useState, useCallback } from 'react'
-import { lazy, Suspense } from 'react'
 import Hero from './sections/Hero'
-import About from './sections/About'
-import Experience from './sections/Experience'
-import Skills from './sections/Skills'
 import SectionDepth from '../shared/SectionDepth'
 import { getHomeContent } from '../../shared/services/homeContentService'
-import { getAboutContent } from '../../shared/services/aboutService'
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 
-const Projects = lazy(() => import('./sections/Projects'))
-const Testimonials = lazy(() => import('./sections/Testimonials'))
-const Contact = lazy(() => import('./sections/Contact'))
-
-const spinner = (
-  <div className="h-64 flex items-center justify-center">
-    <div className="w-10 h-10 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-  </div>
-)
-
-export default function Home() {
+export default function HomePage() {
   const [content, setContent] = useState(null)
-  const [aboutContent, setAboutContent] = useState(null)
 
   const fetchHomeContent = useCallback(() => {
     getHomeContent()
@@ -29,19 +13,11 @@ export default function Home() {
       .catch(() => {})
   }, [])
 
-  const fetchAboutContent = useCallback(() => {
-    getAboutContent()
-      .then((res) => setAboutContent(res.content))
-      .catch(() => {})
-  }, [])
-
   useEffect(() => {
     fetchHomeContent()
-    fetchAboutContent()
-  }, [fetchHomeContent, fetchAboutContent])
+  }, [fetchHomeContent])
 
   useSocketRefresh('content:updated', fetchHomeContent, { type: 'homepage' })
-  useSocketRefresh('content:updated', fetchAboutContent, { type: 'about' })
 
   // Apply appearance CSS variables
   useEffect(() => {
@@ -64,40 +40,12 @@ export default function Home() {
   }, [content?.appearance])
 
   return (
-    <>
-      <SectionDepth sectionId="hero">
-        <Hero
-          content={content}
-          contactButtonText={content?.contactButtonText}
-          contactButtonLink={content?.contactButtonLink}
-        />
-      </SectionDepth>
-      {aboutContent?.status !== 'inactive' && (
-        <SectionDepth sectionId="about">
-          <About content={content?.about} hero={content?.hero} aboutContent={aboutContent} />
-        </SectionDepth>
-      )}
-      <SectionDepth sectionId="experience">
-        <Experience />
-      </SectionDepth>
-      <SectionDepth sectionId="skills">
-        <Skills />
-      </SectionDepth>
-      <Suspense fallback={spinner}>
-        <SectionDepth sectionId="projects">
-          <Projects />
-        </SectionDepth>
-      </Suspense>
-      <Suspense fallback={spinner}>
-        <SectionDepth sectionId="testimonials">
-          <Testimonials />
-        </SectionDepth>
-      </Suspense>
-      <Suspense fallback={spinner}>
-        <SectionDepth sectionId="contact">
-          <Contact />
-        </SectionDepth>
-      </Suspense>
-    </>
+    <SectionDepth sectionId="hero">
+      <Hero
+        content={content}
+        contactButtonText={content?.contactButtonText}
+        contactButtonLink={content?.contactButtonLink}
+      />
+    </SectionDepth>
   )
 }

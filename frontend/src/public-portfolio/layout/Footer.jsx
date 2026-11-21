@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo, useCallback, memo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { ArrowUp, MapPin, Mail, Phone } from 'lucide-react'
 import { getFooterContent } from '../../shared/services/footerService'
@@ -49,6 +50,7 @@ function getPhoneHref(phone, protocol, customUrl) {
 }
 
 export default function Footer() {
+  const navigate = useNavigate()
   const currentYear = new Date().getFullYear()
   const { settings } = useSiteSettings()
   const [content, setContent] = useState(null)
@@ -205,12 +207,11 @@ export default function Footer() {
                       href={item.url}
                       onClick={(e) => {
                         e.preventDefault()
-                        const targetId = item.url.replace('#', '')
-                        if (targetId === 'home') {
+                        const targetId = (item.url || '').replace(/^#\/?/, '').replace(/^\//, '')
+                        const targetPath = targetId === 'home' || !targetId ? '/' : `/${targetId}`
+                        navigate(targetPath)
+                        if (typeof window !== 'undefined') {
                           window.scrollTo({ top: 0, behavior: 'smooth' })
-                        } else {
-                          const target = document.getElementById(targetId)
-                          if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' })
                         }
                       }}
                       className="text-sm sm:text-base md:text-lg hover:text-primary transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold"
