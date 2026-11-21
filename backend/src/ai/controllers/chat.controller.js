@@ -14,11 +14,11 @@ const chatController = async (req, res) => {
       });
     }
 
-    // Get validated user message
-    const { message } = validation.data;
+    // Get validated user message and optional history
+    const { message, history } = validation.data;
 
     // Send question to RAG system
-    const answer = await processRAGQuery(message);
+    const answer = await processRAGQuery(message, history);
 
     // Send AI response
     return res.status(200).json({
