@@ -482,7 +482,7 @@ export default function Security() {
                         </div>
                         {!session.isCurrent && (
                           <button
-                            onClick={() => handleRevokeSession(idx)}
+                            onClick={() => handleRevokeSession(session.id ?? idx)}
                             className="text-sm text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 font-medium"
                           >
                             Revoke

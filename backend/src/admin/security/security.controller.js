@@ -1,5 +1,4 @@
 const User = require('../../shared/models/User')
-const Session = require('../../shared/models/Session')
 const SecuritySettings = require('../../shared/models/SecuritySettings')
 const AuditLog = require('../../shared/models/AuditLog')
 const { parseUserAgent } = require('../../shared/utilities/parseUserAgent')
@@ -49,7 +48,7 @@ async function getActiveSessions(req, res) {
     const sessions = (user.refreshTokens || []).map((rt, index) => {
       const parsed = parseUserAgent(rt.userAgent || '')
       return {
-        id: index,
+        id: rt._id ? rt._id.toString() : String(index),
         token: rt.token ? `${rt.token.slice(0, 8)}...` : '',
         device: rt.device || parsed.device,
         browser: rt.browser || parsed.browser,
@@ -93,18 +92,23 @@ async function getActiveSessions(req, res) {
 async function revokeSession(req, res) {
   try {
     const { sessionIndex } = req.params
-    const idx = parseInt(sessionIndex, 10)
 
     const user = await User.findById(req.user._id).select('+refreshTokens')
     if (!user) {
       return res.status(404).json({ success: false, message: 'User not found.' })
     }
 
-    if (idx < 0 || idx >= (user.refreshTokens || []).length) {
-      return res.status(400).json({ success: false, message: 'Invalid session index.' })
+    const initialLen = (user.refreshTokens || []).length
+    user.refreshTokens = (user.refreshTokens || []).filter((rt, idx) => {
+      if (rt._id && rt._id.toString() === sessionIndex) return false
+      if (String(idx) === sessionIndex) return false
+      return true
+    })
+
+    if (user.refreshTokens.length === initialLen) {
+      return res.status(404).json({ success: false, message: 'Session not found.' })
     }
 
-    user.refreshTokens.splice(idx, 1)
     await user.save()
 
     res.json({ success: true, message: 'Session revoked.' })
