@@ -158,10 +158,10 @@ export default function Projects() {
     if (!searchTerm) return mappedMobileApps
     const term = searchTerm.toLowerCase()
     return mappedMobileApps.filter(app =>
-      app.title.toLowerCase().includes(term) ||
-      app.description.toLowerCase().includes(term) ||
-      app.features.some(f => f.toLowerCase().includes(term)) ||
-      app.platform.toLowerCase().includes(term)
+      (app.title || '').toLowerCase().includes(term) ||
+      (app.description || '').toLowerCase().includes(term) ||
+      (app.features || []).some(f => f.toLowerCase().includes(term)) ||
+      (app.platform || '').toLowerCase().includes(term)
     )
   }, [searchTerm, mappedMobileApps])
 
