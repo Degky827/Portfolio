@@ -9,22 +9,21 @@ import MonitorStand from './MonitorStand'
  * Monitor
  *
  * Professional 16:9 widescreen developer monitor matching Image 1:
- * - Frame center at y = 0.46 above the desk: bottom bezel hovers cleanly just above the tabletop
- * - Leaves clear breathing room above the monitor so subtitle banner text never overlaps
+ * - Frame center at y = 0.58: elevated above the desk to clearly expose the extended neck and metallic V-wing legs
  * - MonitorStand: angled metallic V-wing feet resting flat on tabletop, metallic upright neck
  * - MonitorFrame: slim black bezel enclosure with bottom chin branding badge
  * - MonitorScreen: high-fidelity VS Code workspace
  */
 export default function Monitor({ position = [0, 0, 0], screenMode = 'code', profileData }) {
   const workspace = useWorkspace()
-  const frameCenterY = 0.46
+  const frameCenterY = 0.58
 
   return (
     <group position={position}>
       {/* Stand base resting on desk */}
       <MonitorStand position={[0, 0, 0]} />
 
-      {/* Monitor head - frame + screen properly positioned above desk */}
+      {/* Monitor head - frame + screen raised above desk */}
       <group position={[0, frameCenterY, 0.04]}>
         <MonitorFrame />
 
