@@ -39,9 +39,24 @@ function HeroHeaderBanner({ name = 'Desalegn Kasaye' }) {
         />
       </div>
 
-      {/* ── Subtitle Banner matching Image 1: [Flutter] Fullstack | [</>] Flutter Developer ── */}
+      {/* ── Subtitle Banner: [</>] Fullstack | [Flutter] Flutter Developer ── */}
       <div className="flex items-center justify-center gap-2.5 sm:gap-3.5 mt-2 sm:mt-3 px-4 py-1.5 rounded-full bg-white/70 dark:bg-slate-900/60 backdrop-blur-sm border border-slate-200/50 dark:border-white/10 shadow-sm">
-        {/* Flutter Logo */}
+        {/* </> Code Icon for Fullstack */}
+        <span className="font-mono font-bold text-[#0284C7] text-base sm:text-xl lg:text-[22px] drop-shadow-sm select-none">
+          &lt;/&gt;
+        </span>
+
+        {/* Fullstack */}
+        <span className="font-extrabold text-slate-900 dark:text-white text-base sm:text-xl lg:text-[22px] tracking-tight">
+          Fullstack
+        </span>
+
+        {/* Divider | */}
+        <span className="text-slate-400 dark:text-slate-500 font-light text-base sm:text-xl select-none">
+          |
+        </span>
+
+        {/* Flutter Logo for Flutter Developer */}
         <svg
           className="w-5 h-5 sm:w-6 sm:h-6 shrink-0 drop-shadow-sm"
           viewBox="0 0 24 24"
@@ -53,21 +68,6 @@ function HeroHeaderBanner({ name = 'Desalegn Kasaye' }) {
           <path d="M14.314 10.286L8.457 16.143 14.314 22h7.4l-9.543-9.571 2.143-2.143z" fill="#0175C2" />
           <path d="M8.457 16.143l3.714 3.714 2.143-2.143-3.714-3.714z" fill="#54C5F8" />
         </svg>
-
-        {/* Fullstack */}
-        <span className="font-extrabold text-slate-900 dark:text-white text-base sm:text-xl lg:text-[22px] tracking-tight">
-          Fullstack
-        </span>
-
-        {/* Divider | */}
-        <span className="text-slate-400 dark:text-slate-500 font-light text-base sm:text-xl">
-          |
-        </span>
-
-        {/* </> Code Icon */}
-        <span className="font-mono font-bold text-[#0284C7] text-base sm:text-xl lg:text-[22px]">
-          &lt;/&gt;
-        </span>
 
         {/* Flutter Developer */}
         <span className="font-extrabold text-slate-900 dark:text-white text-base sm:text-xl lg:text-[22px] tracking-tight">
