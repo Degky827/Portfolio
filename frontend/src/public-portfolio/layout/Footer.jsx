@@ -8,6 +8,7 @@ import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 import Logo from '../../shared/components/Logo'
 import { createContainerVariants, defaultViewport } from '../shared/animations'
+import { resolveNavPath } from '../shared/navUtils'
 import {
   FaGithub, FaLinkedin, FaTelegram, FaFacebook, FaInstagram, FaWhatsapp, FaYoutube, FaDiscord, FaTwitter,
 } from 'react-icons/fa6'
@@ -201,27 +202,29 @@ export default function Footer() {
             >
 <h4 className="text-[10px] sm:text-xs font-black uppercase tracking-[0.15em] sm:tracking-[0.2em] mb-6 sm:mb-8 md:mb-10" style={{ color: 'var(--footer-text-secondary)' }}>Explore</h4>
                <ul className="space-y-3 sm:space-y-4 md:space-y-6">
-                {navigationItems.map((item, idx) => (
-                  <li key={idx}>
-                    <a
-                      href={item.url}
-                      onClick={(e) => {
-                        e.preventDefault()
-                        const targetId = (item.url || '').replace(/^#\/?/, '').replace(/^\//, '')
-                        const targetPath = targetId === 'home' || !targetId ? '/' : `/${targetId}`
-                        navigate(targetPath)
-                        if (typeof window !== 'undefined') {
-                          window.scrollTo({ top: 0, behavior: 'smooth' })
-                        }
-                      }}
-                      className="text-sm sm:text-base md:text-lg hover:text-primary transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold"
-                      style={{ color: 'var(--footer-text-secondary)' }}
-                    >
-                      <span className="w-0 sm:w-0 group-hover:w-3 h-0.5 sm:h-1 bg-primary rounded-full transition-all duration-300" />
-                      {item.label}
-                    </a>
-                  </li>
-                ))}
+                {navigationItems.map((item, idx) => {
+                  const targetPath = resolveNavPath(item)
+                  return (
+                    <li key={idx}>
+                      <a
+                        href={item.isExternal ? item.url : `#${targetPath}`}
+                        onClick={(e) => {
+                          if (item.isExternal) return
+                          e.preventDefault()
+                          navigate(targetPath)
+                          if (typeof window !== 'undefined') {
+                            window.scrollTo({ top: 0, behavior: 'smooth' })
+                          }
+                        }}
+                        className="text-sm sm:text-base md:text-lg hover:text-primary transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold cursor-pointer"
+                        style={{ color: 'var(--footer-text-secondary)' }}
+                      >
+                        <span className="w-0 sm:w-0 group-hover:w-3 h-0.5 sm:h-1 bg-primary rounded-full transition-all duration-300" />
+                        {item.label || item.title}
+                      </a>
+                    </li>
+                  )
+                })}
               </ul>
             </motion.div>
           )}
