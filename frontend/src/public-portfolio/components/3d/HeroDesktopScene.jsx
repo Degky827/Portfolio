@@ -35,9 +35,9 @@ const SAFE_DEFAULTS = {
     particleCount: 50,
   },
   camera: {
-    positionX: 0.0, positionY: 0.98, positionZ: 2.15,
+    positionX: 0.0, positionY: 1.02, positionZ: 1.95,
     rotationX: 0, rotationY: 0, rotationZ: 0,
-    fov: 38, zoom: 1,
+    fov: 42, zoom: 1,
   },
   objects: [],
 }
@@ -89,12 +89,12 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
   return (
     <>
-      <ambientLight intensity={darkMode ? 0.75 : 0.90} color="#ffffff" />
+      <ambientLight intensity={darkMode ? 0.78 : 0.92} color="#ffffff" />
 
       {/* Primary Key Light - Crisp high-key studio light */}
       <directionalLight
         position={[2.5, 5.5, 3.0]}
-        intensity={darkMode ? 1.15 : 1.25}
+        intensity={darkMode ? 1.20 : 1.30}
         color="#ffffff"
         castShadow={castShadows}
         shadow-mapSize-width={shadowSize}
@@ -217,7 +217,7 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
       {/* OrbitControls: Zoom disabled, constrained angles keep ideal close-up framing */}
       <OrbitControls
         ref={controlsRef}
-        target={[0.0, 0.80, 0.0]}
+        target={[0.0, 0.76, 0.0]}
         enableZoom={false}
         enablePan={false}
         minPolarAngle={Math.PI / 3.2}
@@ -307,8 +307,8 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
 
   // Close-up prominent framing matching Image 1: Desk, monitor, plant, and PC tower fill ~85-90% of horizontal view
   const inlineCamera = useMemo(() => ({
-    position: [0.0, 0.98, 2.15],
-    fov: 38,
+    position: [0.0, 1.02, 1.95],
+    fov: 42,
     near: 0.1,
     far: 25,
   }), [])

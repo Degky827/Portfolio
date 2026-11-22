@@ -2,11 +2,11 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 
 /**
- * Creates procedural high-resolution warm oak/amber teak wood tabletop textures
+ * Creates procedural high-resolution warm golden honey oak tabletop textures
  * matching Image 1:
- * - Rich warm golden oak / amber wood tones (#a8642a, #be7839, #d08c48)
- * - Beautiful natural horizontal wood grain fibers with soft diffuse satin sheen
- * - Subtle bevel edge highlight
+ * - Rich warm golden oak / amber teak tones (#c57b34, #db8e3f, #a86226)
+ * - Beautiful horizontal wood grain lines with natural pores and satin sheen
+ * - Front edge highlight
  */
 function createOakWoodTableTextures() {
   if (typeof document === 'undefined') return { colorMap: null, bumpMap: null }
@@ -14,39 +14,40 @@ function createOakWoodTableTextures() {
   const width = 1024
   const height = 512
 
-  // 1. Color Map - Warm Oak / Teak Wood with natural grain
+  // 1. Color Map - Warm Golden Honey Oak Wood with natural grain
   const colorCanvas = document.createElement('canvas')
   colorCanvas.width = width
   colorCanvas.height = height
   const ctx = colorCanvas.getContext('2d')
   if (!ctx) return { colorMap: null, bumpMap: null }
 
-  // Base warm amber oak gradient
+  // Base warm golden honey oak gradient matching Image 1
   const grad = ctx.createLinearGradient(0, 0, width, height)
-  grad.addColorStop(0, '#b16a2e')
-  grad.addColorStop(0.5, '#c57b3b')
-  grad.addColorStop(1, '#a35e26')
+  grad.addColorStop(0, '#c87a32')
+  grad.addColorStop(0.35, '#dc9144')
+  grad.addColorStop(0.7, '#d4883b')
+  grad.addColorStop(1, '#b86b25')
   ctx.fillStyle = grad
   ctx.fillRect(0, 0, width, height)
 
   // Natural horizontal wood grain lines
-  for (let i = 0; i < 450; i++) {
+  for (let i = 0; i < 500; i++) {
     const y = Math.random() * height
-    const h = 0.8 + Math.random() * 2.5
+    const h = 0.8 + Math.random() * 2.2
     const rand = Math.random()
 
-    if (rand < 0.4) {
-      ctx.fillStyle = `rgba(130, 72, 25, ${0.25 + Math.random() * 0.35})`
-    } else if (rand < 0.75) {
-      ctx.fillStyle = `rgba(225, 150, 85, ${0.20 + Math.random() * 0.30})`
+    if (rand < 0.35) {
+      ctx.fillStyle = `rgba(145, 80, 25, ${0.25 + Math.random() * 0.30})`
+    } else if (rand < 0.70) {
+      ctx.fillStyle = `rgba(245, 175, 100, ${0.20 + Math.random() * 0.25})`
     } else {
-      ctx.fillStyle = `rgba(90, 48, 16, ${0.15 + Math.random() * 0.25})`
+      ctx.fillStyle = `rgba(100, 50, 15, ${0.15 + Math.random() * 0.20})`
     }
     ctx.fillRect(0, y, width, h)
   }
 
   // Soft wood plank subtle waves
-  ctx.fillStyle = 'rgba(255, 185, 115, 0.08)'
+  ctx.fillStyle = 'rgba(255, 200, 130, 0.09)'
   for (let x = 0; x < width; x += 180) {
     ctx.fillRect(x, 0, 90, height)
   }
@@ -59,10 +60,10 @@ function createOakWoodTableTextures() {
   bCtx.fillStyle = '#808080'
   bCtx.fillRect(0, 0, width, height)
 
-  for (let i = 0; i < 350; i++) {
+  for (let i = 0; i < 400; i++) {
     const y = Math.random() * height
     const h = 0.5 + Math.random() * 1.5
-    const val = Math.floor(115 + Math.random() * 25)
+    const val = Math.floor(118 + Math.random() * 22)
     bCtx.fillStyle = `rgb(${val},${val},${val})`
     bCtx.fillRect(0, y, width, h)
   }
@@ -83,18 +84,18 @@ function createOakWoodTableTextures() {
 /**
  * Desk
  *
- * Warm Oak Wood Developer Workstation Console matching Image 1:
- * - Tabletop: Warm amber oak wood slab (Width 3.40, Depth 1.25, Thickness 0.085)
- * - Finish: Warm golden oak wood (#b87333 / #be7839) with satin sheen (roughness: 0.34)
+ * Warm Golden Honey Oak Wood Workstation Console matching Image 1:
+ * - Tabletop: Warm golden oak wood slab (Width 3.40, Depth 1.25, Thickness 0.085)
+ * - Finish: Warm golden honey oak wood (#c57b34) with satin sheen (roughness: 0.30)
  * - Tabletop top surface at y = 0.72, bottom at y = 0.635
  * - Frame & Legs: Sleek matte black industrial steel rectangular frame (Width 0.055, Height 0.635)
  * - Grounded firmly on the floor at y = 0
  */
 export default function Desk({ position = [0, 0, 0] }) {
   const { colorMap, bumpMap } = useMemo(() => createOakWoodTableTextures(), [])
-  const woodColor = useMemo(() => new THREE.Color('#be7839'), [])
-  const edgeColor = useMemo(() => new THREE.Color('#d49150'), [])
-  const blackSteelColor = useMemo(() => new THREE.Color('#16181d'), [])
+  const woodColor = useMemo(() => new THREE.Color('#c57b34'), [])
+  const edgeColor = useMemo(() => new THREE.Color('#e59e55'), [])
+  const blackSteelColor = useMemo(() => new THREE.Color('#14161b'), [])
 
   // Legs dimensions
   const legHeight = 0.635
@@ -102,7 +103,7 @@ export default function Desk({ position = [0, 0, 0] }) {
 
   return (
     <group position={position}>
-      {/* ── Main Warm Oak Tabletop Slab (Top at y = 0.72, bottom at y = 0.635) ── */}
+      {/* ── Main Warm Honey Oak Tabletop Slab (Top at y = 0.72, bottom at y = 0.635) ── */}
       <mesh position={[0, 0.6775, 0]} castShadow receiveShadow>
         <boxGeometry args={[3.40, 0.085, 1.25]} />
         <meshStandardMaterial
@@ -110,8 +111,8 @@ export default function Desk({ position = [0, 0, 0] }) {
           map={colorMap || undefined}
           bumpMap={bumpMap || undefined}
           bumpScale={0.002}
-          roughness={0.34}
-          metalness={0.06}
+          roughness={0.30}
+          metalness={0.05}
         />
       </mesh>
 
@@ -120,8 +121,8 @@ export default function Desk({ position = [0, 0, 0] }) {
         <boxGeometry args={[3.39, 0.004, 0.006]} />
         <meshStandardMaterial
           color={edgeColor}
-          roughness={0.25}
-          metalness={0.12}
+          roughness={0.22}
+          metalness={0.10}
         />
       </mesh>
 
