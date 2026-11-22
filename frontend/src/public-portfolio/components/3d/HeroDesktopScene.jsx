@@ -3,7 +3,7 @@ import { Canvas, useThree } from '@react-three/fiber'
 import { OrbitControls, ContactShadows } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Minimize2, ZoomIn, ZoomOut } from 'lucide-react'
-import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
+import { useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
 import * as THREE from 'three'
 import Desk from './Desk'
 import Monitor from './Monitor'
@@ -35,7 +35,7 @@ const SAFE_DEFAULTS = {
     particleCount: 50,
   },
   camera: {
-    positionX: 0.0, positionY: 1.14, positionZ: 2.75,
+    positionX: 0.0, positionY: 1.05, positionZ: 2.75,
     rotationX: 0, rotationY: 0, rotationZ: 0,
     fov: 38, zoom: 1,
   },
@@ -52,11 +52,10 @@ function getS3(scene3D) {
 }
 
 /* ─── Scene Content ─── */
-function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
-  const { viewport } = useThree()
+function SceneContent({ darkMode, profileData, s3, controlsRef }) {
   const desktopGroupRef = useRef()
 
-  const castShadows = s3.shadows !== false && !isMobile
+  const castShadows = s3.shadows !== false
   const shadowSize = s3.performance.shadowQuality === 'high' ? 2048 : s3.performance.shadowQuality === 'low' ? 512 : 1024
 
   /* Object lookup from admin */
@@ -73,8 +72,8 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
     return o ? o.visible !== false : fallback
   }
 
-  // Workstation scale: strictly 1.0 on desktop (no fluctuating zoom!), responsive on mobile
-  const workstationScale = isMobile ? Math.min(1.0, (viewport.width * 0.94) / 3.40) : 1.0
+  // Workstation scale: strictly 1.0 across all views — eliminates any self-zooming or scale jumps!
+  const workstationScale = 1.0
   const groupPos = [0, 0, 0]
 
   // Tabletop surface at y = 0.72 inside the group
@@ -215,10 +214,10 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
         />
       </group>
 
-      {/* OrbitControls: Zoom is completely disabled, constrained angles keep ideal hero framing */}
+      {/* OrbitControls: Zoom disabled, constrained angles keep ideal hero framing */}
       <OrbitControls
         ref={controlsRef}
-        target={[0.0, 0.94, -0.05]}
+        target={[0.0, 0.88, -0.05]}
         enableZoom={false}
         enablePan={false}
         minPolarAngle={Math.PI / 3.4}
@@ -267,7 +266,6 @@ function FallbackScene({ darkMode }) {
 
 /* ─── Main Component ─── */
 export default function HeroDesktopScene({ className = '', profileData, scene3D }) {
-  const isMobile = useIsMobile()
   const darkMode = useDarkModeScene()
   const [expanded, setExpanded] = useState(false)
   const [cameraKey, setCameraKey] = useState(0)
@@ -284,15 +282,6 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
         <FallbackScene darkMode={darkMode} />
       </div>
     )
-  }
-
-  /* Device-level toggle */
-  const isTablet = typeof window !== 'undefined' && window.innerWidth >= 768 && window.innerWidth < 1024
-  if (isMobile && !s3.performance.mobile) {
-    return <div className={`relative w-full h-full ${className}`}><FallbackScene darkMode={darkMode} /></div>
-  }
-  if (isTablet && !s3.performance.tablet) {
-    return <div className={`relative w-full h-full ${className}`}><FallbackScene darkMode={darkMode} /></div>
   }
 
   const handleZoomIn = useCallback(() => {
@@ -316,25 +305,25 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [expanded])
 
-  // Close-up telephoto framing matching Image 1: Desk, monitor, plant, and PC tower fill the frame prominently
-  const inlineCamera = useMemo(() => {
-    if (isMobile) {
-      return { position: [0.0, 1.18, 3.10], fov: 42, near: 0.1, far: 25 }
-    }
-    return { position: [0.0, 1.14, 2.75], fov: 38, near: 0.1, far: 25 }
-  }, [isMobile])
+  // Fixed close-up telephoto framing matching Image 1: Desk, monitor, plant, and PC tower fill the frame prominently
+  const inlineCamera = useMemo(() => ({
+    position: [0.0, 1.05, 2.75],
+    fov: 38,
+    near: 0.1,
+    far: 25,
+  }), [])
 
   const maxDpr = s3.performance.maxDpr || 2
   const inlineGl = useMemo(() => ({
-    antialias: !isMobile,
+    antialias: true,
     alpha: true,
-    powerPreference: s3.performance.lightweightMobile && isMobile ? 'low-power' : 'default',
+    powerPreference: 'default',
     stencil: false,
     depth: true,
     failIfMajorPerformanceCaveat: false,
     toneMapping: THREE.ACESFilmicToneMapping,
     toneMappingExposure: darkMode ? 1.05 : 1.00,
-  }), [isMobile, darkMode, s3.performance.lightweightMobile])
+  }), [darkMode])
 
   return (
     <>
@@ -344,14 +333,13 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
           ref={canvasRef}
           key={`inline-${cameraKey}`}
           camera={inlineCamera}
-          dpr={isMobile ? [1, Math.min(maxDpr, 1.5)] : [1, maxDpr]}
+          dpr={[1, maxDpr]}
           gl={inlineGl}
           frameloop="always"
           style={{ background: 'transparent' }}
         >
           <SceneContent
             darkMode={darkMode}
-            isMobile={isMobile}
             profileData={profileData}
             s3={s3}
             controlsRef={controlsRef}
@@ -389,14 +377,13 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
               <Canvas
                 shadows
                 key={`modal-${cameraKey}`}
-                camera={{ position: [0.0, 1.35, 3.20], fov: 36, near: 0.1, far: 25 }}
+                camera={{ position: [0.0, 1.25, 3.20], fov: 36, near: 0.1, far: 25 }}
                 dpr={[1, maxDpr]}
                 gl={inlineGl}
                 style={{ background: 'transparent' }}
               >
                 <SceneContent
                   darkMode={darkMode}
-                  isMobile={false}
                   profileData={profileData}
                   s3={s3}
                   controlsRef={controlsRef}

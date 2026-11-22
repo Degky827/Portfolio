@@ -18,7 +18,7 @@ import { useScrollData } from '../../shared/context/ScrollContext'
  */
 
 const DEPTH_PRESETS = {
-  hero: { parallax: 0.08, rotation: 0.4, scale: true },
+  hero: { parallax: 0, rotation: 0, scale: false },
   about: { parallax: 0.04, rotation: 0.3, scale: false },
   skills: { parallax: 0.02, rotation: 0.15, scale: false },
   projects: { parallax: 0.05, rotation: 0.35, scale: true },
