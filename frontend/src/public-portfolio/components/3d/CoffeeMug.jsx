@@ -19,10 +19,10 @@ function createFlutterMugTexture() {
   // Upper wing
   ctx.fillStyle = '#02569B'
   ctx.beginPath()
-  ctx.moveTo(140, 40)
-  ctx.lineTo(210, 110)
-  ctx.lineTo(165, 155)
-  ctx.lineTo(95, 85)
+  ctx.moveTo(140, 35)
+  ctx.lineTo(215, 110)
+  ctx.lineTo(168, 157)
+  ctx.lineTo(93, 82)
   ctx.closePath()
   ctx.fill()
 
@@ -30,9 +30,9 @@ function createFlutterMugTexture() {
   ctx.fillStyle = '#0175C2'
   ctx.beginPath()
   ctx.moveTo(140, 140)
-  ctx.lineTo(195, 195)
-  ctx.lineTo(150, 240)
-  ctx.lineTo(95, 185)
+  ctx.lineTo(198, 198)
+  ctx.lineTo(151, 245)
+  ctx.lineTo(93, 187)
   ctx.closePath()
   ctx.fill()
 
@@ -40,35 +40,48 @@ function createFlutterMugTexture() {
   ctx.fillStyle = '#54C5F8'
   ctx.beginPath()
   ctx.moveTo(140, 140)
-  ctx.lineTo(165, 165)
-  ctx.lineTo(140, 190)
-  ctx.lineTo(115, 165)
+  ctx.lineTo(168, 168)
+  ctx.lineTo(140, 196)
+  ctx.lineTo(112, 168)
   ctx.closePath()
   ctx.fill()
 
   return new THREE.CanvasTexture(canvas)
 }
 
-export default function CoffeeMug({ position = [-1.08, 0.72, 0.28] }) {
+/**
+ * Ceramic Coffee Mug with Flutter Logo matching Image 1:
+ * - Pure white glazed ceramic finish
+ * - Front-facing official Flutter logo
+ * - Rich dark coffee surface inside
+ * - Curved ceramic handle
+ */
+export default function CoffeeMug({ position = [-1.02, 0.72, 0.26] }) {
   const flutterTexture = useMemo(() => createFlutterMugTexture(), [])
-  const mugColor = useMemo(() => new THREE.Color('#f8fafc'), [])
+  const mugColor = useMemo(() => new THREE.Color('#ffffff'), [])
   const coffeeColor = useMemo(() => new THREE.Color('#38220f'), [])
 
   return (
     <group position={position}>
       {/* ── Ceramic Cup Body ── */}
-      <mesh position={[0, 0.045, 0]} castShadow receiveShadow>
-        <cylinderGeometry args={[0.040, 0.038, 0.09, 24]} />
+      <mesh position={[0, 0.055, 0]} castShadow receiveShadow>
+        <cylinderGeometry args={[0.050, 0.046, 0.11, 28]} />
         <meshStandardMaterial
           color={mugColor}
-          roughness={0.25}
-          metalness={0.08}
+          roughness={0.20}
+          metalness={0.06}
         />
       </mesh>
 
-      {/* ── Coffee Surface Inside ── */}
-      <mesh position={[0, 0.082, 0]}>
-        <circleGeometry args={[0.036, 24]} />
+      {/* ── Cup Top Lip Rim ── */}
+      <mesh position={[0, 0.11, 0]}>
+        <torusGeometry args={[0.049, 0.004, 12, 28]} />
+        <meshStandardMaterial color={mugColor} roughness={0.20} metalness={0.06} />
+      </mesh>
+
+      {/* ── Dark Coffee Surface Inside ── */}
+      <mesh position={[0, 0.098, 0]}>
+        <circleGeometry args={[0.045, 24]} />
         <meshStandardMaterial
           color={coffeeColor}
           roughness={0.15}
@@ -78,16 +91,16 @@ export default function CoffeeMug({ position = [-1.08, 0.72, 0.28] }) {
 
       {/* ── Flutter Logo Decal on Mug Front ── */}
       {flutterTexture && (
-        <mesh position={[0, 0.045, 0.039]}>
-          <planeGeometry args={[0.035, 0.035]} />
+        <mesh position={[0, 0.055, 0.048]}>
+          <planeGeometry args={[0.046, 0.046]} />
           <meshBasicMaterial map={flutterTexture} transparent />
         </mesh>
       )}
 
-      {/* ── Mug Handle (Torus) ── */}
-      <mesh position={[-0.046, 0.045, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
-        <torusGeometry args={[0.024, 0.006, 12, 24, Math.PI]} />
-        <meshStandardMaterial color={mugColor} roughness={0.25} metalness={0.08} />
+      {/* ── Mug Handle (Torus on left side) ── */}
+      <mesh position={[-0.056, 0.055, 0]} rotation={[0, 0, Math.PI / 2]} castShadow>
+        <torusGeometry args={[0.030, 0.007, 12, 24, Math.PI]} />
+        <meshStandardMaterial color={mugColor} roughness={0.20} metalness={0.06} />
       </mesh>
     </group>
   )

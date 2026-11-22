@@ -1,9 +1,7 @@
-import { useEffect, lazy, Suspense, useCallback, memo, useRef } from 'react'
+import { lazy, Suspense, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
-import { useScrollData } from '../../../shared/context/ScrollContext'
-import { setHeroScrollProgress } from '../../shared/heroScrollStore'
 import GuillocheWaves from '../../components/ui/GuillocheWaves'
 import HeroHeaderBanner from '../../components/ui/HeroHeaderBanner'
 
@@ -19,74 +17,13 @@ const fadeIn = (delay = 0) => ({
 
 function Hero({ content }) {
   const { settings } = useSiteSettings()
-  const scrollData = useScrollData()
-  const heroRef = useRef(null)
-  const contentRef = useRef(null)
-  const rafRef = useRef(null)
-  const reducedMotion = useRef(false)
-  const stateRef = useRef({ parallaxY: 0, opacity: 1, scale: 1 })
-
-  useEffect(() => {
-    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
-    reducedMotion.current = mq.matches
-    const handler = () => { reducedMotion.current = mq.matches }
-    mq.addEventListener('change', handler)
-    return () => mq.removeEventListener('change', handler)
-  }, [])
-
-  // Scroll-driven hero effects
-  useEffect(() => {
-    if (!scrollData) return
-
-    const update = () => {
-      const el = heroRef.current
-      const cEl = contentRef.current
-      if (!el || !cEl || reducedMotion.current) {
-        rafRef.current = null
-        return
-      }
-
-      const rect = el.getBoundingClientRect()
-      const heroProgress = Math.max(0, Math.min(1, -rect.top / rect.height))
-      const s = stateRef.current
-      const sm = 0.08
-
-      // Parallax
-      s.parallaxY += (heroProgress * -30 - s.parallaxY) * sm
-      // Opacity
-      s.opacity += (Math.max(0, 1 - heroProgress * 2.2) - s.opacity) * sm
-      // Scale
-      s.scale += (Math.max(0.97, 1 - heroProgress * 0.03) - s.scale) * sm
-      // Progress for 3D scene
-      s.progress = heroProgress
-
-      cEl.style.transform = `translate3d(0, ${s.parallaxY}px, 0) scale(${s.scale})`
-      cEl.style.opacity = Math.max(0, s.opacity)
-
-      setHeroScrollProgress(heroProgress)
-
-      rafRef.current = requestAnimationFrame(update)
-    }
-
-    rafRef.current = requestAnimationFrame(update)
-
-    return () => {
-      if (rafRef.current) cancelAnimationFrame(rafRef.current)
-      setHeroScrollProgress(0)
-      if (contentRef.current) {
-        contentRef.current.style.transform = ''
-        contentRef.current.style.opacity = ''
-      }
-    }
-  }, [scrollData])
+  const navigate = useNavigate()
 
   const profileData = {
     name: 'Desalegn Kasaye',
     badge: 'fullstack and flutter developer',
     socialLinks: settings?.socialLinks || {},
   }
-
-  const navigate = useNavigate()
 
   const scrollToAbout = useCallback(() => {
     navigate('/about')
@@ -95,7 +32,6 @@ function Hero({ content }) {
   return (
     <section
       id="home"
-      ref={heroRef}
       className="flex flex-col min-h-[100svh] min-h-screen bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative"
       aria-label="Hero section"
     >
@@ -110,12 +46,8 @@ function Hero({ content }) {
         <HeroHeaderBanner name="Desalegn Kasaye" />
       </div>
 
-      {/* ── Zone 2: Full-Bleed 3D Workstation Scene matching Image 1 ── */}
-      <div
-        ref={contentRef}
-        className="flex-1 w-full min-h-[480px] sm:min-h-[540px] md:min-h-[580px] relative z-10 pointer-events-auto cursor-grab active:cursor-grabbing"
-        style={{ willChange: 'transform, opacity' }}
-      >
+      {/* ── Zone 2: Full-Bleed 3D Workstation Scene matching Image 1 (NO zoom in / zoom out) ── */}
+      <div className="flex-1 w-full min-h-[500px] sm:min-h-[560px] md:min-h-[620px] relative z-10 pointer-events-auto">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-[#0084FF]/30 border-t-[#0084FF] rounded-full animate-spin" />

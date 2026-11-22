@@ -8,14 +8,14 @@ import * as THREE from 'three'
  *
  * Studio monitor desktop speaker matching Image 1:
  * - Sleek matte black cabinet
- * - Circular glowing electric blue (#0084FF) driver ring
+ * - Circular glowing electric cyan-blue (#00C8FF) driver ring
  */
 export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
   const workspace = useWorkspace()
   const wooferRingRef = useRef()
 
-  const bluePrimary = useMemo(() => new THREE.Color('#0084FF'), [])
-  const blueVibrant = useMemo(() => new THREE.Color('#38BDF8'), [])
+  const cyanRing = useMemo(() => new THREE.Color('#00C8FF'), [])
+  const blueGlow = useMemo(() => new THREE.Color('#0088FF'), [])
   const bodyColor = useMemo(() => new THREE.Color('#0d0e12'), [])
   const baffleColor = useMemo(() => new THREE.Color('#08090c'), [])
   const coneColor = useMemo(() => new THREE.Color('#14151b'), [])
@@ -26,7 +26,7 @@ export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
   useFrame((state) => {
     if (!wooferRingRef.current) return
     const t = state.clock.getElapsedTime()
-    wooferRingRef.current.material.emissiveIntensity = 3.0 + Math.sin(t * 1.5) * 0.4
+    wooferRingRef.current.material.emissiveIntensity = 1.4 + Math.sin(t * 1.5) * 0.2
   })
 
   return (
@@ -63,15 +63,15 @@ export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
         </mesh>
       </group>
 
-      {/* ── Woofer (Bottom driver with Electric Blue Halo Ring matching Image 1) ── */}
+      {/* ── Woofer (Bottom driver with Electric Cyan-Blue Halo Ring matching Image 1) ── */}
       <group position={[0, 0.15, 0.122]}>
         {/* Outer illuminated halo ring */}
         <mesh ref={wooferRingRef}>
           <ringGeometry args={[0.062, 0.088, 36]} />
           <meshStandardMaterial
-            color={blueVibrant}
-            emissive={bluePrimary}
-            emissiveIntensity={3.2}
+            color={cyanRing}
+            emissive={blueGlow}
+            emissiveIntensity={1.4}
             side={THREE.DoubleSide}
           />
         </mesh>
@@ -90,7 +90,7 @@ export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
       {/* ── Bottom LED Status Indicator Dot in Blue ── */}
       <mesh position={[0, 0.024, 0.123]}>
         <circleGeometry args={[0.0035, 12]} />
-        <meshStandardMaterial color={blueVibrant} emissive={bluePrimary} emissiveIntensity={2.5} />
+        <meshBasicMaterial color={cyanRing} />
       </mesh>
     </group>
   )
