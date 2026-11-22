@@ -4,137 +4,94 @@ import * as THREE from 'three'
 /**
  * MonitorFrame
  *
- * Outer bezel of the monitor - black metallic frame with rounded corners
- * and slight thickness. Provides the housing for the screen.
+ * Slim-bezel 16:9 widescreen monitor enclosure in matte charcoal black finish,
+ * with bottom chin branding badge matching the reference workstation monitor.
  */
+function createBrandBadgeTexture() {
+  if (typeof document === 'undefined') return null
+  const canvas = document.createElement('canvas')
+  canvas.width = 256
+  canvas.height = 32
+  const ctx = canvas.getContext('2d')
+  if (!ctx) return null
+  ctx.clearRect(0, 0, 256, 32)
+  ctx.fillStyle = '#b8c2dc'
+  ctx.font = 'bold 15px "Segoe UI", Arial, sans-serif'
+  ctx.textAlign = 'center'
+  ctx.textBaseline = 'middle'
+  ctx.fillText('G I G A B Y T E', 128, 16)
+  const texture = new THREE.CanvasTexture(canvas)
+  return texture
+}
+
 export default function MonitorFrame({ screenPosition = [0, 0, 0] }) {
-  const frameColor = useMemo(() => new THREE.Color('#0a0520'), [])
-  const accentColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
-  const cyanColor = useMemo(() => new THREE.Color('#22d3ee'), [])
+  const frameColor = useMemo(() => new THREE.Color('#0b0c10'), [])
+  const accentColor = useMemo(() => new THREE.Color('#6C2BFF'), [])
+  const badgeTexture = useMemo(() => createBrandBadgeTexture(), [])
 
-  const bodyW = 2.6
-  const bodyH = 1.5
-  const bodyD = 0.06
-  const bezelThickness = 0.06
-
-  const screenW = bodyW - bezelThickness * 2
-  const screenH = bodyH - bezelThickness * 2
+  const bodyW = 1.76
+  const bodyH = 1.00
+  const bodyD = 0.04
+  const topBezel = 0.016
+  const sideBezel = 0.016
+  const bottomBezel = 0.036
 
   return (
     <group position={screenPosition}>
-      {/* Monitor body - back panel */}
-      <mesh position={[0, 0, -bodyD / 2 - 0.02]} castShadow>
+      {/* ── Monitor Back Shell in Matte Charcoal Black ── */}
+      <mesh position={[0, 0, -bodyD / 2 - 0.004]} castShadow>
         <boxGeometry args={[bodyW, bodyH, bodyD]} />
         <meshStandardMaterial
           color={frameColor}
-          roughness={0.3}
-          metalness={0.7}
+          roughness={0.4}
+          metalness={0.65}
         />
       </mesh>
 
-      {/* Top bezel */}
-      <mesh position={[0, bodyH / 2 - bezelThickness / 2, -0.01]} castShadow>
-        <boxGeometry args={[bodyW, bezelThickness, 0.04]} />
-        <meshStandardMaterial
-          color={frameColor}
-          roughness={0.2}
-          metalness={0.8}
+      {/* ── Top Ultra-Thin Bezel in Charcoal Black ── */}
+      <mesh position={[0, bodyH / 2 - topBezel / 2, 0.004]} castShadow>
+        <boxGeometry args={[bodyW, topBezel, 0.014]} />
+        <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.7} />
+      </mesh>
+
+      {/* ── Bottom Chin in Deep Charcoal Black ── */}
+      <mesh position={[0, -bodyH / 2 + bottomBezel / 2, 0.006]} castShadow>
+        <boxGeometry args={[bodyW, bottomBezel, 0.018]} />
+        <meshStandardMaterial color="#07080b" roughness={0.3} metalness={0.75} />
+      </mesh>
+
+      {/* Chin Brand Badge (Gigabyte branding) */}
+      <mesh position={[0, -bodyH / 2 + bottomBezel / 2, 0.016]}>
+        <planeGeometry args={[0.13, 0.016]} />
+        <meshBasicMaterial
+          map={badgeTexture || undefined}
+          color="#ffffff"
+          transparent
+          opacity={0.88}
         />
       </mesh>
 
-      {/* Bottom bezel */}
-      <mesh position={[0, -bodyH / 2 + bezelThickness / 2, -0.01]} castShadow>
-        <boxGeometry args={[bodyW, bezelThickness, 0.04]} />
-        <meshStandardMaterial
-          color={frameColor}
-          roughness={0.2}
-          metalness={0.8}
-        />
+      {/* ── Left Ultra-Thin Bezel in Charcoal Black ── */}
+      <mesh position={[-bodyW / 2 + sideBezel / 2, 0, 0.004]} castShadow>
+        <boxGeometry args={[sideBezel, bodyH, 0.014]} />
+        <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.7} />
       </mesh>
 
-      {/* Left bezel */}
-      <mesh position={[-bodyW / 2 + bezelThickness / 2, 0, -0.01]} castShadow>
-        <boxGeometry args={[bezelThickness, bodyH, 0.04]} />
-        <meshStandardMaterial
-          color={frameColor}
-          roughness={0.2}
-          metalness={0.8}
-        />
+      {/* ── Right Ultra-Thin Bezel in Charcoal Black ── */}
+      <mesh position={[bodyW / 2 - sideBezel / 2, 0, 0.004]} castShadow>
+        <boxGeometry args={[sideBezel, bodyH, 0.014]} />
+        <meshStandardMaterial color={frameColor} roughness={0.3} metalness={0.7} />
       </mesh>
 
-      {/* Right bezel */}
-      <mesh position={[bodyW / 2 - bezelThickness / 2, 0, -0.01]} castShadow>
-        <boxGeometry args={[bezelThickness, bodyH, 0.04]} />
-        <meshStandardMaterial
-          color={frameColor}
-          roughness={0.2}
-          metalness={0.8}
-        />
-      </mesh>
-
-      {/* Inner screen border - thin dark rim */}
-      <mesh position={[0, 0, 0.01]}>
-        <planeGeometry args={[screenW + 0.02, screenH + 0.02]} />
-        <meshBasicMaterial color="#020108" />
-      </mesh>
-
-      {/* Bezel glow - top */}
-      <mesh position={[0, bodyH / 2, 0.01]}>
-        <boxGeometry args={[bodyW + 0.02, 0.015, 0.015]} />
+      {/* Subtle Purple LED Glow from under the bottom chin */}
+      <mesh position={[0, -bodyH / 2 - 0.003, 0.002]}>
+        <boxGeometry args={[bodyW * 0.70, 0.003, 0.008]} />
         <meshStandardMaterial
           color={accentColor}
           emissive={accentColor}
-          emissiveIntensity={2}
+          emissiveIntensity={1.8}
         />
       </mesh>
-
-      {/* Bezel glow - bottom */}
-      <mesh position={[0, -bodyH / 2, 0.01]}>
-        <boxGeometry args={[bodyW + 0.02, 0.015, 0.015]} />
-        <meshStandardMaterial
-          color={accentColor}
-          emissive={accentColor}
-          emissiveIntensity={1.5}
-        />
-      </mesh>
-
-      {/* Bezel glow - left */}
-      <mesh position={[-bodyW / 2, 0, 0.01]}>
-        <boxGeometry args={[0.015, bodyH + 0.02, 0.015]} />
-        <meshStandardMaterial
-          color={accentColor}
-          emissive={accentColor}
-          emissiveIntensity={1.5}
-        />
-      </mesh>
-
-      {/* Bezel glow - right */}
-      <mesh position={[bodyW / 2, 0, 0.01]}>
-        <boxGeometry args={[0.015, bodyH + 0.02, 0.015]} />
-        <meshStandardMaterial
-          color={accentColor}
-          emissive={accentColor}
-          emissiveIntensity={1.5}
-        />
-      </mesh>
-
-      {/* Power indicator LED */}
-      <mesh position={[0, -bodyH / 2 + bezelThickness / 2 - 0.04, 0.025]}>
-        <sphereGeometry args={[0.012, 8, 8]} />
-        <meshStandardMaterial
-          color={cyanColor}
-          emissive={cyanColor}
-          emissiveIntensity={3}
-        />
-      </mesh>
-
-      {/* Screen soft glow - emitted light effect */}
-      <pointLight
-        position={[0, 0, 0.8]}
-        intensity={0.15}
-        color={accentColor}
-        distance={3}
-      />
     </group>
   )
 }

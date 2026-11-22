@@ -8,26 +8,23 @@ import PortfolioPreviewScreen from './PortfolioPreviewScreen'
  * MonitorScreen
  *
  * Renders content on the monitor screen as a CanvasTexture.
- * Supports two modes:
- * - 'code': VS Code-like code editor (default)
- * - 'dashboard': Portfolio dashboard with profile info
- * - 'preview': Video-style preview of the portfolio website
+ * Proportioned to fit precisely within the MonitorFrame (1.72 x 0.95).
  */
 export default function MonitorScreen({ position = [0, 0, 0], mode = 'code', profileData }) {
-  const screenW = 2.48
-  const screenH = 1.38
+  const screenW = 1.72
+  const screenH = 0.95
 
-  const screenColor = useMemo(() => new THREE.Color('#0c1929'), [])
-  const emissiveColor = useMemo(() => new THREE.Color('#1e3a5f'), [])
-  const glowColor = useMemo(() => new THREE.Color('#3b82f6'), [])
+  const screenColor = useMemo(() => new THREE.Color('#0b0f17'), [])
+  const emissiveColor = useMemo(() => new THREE.Color('#131822'), [])
+  const glowColor = useMemo(() => new THREE.Color('#6C2BFF'), [])
 
-  const [glowIntensity, setGlowIntensity] = useState(0.35)
+  const [glowIntensity, setGlowIntensity] = useState(0.25)
 
   useEffect(() => {
     const id = setInterval(() => {
       if (Math.random() > 0.88) {
-        setGlowIntensity(0.28 + Math.random() * 0.14)
-        setTimeout(() => setGlowIntensity(0.35), 80)
+        setGlowIntensity(0.20 + Math.random() * 0.12)
+        setTimeout(() => setGlowIntensity(0.25), 80)
       }
     }, 300)
     return () => clearInterval(id)
@@ -36,7 +33,7 @@ export default function MonitorScreen({ position = [0, 0, 0], mode = 'code', pro
   return (
     <group position={position}>
       {/* Screen backing plane */}
-      <mesh position={[0, 0, -0.005]}>
+      <mesh position={[0, 0, -0.004]}>
         <planeGeometry args={[screenW, screenH]} />
         <meshStandardMaterial
           color={screenColor}
@@ -49,32 +46,21 @@ export default function MonitorScreen({ position = [0, 0, 0], mode = 'code', pro
 
       {/* Screen glow light */}
       <pointLight
-        position={[0, 0, 0.4]}
-        intensity={0.25}
+        position={[0, 0, 0.35]}
+        intensity={0.35}
         color={glowColor}
-        distance={2.5}
+        distance={2.0}
         decay={2}
       />
 
-      {/* Screen content */}
-      {mode === 'dashboard' ? (
-        <PortfolioDashboardScreen screenW={screenW} screenH={screenH} profileData={profileData} />
-      ) : mode === 'preview' ? (
-        <PortfolioPreviewScreen screenW={screenW} screenH={screenH} profileData={profileData} />
-      ) : (
+      {/* Screen Content */}
+      {mode === 'code' ? (
         <CodeScreenCanvas screenW={screenW} screenH={screenH} />
+      ) : mode === 'preview' ? (
+        <PortfolioPreviewScreen />
+      ) : (
+        <PortfolioDashboardScreen profileData={profileData} />
       )}
-
-      {/* Glass reflection overlay */}
-      <mesh position={[0, 0, 0.035]}>
-        <planeGeometry args={[screenW, screenH]} />
-        <meshBasicMaterial
-          color="#ffffff"
-          transparent
-          opacity={0.025}
-          blending={THREE.AdditiveBlending}
-        />
-      </mesh>
     </group>
   )
 }

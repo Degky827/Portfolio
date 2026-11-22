@@ -1,153 +1,57 @@
-import { useRef, useEffect, useMemo, useCallback, useState } from 'react'
-import { useFrame } from '@react-three/fiber'
+import { useRef, useEffect } from 'react'
+import { useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 
 /**
  * CodeScreenCanvas
  *
- * Draws a VS Code–like code editor onto a <canvas>,
- * then uses it as a CanvasTexture on a Three.js plane.
- * No Html component needed — pure Canvas2D + texture.
- *
- * Virtual resolution: 1280×720
+ * Ultra-high-resolution (1920x1080) Visual Studio Code developer workspace texture:
+ * - High pixel density eliminates any blurriness or distortion
+ * - Large, legible, syntax-highlighted React code
+ * - Crisp integrated Vite development terminal
+ * - High anisotropy filtering for crystal-clear legibility at any viewing angle
  */
 
-const W = 1280
-const H = 720
+const W = 1920
+const H = 1080
 
-const CODE_LINES = [
-  '/**',
-  ' * Developer Profile',
-  ' * Generated from Portfolio System',
-  ' */',
-  '',
-  'const developer = {',
-  '    name: "Desalegn",',
-  '    role: "Full Stack Developer",',
-  '',
-  '    expertise: [',
-  '        "React",',
-  '        "Node.js",',
-  '        "Express.js",',
-  '        "MongoDB"',
-  '    ],',
-  '',
-  '    description:',
-  '        "I build modern, scalable, and secure',
-  '         web applications.",',
-  '',
-  '    status: "I am Open To Work !!!',
-  '             Let\'s work together!",',
-  '',
-  '    contact: {',
-  '        github: "github.com/Degky827",',
-  '        email: "desalegnky827@gmail.com"',
-  '    }',
-  '};',
-  '',
-  'console.log("Hello, I am " + developer.name);',
-  'console.log("Role: " + developer.role);',
-]
-
-const FULL_TEXT = CODE_LINES.join('\n')
-const TYPING_SPEED = 22
-const CHARS_PER_TICK = 2
-const PAUSE_MS = 3000
-const CLEAR_SPEED = 4
-
-/* Syntax token colors (VS Code dark+ inspired) */
-const COLORS = {
-  bg: '#0f172a',
-  sidebarBg: '#1e293b',
-  titleBar: '#1e293b',
-  statusBar: '#3b82f6',
-  lineNumber: '#475569',
-  lineNumberBg: '#0f172a',
-  text: '#e2e8f0',
-  keyword: '#569cd6',
-  string: '#ce9178',
-  comment: '#6a9955',
-  property: '#9cdcfe',
-  number: '#b5cea8',
-  punctuation: '#d4d4d4',
-  activeLine: 'rgba(59,130,246,0.06)',
-  cursor: '#60a5fa',
-  minimap: '#1e293b',
-  minimapBar: 'rgba(148,163,184,0.12)',
+const C = {
+  bg: '#0b0f17',
+  editorBg: '#0d131c',
+  activityBg: '#070b10',
+  sidebarBg: '#101520',
+  titleBarBg: '#131822',
+  tabBarBg: '#0d131c',
+  activeTabBg: '#141b27',
+  terminalBg: '#080c12',
+  statusBarBg: '#6C2BFF',
+  statusBarText: '#ffffff',
+  lineNum: '#4e5a73',
+  activeLineBg: 'rgba(108, 43, 255, 0.12)',
+  cursor: '#A855F7',
+  border: 'rgba(255, 255, 255, 0.08)',
+  text: '#e6edf3',
+  keyword: '#ff7b72',      // import, const, return, export
+  hook: '#d2a8ff',         // useState
+  tag: '#7ee787',          // <div>, <Sidebar>, <h1>
+  attr: '#79c0ff',         // className
+  component: '#ffa657',    // App, Sidebar
+  string: '#a5d6ff',       // "Desalegn", 'react'
+  termGreen: '#3fb950',    // Local URL
+  termCyan: '#58a6ff',     // Vite banner
+  termMuted: '#8b949e',    // helper text
 }
 
-/* Simple tokenizer — returns array of { text, color } per line */
-function tokenizeLine(line) {
-  if (!line) return [{ text: '', color: COLORS.text }]
-
-  const tokens = []
-  const patterns = [
-    { re: /(\/\/.*$)/, color: COLORS.comment },
-    { re: /(["'`])(?:(?!\1|\\).|\\.)*\1/g, color: COLORS.string },
-    { re: /\b(const|let|var|function|return|console|log|join)\b/, color: COLORS.keyword },
-    { re: /\b(name|role|expertise|description|status|contact|github|email)\b(?=\s*:)/, color: COLORS.property },
-  ]
-
-  let remaining = line
-  let pos = 0
-
-  while (remaining.length > 0) {
-    let earliest = null
-    let earliestIdx = remaining.length
-
-    for (const p of patterns) {
-      const re = new RegExp(p.re.source, p.re.flags)
-      const m = re.exec(remaining)
-      if (m && m.index < earliestIdx) {
-        earliest = { text: m[0], color: p.color, start: m.index }
-        earliestIdx = m.index
-      }
-    }
-
-    if (earliest) {
-      if (earliest.start > 0) {
-        tokens.push({ text: remaining.slice(0, earliest.start), color: COLORS.text })
-      }
-      tokens.push({ text: earliest.text, color: earliest.color })
-      remaining = remaining.slice(earliest.start + earliest.text.length)
-    } else {
-      tokens.push({ text: remaining, color: COLORS.text })
-      break
-    }
-  }
-
-  return tokens.length ? tokens : [{ text: line, color: COLORS.text }]
-}
-
-/* Draw rounded rect */
-function roundRect(ctx, x, y, w, h, r) {
-  ctx.beginPath()
-  ctx.moveTo(x + r, y)
-  ctx.lineTo(x + w - r, y)
-  ctx.arcTo(x + w, y, x + w, y + r, r)
-  ctx.lineTo(x + w, y + h - r)
-  ctx.arcTo(x + w, y + h, x + w - r, y + h, r)
-  ctx.lineTo(x + r, y + h)
-  ctx.arcTo(x, y + h, x, y + h - r, r)
-  ctx.lineTo(x, y + r)
-  ctx.arcTo(x, y, x + r, y, r)
-  ctx.closePath()
-}
-
-export default function CodeScreenCanvas({ screenW = 2.48, screenH = 1.38 }) {
+export default function CodeScreenCanvas({ screenW = 1.84, screenH = 1.04 }) {
+  const { gl } = useThree()
   const canvasRef = useRef(null)
   const textureRef = useRef(null)
   const stateRef = useRef({
-    typedChars: 0,
-    clearedChars: 0,
-    phase: 'typing',
-    timer: 0,
-    cursorBlink: 0,
     cursorVisible: true,
-    lastTime: 0,
+    cursorBlink: 0,
+    elapsed: 0,
   })
 
-  /* Create canvas + texture once */
   useEffect(() => {
     const canvas = document.createElement('canvas')
     canvas.width = W
@@ -155,105 +59,43 @@ export default function CodeScreenCanvas({ screenW = 2.48, screenH = 1.38 }) {
     canvasRef.current = canvas
 
     const texture = new THREE.CanvasTexture(canvas)
-    texture.minFilter = THREE.LinearFilter
+    texture.minFilter = THREE.LinearMipmapLinearFilter
     texture.magFilter = THREE.LinearFilter
+    texture.generateMipmaps = true
+    // Enable max anisotropic filtering for sharp text at perspective angles
+    const maxAnisotropy = gl?.capabilities?.getMaxAnisotropy?.() || 16
+    texture.anisotropy = maxAnisotropy
     textureRef.current = texture
 
-    return () => {
-      texture.dispose()
-    }
-  }, [])
+    // Initial render
+    const ctx = canvas.getContext('2d')
+    renderVSCode(ctx, true)
+    texture.needsUpdate = true
+  }, [gl])
 
-  /* Animation frame loop */
-  useFrame((_, delta) => {
-    const tex = textureRef.current
-    const cvs = canvasRef.current
-    if (!tex || !cvs) return
-
+  useFrame((state, delta) => {
     const s = stateRef.current
-    const dt = Math.min(delta, 0.05) * 1000
+    s.cursorBlink += delta
+    s.elapsed += delta
 
-    s.lastTime += dt
-    s.cursorBlink += dt
-    let cursorToggled = false
-    if (s.cursorBlink > 530) {
-      s.cursorBlink -= 530
+    let needRedraw = false
+    if (s.cursorBlink >= 0.5) {
+      s.cursorBlink = 0
       s.cursorVisible = !s.cursorVisible
-      cursorToggled = true
+      needRedraw = true
     }
 
-    /* Update typing state */
-    let contentChanged = false
-    if (s.phase === 'typing') {
-      s.timer += dt
-      while (s.timer >= TYPING_SPEED && s.typedChars < FULL_TEXT.length) {
-        s.typedChars = Math.min(s.typedChars + CHARS_PER_TICK, FULL_TEXT.length)
-        s.timer -= TYPING_SPEED
-        contentChanged = true
-      }
-      if (s.typedChars >= FULL_TEXT.length) {
-        s.phase = 'paused'
-        s.timer = 0
-        contentChanged = true
-      }
-    } else if (s.phase === 'paused') {
-      s.timer += dt
-      if (s.timer >= PAUSE_MS) {
-        s.phase = 'clearing'
-        s.timer = 0
-        contentChanged = true
-      }
-    } else if (s.phase === 'clearing') {
-      s.timer += dt
-      while (s.timer >= 8 && s.clearedChars < FULL_TEXT.length) {
-        s.clearedChars = Math.min(s.clearedChars + CLEAR_SPEED, FULL_TEXT.length)
-        s.timer -= 8
-        contentChanged = true
-      }
-      if (s.clearedChars >= FULL_TEXT.length) {
-        s.typedChars = 0
-        s.clearedChars = 0
-        s.phase = 'typing'
-        s.timer = 0
-        contentChanged = true
-      }
+    if (needRedraw && canvasRef.current && textureRef.current) {
+      const ctx = canvasRef.current.getContext('2d')
+      renderVSCode(ctx, s.cursorVisible)
+      textureRef.current.needsUpdate = true
     }
-
-    /* Only redraw when content changes or cursor blinks */
-    if (!contentChanged && !cursorToggled) return
-
-    /* Visible text */
-    const visLen = s.phase === 'clearing'
-      ? FULL_TEXT.length - s.clearedChars
-      : s.typedChars
-    const visText = FULL_TEXT.slice(0, visLen)
-    const visLines = visText.split('\n')
-
-    /* Draw */
-    const ctx = cvs.getContext('2d')
-    drawEditor(ctx, visLines, s)
-    tex.needsUpdate = true
   })
-
-  const material = useMemo(() => {
-    return new THREE.MeshBasicMaterial({
-      map: textureRef.current,
-      toneMapped: false,
-    })
-  }, [])
-
-  /* Cleanup texture on unmount */
-  useEffect(() => {
-    return () => {
-      if (material.map) material.map.dispose()
-      material.dispose()
-    }
-  }, [material])
 
   if (!textureRef.current) return null
 
   return (
-    <mesh position={[0, 0, 0.025]}>
+    <mesh position={[0, 0, 0.008]}>
       <planeGeometry args={[screenW, screenH]} />
       <meshBasicMaterial
         map={textureRef.current}
@@ -263,232 +105,345 @@ export default function CodeScreenCanvas({ screenW = 2.48, screenH = 1.38 }) {
   )
 }
 
-/* ── Draw the full editor frame ──────────────────────────────── */
-function drawEditor(ctx, visLines, state) {
-  const { cursorVisible, phase } = state
-
-  /* Background */
-  ctx.fillStyle = COLORS.bg
+function renderVSCode(ctx, cursorVisible) {
+  // Clear canvas
+  ctx.fillStyle = C.bg
   ctx.fillRect(0, 0, W, H)
 
-  /* Title bar */
-  drawTitleBar(ctx)
+  // ── 1. Top Window Title Bar (H = 54) ──
+  ctx.fillStyle = C.titleBarBg
+  ctx.fillRect(0, 0, W, 54)
+  ctx.fillStyle = C.border
+  ctx.fillRect(0, 53, W, 1)
 
-  /* Tab bar */
-  drawTabBar(ctx)
-
-  /* Sidebar */
-  drawSidebar(ctx)
-
-  /* Line numbers + code */
-  drawCode(ctx, visLines, cursorVisible, phase)
-
-  /* Status bar */
-  drawStatusBar(ctx, phase)
-
-  /* Minimap */
-  drawMinimap(ctx, visLines)
-
-  /* Scanlines overlay */
-  ctx.fillStyle = 'rgba(0,0,0,0.02)'
-  for (let y = 0; y < H; y += 3) {
-    ctx.fillRect(0, y, W, 1)
-  }
-}
-
-function drawTitleBar(ctx) {
-  ctx.fillStyle = COLORS.titleBar
-  ctx.fillRect(0, 0, W, 36)
-
-  /* Traffic lights */
-  const dots = ['#ef4444', '#f59e0b', '#22c55e']
-  dots.forEach((c, i) => {
+  // Window traffic dots
+  const dots = ['#ff5f56', '#ffbd2e', '#27c93f']
+  dots.forEach((color, i) => {
     ctx.beginPath()
-    ctx.arc(20 + i * 22, 18, 6, 0, Math.PI * 2)
-    ctx.fillStyle = c
+    ctx.arc(28 + i * 26, 27, 7, 0, Math.PI * 2)
+    ctx.fillStyle = color
     ctx.fill()
   })
 
-  /* Title */
-  ctx.fillStyle = '#94a3b8'
-  ctx.font = '12px monospace'
+  // Title text
+  ctx.fillStyle = '#8b949e'
+  ctx.font = '16px "Segoe UI", system-ui, sans-serif'
   ctx.textAlign = 'center'
-  ctx.fillText('developer.js — Visual Studio Code', W / 2, 22)
+  ctx.fillText('App.jsx — Portfolio — Visual Studio Code', W / 2, 33)
   ctx.textAlign = 'left'
-}
 
-function drawTabBar(ctx) {
-  ctx.fillStyle = '#0f172a'
-  ctx.fillRect(0, 36, W, 35)
+  // ── 2. Left Activity Bar (W = 64, H = H - 54 - 40) ──
+  const actW = 64
+  ctx.fillStyle = C.activityBg
+  ctx.fillRect(0, 54, actW, H - 54 - 40)
+  ctx.fillStyle = C.border
+  ctx.fillRect(actW - 1, 54, 1, H - 54 - 40)
 
-  /* Active tab */
-  ctx.fillStyle = '#0f172a'
-  ctx.fillRect(0, 36, 200, 35)
-  ctx.fillStyle = '#3b82f6'
-  ctx.fillRect(0, 36, 200, 2)
+  // Active explorer indicator (purple line)
+  ctx.fillStyle = C.statusBarBg
+  ctx.fillRect(0, 62, 4, 52)
 
-  ctx.fillStyle = '#f1e05a'
-  ctx.font = '11px monospace'
-  ctx.fillText('JS', 14, 58)
+  // Activity icons
+  drawIcon(ctx, 'files', 18, 72, '#ffffff', 1.4)
+  drawIcon(ctx, 'search', 18, 140, '#8b949e', 1.4)
+  drawIcon(ctx, 'git', 18, 208, '#8b949e', 1.4)
+  drawIcon(ctx, 'debug', 18, 276, '#8b949e', 1.4)
+  drawIcon(ctx, 'extensions', 18, 344, '#8b949e', 1.4)
+  drawIcon(ctx, 'settings', 18, H - 40 - 60, '#8b949e', 1.4)
 
-  ctx.fillStyle = '#e2e8f0'
-  ctx.font = '13px monospace'
-  ctx.fillText('developer.js', 32, 58)
+  // ── 3. Sidebar: Explorer (W = 280) ──
+  const sbW = 280
+  const sbX = actW
+  ctx.fillStyle = C.sidebarBg
+  ctx.fillRect(sbX, 54, sbW, H - 54 - 40)
+  ctx.fillStyle = C.border
+  ctx.fillRect(sbX + sbW - 1, 54, 1, H - 54 - 40)
 
-  ctx.fillStyle = '#64748b'
-  ctx.fillText('×', 175, 58)
+  // Explorer header
+  ctx.fillStyle = '#8b949e'
+  ctx.font = 'bold 15px "Segoe UI", system-ui, sans-serif'
+  ctx.fillText('EXPLORER', sbX + 22, 84)
 
-  /* Inactive tab */
-  ctx.fillStyle = '#1e293b'
-  ctx.fillRect(200, 36, W - 200, 35)
-  ctx.fillStyle = '#64748b'
-  ctx.font = '11px monospace'
-  ctx.fillText('<>', 214, 58)
-  ctx.font = '13px monospace'
-  ctx.fillText('package.json', 232, 58)
-}
-
-function drawSidebar(ctx) {
-  ctx.fillStyle = COLORS.sidebarBg
-  ctx.fillRect(0, 71, 220, H - 71 - 28)
-
-  ctx.fillStyle = '#94a3b8'
-  ctx.font = '11px monospace'
-  ctx.fillText('EXPLORER', 16, 90)
-
-  const items = [
-    { name: 'portfolio', indent: 0, icon: '📁' },
-    { name: 'src', indent: 1, icon: '📂' },
-    { name: 'components', indent: 2, icon: '📂' },
-    { name: 'Developer.jsx', indent: 3, icon: '📄', active: true },
-    { name: 'Hero.jsx', indent: 3, icon: '📄' },
-    { name: 'App.jsx', indent: 3, icon: '📄' },
-    { name: 'styles', indent: 2, icon: '📂' },
-    { name: 'globals.css', indent: 3, icon: '🎨' },
+  // File tree
+  const tree = [
+    { name: '▼ src', isDir: true },
+    { name: '  ▼ components', isDir: true },
+    { name: '      ● App.jsx', active: true },
+    { name: '        Hero.jsx' },
+    { name: '        Projects.jsx' },
+    { name: '        Contact.jsx' },
+    { name: '  ▶ styles', isDir: true },
+    { name: '    # index.css' },
+    { name: '  { } package.json' },
+    { name: '  ⚡ vite.config.js' },
   ]
 
-  items.forEach((item, i) => {
-    const y = 106 + i * 22
-    const x = 16 + item.indent * 14
-
+  let treeY = 122
+  tree.forEach((item) => {
     if (item.active) {
-      ctx.fillStyle = 'rgba(59,130,246,0.1)'
-      ctx.fillRect(0, y - 12, 220, 22)
-      ctx.fillStyle = '#e2e8f0'
+      ctx.fillStyle = 'rgba(108, 43, 255, 0.28)'
+      ctx.fillRect(sbX, treeY - 22, sbW, 34)
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 17px "Segoe UI", system-ui, sans-serif'
     } else {
-      ctx.fillStyle = '#64748b'
+      ctx.fillStyle = item.isDir ? '#8b949e' : '#c9d1d9'
+      ctx.font = '17px "Segoe UI", system-ui, sans-serif'
     }
-
-    ctx.font = '13px monospace'
-    ctx.fillText(item.icon, x, y)
-    ctx.fillText(item.name, x + 18, y)
+    ctx.fillText(item.name, sbX + 18, treeY)
+    treeY += 36
   })
-}
 
-function drawCode(ctx, visLines, cursorVisible, phase) {
-  const codeX = 280
-  const lineNumX = 228
-  const startY = 86
-  const lineH = 22
+  // ── 4. Editor Area ──
+  const edX = sbX + sbW
+  const edW = W - edX
+  const termH = 320
+  const edH = H - 54 - 40 - termH
 
-  /* Line number background */
-  ctx.fillStyle = COLORS.lineNumberBg
-  ctx.fillRect(220, 71, 60, H - 71 - 28)
+  // Tab bar
+  ctx.fillStyle = C.tabBarBg
+  ctx.fillRect(edX, 54, edW, 52)
+  ctx.fillStyle = C.border
+  ctx.fillRect(edX, 105, edW, 1)
 
-  /* Separator */
-  ctx.fillStyle = '#1e293b'
-  ctx.fillRect(280, 71, 1, H - 71 - 28)
+  // Active tab (App.jsx)
+  const tabW = 200
+  ctx.fillStyle = C.activeTabBg
+  ctx.fillRect(edX, 54, tabW, 51)
+  ctx.fillStyle = C.statusBarBg
+  ctx.fillRect(edX, 54, tabW, 3)
+  ctx.fillStyle = '#ffffff'
+  ctx.font = 'bold 16px "Segoe UI", system-ui, sans-serif'
+  ctx.fillText('● App.jsx', edX + 32, 86)
 
-  ctx.font = '14px monospace'
+  // Editor background
+  ctx.fillStyle = C.editorBg
+  ctx.fillRect(edX, 106, edW, edH)
 
-  visLines.forEach((line, i) => {
+  // Code lines (Large, bold, high-contrast monospace)
+  const codeLines = [
+    [
+      { t: 'import', c: C.keyword },
+      { t: ' React, { ', c: C.text },
+      { t: 'useState', c: C.hook },
+      { t: ' } ', c: C.text },
+      { t: 'from', c: C.keyword },
+      { t: " 'react'", c: C.string },
+      { t: ';', c: C.text },
+    ],
+    [],
+    [
+      { t: 'const', c: C.keyword },
+      { t: ' App = () => {', c: C.text },
+    ],
+    [
+      { t: '  const', c: C.keyword },
+      { t: ' [name, setName] = ', c: C.text },
+      { t: 'useState', c: C.hook },
+      { t: '(', c: C.text },
+      { t: '"Desalegn"', c: C.string },
+      { t: ');', c: C.text },
+    ],
+    [],
+    [
+      { t: '  return', c: C.keyword },
+      { t: ' (', c: C.text },
+    ],
+    [
+      { t: '    <', c: C.text },
+      { t: 'div', c: C.tag },
+      { t: ' className', c: C.attr },
+      { t: '=', c: C.text },
+      { t: '"App"', c: C.string },
+      { t: '>', c: C.text },
+    ],
+    [
+      { t: '      <', c: C.text },
+      { t: 'Sidebar', c: C.component },
+      { t: ' />', c: C.text },
+    ],
+    [
+      { t: '      <', c: C.text },
+      { t: 'div', c: C.tag },
+      { t: ' className', c: C.attr },
+      { t: '=', c: C.text },
+      { t: '"content"', c: C.string },
+      { t: '>', c: C.text },
+    ],
+    [
+      { t: '        <', c: C.text },
+      { t: 'h1', c: C.tag },
+      { t: '>Hello, Developer!</', c: C.text },
+      { t: 'h1', c: C.tag },
+      { t: '>', c: C.text },
+    ],
+    [
+      { t: '        <', c: C.text },
+      { t: 'p', c: C.tag },
+      { t: '>Building clean & scalable apps</', c: C.text },
+      { t: 'p', c: C.tag },
+      { t: '>', c: C.text },
+    ],
+    [
+      { t: '      </', c: C.text },
+      { t: 'div', c: C.tag },
+      { t: '>', c: C.text },
+    ],
+    [
+      { t: '    </', c: C.text },
+      { t: 'div', c: C.tag },
+      { t: '>', c: C.text },
+    ],
+    [
+      { t: '  );', c: C.text },
+    ],
+    [
+      { t: '};', c: C.text },
+    ],
+    [],
+    [
+      { t: 'export default', c: C.keyword },
+      { t: ' App;', c: C.text },
+    ],
+  ]
+
+  const lineH = 31
+  const startY = 142
+  const lineNumW = 56
+
+  codeLines.forEach((tokens, i) => {
     const y = startY + i * lineH
 
-    if (y > H - 40) return
-
-    /* Active line highlight */
-    if (i === visLines.length - 1) {
-      ctx.fillStyle = COLORS.activeLine
-      ctx.fillRect(281, y - 14, W - 281 - 80, lineH)
-    }
-
-    /* Line number */
-    ctx.fillStyle = COLORS.lineNumber
+    // Line number
+    ctx.fillStyle = C.lineNum
+    ctx.font = 'bold 18px "Fira Code", "Cascadia Code", Consolas, monospace'
     ctx.textAlign = 'right'
-    ctx.fillText(String(i + 1), lineNumX, y)
+    ctx.fillText(String(i + 1), edX + lineNumW - 14, y)
     ctx.textAlign = 'left'
 
-    /* Tokenized code */
-    const tokens = tokenizeLine(line)
-    let x = codeX + 12
-    for (const tok of tokens) {
-      ctx.fillStyle = tok.color
-      ctx.fillText(tok.text, x, y)
-      x += ctx.measureText(tok.text).width
+    // Active line background for line 4
+    if (i === 3) {
+      ctx.fillStyle = C.activeLineBg
+      ctx.fillRect(edX + lineNumW, y - 22, edW - lineNumW, lineH)
     }
 
-    /* Blinking cursor */
-    if (i === visLines.length - 1 && cursorVisible && phase === 'typing') {
-      ctx.fillStyle = COLORS.cursor
-      ctx.shadowColor = 'rgba(96,165,250,0.6)'
-      ctx.shadowBlur = 6
-      ctx.fillRect(x + 2, y - 12, 9, 18)
-      ctx.shadowBlur = 0
+    // Code tokens
+    let curX = edX + lineNumW + 16
+    tokens.forEach((tok) => {
+      ctx.fillStyle = tok.c
+      ctx.font = 'bold 19px "Fira Code", "Cascadia Code", Consolas, monospace'
+      ctx.fillText(tok.t, curX, y)
+      curX += ctx.measureText(tok.t).width
+    })
+
+    // Cursor on line 4
+    if (i === 3 && cursorVisible) {
+      ctx.fillStyle = C.cursor
+      ctx.fillRect(curX + 3, y - 21, 3, 26)
     }
   })
 
-  /* Status badge */
-  const badgeY = H - 60
-  const badgeText = phase === 'paused' ? '● Complete' : phase === 'clearing' ? '● Restarting...' : '● Typing...'
-  const badgeColor = phase === 'paused' ? '#22c55e' : phase === 'clearing' ? '#f59e0b' : '#60a5fa'
-  const badgeBg = phase === 'paused' ? 'rgba(34,197,94,0.12)' : phase === 'clearing' ? 'rgba(245,158,11,0.12)' : 'rgba(59,130,246,0.12)'
+  // ── 5. Integrated Terminal Panel (H = termH) ──
+  const termY = H - 40 - termH
+  ctx.fillStyle = C.terminalBg
+  ctx.fillRect(edX, termY, edW, termH)
+  ctx.fillStyle = C.border
+  ctx.fillRect(edX, termY, edW, 1)
 
-  ctx.font = '12px monospace'
-  const bw = ctx.measureText(badgeText).width + 24
-  roundRect(ctx, W - 80 - bw, badgeY, bw, 26, 6)
-  ctx.fillStyle = badgeBg
-  ctx.fill()
-  ctx.strokeStyle = badgeColor
-  ctx.lineWidth = 1
-  ctx.stroke()
-  ctx.fillStyle = badgeColor
-  ctx.fillText(badgeText, W - 80 - bw + 12, badgeY + 17)
-}
+  // Terminal header tabs
+  ctx.fillStyle = '#8b949e'
+  ctx.font = '16px "Segoe UI", system-ui, sans-serif'
+  const termTabs = ['PROBLEMS  0', 'OUTPUT', 'DEBUG CONSOLE', 'TERMINAL']
+  let tabX = edX + 28
+  termTabs.forEach((tab) => {
+    const isAct = tab === 'TERMINAL'
+    if (isAct) {
+      ctx.fillStyle = '#ffffff'
+      ctx.font = 'bold 16px "Segoe UI", system-ui, sans-serif'
+      ctx.fillText(tab, tabX, termY + 30)
+      ctx.fillStyle = C.statusBarBg
+      ctx.fillRect(tabX, termY + 40, ctx.measureText(tab).width, 3)
+      ctx.fillStyle = '#8b949e'
+      ctx.font = '16px "Segoe UI", system-ui, sans-serif'
+    } else {
+      ctx.fillText(tab, tabX, termY + 30)
+    }
+    tabX += ctx.measureText(tab).width + 30
+  })
 
-function drawStatusBar(ctx, phase) {
-  ctx.fillStyle = COLORS.statusBar
-  ctx.fillRect(0, H - 28, W, 28)
+  // Terminal output lines
+  const termLines = [
+    { text: '$ npm run dev', color: '#c9d1d9', bold: true },
+    { text: '  VITE v5.4.21  ready in 420 ms', color: C.termCyan, bold: true },
+    { text: '  ➜  Local:   http://localhost:5179/', color: C.termGreen, bold: true },
+    { text: '  ➜  Network: use --host to expose', color: C.termMuted },
+    { text: '  ➜  press h + enter to show help', color: C.termMuted },
+  ]
 
-  ctx.fillStyle = '#ffffff'
-  ctx.font = '12px monospace'
-  ctx.fillText('⎇ main    ✓ 0    ⚠ 0', 12, H - 10)
+  let tLineY = termY + 84
+  termLines.forEach((tl) => {
+    ctx.fillStyle = tl.color
+    ctx.font = tl.bold
+      ? 'bold 18px "Fira Code", "Cascadia Code", Consolas, monospace'
+      : '17px "Fira Code", "Cascadia Code", Consolas, monospace'
+    ctx.fillText(tl.text, edX + 28, tLineY)
+    tLineY += 34
+  })
+
+  // ── 6. Bottom Purple Status Bar (H = 40) ──
+  ctx.fillStyle = C.statusBarBg
+  ctx.fillRect(0, H - 40, W, 40)
+  ctx.fillStyle = C.statusBarText
+  ctx.font = 'bold 15px "Segoe UI", system-ui, sans-serif'
+  ctx.fillText('main*  ✓ 0  ⚠ 0', 24, H - 14)
+
   ctx.textAlign = 'right'
-  ctx.fillText('UTF-8    JavaScript    Spaces: 4', W - 12, H - 10)
+  ctx.fillText('UTF-8   JavaScript JSX   Prettier', W - 24, H - 14)
   ctx.textAlign = 'left'
 }
 
-function drawMinimap(ctx, visLines) {
-  const mmX = W - 80
-  const mmY = 71
-  const mmW = 80
-  const mmH = H - 71 - 28
+function drawIcon(ctx, name, x, y, color, scale = 1.0) {
+  ctx.save()
+  ctx.translate(x, y)
+  ctx.scale(scale, scale)
+  ctx.strokeStyle = color
+  ctx.fillStyle = color
+  ctx.lineWidth = 1.5
+  ctx.lineCap = 'round'
+  ctx.lineJoin = 'round'
 
-  ctx.fillStyle = 'rgba(15,23,42,0.7)'
-  ctx.fillRect(mmX, mmY, mmW, mmH)
-
-  ctx.fillStyle = '#1e293b'
-  ctx.fillRect(mmX, mmY, 1, mmH)
-
-  visLines.forEach((line, i) => {
-    const y = mmY + 8 + i * 4
-    if (y > mmY + mmH - 8) return
-    const barW = Math.min(line.length * 1.2, mmW - 12)
-    ctx.fillStyle = COLORS.minimapBar
-    ctx.fillRect(mmX + 6, y, barW, 2)
-  })
-
-  /* Scroll indicator */
-  const ratio = Math.min(1, visLines.length / CODE_LINES.length)
-  ctx.fillStyle = 'rgba(59,130,246,0.25)'
-  ctx.fillRect(mmX + mmW - 4, mmY, 3, mmH * ratio)
+  if (name === 'files') {
+    ctx.strokeRect(0, 0, 14, 16)
+    ctx.beginPath()
+    ctx.moveTo(3, 4)
+    ctx.lineTo(11, 4)
+    ctx.moveTo(3, 8)
+    ctx.lineTo(11, 8)
+    ctx.stroke()
+  } else if (name === 'search') {
+    ctx.beginPath()
+    ctx.arc(6, 6, 5, 0, Math.PI * 2)
+    ctx.moveTo(10, 10)
+    ctx.lineTo(15, 15)
+    ctx.stroke()
+  } else if (name === 'git') {
+    ctx.beginPath()
+    ctx.arc(8, 4, 2.5, 0, Math.PI * 2)
+    ctx.arc(8, 13, 2.5, 0, Math.PI * 2)
+    ctx.moveTo(8, 6.5)
+    ctx.lineTo(8, 10.5)
+    ctx.stroke()
+  } else if (name === 'debug') {
+    ctx.beginPath()
+    ctx.arc(8, 8, 5, 0, Math.PI * 2)
+    ctx.stroke()
+  } else if (name === 'extensions') {
+    ctx.strokeRect(0, 0, 6, 6)
+    ctx.strokeRect(8, 0, 6, 6)
+    ctx.strokeRect(0, 8, 6, 6)
+  } else if (name === 'settings') {
+    ctx.beginPath()
+    ctx.arc(8, 8, 4, 0, Math.PI * 2)
+    ctx.stroke()
+  }
+  ctx.restore()
 }

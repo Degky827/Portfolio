@@ -8,34 +8,25 @@ import MonitorStand from './MonitorStand'
 /**
  * Monitor
  *
- * Ultra-wide monitor composed of three parts:
- * - MonitorFrame: outer bezel/frame
- * - MonitorScreen: display area with Canvas2D content
- * - MonitorStand: stand base and neck
- *
- * Supports 'code' and 'dashboard' screen modes.
+ * Professional 16:9 widescreen developer monitor:
+ * - Elevated above the desk (frameCenterY = 0.80) to clearly expose the long stand neck and metallic V-wing feet
+ * - MonitorStand: angled metallic V-wing feet resting flat on tabletop, long metallic upright neck
+ * - MonitorFrame: slim black bezel enclosure with bottom chin branding badge
+ * - MonitorScreen: high-fidelity VS Code workspace
  */
-export default function Monitor({ position = [0, 0, 0], screenMode = 'portfolio', profileData }) {
+export default function Monitor({ position = [0, 0, 0], screenMode = 'code', profileData }) {
   const workspace = useWorkspace()
-  const monitorHeight = 1.5
-  const standHeight = 0.44
-  const baseOffset = 0.03
-
-  const frameCenterY = baseOffset + standHeight + monitorHeight / 2
-
-  const hoverColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
+  const frameCenterY = 0.80
 
   return (
     <group position={position}>
-      {/* Stand */}
+      {/* Stand base resting on desk */}
       <MonitorStand position={[0, 0, 0]} />
 
-      {/* Monitor head - frame + screen */}
-      <group position={[0, frameCenterY, 0.1]}>
-        {/* Frame */}
+      {/* Monitor head - frame + screen raised above desk */}
+      <group position={[0, frameCenterY, 0.04]}>
         <MonitorFrame />
 
-        {/* Screen with Canvas2D content */}
         <Suspense fallback={null}>
           <MonitorScreen
             position={[0, 0, 0.01]}
@@ -59,7 +50,7 @@ export default function Monitor({ position = [0, 0, 0], screenMode = 'portfolio'
             document.body.style.cursor = 'auto'
           }}
         >
-          <boxGeometry args={[2.6, 1.5, 0.1]} />
+          <boxGeometry args={[1.76, 1.00, 0.08]} />
           <meshStandardMaterial
             transparent
             opacity={0}
