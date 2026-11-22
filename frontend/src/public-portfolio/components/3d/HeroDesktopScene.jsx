@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { OrbitControls, ContactShadows } from '@react-three/drei'
+import { OrbitControls, ContactShadows, Text3D, Center, Text } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Minimize2, ZoomIn, ZoomOut } from 'lucide-react'
 import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
@@ -53,15 +53,15 @@ function getS3(scene3D) {
 /* ─── Scroll-driven camera movement ─── */
 function ScrollCamera() {
   const { camera } = useThree()
-  const targetRef = useRef({ x: 0.35, y: 1.6, z: 5.1 })
+  const targetRef = useRef({ x: 0.0, y: 1.45, z: 4.20 })
 
   useFrame(() => {
     const scrollProgress = getHeroScrollProgress()
 
     // Subtle stable movement based on scroll
-    const targetX = 0.35 + scrollProgress * 0.25
-    const targetY = 1.6 - scrollProgress * 0.4
-    const targetZ = 5.1 + scrollProgress * 1.2
+    const targetX = 0.0 + scrollProgress * 0.20
+    const targetY = 1.45 - scrollProgress * 0.35
+    const targetZ = 4.20 + scrollProgress * 1.0
 
     targetRef.current.x += (targetX - targetRef.current.x) * 0.03
     targetRef.current.y += (targetY - targetRef.current.y) * 0.03
@@ -70,7 +70,7 @@ function ScrollCamera() {
     camera.position.x = targetRef.current.x
     camera.position.y = targetRef.current.y
     camera.position.z = targetRef.current.z
-    camera.lookAt(0.2, 1.0, -0.2)
+    camera.lookAt(-0.05, 1.25, -0.10)
   })
 
   return null
@@ -98,27 +98,27 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
     return o ? o.visible !== false : fallback
   }
 
-  // Workstation base width is 3.55 units
-  const workstationScale = Math.min(1.0, (viewport.width * 0.95) / 3.55)
+  // Workstation base width is 3.30 units matching Image 3
+  const workstationScale = Math.min(1.0, (viewport.width * 0.95) / 3.30)
   const groupScale = workstationScale
   const groupPos = [0, 0, 0]
 
   // Tabletop surface at y = 0.72 inside the scaled group
   const deskPos = [0, 0, 0]
-  const monitorPos = [-0.14, 0.72, -0.06]
-  const keyboardPos = [-0.14, 0.72, 0.28]
-  const mousepadPos = [0.48, 0.72, 0.28]
-  const speakerLeftPos = [-1.22, 0.72, 0.04]
-  const speakerRightPos = [0.90, 0.72, 0.04]
-  const pcPos = [1.38, 0.72, 0.04]
+  const monitorPos = [-0.10, 0.72, -0.06]
+  const keyboardPos = [-0.10, 0.72, 0.28]
+  const mousepadPos = [0.46, 0.72, 0.28]
+  const speakerLeftPos = [-1.18, 0.72, 0.04]
+  const speakerRightPos = [0.86, 0.72, 0.04]
+  const pcPos = [1.28, 0.72, 0.04]
 
   return (
     <>
-      <ambientLight intensity={darkMode ? 0.70 : 0.88} color="#ffffff" />
+      <ambientLight intensity={darkMode ? 0.75 : 0.92} color="#ffffff" />
 
       {/* Primary Key Light - Balanced studio directional light casting crisp, realistic shadows */}
       <directionalLight
-        position={[2.8, 6.8, 3.8]}
+        position={[2.8, 6.8, 4.0]}
         intensity={darkMode ? 1.25 : 1.35}
         color={darkMode ? '#9a90f6' : '#ffffff'}
         castShadow={castShadows}
@@ -140,7 +140,7 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
         color={darkMode ? '#7c3aed' : '#edf0ff'}
       />
 
-      {/* ── Floor Shadow Catcher (Receives directional shadows from white table slab & sled legs) ── */}
+      {/* ── Floor Shadow Catcher (Receives directional shadows from dark table slab & sled legs) ── */}
       <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[14, 10]} />
         <shadowMaterial transparent opacity={darkMode ? 0.65 : 0.35} />
@@ -156,8 +156,42 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
         color={darkMode ? '#080810' : '#140c24'}
       />
 
-      {/* ── Workstation (White Table + Charcoal Black Components + Purple Accents) ── */}
+      {/* ── Workstation (Dark Charcoal Wood Table + Components + Purple Accents) ── */}
       <group ref={desktopGroupRef} position={groupPos} scale={workstationScale}>
+        {/* ── 3D Wall-Mounted Name & Subtitle matching Image 1 ── */}
+        <group position={[-0.10, 1.98, -0.12]}>
+          <Center top>
+            <Text3D
+              font="/fonts/helvetiker_bold.typeface.json"
+              size={0.25}
+              height={0.07}
+              curveSegments={14}
+              bevelEnabled
+              bevelThickness={0.012}
+              bevelSize={0.008}
+              bevelSegments={5}
+              castShadow
+            >
+              Desalegn Kasaye
+              <meshStandardMaterial
+                color={darkMode ? '#f8fafc' : '#0f172a'}
+                roughness={0.22}
+                metalness={0.35}
+              />
+            </Text3D>
+          </Center>
+          <Center position={[0, -0.15, 0.02]}>
+            <Text
+              fontSize={0.095}
+              fontStyle="italic"
+              color={darkMode ? '#a5b4fc' : '#475569'}
+              letterSpacing={0.04}
+            >
+              fullstack and flutter developer
+            </Text>
+          </Center>
+        </group>
+
         {vis('desk') && <Desk position={deskPos} />}
         {vis('monitor') && <Monitor position={monitorPos} screenMode="code" profileData={profileData} />}
         {vis('keyboard') && <Keyboard position={keyboardPos} />}
@@ -204,25 +238,25 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
 
         {/* Accent Point Light at PC Fans */}
         <pointLight
-          position={[1.38, 1.06, 0.34]}
+          position={[1.28, 1.06, 0.34]}
           intensity={0.70}
           color={PURPLE}
           distance={2.4}
           decay={2}
         />
 
-        {/* Soft ambient purple reflection pool under PC fans onto satin white tabletop */}
+        {/* Soft ambient purple reflection pool under PC fans onto dark wood tabletop */}
         <pointLight
-          position={[1.34, 0.76, 0.22]}
+          position={[1.26, 0.76, 0.22]}
           intensity={0.65}
           color={PURPLE}
           distance={1.0}
           decay={2}
         />
 
-        {/* Soft ambient purple reflection pool on satin white tabletop under monitor & keyboard */}
+        {/* Soft ambient purple reflection pool on tabletop under monitor & keyboard */}
         <pointLight
-          position={[-0.14, 0.76, 0.08]}
+          position={[-0.10, 0.76, 0.08]}
           intensity={0.55}
           color={PURPLE}
           distance={1.1}
@@ -231,7 +265,7 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
 
         {/* Accent Point Light at Left Speaker */}
         <pointLight
-          position={[-1.22, 0.82, 0.18]}
+          position={[-1.18, 0.82, 0.18]}
           intensity={0.25}
           color={PURPLE}
           distance={1.0}
@@ -241,7 +275,7 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
 
       <OrbitControls
         ref={controlsRef}
-        target={[0.2, 1.0, -0.2]}
+        target={[-0.05, 1.25, -0.10]}
         enableZoom={false}
         enablePan={false}
         minPolarAngle={Math.PI / 4.2}
@@ -341,12 +375,12 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [expanded])
 
-  // Low FOV (28°) telephoto perspective frames the 3D wall text and reduced table cleanly
+  // Balanced telephoto perspective frames the 3D name, title and developer workstation cleanly
   const inlineCamera = useMemo(() => {
     if (isMobile) {
-      return { position: [0.0, 1.60, 5.00], fov: 30, near: 0.1, far: 25 }
+      return { position: [0.0, 1.45, 4.60], fov: 32, near: 0.1, far: 25 }
     }
-    return { position: [0.0, 1.70, 4.80], fov: 28, near: 0.1, far: 25 }
+    return { position: [0.0, 1.45, 4.20], fov: 30, near: 0.1, far: 25 }
   }, [isMobile])
 
   const maxDpr = s3.performance.maxDpr || 2
@@ -371,7 +405,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
           camera={inlineCamera}
           dpr={isMobile ? [1, Math.min(maxDpr, 1.5)] : [1, maxDpr]}
           gl={inlineGl}
-          frameloop="demand"
+          frameloop="always"
           style={{ background: 'transparent' }}
         >
           <SceneContent
