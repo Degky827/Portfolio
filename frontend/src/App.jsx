@@ -81,7 +81,6 @@ function App() {
   return (
     <ErrorBoundary>
       <ScrollProvider>
-        <CursorSystem />
         <ScrollToTop />
         <IntroSystem />
         <Suspense fallback={layoutSpinner}>
