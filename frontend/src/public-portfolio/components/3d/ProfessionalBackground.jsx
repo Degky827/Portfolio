@@ -85,7 +85,7 @@ function AmbientOrbs({ darkMode }) {
         <mesh key={i} position={orb.position} castShadow={false} receiveShadow={false}>
           <sphereGeometry args={[orb.radius, 32, 32]} />
           <meshBasicMaterial
-            color={darkMode ? '#818cf8' : '#6366f1'}
+            color={darkMode ? '#8B5CF6' : '#6C2BFF'}
             transparent
             opacity={orb.opacity}
             depthWrite={false}
@@ -158,15 +158,15 @@ export default function ProfessionalBackground({ darkMode, isMobile }) {
   const shapeRefs = useRef([])
   const particleRefs = useRef([])
 
-  const pColor = darkMode ? '#6366f1' : '#4f46e5'
-  const sColor = darkMode ? '#818cf8' : '#6366f1'
-  const pOpacity = darkMode ? 0.18 : 0.08
-  const sOpacity = darkMode ? 0.15 : 0.06
+  const pColor = darkMode ? '#8B5CF6' : '#6C2BFF'
+  const sColor = darkMode ? '#A78BFA' : '#8B5CF6'
+  const pOpacity = darkMode ? 0.16 : 0.05
+  const sOpacity = darkMode ? 0.14 : 0.04
   const pMetalness = darkMode ? 0.3 : 0.1
   const sMetalness = darkMode ? 0.4 : 0.2
   const pRoughness = darkMode ? 0.6 : 0.8
   const sRoughness = darkMode ? 0.5 : 0.7
-  const ringOpacity = darkMode ? 0.08 : 0.04
+  const ringOpacity = darkMode ? 0.08 : 0.03
 
   useFrame((state) => {
     const time = state.clock.getElapsedTime()

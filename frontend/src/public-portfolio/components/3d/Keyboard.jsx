@@ -5,75 +5,81 @@ import * as THREE from 'three'
 /**
  * Keyboard
  *
- * Mechanical keyboard with per-key RGB glow effect.
+ * Centered backlit mechanical keyboard in refined matte charcoal black finish,
+ * floating mechanical keycaps, and glowing purple (#6C2BFF) underglow bed.
+ * Proportioned to match the reference workstation (width ~0.82, depth ~0.24).
  */
 export default function Keyboard({ position = [0, 0, 0] }) {
   const workspace = useWorkspace()
-  const keyColor = useMemo(() => new THREE.Color('#1a1035'), [])
-  const purpleColor = useMemo(() => new THREE.Color('#8b5cf6'), [])
-  const cyanColor = useMemo(() => new THREE.Color('#22d3ee'), [])
-  const bodyColor = useMemo(() => new THREE.Color('#0f0a2a'), [])
+  const keyColor = useMemo(() => new THREE.Color('#14151a'), [])
+  const purplePrimary = useMemo(() => new THREE.Color('#6C2BFF'), [])
+  const purpleSoft = useMemo(() => new THREE.Color('#8B5CF6'), [])
+  const bodyColor = useMemo(() => new THREE.Color('#0b0c10'), [])
 
   const keyRows = [
-    { z: -0.18, keys: 14, width: 0.14 },
-    { z: -0.09, keys: 14, width: 0.14 },
-    { z: 0, keys: 13, width: 0.14 },
-    { z: 0.09, keys: 12, width: 0.14 },
-    { z: 0.18, keys: 8, width: 0.14 },
+    { z: -0.08, keys: 14, width: 0.052 },
+    { z: -0.04, keys: 14, width: 0.052 },
+    { z: 0.00, keys: 13, width: 0.052 },
+    { z: 0.04, keys: 12, width: 0.052 },
+    { z: 0.08, keys: 7, width: 0.052 },
   ]
 
   return (
     <group position={position}>
-      {/* Keyboard body */}
-      <mesh position={[0, 0.02, 0]} castShadow>
-        <boxGeometry args={[1.4, 0.04, 0.5]} />
+      {/* ── Keyboard Chassis Body in Matte Charcoal Black ── */}
+      <mesh position={[0, 0.008, 0]} castShadow receiveShadow>
+        <boxGeometry args={[0.82, 0.016, 0.24]} />
         <meshStandardMaterial
           color={bodyColor}
-          roughness={0.2}
-          metalness={0.8}
+          roughness={0.4}
+          metalness={0.6}
         />
       </mesh>
 
-      {/* Keyboard body edge glow */}
-      <mesh position={[0, 0.02, 0.26]}>
-        <boxGeometry args={[1.42, 0.02, 0.01]} />
+      {/* ── Front Wrist Edge Bevel ── */}
+      <mesh position={[0, 0.006, 0.121]}>
+        <boxGeometry args={[0.816, 0.012, 0.004]} />
+        <meshStandardMaterial color="#101116" roughness={0.35} metalness={0.65} />
+      </mesh>
+
+      {/* ── Flat Horizontal Key Underglow Bed (Lying flat, NO vertical artifact) ── */}
+      <mesh position={[0, 0.016, 0]}>
+        <boxGeometry args={[0.80, 0.002, 0.22]} />
         <meshStandardMaterial
-          color={purpleColor}
-          emissive={purpleColor}
-          emissiveIntensity={1.5}
+          color={purplePrimary}
+          emissive={purplePrimary}
+          emissiveIntensity={2.0}
+          transparent
+          opacity={0.75}
         />
       </mesh>
 
-      {/* Key rows */}
+      {/* ── Floating Mechanical Keycap Rows in Charcoal Black PBT ── */}
       {keyRows.map((row, rowIdx) => (
-        <group key={rowIdx} position={[0, 0.045, row.z]}>
+        <group key={rowIdx} position={[0, 0.021, row.z]}>
           {Array.from({ length: row.keys }).map((_, keyIdx) => {
-            const totalWidth = row.keys * row.width + (row.keys - 1) * 0.01
+            const totalWidth = row.keys * row.width + (row.keys - 1) * 0.005
             const startX = -totalWidth / 2 + row.width / 2
-            const x = startX + keyIdx * (row.width + 0.01)
-            const isAccent = (rowIdx + keyIdx) % 5 === 0
+            const x = startX + keyIdx * (row.width + 0.005)
 
             return (
               <group key={keyIdx} position={[x, 0, 0]}>
-                {/* Key cap */}
+                {/* Floating keycap */}
                 <mesh castShadow>
-                  <boxGeometry args={[row.width - 0.01, 0.025, 0.12]} />
+                  <boxGeometry args={[row.width - 0.006, 0.010, 0.034]} />
                   <meshStandardMaterial
                     color={keyColor}
-                    roughness={0.4}
-                    metalness={0.3}
+                    roughness={0.5}
+                    metalness={0.2}
                   />
                 </mesh>
-
-                {/* Key glow */}
-                <mesh position={[0, -0.013, 0]}>
-                  <boxGeometry args={[row.width - 0.02, 0.005, 0.1]} />
+                {/* Micro switch stem glow under keycap */}
+                <mesh position={[0, -0.004, 0]}>
+                  <boxGeometry args={[0.012, 0.004, 0.012]} />
                   <meshStandardMaterial
-                    color={isAccent ? cyanColor : purpleColor}
-                    emissive={isAccent ? cyanColor : purpleColor}
-                    emissiveIntensity={isAccent ? 1.5 : 0.8}
-                    transparent
-                    opacity={isAccent ? 0.8 : 0.5}
+                    color={purpleSoft}
+                    emissive={purpleSoft}
+                    emissiveIntensity={2.5}
                   />
                 </mesh>
               </group>
@@ -82,25 +88,31 @@ export default function Keyboard({ position = [0, 0, 0] }) {
         </group>
       ))}
 
-      {/* Spacebar glow */}
-      <mesh position={[0, 0.02, 0.18]}>
-        <boxGeometry args={[0.6, 0.005, 0.08]} />
+      {/* ── Spacebar Key & Purple LED Accent Bar ── */}
+      <mesh position={[0, 0.022, 0.08]} castShadow>
+        <boxGeometry args={[0.26, 0.010, 0.034]} />
         <meshStandardMaterial
-          color={cyanColor}
-          emissive={cyanColor}
-          emissiveIntensity={1}
-          transparent
-          opacity={0.6}
+          color={keyColor}
+          roughness={0.5}
+          metalness={0.2}
+        />
+      </mesh>
+      <mesh position={[0, 0.028, 0.08]}>
+        <boxGeometry args={[0.22, 0.002, 0.006]} />
+        <meshStandardMaterial
+          color={purpleSoft}
+          emissive={purpleSoft}
+          emissiveIntensity={2.8}
         />
       </mesh>
 
-      {/* Clickable hitbox */}
+      {/* ── Keyboard Interactive Hitbox ── */}
       <mesh
-        position={[0, 0.05, 0]}
-          onClick={(e) => {
-            e.stopPropagation()
-            workspace?.openByObject?.('keyboard')
-          }}
+        position={[0, 0.02, 0]}
+        onClick={(e) => {
+          e.stopPropagation()
+          workspace?.openByObject?.('keyboard')
+        }}
         onPointerOver={(e) => {
           e.stopPropagation()
           document.body.style.cursor = 'pointer'
@@ -109,7 +121,7 @@ export default function Keyboard({ position = [0, 0, 0] }) {
           document.body.style.cursor = 'auto'
         }}
       >
-        <boxGeometry args={[1.5, 0.1, 0.6]} />
+        <boxGeometry args={[0.84, 0.04, 0.26]} />
         <meshStandardMaterial transparent opacity={0} depthWrite={false} />
       </mesh>
     </group>

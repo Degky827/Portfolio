@@ -1,8 +1,8 @@
 import { Suspense, useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { Float, OrbitControls } from '@react-three/drei'
+import { OrbitControls, ContactShadows } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Maximize2, Minimize2, RotateCcw, ZoomIn, ZoomOut } from 'lucide-react'
+import { Minimize2, ZoomIn, ZoomOut } from 'lucide-react'
 import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
 import { getHeroScrollProgress } from '../../shared/heroScrollStore'
 import * as THREE from 'three'
@@ -11,9 +11,9 @@ import Monitor from './Monitor'
 import Keyboard from './Keyboard'
 import PC from './PC'
 import Speaker from './Speaker'
-import ProfessionalBackground from './ProfessionalBackground'
 
-const CYAN = new THREE.Color('#22d3ee')
+const PURPLE = new THREE.Color('#6C2BFF')
+const PURPLE_VIBRANT = new THREE.Color('#A855F7')
 
 /* Safe defaults — used when API data is missing or invalid */
 const SAFE_DEFAULTS = {
@@ -50,26 +50,18 @@ function getS3(scene3D) {
   return s
 }
 
-/* ─── Demand-based renderer ─── */
-function DemandRenderer() {
-  const { invalidate, gl } = useThree()
-  useEffect(() => { gl.setAnimationLoop(null) }, [gl])
-  useFrame(() => { invalidate() })
-  return null
-}
-
 /* ─── Scroll-driven camera movement ─── */
 function ScrollCamera() {
   const { camera } = useThree()
-  const targetRef = useRef({ x: 0, y: 0, z: 0 })
+  const targetRef = useRef({ x: 0.35, y: 1.6, z: 5.1 })
 
   useFrame(() => {
     const scrollProgress = getHeroScrollProgress()
 
-    // Subtle camera movement based on scroll
-    const targetX = scrollProgress * 0.3
-    const targetY = 1.6 - scrollProgress * 0.5
-    const targetZ = 5.1 + scrollProgress * 1.5
+    // Subtle stable movement based on scroll
+    const targetX = 0.35 + scrollProgress * 0.25
+    const targetY = 1.6 - scrollProgress * 0.4
+    const targetZ = 5.1 + scrollProgress * 1.2
 
     targetRef.current.x += (targetX - targetRef.current.x) * 0.03
     targetRef.current.y += (targetY - targetRef.current.y) * 0.03
@@ -85,23 +77,12 @@ function ScrollCamera() {
 }
 
 /* ─── Scene Content ─── */
-function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackground = true, s3, controlsRef }) {
+function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
+  const { viewport } = useThree()
   const desktopGroupRef = useRef()
 
-  const bgColor = darkMode ? '#1a1a2e' : '#ffffff'
-  const fogColor = useMemo(() => new THREE.Color(bgColor), [bgColor])
-  const floorColor = darkMode ? '#1a1a2e' : '#ffffff'
-  const wallColor = darkMode ? '#1a1a2e' : '#ffffff'
-  const accentColor = darkMode ? '#6366f1' : '#4f46e5'
-  const ambientColor = darkMode ? '#1a1a2e' : '#ffffff'
-  const dirColor = darkMode ? '#818cf8' : '#6366f1'
-  const ambientIntensity = darkMode ? 0.6 : 0.75
-  const dirIntensity = darkMode ? 1.2 : 1.0
-  const floorRoughness = darkMode ? 0.8 : 0.9
-  const floorMetalness = darkMode ? 0.1 : 0.05
-
-  const castShadows = s3.shadows && !isMobile
-  const shadowSize = s3.performance.shadowQuality === 'high' ? 1024 : s3.performance.shadowQuality === 'low' ? 256 : 512
+  const castShadows = s3.shadows !== false && !isMobile
+  const shadowSize = s3.performance.shadowQuality === 'high' ? 2048 : s3.performance.shadowQuality === 'low' ? 512 : 1024
 
   /* Object lookup from admin */
   const objMap = useMemo(() => {
@@ -112,156 +93,169 @@ function SceneContent({ darkMode, isMobile, profileData, canvasRef, showBackgrou
     return m
   }, [s3.objects])
 
-  function getObj(name) {
-    return objMap[name.toLowerCase()] || null
-  }
-  function pos(defaults, name) {
-    const o = getObj(name)
-    if (!o || !o.position) return defaults
-    return [o.position.x ?? defaults[0], o.position.y ?? defaults[1], o.position.z ?? defaults[2]]
-  }
   function vis(name, fallback = true) {
-    const o = getObj(name)
+    const o = objMap[name.toLowerCase()]
     return o ? o.visible !== false : fallback
   }
-  function scl(name, fallback = 0.82) {
-    const o = getObj(name)
-    return o ? (typeof o.scale === 'number' ? o.scale : fallback) : fallback
-  }
 
-  const groupPos = pos([0.2, -0.05, 0], 'group')
-  const groupScale = scl('group', 0.82)
-  const deskPos = pos([0, 0, 0], 'desk')
-  const monitorPos = pos([0, 0, -0.3], 'monitor')
-  const keyboardPos = pos([0, 0, 0.25], 'keyboard')
-  const mousePos = pos([0.9, 0.78, 0.3], 'mouse')
-  const pcPos = pos([-2.2, 0, 0.3], 'pc')
-  const speakerLeftPos = pos([-1.8, 0.78, 0.1], 'speaker-left')
-  const speakerRightPos = pos([1.8, 0.78, 0.1], 'speaker-right')
+  // Workstation base width is 3.55 units
+  const workstationScale = Math.min(1.0, (viewport.width * 0.95) / 3.55)
+  const groupScale = workstationScale
+  const groupPos = [0, 0, 0]
+
+  // Tabletop surface at y = 0.72 inside the scaled group
+  const deskPos = [0, 0, 0]
+  const monitorPos = [-0.14, 0.72, -0.06]
+  const keyboardPos = [-0.14, 0.72, 0.28]
+  const mousepadPos = [0.48, 0.72, 0.28]
+  const speakerLeftPos = [-1.22, 0.72, 0.04]
+  const speakerRightPos = [0.90, 0.72, 0.04]
+  const pcPos = [1.38, 0.72, 0.04]
 
   return (
     <>
-      {showBackground && <color attach="background" args={[bgColor]} />}
-      <fog attach="fog" args={[fogColor, 10, 28]} />
+      <ambientLight intensity={darkMode ? 0.70 : 0.88} color="#ffffff" />
 
-      <ambientLight intensity={ambientIntensity} color={ambientColor} />
-
+      {/* Primary Key Light - Balanced studio directional light casting crisp, realistic shadows */}
       <directionalLight
-        position={[4, 6, 4]}
-        intensity={dirIntensity}
-        color={dirColor}
+        position={[2.8, 6.8, 3.8]}
+        intensity={darkMode ? 1.25 : 1.35}
+        color={darkMode ? '#9a90f6' : '#ffffff'}
         castShadow={castShadows}
         shadow-mapSize-width={shadowSize}
         shadow-mapSize-height={shadowSize}
         shadow-camera-near={0.5}
         shadow-camera-far={18}
-        shadow-camera-left={-4}
-        shadow-camera-right={4}
-        shadow-camera-top={4}
-        shadow-camera-bottom={-4}
-        shadow-bias={-0.0005}
+        shadow-camera-left={-5}
+        shadow-camera-right={5}
+        shadow-camera-top={5}
+        shadow-camera-bottom={-5}
+        shadow-bias={-0.0004}
       />
 
+      {/* Secondary Fill Light - Soft studio ambient fill */}
       <directionalLight
-        position={[-3, 3, 2]}
-        intensity={darkMode ? 0.25 : 0.15}
-        color={darkMode ? '#4f46e5' : '#93c5fd'}
+        position={[-3.2, 5.0, 2.5]}
+        intensity={darkMode ? 0.35 : 0.38}
+        color={darkMode ? '#7c3aed' : '#edf0ff'}
       />
 
-      {darkMode && (
-        <pointLight position={[0.5, 1.6, -0.1]} intensity={0.6} color="#818cf8" distance={5} decay={2} />
-      )}
-
-      <Suspense fallback={null}>
-        <ProfessionalBackground key={isMobile ? 'mobile' : 'desktop'} darkMode={darkMode} isMobile={isMobile} />
-      </Suspense>
-
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, -0.01, 0]} receiveShadow>
-        <planeGeometry args={[30, 30]} />
-        <meshStandardMaterial color={floorColor} roughness={floorRoughness} metalness={floorMetalness} envMapIntensity={darkMode ? 0.3 : 0.1} />
+      {/* ── Floor Shadow Catcher (Receives directional shadows from white table slab & sled legs) ── */}
+      <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[14, 10]} />
+        <shadowMaterial transparent opacity={darkMode ? 0.65 : 0.35} />
       </mesh>
 
-      <mesh rotation={[-Math.PI / 2, 0, 0]} position={[0, 0.003, 1.2]}>
-        <planeGeometry args={[3.2, 0.3]} />
-        <meshStandardMaterial color={accentColor} emissive={accentColor} emissiveIntensity={darkMode ? 0.2 : 0.08} transparent opacity={darkMode ? 0.12 : 0.05} />
-      </mesh>
+      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs and sled runners) ── */}
+      <ContactShadows
+        position={[0, 0.001, 0]}
+        opacity={darkMode ? 0.85 : 0.65}
+        scale={9.6}
+        blur={2.4}
+        far={2.8}
+        color={darkMode ? '#080810' : '#140c24'}
+      />
 
-      <mesh position={[0, 2.5, -2]} receiveShadow>
-        <planeGeometry args={[14, 8]} />
-        <meshStandardMaterial color={wallColor} roughness={0.98} metalness={0.0} />
-      </mesh>
+      {/* ── Workstation (White Table + Charcoal Black Components + Purple Accents) ── */}
+      <group ref={desktopGroupRef} position={groupPos} scale={workstationScale}>
+        {vis('desk') && <Desk position={deskPos} />}
+        {vis('monitor') && <Monitor position={monitorPos} screenMode="code" profileData={profileData} />}
+        {vis('keyboard') && <Keyboard position={keyboardPos} />}
 
-      <Suspense fallback={null}>
-        <Float speed={1.2} rotationIntensity={s3.autoRotate ? 0.3 : 0} floatIntensity={0.05}>
-          <group ref={desktopGroupRef} position={groupPos} scale={groupScale}>
-            {vis('desk') && <Desk position={deskPos} />}
-            {vis('monitor') && <Monitor position={monitorPos} screenMode="preview" profileData={profileData} />}
-            {vis('keyboard') && <Keyboard position={keyboardPos} />}
+        {vis('mouse') && (
+          <group position={mousepadPos}>
+            {/* Charcoal Black Mousepad with Glowing Purple Neon Trim */}
+            <mesh receiveShadow position={[0, 0.002, 0]}>
+              <boxGeometry args={[0.38, 0.004, 0.28]} />
+              <meshStandardMaterial color="#0c0d11" roughness={0.75} />
+            </mesh>
+            <mesh position={[0, 0.001, 0]}>
+              <boxGeometry args={[0.388, 0.003, 0.288]} />
+              <meshStandardMaterial
+                color={PURPLE_VIBRANT}
+                emissive={PURPLE}
+                emissiveIntensity={2.2}
+              />
+            </mesh>
 
-            {!isMobile && vis('mouse') && (
-              <group position={mousePos}>
-                <mesh castShadow>
-                  <boxGeometry args={[0.12, 0.03, 0.18]} />
-                  <meshStandardMaterial color="#0f0a2a" roughness={0.15} metalness={0.85} />
-                </mesh>
-                <mesh position={[0, 0.02, -0.03]}>
-                  <cylinderGeometry args={[0.008, 0.008, 0.02, 8]} />
-                  <meshStandardMaterial color={CYAN} emissive={CYAN} emissiveIntensity={2.5} />
-                </mesh>
-                <mesh position={[0, -0.01, 0]}>
-                  <boxGeometry args={[0.1, 0.004, 0.16]} />
-                  <meshStandardMaterial color={CYAN} emissive={CYAN} emissiveIntensity={1.2} transparent opacity={0.45} />
-                </mesh>
-              </group>
-            )}
-
-            {!isMobile && vis('pc') && <PC position={pcPos} />}
-            {vis('speaker-left') && <Speaker position={speakerLeftPos} side="left" />}
-            {!isMobile && vis('speaker-right') && <Speaker position={speakerRightPos} side="right" />}
+            {/* Ergonomic Gaming Mouse in Matte Charcoal Black */}
+            <group position={[0, 0.016, 0]}>
+              <mesh castShadow>
+                <boxGeometry args={[0.080, 0.026, 0.126]} />
+                <meshStandardMaterial color="#0e0f14" roughness={0.35} metalness={0.65} />
+              </mesh>
+              {/* Illuminated purple scroll wheel */}
+              <mesh position={[0, 0.013, -0.026]}>
+                <cylinderGeometry args={[0.006, 0.006, 0.014, 12]} />
+                <meshStandardMaterial color={PURPLE_VIBRANT} emissive={PURPLE} emissiveIntensity={2.8} />
+              </mesh>
+              {/* Illuminated purple rear logo */}
+              <mesh position={[0, 0.014, 0.032]}>
+                <boxGeometry args={[0.020, 0.002, 0.020]} />
+                <meshStandardMaterial color={PURPLE_VIBRANT} emissive={PURPLE} emissiveIntensity={2.5} />
+              </mesh>
+            </group>
           </group>
-        </Float>
-      </Suspense>
+        )}
+
+        {vis('pc') && <PC position={pcPos} />}
+        {vis('speaker-left') && <Speaker position={speakerLeftPos} side="left" />}
+        {vis('speaker-right') && <Speaker position={speakerRightPos} side="right" />}
+
+        {/* Accent Point Light at PC Fans */}
+        <pointLight
+          position={[1.38, 1.06, 0.34]}
+          intensity={0.70}
+          color={PURPLE}
+          distance={2.4}
+          decay={2}
+        />
+
+        {/* Soft ambient purple reflection pool under PC fans onto satin white tabletop */}
+        <pointLight
+          position={[1.34, 0.76, 0.22]}
+          intensity={0.65}
+          color={PURPLE}
+          distance={1.0}
+          decay={2}
+        />
+
+        {/* Soft ambient purple reflection pool on satin white tabletop under monitor & keyboard */}
+        <pointLight
+          position={[-0.14, 0.76, 0.08]}
+          intensity={0.55}
+          color={PURPLE}
+          distance={1.1}
+          decay={2}
+        />
+
+        {/* Accent Point Light at Left Speaker */}
+        <pointLight
+          position={[-1.22, 0.82, 0.18]}
+          intensity={0.25}
+          color={PURPLE}
+          distance={1.0}
+          decay={2}
+        />
+      </group>
 
       <OrbitControls
         ref={controlsRef}
         target={[0.2, 1.0, -0.2]}
-        enableZoom={true}
+        enableZoom={false}
         enablePan={false}
-        minPolarAngle={Math.PI / 4}
-        maxPolarAngle={Math.PI / 2 + 0.1}
-        minAzimuthAngle={-Math.PI / 2.5}
-        maxAzimuthAngle={Math.PI / 2.5}
-        minDistance={3}
-        maxDistance={10}
+        minPolarAngle={Math.PI / 4.2}
+        maxPolarAngle={Math.PI / 2.05}
+        minAzimuthAngle={-Math.PI / 4}
+        maxAzimuthAngle={Math.PI / 4}
         enableDamping
         dampingFactor={0.05}
-        rotateSpeed={0.7}
-        autoRotate={s3.autoRotate}
-        zoomSpeed={0.8}
+        rotateSpeed={0.5}
+        autoRotate={false}
       />
 
       {getHeroScrollProgress() > 0 && <ScrollCamera />}
     </>
-  )
-}
-
-/* ─── Expand Button ─── */
-function ExpandButton({ onClick, icon: Icon, label, darkMode }) {
-  return (
-    <motion.button
-      onClick={onClick}
-      whileHover={{ scale: 1.1 }}
-      whileTap={{ scale: 0.9 }}
-      className={`absolute top-3 right-3 z-30 p-2.5 rounded-xl backdrop-blur-md border transition-all shadow-lg cursor-pointer ${
-        darkMode
-          ? 'bg-black/60 border-white/10 text-white hover:bg-black/80'
-          : 'bg-white/80 border-black/10 text-slate-900 hover:bg-white'
-      }`}
-      title={label}
-      aria-label={label}
-    >
-      <Icon size={16} />
-    </motion.button>
   )
 }
 
@@ -326,15 +320,6 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return <div className={`relative w-full h-full ${className}`}><FallbackScene darkMode={darkMode} /></div>
   }
 
-  const handleToggle = useCallback(() => {
-    setExpanded((prev) => !prev)
-    setCameraKey((k) => k + 1)
-  }, [])
-
-  const handleResetCamera = useCallback(() => {
-    setCameraKey((k) => k + 1)
-  }, [])
-
   const handleZoomIn = useCallback(() => {
     if (controlsRef.current) {
       controlsRef.current.object.position.multiplyScalar(0.85)
@@ -356,16 +341,13 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [expanded])
 
-  const cam = s3.camera
+  // Low FOV (28°) telephoto perspective frames the 3D wall text and reduced table cleanly
   const inlineCamera = useMemo(() => {
     if (isMobile) {
-      return { position: [cam.positionX || 0.2, cam.positionY || 1.5, cam.positionZ || 5.6], fov: cam.fov || 36, near: 0.1, far: 25 }
+      return { position: [0.0, 1.60, 5.00], fov: 30, near: 0.1, far: 25 }
     }
-    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
-      return { position: [cam.positionX || 0.3, cam.positionY || 1.7, cam.positionZ || 6.2], fov: cam.fov || 32, near: 0.1, far: 25 }
-    }
-    return { position: [cam.positionX || 0.35, cam.positionY || 1.6, cam.positionZ || 5.1], fov: cam.fov || 30, near: 0.1, far: 25 }
-  }, [isMobile, cam.positionX, cam.positionY, cam.positionZ, cam.fov])
+    return { position: [0.0, 1.70, 4.80], fov: 28, near: 0.1, far: 25 }
+  }, [isMobile])
 
   const maxDpr = s3.performance.maxDpr || 2
   const inlineGl = useMemo(() => ({
@@ -376,13 +358,14 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     depth: true,
     failIfMajorPerformanceCaveat: false,
     toneMapping: THREE.ACESFilmicToneMapping,
-    toneMappingExposure: darkMode ? 1.1 : 1.0,
+    toneMappingExposure: darkMode ? 1.08 : 1.02,
   }), [isMobile, darkMode, s3.performance.lightweightMobile])
 
   return (
     <>
       <div className={`relative w-full h-full ${className}`}>
         <Canvas
+          shadows
           ref={canvasRef}
           key={`inline-${cameraKey}`}
           camera={inlineCamera}
@@ -395,20 +378,10 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
             darkMode={darkMode}
             isMobile={isMobile}
             profileData={profileData}
-            canvasRef={canvasRef}
-            showBackground={false}
             s3={s3}
             controlsRef={controlsRef}
           />
         </Canvas>
-
-        {!isMobile && s3.interaction && (
-          <div className="absolute top-3 right-3 z-30 flex flex-col gap-2">
-            <ExpandButton onClick={handleToggle} icon={Maximize2} label="Expand 3D workspace" darkMode={darkMode} />
-            <ExpandButton onClick={handleZoomIn} icon={ZoomIn} label="Zoom in" darkMode={darkMode} />
-            <ExpandButton onClick={handleZoomOut} icon={ZoomOut} label="Zoom out" darkMode={darkMode} />
-          </div>
-        )}
       </div>
 
       <AnimatePresence>
@@ -431,33 +404,30 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
                 <motion.button onClick={handleZoomOut} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer" title="Zoom out" aria-label="Zoom out">
                   <ZoomOut size={16} />
                 </motion.button>
-                <motion.button onClick={handleResetCamera} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer" title="Reset camera" aria-label="Reset camera">
-                  <RotateCcw size={16} />
-                </motion.button>
-                <motion.button onClick={handleToggle} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer" title="Collapse" aria-label="Collapse 3D workspace">
+                <motion.button onClick={() => setExpanded(false)} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.9 }} className="p-2.5 rounded-xl bg-white/10 border border-white/10 hover:bg-white/20 text-white transition-all cursor-pointer" title="Close" aria-label="Close">
                   <Minimize2 size={16} />
                 </motion.button>
               </div>
             </div>
 
-            <Canvas
-              key={`expanded-${cameraKey}`}
-              camera={{ position: [cam.positionX || 0, 2.2, 8], fov: cam.fov || 32, near: 0.1, far: 100 }}
-              dpr={[1, Math.min(maxDpr, 1.5)]}
-              gl={{
-                antialias: true,
-                alpha: false,
-                powerPreference: 'default',
-                failIfMajorPerformanceCaveat: false,
-                toneMapping: THREE.ACESFilmicToneMapping,
-                toneMappingExposure: darkMode ? 1.1 : 1.0,
-              }}
-              shadows={s3.shadows}
-              frameloop="demand"
-              style={{ background: darkMode ? '#1a1a2e' : '#ffffff', width: '100%', height: '100%' }}
-            >
-              <SceneContent darkMode={darkMode} isMobile={false} profileData={profileData} canvasRef={canvasRef} s3={s3} controlsRef={controlsRef} />
-            </Canvas>
+            <div className="flex-1 w-full h-full">
+              <Canvas
+                shadows
+                key={`modal-${cameraKey}`}
+                camera={{ position: [0.0, 1.70, 4.80], fov: 28, near: 0.1, far: 25 }}
+                dpr={[1, maxDpr]}
+                gl={inlineGl}
+                style={{ background: 'transparent' }}
+              >
+                <SceneContent
+                  darkMode={darkMode}
+                  isMobile={false}
+                  profileData={profileData}
+                  s3={s3}
+                  controlsRef={controlsRef}
+                />
+              </Canvas>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
