@@ -35,7 +35,7 @@ const SAFE_DEFAULTS = {
     particleCount: 50,
   },
   camera: {
-    positionX: 0.0, positionY: 1.05, positionZ: 2.75,
+    positionX: 0.0, positionY: 0.98, positionZ: 2.15,
     rotationX: 0, rotationY: 0, rotationZ: 0,
     fov: 38, zoom: 1,
   },
@@ -79,10 +79,10 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
   // Tabletop surface at y = 0.72 inside the group
   const deskPos = [0, 0, 0]
   const monitorPos = [-0.04, 0.72, -0.06]
-  const keyboardPos = [-0.04, 0.72, 0.28]
-  const mousepadPos = [0.50, 0.72, 0.28]
+  const keyboardPos = [-0.04, 0.72, 0.30]
+  const mousepadPos = [0.50, 0.72, 0.30]
   const plantPos = [-1.24, 0.72, 0.06]
-  const coffeeMugPos = [-1.02, 0.72, 0.26]
+  const coffeeMugPos = [-1.02, 0.72, 0.28]
   const speakerLeftPos = [-0.86, 0.72, 0.04]
   const speakerRightPos = [0.82, 0.72, 0.04]
   const pcPos = [1.22, 0.72, 0.04]
@@ -93,41 +93,41 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
       {/* Primary Key Light - Crisp high-key studio light */}
       <directionalLight
-        position={[2.5, 6.0, 3.5]}
+        position={[2.5, 5.5, 3.0]}
         intensity={darkMode ? 1.15 : 1.25}
         color="#ffffff"
         castShadow={castShadows}
         shadow-mapSize-width={shadowSize}
         shadow-mapSize-height={shadowSize}
         shadow-camera-near={0.5}
-        shadow-camera-far={16}
-        shadow-camera-left={-4}
-        shadow-camera-right={4}
-        shadow-camera-top={4}
-        shadow-camera-bottom={-4}
+        shadow-camera-far={14}
+        shadow-camera-left={-3.5}
+        shadow-camera-right={3.5}
+        shadow-camera-top={3.5}
+        shadow-camera-bottom={-3.5}
         shadow-bias={-0.0004}
       />
 
       {/* Secondary Soft Fill Light */}
       <directionalLight
-        position={[-3.0, 4.5, 2.5]}
+        position={[-3.0, 4.0, 2.0]}
         intensity={darkMode ? 0.35 : 0.40}
         color="#f0f6ff"
       />
 
       {/* ── Floor Shadow Catcher ── */}
       <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[12, 8]} />
+        <planeGeometry args={[10, 7]} />
         <shadowMaterial transparent opacity={darkMode ? 0.55 : 0.25} />
       </mesh>
 
       {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs) ── */}
       <ContactShadows
         position={[0, 0.001, 0]}
-        opacity={darkMode ? 0.75 : 0.45}
-        scale={8.0}
-        blur={2.0}
-        far={2.5}
+        opacity={darkMode ? 0.75 : 0.48}
+        scale={7.5}
+        blur={1.8}
+        far={2.2}
         color={darkMode ? '#080810' : '#141824'}
       />
 
@@ -214,16 +214,16 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
         />
       </group>
 
-      {/* OrbitControls: Zoom disabled, constrained angles keep ideal hero framing */}
+      {/* OrbitControls: Zoom disabled, constrained angles keep ideal close-up framing */}
       <OrbitControls
         ref={controlsRef}
-        target={[0.0, 0.88, -0.05]}
+        target={[0.0, 0.80, 0.0]}
         enableZoom={false}
         enablePan={false}
-        minPolarAngle={Math.PI / 3.4}
+        minPolarAngle={Math.PI / 3.2}
         maxPolarAngle={Math.PI / 2.05}
-        minAzimuthAngle={-Math.PI / 5}
-        maxAzimuthAngle={Math.PI / 5}
+        minAzimuthAngle={-Math.PI / 6}
+        maxAzimuthAngle={Math.PI / 6}
         enableDamping
         dampingFactor={0.05}
         rotateSpeed={0.45}
@@ -305,9 +305,9 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [expanded])
 
-  // Fixed close-up telephoto framing matching Image 1: Desk, monitor, plant, and PC tower fill the frame prominently
+  // Close-up prominent framing matching Image 1: Desk, monitor, plant, and PC tower fill ~85-90% of horizontal view
   const inlineCamera = useMemo(() => ({
-    position: [0.0, 1.05, 2.75],
+    position: [0.0, 0.98, 2.15],
     fov: 38,
     near: 0.1,
     far: 25,
@@ -377,7 +377,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
               <Canvas
                 shadows
                 key={`modal-${cameraKey}`}
-                camera={{ position: [0.0, 1.25, 3.20], fov: 36, near: 0.1, far: 25 }}
+                camera={{ position: [0.0, 1.20, 2.70], fov: 36, near: 0.1, far: 25 }}
                 dpr={[1, maxDpr]}
                 gl={inlineGl}
                 style={{ background: 'transparent' }}

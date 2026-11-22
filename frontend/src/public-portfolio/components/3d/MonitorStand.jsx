@@ -7,7 +7,7 @@ import * as THREE from 'three'
  * Professional widescreen monitor stand in matte charcoal black finish matching Image 1:
  * - Sleek angled metallic V-wing feet in charcoal black steel resting flat on the tabletop
  * - Heavy-duty cast-aluminum base hub
- * - Metallic upright column (height ~0.48, frameCenterY = 0.50)
+ * - Metallic upright column (height ~0.44, frameCenterY = 0.46)
  * - Cable management pass-through channel with subtle blue glow
  * - VESA mounting bracket securely behind the monitor
  */
@@ -69,23 +69,23 @@ export default function MonitorStand({ position = [0, 0, 0] }) {
         <meshStandardMaterial color={metallicTitanium} roughness={0.3} metalness={0.8} />
       </mesh>
 
-      {/* ── Stand Neck in Charcoal Black (Proportioned to y = 0.50 frame height) ── */}
-      <group position={[0, 0.25, -0.05]} rotation={[-0.03, 0, 0]}>
+      {/* ── Stand Neck in Charcoal Black (Proportioned to y = 0.46 frame height) ── */}
+      <group position={[0, 0.23, -0.05]} rotation={[-0.03, 0, 0]}>
         {/* Main metallic neck column */}
         <mesh castShadow>
-          <boxGeometry args={[0.082, 0.48, 0.054]} />
+          <boxGeometry args={[0.082, 0.44, 0.054]} />
           <meshStandardMaterial color={metallicTitanium} roughness={0.3} metalness={0.8} />
         </mesh>
 
         {/* Cable management pass-through channel slot */}
-        <mesh position={[0, -0.06, 0]}>
-          <boxGeometry args={[0.024, 0.16, 0.058]} />
+        <mesh position={[0, -0.05, 0]}>
+          <boxGeometry args={[0.024, 0.15, 0.058]} />
           <meshStandardMaterial color="#06070a" roughness={0.6} />
         </mesh>
 
         {/* Subtle electric blue illumination inside cable channel matching Image 1 */}
-        <mesh position={[0, -0.06, 0]}>
-          <boxGeometry args={[0.012, 0.14, 0.006]} />
+        <mesh position={[0, -0.05, 0]}>
+          <boxGeometry args={[0.012, 0.13, 0.006]} />
           <meshStandardMaterial
             color={accentColor}
             emissive={accentColor}
@@ -95,7 +95,7 @@ export default function MonitorStand({ position = [0, 0, 0] }) {
       </group>
 
       {/* VESA Mounting Bracket plate behind monitor */}
-      <mesh position={[0, 0.50, -0.035]} castShadow>
+      <mesh position={[0, 0.46, -0.035]} castShadow>
         <boxGeometry args={[0.16, 0.16, 0.022]} />
         <meshStandardMaterial color="#0a0b10" roughness={0.35} metalness={0.7} />
       </mesh>
