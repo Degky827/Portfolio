@@ -1,35 +1,15 @@
 import { useEffect, useState, lazy, Suspense, useCallback, memo, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { ArrowRight, MessageCircle, Mail, Download, Globe } from 'lucide-react'
+import { ArrowRight, Mail } from 'lucide-react'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
 import { useScrollData } from '../../../shared/context/ScrollContext'
 import { setHeroScrollProgress } from '../../shared/heroScrollStore'
-import TechTile from '../../components/ui/TechTile'
+import GuillocheWaves from '../../components/ui/GuillocheWaves'
 
 const HeroDesktopScene = lazy(() =>
   import('../../components/3d/HeroDesktopScene')
 )
-
-function useTypingEffect(fullText) {
-  const [typedText, setTypedText] = useState('')
-
-  useEffect(() => {
-    let index = 0
-    setTypedText('')
-    const timer = setInterval(() => {
-      if (index <= fullText.length) {
-        setTypedText(fullText.slice(0, index))
-        index++
-      } else {
-        clearInterval(timer)
-      }
-    }, 50)
-    return () => clearInterval(timer)
-  }, [fullText])
-
-  return typedText
-}
 
 const fadeUp = (delay = 0) => ({
   initial: { opacity: 0, y: 16 },
@@ -66,8 +46,8 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
 
     const update = () => {
       const el = heroRef.current
-      const content = contentRef.current
-      if (!el || !content || reducedMotion.current) {
+      const cEl = contentRef.current
+      if (!el || !cEl || reducedMotion.current) {
         rafRef.current = null
         return
       }
@@ -86,10 +66,9 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
       // Progress for 3D scene
       s.progress = heroProgress
 
-      content.style.transform = `translate3d(0, ${s.parallaxY}px, 0) scale(${s.scale})`
-      content.style.opacity = Math.max(0, s.opacity)
+      cEl.style.transform = `translate3d(0, ${s.parallaxY}px, 0) scale(${s.scale})`
+      cEl.style.opacity = Math.max(0, s.opacity)
 
-      // Update global store for 3D scene
       setHeroScrollProgress(heroProgress)
 
       rafRef.current = requestAnimationFrame(update)
@@ -108,100 +87,27 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
   }, [scrollData])
 
   const h = content?.hero || {}
-  const eyebrow = h.eyebrow || 'WELCOME TO MY DIGITAL SPACE'
   const greeting = settings?.greeting || content?.greeting || h.greeting || "Hi, I'm"
-  const fullName = settings?.brandName || content?.fullName || h.fullName || 'DESALEGN'
+  const fullName = settings?.brandName || content?.fullName || h.fullName || 'Desalegn'
   const badge = settings?.professionalBadge || content?.professionalBadge || h.professionalBadge || 'Full Stack Developer'
-  const fullText = (settings?.typingWords?.length ? settings.typingWords : content?.typingWords || h.typingWords)?.[0] || 'Fullstack Developer'
   const introduction = settings?.shortIntroduction || content?.shortIntroduction || h.shortIntroduction || h.description || 'I build scalable, high-performance web and mobile applications using modern technologies, robust architecture, and production-ready engineering practices.'
   const contactBtnText = h.secondaryCtaText || contactButtonText || settings?.contactButtonText || 'Get In Touch'
   const contactBtnLink = h.secondaryCtaUrl || contactButtonLink || settings?.contactButtonLink || '#contact'
 
-  const showEyebrow = h.showEyebrow !== false
-  const showGreeting = h.showGreeting !== false
-  const showName = h.showName !== false
-  const showTitle = h.showTitle !== false
-  const showDescription = h.showDescription !== false
   const showPrimaryCta = h.showPrimaryCta !== false
   const showSecondaryCta = h.showSecondaryCta !== false
   const primaryCtaText = h.primaryCtaText || 'Explore My Work'
   const primaryCtaUrl = h.primaryCtaUrl || '#projects'
 
-  const DEFAULT_STATS = [
-    { label: 'Years Experience', value: '2+', icon: 'Award', color: '#6366f1' },
-    { label: 'Projects Completed', value: '12+', icon: 'BookOpen', color: '#6366f1' },
-    { label: 'Technologies', value: '10+', icon: 'Cpu', color: '#6366f1' },
-    { label: 'Happy Clients', value: '5+', icon: 'Users', color: '#6366f1' },
-  ]
-  const statsEnabled = content?.statisticsEnabled !== false
-  const dbStats = content?.statistics?.filter(s => s.active !== false) || []
-  const stats = statsEnabled && dbStats.length > 0
-    ? dbStats.sort((a, b) => (a.order || 0) - (b.order || 0))
-    : DEFAULT_STATS
-
-  const DEFAULT_TECHS = [
-    { name: 'React' },
-    { name: 'Node.js' },
-    { name: 'TypeScript' },
-    { name: 'MongoDB' },
-    { name: 'Express' },
-    { name: 'Flutter' },
-  ]
-  const techsEnabled = content?.technologiesEnabled !== false
-  const dbTechs = content?.technologies?.filter(t => t.active !== false) || []
-  const technologies = techsEnabled && dbTechs.length > 0
-    ? dbTechs.sort((a, b) => (a.order || 0) - (b.order || 0))
-    : DEFAULT_TECHS
-
-  const availability = content?.availability || { enabled: true, status: 'available', title: 'Available for Freelance', description: "Let's build something amazing together.", ctaText: 'Hire Me', ctaUrl: '/contact' }
-
-  const ctaButtons = h.ctaButtons?.length > 0
-    ? h.ctaButtons
-    : [{ text: '', link: '', openNewTab: false, icon: 'ArrowRight' }]
-
-  const typedText = useTypingEffect(fullText)
-  const splitAt = fullText.indexOf(' ')
-  const typedHead = splitAt === -1 ? typedText : typedText.slice(0, splitAt)
-  const typedTail = splitAt === -1 ? '' : typedText.slice(splitAt)
+  const displayName = (fullName === 'DESALEGN' || fullName === 'DK' || !fullName)
+    ? 'Desalegn'
+    : (fullName.includes(' ') ? fullName.split(' ')[0] : fullName)
 
   const profileData = {
     name: fullName,
     badge,
-    stats,
-    skills: [
-      { name: 'React', level: 92, color: '#61dafb', icon: 'React' },
-      { name: 'Node.js', level: 85, color: '#68a063', icon: 'Node.js' },
-      { name: 'Express', level: 82, color: '#6366f1', icon: 'Express' },
-      { name: 'Flutter', level: 78, color: '#02569b', icon: 'Flutter' },
-    ],
     socialLinks: settings?.socialLinks || {},
-    ctaButtons: ctaButtons.filter(b => b.text || b.link),
-    introduction,
   }
-
-  const SOCIAL_ICONS = {
-    github: <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>,
-    linkedin: <svg viewBox="0 0 24 24" width="17" height="17" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 0 1-2.063-2.065 2.064 2.064 0 1 1 2.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>,
-    email: <Mail size={17} />,
-    cv: <Download size={17} />,
-  }
-
-  const DEFAULT_SOCIAL = [
-    { name: 'GitHub', url: profileData.socialLinks?.github || '#', icon: SOCIAL_ICONS.github, openNewTab: true },
-    { name: 'LinkedIn', url: profileData.socialLinks?.linkedin || '#', icon: SOCIAL_ICONS.linkedin, openNewTab: true },
-    { name: 'Email', url: `mailto:${profileData.socialLinks?.email || '#'}`, icon: SOCIAL_ICONS.email, openNewTab: false },
-    ...(profileData.socialLinks?.cv ? [{ name: 'Download CV', url: profileData.socialLinks.cv, icon: SOCIAL_ICONS.cv, openNewTab: true }] : []),
-  ]
-  const socialLinksEnabled = content?.socialLinksEnabled !== false
-  const dbSocialLinks = content?.socialLinksOrder?.filter(l => l.active !== false && l.visible !== false) || []
-  const socialItems = socialLinksEnabled && dbSocialLinks.length > 0
-    ? dbSocialLinks.sort((a, b) => (a.order ?? 0) - (b.order ?? 0)).map(l => ({
-        name: l.tooltip || l.platform,
-        url: l.platform === 'email' ? `mailto:${l.url}` : l.url,
-        icon: SOCIAL_ICONS[l.platform?.toLowerCase()] || <Globe size={17} />,
-        openNewTab: l.openNewTab !== false,
-      }))
-    : DEFAULT_SOCIAL
 
   const navigate = useNavigate()
 
@@ -217,120 +123,96 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
     navigate('/about')
   }, [navigate])
 
-  const scrollToSkills = useCallback(() => {
-    navigate('/skills')
-  }, [navigate])
-
   return (
     <section
       id="home"
       ref={heroRef}
-      className="flex flex-col min-h-[100svh] min-h-screen bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
+      className="flex flex-col min-h-[100svh] min-h-screen bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative"
       aria-label="Hero section"
     >
+      {/* Background Guilloche Waves (#6C2BFF) */}
+      <GuillocheWaves />
+
       {/* ── Zone 0: Navbar spacer ── */}
-      <div className="h-16 shrink-0" />
+      <div className="h-10 sm:h-12 shrink-0" />
 
-      {/* ── Zone 1: Hero row (text + 3D scene) ── */}
-      <div ref={contentRef} className="flex-1 min-h-0 flex flex-col md:flex-row" style={{ willChange: 'transform, opacity' }}>
-        {/* Left: hero content */}
-        <div className="w-full md:w-[42%] lg:w-[40%] px-4 sm:px-6 md:px-10 lg:px-16 xl:px-20 py-6 sm:py-8 md:py-0 md:flex md:items-center pointer-events-none">
+      {/* ── Zone 1: Hero row (Hero Content + 3D Desktop Scene) ── */}
+      <div
+        ref={contentRef}
+        className="flex-1 min-h-0 flex flex-col lg:flex-row items-center justify-between w-full max-w-[1700px] mx-auto px-4 sm:px-8 lg:px-12 xl:px-16"
+        style={{ willChange: 'transform, opacity' }}
+      >
+        {/* Left: Typography & Actions matching Image 2 */}
+        <div className="w-full lg:w-[38%] xl:w-[36%] py-6 lg:py-0 pointer-events-none z-20">
           <div className="pointer-events-auto w-full">
-            {showEyebrow && (
-              <motion.p {...fadeIn(0.2)} className="text-[10px] font-bold uppercase tracking-[0.2em] mb-3 text-indigo-600 dark:text-indigo-400">
-                {eyebrow}
-              </motion.p>
-            )}
-
-            <h1 className="mb-5">
-              {showGreeting && (
-                <motion.span {...fadeUp(0.35)} className="block text-sm sm:text-base md:text-lg font-semibold leading-tight text-slate-500 dark:text-[#A8B0C0]">
-                  {greeting}
-                </motion.span>
-              )}
-              {showName && (
-                <motion.span {...fadeUp(0.45)} className="block text-xl sm:text-2xl md:text-3xl lg:text-4xl font-extrabold leading-[1.1] tracking-tight text-slate-900 dark:text-white my-0.5">
-                  {fullName}
-                </motion.span>
-              )}
-              {showTitle && (
-                <motion.span {...fadeUp(0.55)} className="block text-sm sm:text-base md:text-xl lg:text-2xl font-bold leading-tight mt-1 text-slate-900 dark:text-white">
-                  {typedHead}
-                  <span className="text-indigo-600 dark:text-[#818CF8]">{typedTail}</span>
-                  <motion.span
-                    animate={{ opacity: [1, 0] }}
-                    transition={{ duration: 0.6, repeat: Infinity }}
-                    className="inline-block w-[2px] h-5 sm:h-6 md:h-7 lg:h-8 ml-1 bg-indigo-500 align-middle"
-                    aria-hidden="true"
-                  />
-                </motion.span>
-              )}
-            </h1>
-
-            {showDescription && introduction && (
-              <motion.p {...fadeUp(0.65)} className="text-xs sm:text-sm md:text-base leading-relaxed mb-6 text-slate-600 dark:text-[#A8B0C0] max-w-lg font-normal">
-                {introduction}
-              </motion.p>
-            )}
-
-            {(showPrimaryCta || showSecondaryCta) && (
-              <motion.div {...fadeUp(0.75)} className="flex flex-wrap items-center gap-3 mb-8">
-                {showPrimaryCta && (
-                  <button
-                    onClick={primaryCtaUrl.startsWith('#') ? scrollToWork : () => window.location.href = primaryCtaUrl}
-                    className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 shadow-lg shadow-indigo-600/25 cursor-pointer"
-                    aria-label={primaryCtaText}
-                  >
-                    {primaryCtaText}
-                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform duration-200" />
-                  </button>
-                )}
-                {showSecondaryCta && (
-                  <button
-                    onClick={contactBtnLink.startsWith('#') ? scrollToContact : () => window.location.href = contactBtnLink}
-                    className="group flex items-center gap-2 px-4 sm:px-5 py-2.5 sm:py-3 border border-slate-300 dark:border-white/10 hover:border-indigo-500/50 bg-slate-100/80 dark:bg-white/[0.04] backdrop-blur-md text-slate-800 dark:text-white font-semibold text-xs sm:text-sm rounded-xl transition-all duration-200 cursor-pointer"
-                    aria-label={contactBtnText}
-                  >
-                    {contactBtnText}
-                    <MessageCircle size={14} className="opacity-70 group-hover:opacity-100 transition-opacity" />
-                  </button>
-                )}
-              </motion.div>
-            )}
-
-            {/* Technologies Strip */}
-            <motion.div {...fadeUp(0.85)}>
-              <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.18em] mb-2.5 text-slate-500 dark:text-[#64748B]">
-                Technologies I work with
-              </p>
-              <div className="flex flex-wrap gap-3 sm:gap-4">
-                {technologies.map((tech, i) => (
-                  <motion.div
-                    key={tech.name}
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.35, delay: 0.95 + i * 0.05 }}
-                  >
-                    <TechTile name={tech.name} icon={tech.icon} />
-                  </motion.div>
-                ))}
-                <motion.div
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, delay: 0.95 + technologies.length * 0.05 }}
-                >
-                  <TechTile name="More" icon="more" label="More" onClick={scrollToSkills} />
-                </motion.div>
+            <div className="flex items-start gap-4 sm:gap-5">
+              {/* Vertical Purple Accent Line with Dot */}
+              <div className="flex flex-col items-center shrink-0 pt-2 sm:pt-2.5 select-none" aria-hidden="true">
+                <div className="w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full bg-[#6C2BFF] ring-4 ring-[#6C2BFF]/20 shadow-md shadow-[#6C2BFF]/40" />
+                <div className="w-[3px] h-32 sm:h-40 md:h-48 bg-[#6C2BFF] rounded-full mt-2.5" />
               </div>
-            </motion.div>
+
+              <div className="flex-1 min-w-0">
+                {/* Main Heading: Hi, I'm Desalegn */}
+                <motion.h1
+                  {...fadeUp(0.2)}
+                  className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.12]"
+                >
+                  {greeting} <span className="text-[#6C2BFF] dark:text-[#8B5CF6]">{displayName}</span>
+                </motion.h1>
+
+                {/* Subtitle: I am Full Stack Developer, Content Creator */}
+                <motion.div
+                  {...fadeUp(0.3)}
+                  className="text-xl sm:text-2xl lg:text-[26px] font-bold text-slate-800 dark:text-slate-100 mt-3 sm:mt-4 leading-snug"
+                >
+                  I am {badge},<br />
+                  Content Creator
+                </motion.div>
+
+                {/* Introduction Paragraph */}
+                <motion.p
+                  {...fadeUp(0.4)}
+                  className="text-sm sm:text-[15px] text-slate-600 dark:text-slate-300 mt-3 sm:mt-4 max-w-lg leading-relaxed font-normal"
+                >
+                  {introduction}
+                </motion.p>
+
+                {/* CTA Buttons */}
+                {(showPrimaryCta || showSecondaryCta) && (
+                  <motion.div {...fadeUp(0.5)} className="flex flex-wrap items-center gap-3.5 sm:gap-4 mt-6 sm:mt-8">
+                    {showPrimaryCta && (
+                      <button
+                        onClick={primaryCtaUrl.startsWith('#') ? scrollToWork : () => window.location.href = primaryCtaUrl}
+                        className="group flex items-center gap-2.5 px-6 sm:px-7 py-3 sm:py-3.5 bg-[#6C2BFF] hover:bg-[#591FE6] text-white font-medium text-sm sm:text-[15px] rounded-full transition-all duration-200 shadow-md shadow-[#6C2BFF]/30 hover:shadow-xl hover:shadow-[#6C2BFF]/40 hover:-translate-y-0.5 cursor-pointer"
+                        aria-label={primaryCtaText}
+                      >
+                        <span>{primaryCtaText}</span>
+                        <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform duration-200" />
+                      </button>
+                    )}
+                    {showSecondaryCta && (
+                      <button
+                        onClick={contactBtnLink.startsWith('#') ? scrollToContact : () => window.location.href = contactBtnLink}
+                        className="group flex items-center gap-2.5 px-6 sm:px-7 py-3 sm:py-3.5 border border-slate-300 dark:border-white/20 bg-white/80 dark:bg-white/[0.04] backdrop-blur-md text-slate-800 dark:text-white hover:border-[#6C2BFF] hover:text-[#6C2BFF] font-medium text-sm sm:text-[15px] rounded-full transition-all duration-200 hover:-translate-y-0.5 shadow-sm cursor-pointer"
+                        aria-label={contactBtnText}
+                      >
+                        <span>{contactBtnText}</span>
+                        <Mail size={16} className="text-[#6C2BFF] group-hover:scale-110 transition-transform duration-200" />
+                      </button>
+                    )}
+                  </motion.div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* Right: 3D Desktop Scene */}
-        <div className="w-full md:flex-1 h-[45vh] sm:h-[50vh] md:h-auto relative z-0 pointer-events-none md:pointer-events-auto cursor-grab active:cursor-grabbing overflow-hidden">
+        {/* Right: 3D Scene with Satin White Table, Sled Legs, Floor Shadow & Charcoal Components */}
+        <div className="w-full lg:w-[62%] xl:w-[64%] h-[520px] sm:h-[580px] md:h-[640px] lg:h-[700px] relative z-10 pointer-events-auto cursor-grab active:cursor-grabbing">
           <Suspense fallback={
             <div className="w-full h-full flex items-center justify-center">
-              <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-[#6C2BFF]/30 border-t-[#6C2BFF] rounded-full animate-spin" />
             </div>
           }>
             <HeroDesktopScene className="w-full h-full" profileData={profileData} scene3D={content?.scene3D} />
@@ -338,129 +220,7 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         </div>
       </div>
 
-      {/* ── Zone 2: Social media sidebar (fixed, desktop only) ── */}
-      <motion.div
-        {...fadeIn(1.4)}
-        className="hidden lg:flex fixed right-4 xl:right-6 top-1/2 -translate-y-1/2 z-40 flex-col items-center gap-3 pointer-events-auto"
-      >
-        {socialItems.map((social, i) => (
-          <motion.a
-            key={social.name}
-            href={social.url}
-            target={social.openNewTab ? '_blank' : undefined}
-            rel={social.openNewTab ? 'noopener noreferrer' : undefined}
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.4, delay: 1.2 + i * 0.1 }}
-            className="group relative flex items-center justify-center w-11 h-11 rounded-xl transition-all duration-200 hover:scale-110 border bg-white/80 dark:bg-[#101522]/80 border-slate-200 dark:border-white/10 text-slate-600 dark:text-[#A8B0C0] hover:text-indigo-600 dark:hover:text-indigo-400 hover:border-indigo-500 shadow-md backdrop-blur-md"
-            aria-label={social.name}
-          >
-            {social.icon}
-            <span
-              className="absolute right-full mr-3 px-2.5 py-1 text-xs font-semibold rounded-lg whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none shadow-lg bg-slate-900 dark:bg-[#101522] text-white border border-slate-700 dark:border-white/10"
-            >
-              {social.name}
-            </span>
-          </motion.a>
-        ))}
-      </motion.div>
-
-      {/* ── Zone 3: Statistics / Freelance card (desktop) ── */}
-      <motion.div
-        {...fadeUp(1.1)}
-        className="pointer-events-auto hidden md:block px-6 lg:px-8 pb-4 shrink-0"
-      >
-        <div
-          className="flex items-stretch rounded-2xl border bg-white/85 dark:bg-[#101522]/85 border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-xl shadow-slate-900/5 overflow-hidden"
-          role="region"
-          aria-label="Portfolio statistics"
-        >
-          {stats.map((stat, i) => (
-            <div
-              key={i}
-              className="flex flex-col justify-center px-4 sm:px-6 lg:px-8 py-3 sm:py-4 border-r border-slate-200/80 dark:border-white/10"
-            >
-              <div className="text-base sm:text-lg lg:text-xl font-extrabold leading-none text-indigo-600 dark:text-[#818CF8]">
-                {stat.value}
-              </div>
-              <div className="text-[9px] sm:text-[10px] lg:text-[11px] font-medium mt-1 sm:mt-1.5 text-slate-500 dark:text-[#7a8599] whitespace-nowrap">
-                {stat.label}
-              </div>
-            </div>
-          ))}
-
-          {availability.enabled && (
-            <div className="flex items-center gap-3 sm:gap-4 ml-auto px-4 sm:px-5 lg:px-6 py-3 sm:py-4">
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className={`w-2 h-2 rounded-full ${
-                    availability.status === 'available' ? 'bg-emerald-500 animate-pulse' :
-                    availability.status === 'busy' ? 'bg-amber-500' : 'bg-gray-400'
-                  }`} />
-                  <div className="text-[10px] sm:text-[11px] lg:text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                    {availability.title}
-                  </div>
-                </div>
-                <div className="text-[9px] sm:text-[10px] lg:text-[11px] mt-0.5 text-slate-500 dark:text-[#7a8599] hidden sm:block">
-                  {availability.description}
-                </div>
-              </div>
-              <button
-                onClick={scrollToContact}
-                className="group flex items-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-[11px] sm:text-xs rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md shadow-indigo-600/25"
-              >
-                {availability.ctaText}
-                <ArrowRight size={12} className="group-hover:translate-x-0.5 transition-transform duration-200" />
-              </button>
-            </div>
-          )}
-        </div>
-      </motion.div>
-
-      {/* ── Zone 3: Statistics / Freelance card (mobile) ── */}
-      <div className="md:hidden px-4 pb-3 pt-2 shrink-0 pointer-events-auto">
-        <div
-          className="flex flex-col rounded-xl border bg-white/85 dark:bg-[#101522]/85 border-slate-200/80 dark:border-white/10 backdrop-blur-xl shadow-lg overflow-hidden"
-          role="region"
-          aria-label="Portfolio statistics"
-        >
-          <div className="flex flex-wrap justify-around py-3 px-3">
-            {stats.map((stat, i) => (
-              <div key={i} className="flex flex-col items-center px-3 py-1">
-                <div className="text-sm font-extrabold leading-none text-indigo-600 dark:text-[#818CF8]">
-                  {stat.value}
-                </div>
-                <div className="text-[9px] font-medium mt-1 text-slate-500 dark:text-[#7a8599] whitespace-nowrap">
-                  {stat.label}
-                </div>
-              </div>
-            ))}
-          </div>
-
-          {availability.enabled && (
-            <div className="flex items-center justify-between gap-3 px-4 py-2.5 border-t border-slate-200/80 dark:border-white/10 bg-slate-50/50 dark:bg-white/[0.02]">
-              <div className="flex items-center gap-2">
-                <span className={`w-1.5 h-1.5 rounded-full ${
-                  availability.status === 'available' ? 'bg-emerald-500 animate-pulse' :
-                  availability.status === 'busy' ? 'bg-amber-500' : 'bg-gray-400'
-                }`} />
-                <span className="text-[10px] font-bold uppercase tracking-wider text-slate-900 dark:text-white">
-                  {availability.title}
-                </span>
-              </div>
-              <button
-                onClick={scrollToContact}
-                className="group flex items-center gap-1 px-3 py-1.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-[11px] rounded-lg transition-all duration-200 shrink-0 cursor-pointer shadow-md shadow-indigo-600/25"
-              >
-                {availability.ctaText}
-                <ArrowRight size={10} className="group-hover:translate-x-0.5 transition-transform duration-200" />
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* ── Zone 4: Scroll indicator ── */}
+      {/* ── Zone 4: Scroll indicator (Shows the whole previous home page is scrollable) ── */}
       <motion.div
         {...fadeIn(1.6)}
         onClick={scrollToAbout}
@@ -471,18 +231,18 @@ function Hero({ content, contactButtonText, contactButtonLink }) {
         aria-label="Scroll to explore"
       >
         <div className="flex flex-col items-center gap-1.5">
-          <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors duration-200">
+          <span className="text-[9px] sm:text-[10px] font-semibold uppercase tracking-[0.18em] group-hover:text-[#6C2BFF] dark:group-hover:text-[#8B5CF6] transition-colors duration-200">
             Scroll to explore
           </span>
           <motion.div
             animate={{ y: [0, 5, 0] }}
             transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-[18px] h-[28px] border-[1.5px] border-slate-300 dark:border-[#2a3454] rounded-full flex justify-center pt-1.5 group-hover:border-indigo-600 dark:group-hover:border-indigo-400 transition-colors duration-200"
+            className="w-[18px] h-[28px] border-[1.5px] border-slate-300 dark:border-[#2a3454] rounded-full flex justify-center pt-1.5 group-hover:border-[#6C2BFF] dark:group-hover:border-[#8B5CF6] transition-colors duration-200"
           >
             <motion.div
               animate={{ y: [0, 8, 0], opacity: [1, 0.3, 1] }}
               transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-[2px] h-[6px] bg-indigo-600 dark:bg-indigo-400 rounded-full"
+              className="w-[2px] h-[6px] bg-[#6C2BFF] dark:bg-[#8B5CF6] rounded-full"
             />
           </motion.div>
         </div>
