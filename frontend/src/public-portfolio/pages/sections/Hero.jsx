@@ -42,7 +42,7 @@ function Hero({ content }) {
       <div className="h-10 sm:h-12 shrink-0" />
 
       {/* ── Zone 1: 3D Header Banner matching Image 1 ── */}
-      <div className="w-full z-20 shrink-0 pointer-events-none">
+      <div className="w-full z-20 shrink-0 pointer-events-none pb-2 sm:pb-3">
         <HeroHeaderBanner name="Desalegn Kasaye" />
       </div>
 

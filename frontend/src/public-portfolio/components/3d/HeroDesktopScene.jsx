@@ -35,7 +35,7 @@ const SAFE_DEFAULTS = {
     particleCount: 50,
   },
   camera: {
-    positionX: 0.0, positionY: 1.02, positionZ: 1.95,
+    positionX: 0.0, positionY: 0.90, positionZ: 2.05,
     rotationX: 0, rotationY: 0, rotationZ: 0,
     fov: 42, zoom: 1,
   },
@@ -74,7 +74,8 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
   // Workstation scale: strictly 1.0 across all views — eliminates any self-zooming or scale jumps!
   const workstationScale = 1.0
-  const groupPos = [0, 0, 0]
+  // Lowered group position (y = -0.24) to ensure comfortable gap between text banner and table content
+  const groupPos = [0, -0.24, 0]
 
   // Tabletop surface at y = 0.72 inside the group
   const deskPos = [0, 0, 0]
@@ -93,7 +94,7 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
       {/* Primary Key Light - Crisp high-key studio light */}
       <directionalLight
-        position={[2.5, 5.5, 3.0]}
+        position={[2.5, 5.25, 3.0]}
         intensity={darkMode ? 1.20 : 1.30}
         color="#ffffff"
         castShadow={castShadows}
@@ -110,20 +111,20 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
       {/* Secondary Soft Fill Light */}
       <directionalLight
-        position={[-3.0, 4.0, 2.0]}
+        position={[-3.0, 3.75, 2.0]}
         intensity={darkMode ? 0.35 : 0.40}
         color="#f0f6ff"
       />
 
-      {/* ── Floor Shadow Catcher ── */}
-      <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      {/* ── Floor Shadow Catcher (Positioned at table leg base y = -0.24) ── */}
+      <mesh position={[0, -0.24, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[10, 7]} />
         <shadowMaterial transparent opacity={darkMode ? 0.55 : 0.25} />
       </mesh>
 
-      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs) ── */}
+      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs at y = -0.24) ── */}
       <ContactShadows
-        position={[0, 0.001, 0]}
+        position={[0, -0.239, 0]}
         opacity={darkMode ? 0.75 : 0.48}
         scale={7.5}
         blur={1.8}
@@ -217,7 +218,7 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
       {/* OrbitControls: Zoom disabled, constrained angles keep ideal close-up framing */}
       <OrbitControls
         ref={controlsRef}
-        target={[0.0, 0.76, 0.0]}
+        target={[0.0, 0.52, 0.0]}
         enableZoom={false}
         enablePan={false}
         minPolarAngle={Math.PI / 3.2}
@@ -305,9 +306,9 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [expanded])
 
-  // Close-up prominent framing matching Image 1: Desk, monitor, plant, and PC tower fill ~85-90% of horizontal view
+  // Prominent close-up framing with comfortable vertical clearance below header banner
   const inlineCamera = useMemo(() => ({
-    position: [0.0, 1.02, 1.95],
+    position: [0.0, 0.90, 2.05],
     fov: 42,
     near: 0.1,
     far: 25,
@@ -377,7 +378,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
               <Canvas
                 shadows
                 key={`modal-${cameraKey}`}
-                camera={{ position: [0.0, 1.20, 2.70], fov: 36, near: 0.1, far: 25 }}
+                camera={{ position: [0.0, 1.10, 2.70], fov: 36, near: 0.1, far: 25 }}
                 dpr={[1, maxDpr]}
                 gl={inlineGl}
                 style={{ background: 'transparent' }}
