@@ -2,46 +2,56 @@ import { useMemo } from 'react'
 import * as THREE from 'three'
 
 /**
- * Creates procedural high-resolution dark charcoal wood tabletop textures
- * matching the reference image 3:
- * - Rich dark charcoal/black wood tone (#14151a / #181920)
- * - Ultra-fine horizontal wood grain fibers with subtle satin sheen
- * - Soft chamfer edge highlight
+ * Creates procedural high-resolution warm oak/amber teak wood tabletop textures
+ * matching Image 1:
+ * - Rich warm golden oak / amber wood tones (#a8642a, #be7839, #d08c48)
+ * - Beautiful natural horizontal wood grain fibers with soft diffuse satin sheen
+ * - Subtle bevel edge highlight
  */
-function createDarkWoodTableTextures() {
+function createOakWoodTableTextures() {
   if (typeof document === 'undefined') return { colorMap: null, bumpMap: null }
 
   const width = 1024
   const height = 512
 
-  // 1. Color Map - Dark charcoal wood with subtle grain variations
+  // 1. Color Map - Warm Oak / Teak Wood with natural grain
   const colorCanvas = document.createElement('canvas')
   colorCanvas.width = width
   colorCanvas.height = height
   const ctx = colorCanvas.getContext('2d')
   if (!ctx) return { colorMap: null, bumpMap: null }
 
-  // Base dark charcoal
-  ctx.fillStyle = '#14151a'
+  // Base warm amber oak gradient
+  const grad = ctx.createLinearGradient(0, 0, width, height)
+  grad.addColorStop(0, '#b16a2e')
+  grad.addColorStop(0.5, '#c57b3b')
+  grad.addColorStop(1, '#a35e26')
+  ctx.fillStyle = grad
   ctx.fillRect(0, 0, width, height)
 
-  // Horizontal wood grain fibers matching Image 3
-  for (let i = 0; i < 400; i++) {
+  // Natural horizontal wood grain lines
+  for (let i = 0; i < 450; i++) {
     const y = Math.random() * height
-    const h = 1.0 + Math.random() * 2.5
+    const h = 0.8 + Math.random() * 2.5
     const rand = Math.random()
 
-    if (rand < 0.45) {
-      ctx.fillStyle = `rgba(28, 30, 38, ${0.35 + Math.random() * 0.30})`
-    } else if (rand < 0.8) {
-      ctx.fillStyle = `rgba(10, 11, 14, ${0.40 + Math.random() * 0.30})`
+    if (rand < 0.4) {
+      ctx.fillStyle = `rgba(130, 72, 25, ${0.25 + Math.random() * 0.35})`
+    } else if (rand < 0.75) {
+      ctx.fillStyle = `rgba(225, 150, 85, ${0.20 + Math.random() * 0.30})`
     } else {
-      ctx.fillStyle = `rgba(38, 40, 52, ${0.20 + Math.random() * 0.20})`
+      ctx.fillStyle = `rgba(90, 48, 16, ${0.15 + Math.random() * 0.25})`
     }
     ctx.fillRect(0, y, width, h)
   }
 
-  // 2. Bump Map for fine wood grain micro-relief
+  // Soft wood plank subtle waves
+  ctx.fillStyle = 'rgba(255, 185, 115, 0.08)'
+  for (let x = 0; x < width; x += 180) {
+    ctx.fillRect(x, 0, 90, height)
+  }
+
+  // 2. Bump Map for fine wood pore micro-relief
   const bumpCanvas = document.createElement('canvas')
   bumpCanvas.width = width
   bumpCanvas.height = height
@@ -49,10 +59,10 @@ function createDarkWoodTableTextures() {
   bCtx.fillStyle = '#808080'
   bCtx.fillRect(0, 0, width, height)
 
-  for (let i = 0; i < 300; i++) {
+  for (let i = 0; i < 350; i++) {
     const y = Math.random() * height
     const h = 0.5 + Math.random() * 1.5
-    const val = Math.floor(120 + Math.random() * 16)
+    const val = Math.floor(115 + Math.random() * 25)
     bCtx.fillStyle = `rgb(${val},${val},${val})`
     bCtx.fillRect(0, y, width, h)
   }
@@ -73,142 +83,118 @@ function createDarkWoodTableTextures() {
 /**
  * Desk
  *
- * Professional Developer Workstation Console Desk matching Image 3:
- * - Tabletop: Modern dark charcoal wood console slab (Width 3.30, Depth 1.25, Thickness 0.08)
- * - Finish: Dark charcoal wood finish (#14151a) with subtle satin sheen (roughness: 0.36)
- * - Tabletop top surface at y = 0.72, bottom at y = 0.64
- * - Legs: Solid architectural straight rectangular loop sled legs on left and right (x = ±1.36)
- * - Height: 0.64m, firmly grounded on floor at y = 0
+ * Warm Oak Wood Developer Workstation Console matching Image 1:
+ * - Tabletop: Warm amber oak wood slab (Width 3.40, Depth 1.25, Thickness 0.085)
+ * - Finish: Warm golden oak wood (#b87333 / #be7839) with satin sheen (roughness: 0.34)
+ * - Tabletop top surface at y = 0.72, bottom at y = 0.635
+ * - Frame & Legs: Sleek matte black industrial steel rectangular frame (Width 0.055, Height 0.635)
+ * - Grounded firmly on the floor at y = 0
  */
 export default function Desk({ position = [0, 0, 0] }) {
-  const { colorMap, bumpMap } = useMemo(() => createDarkWoodTableTextures(), [])
-  const tableColor = useMemo(() => new THREE.Color('#14151a'), [])
-  const frontEdgeHighlight = useMemo(() => new THREE.Color('#2a2d38'), [])
-  const chamferColor = useMemo(() => new THREE.Color('#1c1e26'), [])
-  const legsSteelColor = useMemo(() => new THREE.Color('#0c0d11'), [])
-  const purpleGlow = useMemo(() => new THREE.Color('#6C2BFF'), [])
+  const { colorMap, bumpMap } = useMemo(() => createOakWoodTableTextures(), [])
+  const woodColor = useMemo(() => new THREE.Color('#be7839'), [])
+  const edgeColor = useMemo(() => new THREE.Color('#d49150'), [])
+  const blackSteelColor = useMemo(() => new THREE.Color('#16181d'), [])
 
-  // Legs dimensions (height from floor y = 0 up to tabletop bottom y = 0.64)
-  const legHeight = 0.64
-  const legCenterY = legHeight / 2 // 0.32
+  // Legs dimensions
+  const legHeight = 0.635
+  const legCenterY = legHeight / 2 // 0.3175
 
   return (
     <group position={position}>
-      {/* ── Main Dark Charcoal Wood Tabletop Slab (Top at y = 0.72, bottom at y = 0.64) ── */}
-      <mesh position={[0, 0.68, 0]} castShadow receiveShadow>
-        <boxGeometry args={[3.30, 0.08, 1.25]} />
+      {/* ── Main Warm Oak Tabletop Slab (Top at y = 0.72, bottom at y = 0.635) ── */}
+      <mesh position={[0, 0.6775, 0]} castShadow receiveShadow>
+        <boxGeometry args={[3.40, 0.085, 1.25]} />
         <meshStandardMaterial
-          color={tableColor}
+          color={woodColor}
           map={colorMap || undefined}
           bumpMap={bumpMap || undefined}
           bumpScale={0.002}
-          roughness={0.36}
-          metalness={0.15}
+          roughness={0.34}
+          metalness={0.06}
         />
       </mesh>
 
-      {/* ── Front Top Edge Sheen Highlight Strip ── */}
-      <mesh position={[0, 0.719, 0.623]} receiveShadow>
-        <boxGeometry args={[3.29, 0.004, 0.006]} />
+      {/* ── Front Top Edge Bevel Sheen Highlight ── */}
+      <mesh position={[0, 0.718, 0.623]} receiveShadow>
+        <boxGeometry args={[3.39, 0.004, 0.006]} />
         <meshStandardMaterial
-          color={frontEdgeHighlight}
-          roughness={0.3}
-          metalness={0.25}
+          color={edgeColor}
+          roughness={0.25}
+          metalness={0.12}
         />
       </mesh>
 
-      {/* ── Front Vertical Slab Chamfer Accent ── */}
-      <mesh position={[0, 0.68, 0.627]}>
-        <boxGeometry args={[3.29, 0.072, 0.003]} />
-        <meshStandardMaterial
-          color={chamferColor}
-          roughness={0.4}
-          metalness={0.15}
-        />
-      </mesh>
-
-      {/* ── Subtle Purple Underglow beneath desk bottom matching Image 3 ── */}
-      <mesh position={[0, 0.638, 0]}>
-        <boxGeometry args={[3.15, 0.004, 1.12]} />
-        <meshStandardMaterial
-          color={purpleGlow}
-          emissive={purpleGlow}
-          emissiveIntensity={0.30}
-          transparent
-          opacity={0.35}
-        />
-      </mesh>
-
-      {/* ── Left Leg: Rectangular Loop Sled Leg (x = -1.36) ── */}
-      <group position={[-1.36, 0, 0]}>
-        {/* Front vertical post */}
-        <mesh position={[0, legCenterY, 0.46]} castShadow receiveShadow>
+      {/* ── Left Matte Black Steel Leg Frame (x = -1.40) ── */}
+      <group position={[-1.40, 0, 0]}>
+        {/* Front post */}
+        <mesh position={[0, legCenterY, 0.48]} castShadow receiveShadow>
           <boxGeometry args={[0.06, legHeight, 0.06]} />
-          <meshStandardMaterial color={legsSteelColor} roughness={0.4} metalness={0.7} />
+          <meshStandardMaterial color={blackSteelColor} roughness={0.4} metalness={0.7} />
         </mesh>
-        {/* Rear vertical post */}
-        <mesh position={[0, legCenterY, -0.46]} castShadow receiveShadow>
+        {/* Rear post */}
+        <mesh position={[0, legCenterY, -0.48]} castShadow receiveShadow>
           <boxGeometry args={[0.06, legHeight, 0.06]} />
-          <meshStandardMaterial color={legsSteelColor} roughness={0.4} metalness={0.7} />
+          <meshStandardMaterial color={blackSteelColor} roughness={0.4} metalness={0.7} />
         </mesh>
-        {/* Bottom floor runner bar */}
+        {/* Floor runner bar */}
         <mesh position={[0, 0.02, 0]} castShadow receiveShadow>
-          <boxGeometry args={[0.06, 0.04, 0.98]} />
-          <meshStandardMaterial color={legsSteelColor} roughness={0.4} metalness={0.7} />
+          <boxGeometry args={[0.06, 0.04, 1.02]} />
+          <meshStandardMaterial color={blackSteelColor} roughness={0.4} metalness={0.7} />
         </mesh>
-        {/* Top mounting runner bar */}
-        <mesh position={[0, 0.63, 0]} castShadow>
-          <boxGeometry args={[0.06, 0.02, 0.98]} />
-          <meshStandardMaterial color={legsSteelColor} roughness={0.4} metalness={0.7} />
+        {/* Top mounting runner */}
+        <mesh position={[0, 0.625, 0]} castShadow>
+          <boxGeometry args={[0.06, 0.02, 1.02]} />
+          <meshStandardMaterial color={blackSteelColor} roughness={0.4} metalness={0.7} />
         </mesh>
-        {/* Protective floor glides */}
-        <mesh position={[0, 0.003, 0.44]}>
+        {/* Protective rubber floor feet */}
+        <mesh position={[0, 0.003, 0.46]}>
           <boxGeometry args={[0.062, 0.006, 0.07]} />
           <meshStandardMaterial color="#050505" roughness={0.9} />
         </mesh>
-        <mesh position={[0, 0.003, -0.44]}>
+        <mesh position={[0, 0.003, -0.46]}>
           <boxGeometry args={[0.062, 0.006, 0.07]} />
           <meshStandardMaterial color="#050505" roughness={0.9} />
         </mesh>
       </group>
 
-      {/* ── Right Leg: Rectangular Loop Sled Leg (x = +1.36) ── */}
-      <group position={[1.36, 0, 0]}>
-        {/* Front vertical post */}
-        <mesh position={[0, legCenterY, 0.46]} castShadow receiveShadow>
+      {/* ── Right Matte Black Steel Leg Frame (x = +1.40) ── */}
+      <group position={[1.40, 0, 0]}>
+        {/* Front post */}
+        <mesh position={[0, legCenterY, 0.48]} castShadow receiveShadow>
           <boxGeometry args={[0.06, legHeight, 0.06]} />
-          <meshStandardMaterial color={legsSteelColor} roughness={0.4} metalness={0.7} />
+          <meshStandardMaterial color={blackSteelColor} roughness={0.4} metalness={0.7} />
         </mesh>
-        {/* Rear vertical post */}
-        <mesh position={[0, legCenterY, -0.46]} castShadow receiveShadow>
+        {/* Rear post */}
+        <mesh position={[0, legCenterY, -0.48]} castShadow receiveShadow>
           <boxGeometry args={[0.06, legHeight, 0.06]} />
-          <meshStandardMaterial color={legsSteelColor} roughness={0.4} metalness={0.7} />
+          <meshStandardMaterial color={blackSteelColor} roughness={0.4} metalness={0.7} />
         </mesh>
-        {/* Bottom floor runner bar */}
+        {/* Floor runner bar */}
         <mesh position={[0, 0.02, 0]} castShadow receiveShadow>
-          <boxGeometry args={[0.06, 0.04, 0.98]} />
-          <meshStandardMaterial color={legsSteelColor} roughness={0.4} metalness={0.7} />
+          <boxGeometry args={[0.06, 0.04, 1.02]} />
+          <meshStandardMaterial color={blackSteelColor} roughness={0.4} metalness={0.7} />
         </mesh>
-        {/* Top mounting runner bar */}
-        <mesh position={[0, 0.63, 0]} castShadow>
-          <boxGeometry args={[0.06, 0.02, 0.98]} />
-          <meshStandardMaterial color={legsSteelColor} roughness={0.4} metalness={0.7} />
+        {/* Top mounting runner */}
+        <mesh position={[0, 0.625, 0]} castShadow>
+          <boxGeometry args={[0.06, 0.02, 1.02]} />
+          <meshStandardMaterial color={blackSteelColor} roughness={0.4} metalness={0.7} />
         </mesh>
-        {/* Protective floor glides */}
-        <mesh position={[0, 0.003, 0.44]}>
+        {/* Protective rubber floor feet */}
+        <mesh position={[0, 0.003, 0.46]}>
           <boxGeometry args={[0.062, 0.006, 0.07]} />
           <meshStandardMaterial color="#050505" roughness={0.9} />
         </mesh>
-        <mesh position={[0, 0.003, -0.44]}>
+        <mesh position={[0, 0.003, -0.46]}>
           <boxGeometry args={[0.062, 0.006, 0.07]} />
           <meshStandardMaterial color="#050505" roughness={0.9} />
         </mesh>
       </group>
 
       {/* ── Rear Cross Stabilizer Bar ── */}
-      <mesh position={[0, legCenterY, -0.46]} castShadow>
-        <boxGeometry args={[2.66, 0.035, 0.035]} />
-        <meshStandardMaterial color={legsSteelColor} roughness={0.45} metalness={0.65} />
+      <mesh position={[0, legCenterY, -0.48]} castShadow>
+        <boxGeometry args={[2.74, 0.035, 0.035]} />
+        <meshStandardMaterial color={blackSteelColor} roughness={0.45} metalness={0.65} />
       </mesh>
     </group>
   )

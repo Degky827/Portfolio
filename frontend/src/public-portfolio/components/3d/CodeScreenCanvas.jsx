@@ -24,21 +24,21 @@ const C = {
   tabBarBg: '#0d131c',
   activeTabBg: '#141b27',
   terminalBg: '#080c12',
-  statusBarBg: '#6C2BFF',
+  statusBarBg: '#0084FF',
   statusBarText: '#ffffff',
   lineNum: '#4e5a73',
-  activeLineBg: 'rgba(108, 43, 255, 0.12)',
-  cursor: '#A855F7',
+  activeLineBg: 'rgba(0, 132, 255, 0.12)',
+  cursor: '#38BDF8',
   border: 'rgba(255, 255, 255, 0.08)',
   text: '#e6edf3',
-  keyword: '#ff7b72',      // import, const, return, export
-  hook: '#d2a8ff',         // useState
-  tag: '#7ee787',          // <div>, <Sidebar>, <h1>
+  keyword: '#ff7b72',      // import, export, default, function, return
+  hook: '#79c0ff',         // React, BrowserRouter
+  tag: '#7ee787',          // <div>, <h1>, <BrowserRouter>
   attr: '#79c0ff',         // className
-  component: '#ffa657',    // App, Sidebar
-  string: '#a5d6ff',       // "Desalegn", 'react'
+  component: '#ffa657',    // App, BrowserRouter
+  string: '#a5d6ff',       // 'react', 'react-router-dom', "app"
   termGreen: '#3fb950',    // Local URL
-  termCyan: '#58a6ff',     // Vite banner
+  termCyan: '#38BDF8',     // Vite banner
   termMuted: '#8b949e',    // helper text
 }
 
@@ -164,24 +164,22 @@ function renderVSCode(ctx, cursorVisible) {
   ctx.font = 'bold 15px "Segoe UI", system-ui, sans-serif'
   ctx.fillText('EXPLORER', sbX + 22, 84)
 
-  // File tree
+  // File tree matching Image 1
   const tree = [
     { name: '▼ src', isDir: true },
-    { name: '  ▼ components', isDir: true },
-    { name: '      ● App.jsx', active: true },
-    { name: '        Hero.jsx' },
-    { name: '        Projects.jsx' },
-    { name: '        Contact.jsx' },
+    { name: '  ▶ components', isDir: true },
+    { name: '  ▶ pages', isDir: true },
+    { name: '  ▶ routes', isDir: true },
+    { name: '  ▶ assets', isDir: true },
     { name: '  ▶ styles', isDir: true },
-    { name: '    # index.css' },
-    { name: '  { } package.json' },
-    { name: '  ⚡ vite.config.js' },
+    { name: '    ⚛ App.jsx', active: true },
+    { name: '    ⚛ main.jsx' },
   ]
 
   let treeY = 122
   tree.forEach((item) => {
     if (item.active) {
-      ctx.fillStyle = 'rgba(108, 43, 255, 0.28)'
+      ctx.fillStyle = 'rgba(0, 132, 255, 0.28)'
       ctx.fillRect(sbX, treeY - 22, sbW, 34)
       ctx.fillStyle = '#ffffff'
       ctx.font = 'bold 17px "Segoe UI", system-ui, sans-serif'
@@ -213,74 +211,62 @@ function renderVSCode(ctx, cursorVisible) {
   ctx.fillRect(edX, 54, tabW, 3)
   ctx.fillStyle = '#ffffff'
   ctx.font = 'bold 16px "Segoe UI", system-ui, sans-serif'
-  ctx.fillText('● App.jsx', edX + 32, 86)
+  ctx.fillText('⚛ App.jsx', edX + 32, 86)
 
   // Editor background
   ctx.fillStyle = C.editorBg
   ctx.fillRect(edX, 106, edW, edH)
 
-  // Code lines (Large, bold, high-contrast monospace)
+  // Code lines matching Image 1
   const codeLines = [
     [
       { t: 'import', c: C.keyword },
-      { t: ' React, { ', c: C.text },
-      { t: 'useState', c: C.hook },
-      { t: ' } ', c: C.text },
+      { t: ' React ', c: C.component },
       { t: 'from', c: C.keyword },
       { t: " 'react'", c: C.string },
       { t: ';', c: C.text },
     ],
-    [],
     [
-      { t: 'const', c: C.keyword },
-      { t: ' App = () => {', c: C.text },
-    ],
-    [
-      { t: '  const', c: C.keyword },
-      { t: ' [name, setName] = ', c: C.text },
-      { t: 'useState', c: C.hook },
-      { t: '(', c: C.text },
-      { t: '"Desalegn"', c: C.string },
-      { t: ');', c: C.text },
+      { t: 'import', c: C.keyword },
+      { t: ' { ', c: C.text },
+      { t: 'BrowserRouter', c: C.component },
+      { t: ' } ', c: C.text },
+      { t: 'from', c: C.keyword },
+      { t: " 'react-router-dom'", c: C.string },
+      { t: ';', c: C.text },
     ],
     [],
+    [
+      { t: 'export', c: C.keyword },
+      { t: ' default', c: C.keyword },
+      { t: ' function', c: C.keyword },
+      { t: ' App', c: C.component },
+      { t: '() {', c: C.text },
+    ],
     [
       { t: '  return', c: C.keyword },
       { t: ' (', c: C.text },
     ],
     [
       { t: '    <', c: C.text },
-      { t: 'div', c: C.tag },
-      { t: ' className', c: C.attr },
-      { t: '=', c: C.text },
-      { t: '"App"', c: C.string },
+      { t: 'BrowserRouter', c: C.tag },
       { t: '>', c: C.text },
-    ],
-    [
-      { t: '      <', c: C.text },
-      { t: 'Sidebar', c: C.component },
-      { t: ' />', c: C.text },
     ],
     [
       { t: '      <', c: C.text },
       { t: 'div', c: C.tag },
       { t: ' className', c: C.attr },
       { t: '=', c: C.text },
-      { t: '"content"', c: C.string },
+      { t: '"app"', c: C.string },
       { t: '>', c: C.text },
     ],
     [
       { t: '        <', c: C.text },
       { t: 'h1', c: C.tag },
-      { t: '>Hello, Developer!</', c: C.text },
-      { t: 'h1', c: C.tag },
       { t: '>', c: C.text },
-    ],
-    [
-      { t: '        <', c: C.text },
-      { t: 'p', c: C.tag },
-      { t: '>Building clean & scalable apps</', c: C.text },
-      { t: 'p', c: C.tag },
+      { t: 'Welcome to My Portfolio', c: '#ffffff' },
+      { t: '</', c: C.text },
+      { t: 'h1', c: C.tag },
       { t: '>', c: C.text },
     ],
     [
@@ -290,23 +276,18 @@ function renderVSCode(ctx, cursorVisible) {
     ],
     [
       { t: '    </', c: C.text },
-      { t: 'div', c: C.tag },
+      { t: 'BrowserRouter', c: C.tag },
       { t: '>', c: C.text },
     ],
     [
       { t: '  );', c: C.text },
     ],
     [
-      { t: '};', c: C.text },
-    ],
-    [],
-    [
-      { t: 'export default', c: C.keyword },
-      { t: ' App;', c: C.text },
+      { t: '}', c: C.text },
     ],
   ]
 
-  const lineH = 31
+  const lineH = 34
   const startY = 142
   const lineNumW = 56
 

@@ -1,6 +1,6 @@
 import { Suspense, useMemo, useState, useCallback, useRef, useEffect } from 'react'
 import { Canvas, useThree, useFrame } from '@react-three/fiber'
-import { OrbitControls, ContactShadows, Text3D, Center, Text } from '@react-three/drei'
+import { OrbitControls, ContactShadows } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Minimize2, ZoomIn, ZoomOut } from 'lucide-react'
 import { useIsMobile, useDarkModeScene } from '../../../shared/hooks/useSceneHooks'
@@ -11,9 +11,11 @@ import Monitor from './Monitor'
 import Keyboard from './Keyboard'
 import PC from './PC'
 import Speaker from './Speaker'
+import Plant from './Plant'
+import CoffeeMug from './CoffeeMug'
 
-const PURPLE = new THREE.Color('#6C2BFF')
-const PURPLE_VIBRANT = new THREE.Color('#A855F7')
+const BLUE_PRIMARY = new THREE.Color('#0084FF')
+const BLUE_VIBRANT = new THREE.Color('#38BDF8')
 
 /* Safe defaults — used when API data is missing or invalid */
 const SAFE_DEFAULTS = {
@@ -70,7 +72,7 @@ function ScrollCamera() {
     camera.position.x = targetRef.current.x
     camera.position.y = targetRef.current.y
     camera.position.z = targetRef.current.z
-    camera.lookAt(-0.05, 1.25, -0.10)
+    camera.lookAt(0.0, 1.15, -0.05)
   })
 
   return null
@@ -98,29 +100,31 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
     return o ? o.visible !== false : fallback
   }
 
-  // Workstation base width is 3.30 units matching Image 3
-  const workstationScale = Math.min(1.0, (viewport.width * 0.95) / 3.30)
+  // Workstation base width is 3.40 units matching Image 1
+  const workstationScale = Math.min(1.0, (viewport.width * 0.95) / 3.40)
   const groupScale = workstationScale
   const groupPos = [0, 0, 0]
 
   // Tabletop surface at y = 0.72 inside the scaled group
   const deskPos = [0, 0, 0]
-  const monitorPos = [-0.10, 0.72, -0.06]
-  const keyboardPos = [-0.10, 0.72, 0.28]
-  const mousepadPos = [0.46, 0.72, 0.28]
-  const speakerLeftPos = [-1.18, 0.72, 0.04]
+  const monitorPos = [-0.04, 0.72, -0.06]
+  const keyboardPos = [-0.04, 0.72, 0.28]
+  const mousepadPos = [0.48, 0.72, 0.28]
+  const plantPos = [-1.32, 0.72, 0.08]
+  const coffeeMugPos = [-1.10, 0.72, 0.28]
+  const speakerLeftPos = [-0.92, 0.72, 0.04]
   const speakerRightPos = [0.86, 0.72, 0.04]
-  const pcPos = [1.28, 0.72, 0.04]
+  const pcPos = [1.24, 0.72, 0.04]
 
   return (
     <>
-      <ambientLight intensity={darkMode ? 0.75 : 0.92} color="#ffffff" />
+      <ambientLight intensity={darkMode ? 0.78 : 0.95} color="#ffffff" />
 
-      {/* Primary Key Light - Balanced studio directional light casting crisp, realistic shadows */}
+      {/* Primary Key Light - Crisp high-key studio light */}
       <directionalLight
         position={[2.8, 6.8, 4.0]}
         intensity={darkMode ? 1.25 : 1.35}
-        color={darkMode ? '#9a90f6' : '#ffffff'}
+        color="#ffffff"
         castShadow={castShadows}
         shadow-mapSize-width={shadowSize}
         shadow-mapSize-height={shadowSize}
@@ -133,72 +137,42 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
         shadow-bias={-0.0004}
       />
 
-      {/* Secondary Fill Light - Soft studio ambient fill */}
+      {/* Secondary Fill Light */}
       <directionalLight
         position={[-3.2, 5.0, 2.5]}
-        intensity={darkMode ? 0.35 : 0.38}
-        color={darkMode ? '#7c3aed' : '#edf0ff'}
+        intensity={darkMode ? 0.35 : 0.40}
+        color="#eef5ff"
       />
 
-      {/* ── Floor Shadow Catcher (Receives directional shadows from dark table slab & sled legs) ── */}
+      {/* ── Floor Shadow Catcher ── */}
       <mesh position={[0, 0, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[14, 10]} />
-        <shadowMaterial transparent opacity={darkMode ? 0.65 : 0.35} />
+        <shadowMaterial transparent opacity={darkMode ? 0.65 : 0.30} />
       </mesh>
 
-      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs and sled runners) ── */}
+      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs) ── */}
       <ContactShadows
         position={[0, 0.001, 0]}
-        opacity={darkMode ? 0.85 : 0.65}
+        opacity={darkMode ? 0.85 : 0.55}
         scale={9.6}
         blur={2.4}
         far={2.8}
-        color={darkMode ? '#080810' : '#140c24'}
+        color={darkMode ? '#080810' : '#141824'}
       />
 
-      {/* ── Workstation (Dark Charcoal Wood Table + Components + Purple Accents) ── */}
+      {/* ── Workstation (Warm Oak Wood Table + Components + Blue Accents matching Image 1) ── */}
       <group ref={desktopGroupRef} position={groupPos} scale={workstationScale}>
-        {/* ── 3D Wall-Mounted Name & Subtitle matching Image 1 ── */}
-        <group position={[-0.10, 1.98, -0.12]}>
-          <Center top>
-            <Text3D
-              font="/fonts/helvetiker_bold.typeface.json"
-              size={0.25}
-              height={0.07}
-              curveSegments={14}
-              bevelEnabled
-              bevelThickness={0.012}
-              bevelSize={0.008}
-              bevelSegments={5}
-              castShadow
-            >
-              Desalegn Kasaye
-              <meshStandardMaterial
-                color={darkMode ? '#f8fafc' : '#0f172a'}
-                roughness={0.22}
-                metalness={0.35}
-              />
-            </Text3D>
-          </Center>
-          <Center position={[0, -0.15, 0.02]}>
-            <Text
-              fontSize={0.095}
-              fontStyle="italic"
-              color={darkMode ? '#a5b4fc' : '#475569'}
-              letterSpacing={0.04}
-            >
-              fullstack and flutter developer
-            </Text>
-          </Center>
-        </group>
-
         {vis('desk') && <Desk position={deskPos} />}
         {vis('monitor') && <Monitor position={monitorPos} screenMode="code" profileData={profileData} />}
         {vis('keyboard') && <Keyboard position={keyboardPos} />}
 
+        {/* Plant and Flutter Coffee Mug on left of desk */}
+        <Plant position={plantPos} />
+        <CoffeeMug position={coffeeMugPos} />
+
         {vis('mouse') && (
           <group position={mousepadPos}>
-            {/* Charcoal Black Mousepad with Glowing Purple Neon Trim */}
+            {/* Charcoal Black Mousepad with Glowing Blue Neon Trim */}
             <mesh receiveShadow position={[0, 0.002, 0]}>
               <boxGeometry args={[0.38, 0.004, 0.28]} />
               <meshStandardMaterial color="#0c0d11" roughness={0.75} />
@@ -206,27 +180,27 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
             <mesh position={[0, 0.001, 0]}>
               <boxGeometry args={[0.388, 0.003, 0.288]} />
               <meshStandardMaterial
-                color={PURPLE_VIBRANT}
-                emissive={PURPLE}
-                emissiveIntensity={2.2}
+                color={BLUE_VIBRANT}
+                emissive={BLUE_PRIMARY}
+                emissiveIntensity={2.5}
               />
             </mesh>
 
-            {/* Ergonomic Gaming Mouse in Matte Charcoal Black */}
+            {/* Ergonomic Gaming Mouse in Matte Black */}
             <group position={[0, 0.016, 0]}>
               <mesh castShadow>
                 <boxGeometry args={[0.080, 0.026, 0.126]} />
                 <meshStandardMaterial color="#0e0f14" roughness={0.35} metalness={0.65} />
               </mesh>
-              {/* Illuminated purple scroll wheel */}
+              {/* Illuminated blue scroll wheel */}
               <mesh position={[0, 0.013, -0.026]}>
                 <cylinderGeometry args={[0.006, 0.006, 0.014, 12]} />
-                <meshStandardMaterial color={PURPLE_VIBRANT} emissive={PURPLE} emissiveIntensity={2.8} />
+                <meshStandardMaterial color={BLUE_VIBRANT} emissive={BLUE_PRIMARY} emissiveIntensity={3.0} />
               </mesh>
-              {/* Illuminated purple rear logo */}
+              {/* Illuminated blue rear logo */}
               <mesh position={[0, 0.014, 0.032]}>
                 <boxGeometry args={[0.020, 0.002, 0.020]} />
-                <meshStandardMaterial color={PURPLE_VIBRANT} emissive={PURPLE} emissiveIntensity={2.5} />
+                <meshStandardMaterial color={BLUE_VIBRANT} emissive={BLUE_PRIMARY} emissiveIntensity={2.5} />
               </mesh>
             </group>
           </group>
@@ -236,38 +210,38 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
         {vis('speaker-left') && <Speaker position={speakerLeftPos} side="left" />}
         {vis('speaker-right') && <Speaker position={speakerRightPos} side="right" />}
 
-        {/* Accent Point Light at PC Fans */}
+        {/* Accent Point Light at PC Fans (Electric Blue) */}
         <pointLight
-          position={[1.28, 1.06, 0.34]}
-          intensity={0.70}
-          color={PURPLE}
+          position={[1.24, 1.06, 0.34]}
+          intensity={0.75}
+          color={BLUE_PRIMARY}
           distance={2.4}
           decay={2}
         />
 
-        {/* Soft ambient purple reflection pool under PC fans onto dark wood tabletop */}
+        {/* Soft ambient blue reflection pool under PC fans onto warm oak tabletop */}
         <pointLight
-          position={[1.26, 0.76, 0.22]}
+          position={[1.22, 0.76, 0.22]}
           intensity={0.65}
-          color={PURPLE}
+          color={BLUE_PRIMARY}
           distance={1.0}
           decay={2}
         />
 
-        {/* Soft ambient purple reflection pool on tabletop under monitor & keyboard */}
+        {/* Soft ambient blue reflection pool on tabletop under monitor & keyboard */}
         <pointLight
-          position={[-0.10, 0.76, 0.08]}
+          position={[-0.04, 0.76, 0.08]}
           intensity={0.55}
-          color={PURPLE}
+          color={BLUE_PRIMARY}
           distance={1.1}
           decay={2}
         />
 
-        {/* Accent Point Light at Left Speaker */}
+        {/* Accent Point Light at Left Speaker (Electric Blue) */}
         <pointLight
-          position={[-1.18, 0.82, 0.18]}
-          intensity={0.25}
-          color={PURPLE}
+          position={[-0.92, 0.82, 0.18]}
+          intensity={0.30}
+          color={BLUE_PRIMARY}
           distance={1.0}
           decay={2}
         />
@@ -275,7 +249,7 @@ function SceneContent({ darkMode, isMobile, profileData, s3, controlsRef }) {
 
       <OrbitControls
         ref={controlsRef}
-        target={[-0.05, 1.25, -0.10]}
+        target={[0.0, 1.15, -0.05]}
         enableZoom={false}
         enablePan={false}
         minPolarAngle={Math.PI / 4.2}

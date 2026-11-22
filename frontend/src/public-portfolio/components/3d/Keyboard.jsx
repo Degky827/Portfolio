@@ -12,8 +12,8 @@ import * as THREE from 'three'
 export default function Keyboard({ position = [0, 0, 0] }) {
   const workspace = useWorkspace()
   const keyColor = useMemo(() => new THREE.Color('#14151a'), [])
-  const purplePrimary = useMemo(() => new THREE.Color('#6C2BFF'), [])
-  const purpleSoft = useMemo(() => new THREE.Color('#8B5CF6'), [])
+  const bluePrimary = useMemo(() => new THREE.Color('#0084FF'), [])
+  const blueSoft = useMemo(() => new THREE.Color('#38BDF8'), [])
   const bodyColor = useMemo(() => new THREE.Color('#0b0c10'), [])
 
   const keyRows = [
@@ -46,11 +46,11 @@ export default function Keyboard({ position = [0, 0, 0] }) {
       <mesh position={[0, 0.016, 0]}>
         <boxGeometry args={[0.80, 0.002, 0.22]} />
         <meshStandardMaterial
-          color={purplePrimary}
-          emissive={purplePrimary}
-          emissiveIntensity={2.0}
+          color={bluePrimary}
+          emissive={bluePrimary}
+          emissiveIntensity={2.5}
           transparent
-          opacity={0.75}
+          opacity={0.80}
         />
       </mesh>
 
@@ -77,9 +77,9 @@ export default function Keyboard({ position = [0, 0, 0] }) {
                 <mesh position={[0, -0.004, 0]}>
                   <boxGeometry args={[0.012, 0.004, 0.012]} />
                   <meshStandardMaterial
-                    color={purpleSoft}
-                    emissive={purpleSoft}
-                    emissiveIntensity={2.5}
+                    color={blueSoft}
+                    emissive={blueSoft}
+                    emissiveIntensity={2.8}
                   />
                 </mesh>
               </group>
@@ -88,7 +88,7 @@ export default function Keyboard({ position = [0, 0, 0] }) {
         </group>
       ))}
 
-      {/* ── Spacebar Key & Purple LED Accent Bar ── */}
+      {/* ── Spacebar Key & Blue LED Accent Bar ── */}
       <mesh position={[0, 0.022, 0.08]} castShadow>
         <boxGeometry args={[0.26, 0.010, 0.034]} />
         <meshStandardMaterial
@@ -100,9 +100,9 @@ export default function Keyboard({ position = [0, 0, 0] }) {
       <mesh position={[0, 0.028, 0.08]}>
         <boxGeometry args={[0.22, 0.002, 0.006]} />
         <meshStandardMaterial
-          color={purpleSoft}
-          emissive={purpleSoft}
-          emissiveIntensity={2.8}
+          color={blueSoft}
+          emissive={blueSoft}
+          emissiveIntensity={3.0}
         />
       </mesh>
 
