@@ -44,17 +44,16 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
             className="w-full h-full object-contain p-0.5"
           />
         ) : (
-          <div className="w-full h-full flex items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 via-indigo-600 to-indigo-700 border border-indigo-400/40 text-white font-black text-xs sm:text-sm tracking-tight shadow-md shadow-indigo-500/20">
-            {brandName.substring(0, 1).toUpperCase()}
+          <div className="w-full h-full flex items-center justify-center rounded-xl bg-[#6C2BFF] text-white font-mono font-bold text-xs sm:text-sm tracking-tight shadow-sm shadow-[#6C2BFF]/30 select-none">
+            &#123;N&#125;
           </div>
         )}
       </div>
       {showText && (
         <span
-          className="font-black text-lg sm:text-xl tracking-tight text-slate-900 dark:text-white flex items-center gap-1"
+          className="font-bold text-base sm:text-lg tracking-tight text-slate-900 dark:text-white flex items-center gap-1 select-none"
         >
-          {logoText || (brandName === 'DESALEGN' ? 'DK' : brandName)}
-          <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 inline-block ml-0.5" />
+          {logoText || (brandName === 'DESALEGN' || brandName === 'DK' ? 'Desalegn Kasaye' : brandName)}
         </span>
       )}
     </div>

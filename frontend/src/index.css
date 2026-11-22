@@ -6,8 +6,9 @@
   --font-sans: "Plus Jakarta Sans", sans-serif;
   --font-display: "Outfit", sans-serif;
 
-  --color-primary: #6366f1;
-  --color-secondary: #818cf8;
+  --color-primary: #6C2BFF;
+  --color-secondary: #8B5CF6;
+  --color-accent-purple: #6C2BFF;
   --color-success: #059669;
   --color-danger: #dc2626;
   --color-primary-foreground: #ffffff;
@@ -100,8 +101,8 @@
   --overlay-bg: rgba(0, 0, 0, 0.5);
   --input-bg: #f5f7fa;
   --input-border: #d1d5db;
-  --input-focus-border: #4f46e5;
-  --input-focus-ring: rgba(79, 70, 229, 0.15);
+  --input-focus-border: #6C2BFF;
+  --input-focus-ring: rgba(108, 43, 255, 0.15);
   --nav-bg: rgba(255, 255, 255, 0.85);
   --nav-bg-solid: #ffffff;
   --footer-bg: #111827;
@@ -112,14 +113,14 @@
   --success-bg: rgba(5, 150, 105, 0.1);
   --error-color: #dc2626;
   --error-bg: rgba(220, 38, 38, 0.1);
-  --accent-home: #4F46E5;
-  --accent-about: #4F46E5;
-  --accent-skills: #0EA5E9;
-  --accent-projects: #8B5CF6;
-  --accent-contact: #4F46E5;
-  --accent-experience: #6366f1;
-  --accent-testimonials: #0a66c2;
-  --accent-cv: #4F46E5;
+  --accent-home: #6C2BFF;
+  --accent-about: #6C2BFF;
+  --accent-skills: #6C2BFF;
+  --accent-projects: #6C2BFF;
+  --accent-contact: #6C2BFF;
+  --accent-experience: #6C2BFF;
+  --accent-testimonials: #6C2BFF;
+  --accent-cv: #6C2BFF;
 }
 
 .dark {
@@ -145,8 +146,8 @@
   --overlay-bg: rgba(26, 26, 46, 0.75);
   --input-bg: #1e2a3a;
   --input-border: #2a3050;
-  --input-focus-border: #6366f1;
-  --input-focus-ring: rgba(99, 102, 241, 0.2);
+  --input-focus-border: #8B5CF6;
+  --input-focus-ring: rgba(139, 92, 246, 0.2);
   --nav-bg: rgba(26, 26, 46, 0.85);
   --nav-bg-solid: #1a1a2e;
   --footer-bg: #12121f;
@@ -157,11 +158,11 @@
   --success-bg: rgba(94, 231, 160, 0.1);
   --error-color: #f87171;
   --error-bg: rgba(248, 113, 113, 0.1);
-  --accent-home: #6366f1;
-  --accent-about: #6366f1;
-  --accent-skills: #0EA5E9;
+  --accent-home: #8B5CF6;
+  --accent-about: #8B5CF6;
+  --accent-skills: #8B5CF6;
   --accent-projects: #8B5CF6;
-  --accent-contact: #6366f1;
+  --accent-contact: #8B5CF6;
   --accent-experience: #6366f1;
   --accent-testimonials: #70b5f9;
   --accent-cv: #818cf8;

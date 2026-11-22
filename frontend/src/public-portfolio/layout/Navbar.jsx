@@ -8,20 +8,14 @@ import { getNavigation, getNavbarSettings } from '../../shared/services/navigati
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 import { resolveNavPath, isNavPathActive } from '../shared/navUtils'
 
-const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'experience', 'contact']
+const FALLBACK_NAV_IDS = ['about', 'projects', 'contact']
 
 function buildFallbackItems() {
-  return FALLBACK_NAV_IDS.map((id) => ({
-    _id: id,
-    title: id.charAt(0).toUpperCase() + id.slice(1),
-    sectionId: id,
-    url: id === 'home' ? '/' : `/${id}`,
-    order: 0,
-    visible: true,
-    active: true,
-    isExternal: false,
-    openNewTab: false,
-  }))
+  return [
+    { _id: 'about', title: 'About', sectionId: 'about', url: '/about', order: 0, visible: true, active: true },
+    { _id: 'projects', title: 'Work', sectionId: 'projects', url: '/projects', order: 1, visible: true, active: true },
+    { _id: 'contact', title: 'Contact', sectionId: 'contact', url: '/contact', order: 2, visible: true, active: true },
+  ]
 }
 
 export default function Navbar({ darkMode, onToggleDark }) {
@@ -121,28 +115,28 @@ export default function Navbar({ darkMode, onToggleDark }) {
       transparent: !!s.transparent,
       fixed: s.fixed !== false,
       fullWidth: !!s.fullWidth,
-      bgColor: s.bgColor || '#1a1a2e',
-      textColor: s.textColor || '#ffffff',
-      hoverColor: s.hoverColor || '#6366f1',
-      activeLinkColor: s.activeLinkColor || '#6366f1',
-      borderColor: s.borderColor || 'rgba(255,255,255,0.08)',
-      shadowColor: s.shadowColor || 'rgba(0,0,0,0.2)',
+      bgColor: s.bgColor || '#ffffff',
+      textColor: s.textColor || '#1f2937',
+      hoverColor: s.hoverColor || '#6C2BFF',
+      activeLinkColor: s.activeLinkColor || '#6C2BFF',
+      borderColor: s.borderColor || 'rgba(0,0,0,0.06)',
+      shadowColor: s.shadowColor || 'rgba(108,43,255,0.08)',
       glassmorphism: s.glassmorphism !== false,
       blurEffect: s.blurEffect !== false,
       shadow: s.shadow !== false,
       backdropFilter: s.backdropFilter !== false,
       logoMargin: s.logoMargin ?? 0,
-      menuGap: s.menuGap ?? 24,
+      menuGap: s.menuGap ?? 28,
       navbarPadding: s.navbarPadding ?? 12,
       buttonPadding: s.buttonPadding ?? 10,
       themeEnabled: s.themeEnabled !== false,
       themeMode: s.themeMode || 'auto',
       lightBg: s.lightTheme?.bgColor || '#ffffff',
       lightText: s.lightTheme?.textColor || '#1f2937',
-      lightHover: s.lightTheme?.hoverColor || '#4f46e5',
+      lightHover: s.lightTheme?.hoverColor || '#6C2BFF',
       darkBg: s.darkTheme?.bgColor || '#1a1a2e',
       darkText: s.darkTheme?.textColor || '#ffffff',
-      darkHover: s.darkTheme?.hoverColor || '#818cf8',
+      darkHover: s.darkTheme?.hoverColor || '#8B5CF6',
       hamburgerColor: s.hamburgerColor || '#374151',
       hamburgerPosition: s.hamburgerPosition || 'right',
       hamburgerWidth: s.hamburgerWidth ?? 24,
@@ -220,7 +214,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
   }, [darkMode])
 
   const linkHoverColor = useMemo(() => {
-    return settings.hoverColor || '#6366f1'
+    return settings.hoverColor || '#6C2BFF'
   }, [settings])
 
   const drawerBg = useMemo(() => {
@@ -244,7 +238,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
   }), [])
 
   const drawerTransition = { type: 'spring', damping: 30, stiffness: 150 }
-  const drawerWidthClass = 'w-full'
+  const drawerWidthClass = 'w-full max-w-sm sm:max-w-md'
   const rightControlsGap = Math.round(settings.menuGap / 3)
 
   const handleNavClick = useCallback((e, item) => {
@@ -261,16 +255,25 @@ export default function Navbar({ darkMode, onToggleDark }) {
   }, [navigate])
 
   const hoverUnderlineStyle = useMemo(() => ({
-    backgroundColor: linkHoverColor || '#6366f1',
+    backgroundColor: linkHoverColor || '#6C2BFF',
   }), [linkHoverColor])
 
   const controlBg = useMemo(() => {
-    return darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.05)'
+    return darkMode ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.04)'
   }, [darkMode])
 
   const controlTextColor = useMemo(() => {
     return darkMode ? '#ffffff' : '#374151'
   }, [darkMode])
+
+  const desktopNavItems = useMemo(() => {
+    const allowed = ['about', 'work', 'projects', 'contact']
+    const filtered = displayNavItems.filter((i) => {
+      const key = (i.sectionId || i.title || '').toLowerCase()
+      return allowed.includes(key)
+    })
+    return filtered.length > 0 ? filtered : buildFallbackItems()
+  }, [displayNavItems])
 
   return (
     <motion.nav
@@ -281,7 +284,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
       className={`${positionClass} top-0 z-[1000] transition-[background-color,box-shadow,padding] duration-300 py-3 sm:py-3.5`}
     >
       <div
-        className={`${settings.fullWidth ? 'w-full' : 'container'} mx-auto px-4 sm:px-6 flex justify-between items-center`}
+        className={`${settings.fullWidth ? 'w-full' : 'container'} mx-auto px-4 sm:px-8 flex justify-between items-center`}
         style={settings.fullWidth ? {} : { maxWidth: settings.containerWidth }}
       >
         {/* Logo — left */}
@@ -296,110 +299,76 @@ export default function Navbar({ darkMode, onToggleDark }) {
           }} />
         </div>
 
-        {/* Mobile Menu Toggle */}
-        <button
-          className="md:hidden w-10 h-10 flex items-center justify-center cursor-pointer z-[1002] rounded-lg hover:bg-indigo-600 hover:text-white transition-colors relative"
-          onClick={() => setIsOpen(!isOpen)}
-          aria-label="Toggle menu"
-          style={{ ...hamburgerBtnStyle, backgroundColor: controlBg }}
-        >
-          {isOpen ? <X size={20} /> : <Menu size={20} />}
-        </button>
+        {/* Desktop: Navigation links positioned on the right matching reference image */}
+        <div className="hidden md:flex items-center gap-7 lg:gap-8">
+          <ul
+            className="flex items-center"
+            style={{ gap: (settings.menuGap || 32) + 'px' }}
+          >
+            {desktopNavItems.map((item, idx) => {
+              const targetPath = resolveNavPath(item)
+              const isActive = (location.pathname === '/' || location.pathname === '')
+                ? (item.sectionId === 'about' || item.title?.toLowerCase() === 'about')
+                : isNavPathActive(targetPath, location.pathname)
+              const isClickable = item.active !== false
+              const displayTitle = item.title === 'Projects' ? 'Work' : item.title
 
-        {/* Desktop: center nav links */}
-        <ul
-          className="hidden md:flex items-center justify-center flex-1"
-          style={{ gap: settings.menuGap + 'px' }}
-        >
-          {displayNavItems.map((item, idx) => {
-            const targetPath = resolveNavPath(item)
-            const isActive = isNavPathActive(targetPath, location.pathname)
-            const isClickable = item.active !== false
-
-            return (
-              <motion.li
-                key={item._id || item.sectionId || targetPath}
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 * idx + 0.2 }}
-              >
-                <a
-                  href={item.isExternal ? item.url : `#${targetPath}`}
-                  target={item.openNewTab ? '_blank' : undefined}
-                  rel={item.openNewTab ? 'noopener noreferrer' : undefined}
-                  className="text-xs font-bold uppercase tracking-widest transition-colors relative group whitespace-nowrap cursor-pointer"
-                  style={{
-                    color: isActive ? settings.activeLinkColor : linkTextColor,
-                  }}
-                  onMouseEnter={(e) => {
-                    if (isClickable && linkHoverColor && !isActive) {
-                      e.currentTarget.style.color = linkHoverColor
-                    }
-                  }}
-                  onMouseLeave={(e) => {
-                    e.currentTarget.style.color = isActive
-                      ? settings.activeLinkColor
-                      : linkTextColor || ''
-                  }}
-                  onClick={(e) => handleNavClick(e, item)}
+              return (
+                <motion.li
+                  key={item._id || item.sectionId || targetPath}
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.04 * idx + 0.15 }}
                 >
-                  {item.title}
-                  {isActive ? (
-                    <motion.span
-                      layoutId="activeNavPill"
-                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 shadow-[0_0_12px_rgba(129,140,248,0.8)]"
-                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                    />
-                  ) : (
-                    settings.hoverEffect === 'underline' && (
+                  <a
+                    href={item.isExternal ? item.url : `#${targetPath}`}
+                    target={item.openNewTab ? '_blank' : undefined}
+                    rel={item.openNewTab ? 'noopener noreferrer' : undefined}
+                    className={`text-sm lg:text-[15px] font-medium transition-colors relative group whitespace-nowrap cursor-pointer pb-1 ${
+                      isActive ? 'text-[#6C2BFF] font-semibold' : 'text-slate-700 dark:text-slate-300 hover:text-[#6C2BFF]'
+                    }`}
+                    style={{
+                      color: isActive ? '#6C2BFF' : undefined,
+                    }}
+                    onClick={(e) => handleNavClick(e, item)}
+                  >
+                    {displayTitle}
+                    {isActive ? (
                       <motion.span
-                        className="absolute -bottom-1.5 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300"
-                        style={hoverUnderlineStyle}
+                        layoutId="activeNavLine"
+                        className="absolute -bottom-0.5 left-0 right-0 h-[2.5px] rounded-full bg-[#6C2BFF]"
+                        transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                       />
-                    )
-                  )}
-                </a>
-              </motion.li>
-            )
-          })}
-        </ul>
+                    ) : (
+                      <span className="absolute -bottom-0.5 left-0 w-0 h-[2px] rounded-full bg-[#6C2BFF]/60 group-hover:w-full transition-all duration-200" />
+                    )}
+                  </a>
+                </motion.li>
+              )
+            })}
+          </ul>
+        </div>
 
-        {/* Desktop: right controls — CV link + theme toggle */}
-        <div className="hidden md:flex items-center shrink-0" style={{ gap: rightControlsGap + 'px' }}>
-          {ns?.resumeEnabled !== false && (
-            <a
-              href="#/cv"
-              onClick={(e) => {
-                e.preventDefault()
-                navigate('/cv')
-                if (typeof window !== 'undefined') {
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }
-              }}
-              className="text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
-              style={{ color: location.pathname === '/cv' ? settings.activeLinkColor : linkTextColor }}
-              onMouseEnter={(e) => { if (location.pathname !== '/cv') e.currentTarget.style.color = linkHoverColor }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = location.pathname === '/cv' ? settings.activeLinkColor : linkTextColor }}
-            >
-              <FileText size={13} />
-              {ns?.resumeText || 'CV'}
-            </a>
-          )}
+        {/* Mobile Controls: Theme toggle + Hamburger */}
+        <div className="md:hidden flex items-center gap-2">
           {settings.themeEnabled && (
-            <motion.button
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.4 }}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.92 }}
+            <button
               onClick={onToggleDark}
-              className="w-9 h-9 flex items-center justify-center rounded-lg hover:bg-indigo-600 hover:text-white transition-colors"
+              className="w-9 h-9 flex items-center justify-center rounded-lg transition-colors cursor-pointer"
               style={{ backgroundColor: controlBg, color: controlTextColor }}
               aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
             >
               {darkMode ? <Sun size={16} /> : <Moon size={16} />}
-            </motion.button>
+            </button>
           )}
+          <button
+            className="w-10 h-10 flex items-center justify-center cursor-pointer z-[1002] rounded-lg hover:bg-[#6C2BFF] hover:text-white transition-colors relative"
+            onClick={() => setIsOpen(!isOpen)}
+            aria-label="Toggle menu"
+            style={{ ...hamburgerBtnStyle, backgroundColor: controlBg }}
+          >
+            {isOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
         </div>
 
         {/* Mobile Sidebar */}
@@ -430,7 +399,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
                     onClick={() => setIsOpen(false)}
-                    className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-indigo-600 hover:text-white transition-all"
+                    className="w-10 h-10 flex items-center justify-center rounded-xl hover:bg-[#6C2BFF] hover:text-white transition-all cursor-pointer"
                     style={{ backgroundColor: controlBg, color: controlTextColor }}
                   >
                     <X size={20} />
@@ -441,6 +410,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   {displayNavItems.map((item, idx) => {
                     const targetPath = resolveNavPath(item)
                     const isActive = isNavPathActive(targetPath, location.pathname)
+                    const displayTitle = item.title === 'Projects' ? 'Work' : item.title
 
                     return (
                       <motion.li
@@ -453,18 +423,18 @@ export default function Navbar({ darkMode, onToggleDark }) {
                           href={item.isExternal ? item.url : `#${targetPath}`}
                           target={item.openNewTab ? '_blank' : undefined}
                           rel={item.openNewTab ? 'noopener noreferrer' : undefined}
-                          className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight cursor-pointer"
+                          className="text-xl font-bold transition-all flex items-center justify-between group font-sans tracking-tight cursor-pointer"
                           style={{
-                            color: isActive ? settings.activeLinkColor : linkTextColor,
+                            color: isActive ? '#6C2BFF' : linkTextColor,
                           }}
                           onClick={(e) => handleNavClick(e, item)}
                         >
                           <span className="group-hover:translate-x-2 transition-transform duration-300">
-                            {item.title}
+                            {displayTitle}
                           </span>
                           <ChevronRight
-                            className={`transition-all duration-300 w-5 h-5 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                            style={{ color: linkHoverColor }}
+                            className={`transition-all duration-300 w-5 h-5 ${isActive ? 'opacity-100 text-[#6C2BFF]' : 'opacity-0 group-hover:opacity-100'}`}
+                            style={{ color: isActive ? '#6C2BFF' : linkHoverColor }}
                           />
                         </a>
                       </motion.li>
@@ -475,8 +445,8 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 {ns?.resumeEnabled !== false && (
                 <a
                   href="#/cv"
-                  className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight mt-2 cursor-pointer"
-                  style={{ color: location.pathname === '/cv' ? settings.activeLinkColor : linkTextColor }}
+                  className="text-xl font-bold transition-all flex items-center justify-between group font-sans tracking-tight mt-2 cursor-pointer"
+                  style={{ color: location.pathname === '/cv' ? '#6C2BFF' : linkTextColor }}
                   onClick={(e) => {
                     e.preventDefault()
                     navigate('/cv')
@@ -487,12 +457,12 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   }}
                 >
                   <span className="group-hover:translate-x-2 transition-transform duration-300 flex items-center gap-2">
-                    <FileText size={22} />
+                    <FileText size={20} />
                     {ns?.resumeText || 'CV'}
                   </span>
                   <ChevronRight
-                    className={`transition-all duration-300 w-5 h-5 ${location.pathname === '/cv' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
-                    style={{ color: linkHoverColor }}
+                    className={`transition-all duration-300 w-5 h-5 ${location.pathname === '/cv' ? 'opacity-100 text-[#6C2BFF]' : 'opacity-0 group-hover:opacity-100'}`}
+                    style={{ color: location.pathname === '/cv' ? '#6C2BFF' : linkHoverColor }}
                   />
                 </a>
                 )}
@@ -501,7 +471,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   <div className="flex justify-center">
                     <button
                       onClick={onToggleDark}
-                      className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-indigo-600 hover:text-white transition-all"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-[#6C2BFF] hover:text-white transition-all cursor-pointer"
                       style={{ backgroundColor: controlBg, color: controlTextColor }}
                       aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
                     >
