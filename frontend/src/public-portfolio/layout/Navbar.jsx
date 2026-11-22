@@ -6,6 +6,7 @@ import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import Logo from '../../shared/components/Logo'
 import { getNavigation, getNavbarSettings } from '../../shared/services/navigationService'
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
+import { resolveNavPath, isNavPathActive } from '../shared/navUtils'
 
 const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'projects', 'experience', 'contact']
 
@@ -247,14 +248,12 @@ export default function Navbar({ darkMode, onToggleDark }) {
   const rightControlsGap = Math.round(settings.menuGap / 3)
 
   const handleNavClick = useCallback((e, item) => {
-    if (!item.active) return
-    if (item.isExternal || item.openNewTab) return
+    if (item?.isExternal || item?.openNewTab) return
     e.preventDefault()
     setIsOpen(false)
+    if (item?.active === false) return
 
-    const rawId = item.sectionId || (item.url || '').replace(/^#\/?/, '').replace(/^\//, '')
-    const targetPath = rawId === 'home' || item.url === '/' || item.url === '#home' || item.url === '#' ? '/' : `/${rawId}`
-
+    const targetPath = resolveNavPath(item)
     navigate(targetPath)
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'smooth' })
@@ -312,57 +311,57 @@ export default function Navbar({ darkMode, onToggleDark }) {
           className="hidden md:flex items-center justify-center flex-1"
           style={{ gap: settings.menuGap + 'px' }}
         >
-          {displayNavItems.map((item, idx) => (
-            <motion.li
-              key={item._id || item.sectionId}
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 * idx + 0.2 }}
-            >
-              <a
-                href="#"
-                target={item.active && item.openNewTab ? '_blank' : undefined}
-                rel={item.active && item.openNewTab ? 'noopener noreferrer' : undefined}
-                className="text-xs font-bold uppercase tracking-widest transition-colors relative group whitespace-nowrap"
-                style={{
-                  color: item.active
-                    ? (activeSection === item.sectionId
-                      ? settings.activeLinkColor
-                      : linkTextColor)
-                    : linkTextColor,
-                }}
-                onMouseEnter={(e) => {
-                  if (item.active && linkHoverColor && activeSection !== item.sectionId) {
-                    e.currentTarget.style.color = linkHoverColor
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (item.active) {
-                    e.currentTarget.style.color = activeSection === item.sectionId
+          {displayNavItems.map((item, idx) => {
+            const targetPath = resolveNavPath(item)
+            const isActive = isNavPathActive(targetPath, location.pathname)
+            const isClickable = item.active !== false
+
+            return (
+              <motion.li
+                key={item._id || item.sectionId || targetPath}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.05 * idx + 0.2 }}
+              >
+                <a
+                  href={item.isExternal ? item.url : `#${targetPath}`}
+                  target={item.openNewTab ? '_blank' : undefined}
+                  rel={item.openNewTab ? 'noopener noreferrer' : undefined}
+                  className="text-xs font-bold uppercase tracking-widest transition-colors relative group whitespace-nowrap cursor-pointer"
+                  style={{
+                    color: isActive ? settings.activeLinkColor : linkTextColor,
+                  }}
+                  onMouseEnter={(e) => {
+                    if (isClickable && linkHoverColor && !isActive) {
+                      e.currentTarget.style.color = linkHoverColor
+                    }
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.color = isActive
                       ? settings.activeLinkColor
                       : linkTextColor || ''
-                  }
-                }}
-                onClick={(e) => handleNavClick(e, item)}
-              >
-                {item.title}
-                {activeSection === item.sectionId ? (
-                  <motion.span
-                    layoutId="activeNavPill"
-                    className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 shadow-[0_0_12px_rgba(129,140,248,0.8)]"
-                    transition={{ type: 'spring', stiffness: 380, damping: 30 }}
-                  />
-                ) : (
-                  settings.hoverEffect === 'underline' && (
+                  }}
+                  onClick={(e) => handleNavClick(e, item)}
+                >
+                  {item.title}
+                  {isActive ? (
                     <motion.span
-                      className="absolute -bottom-1.5 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300"
-                      style={hoverUnderlineStyle}
+                      layoutId="activeNavPill"
+                      className="absolute -bottom-2 left-1/2 -translate-x-1/2 w-10 h-[3px] rounded-full bg-gradient-to-r from-indigo-500 via-purple-500 to-indigo-500 shadow-[0_0_12px_rgba(129,140,248,0.8)]"
+                      transition={{ type: 'spring', stiffness: 380, damping: 30 }}
                     />
-                  )
-                )}
-              </a>
-            </motion.li>
-          ))}
+                  ) : (
+                    settings.hoverEffect === 'underline' && (
+                      <motion.span
+                        className="absolute -bottom-1.5 left-0 w-0 h-0.5 group-hover:w-full transition-all duration-300"
+                        style={hoverUnderlineStyle}
+                      />
+                    )
+                  )}
+                </a>
+              </motion.li>
+            )
+          })}
         </ul>
 
         {/* Desktop: right controls — CV link + theme toggle */}
@@ -377,10 +376,10 @@ export default function Navbar({ darkMode, onToggleDark }) {
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }
               }}
-              className="text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5 whitespace-nowrap"
-              style={{ color: linkTextColor }}
-              onMouseEnter={(e) => { e.currentTarget.style.color = linkHoverColor }}
-              onMouseLeave={(e) => { e.currentTarget.style.color = linkTextColor }}
+              className="text-xs font-bold uppercase tracking-widest transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
+              style={{ color: location.pathname === '/cv' ? settings.activeLinkColor : linkTextColor }}
+              onMouseEnter={(e) => { if (location.pathname !== '/cv') e.currentTarget.style.color = linkHoverColor }}
+              onMouseLeave={(e) => { e.currentTarget.style.color = location.pathname === '/cv' ? settings.activeLinkColor : linkTextColor }}
             >
               <FileText size={13} />
               {ns?.resumeText || 'CV'}
@@ -439,48 +438,52 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 </div>
 
                 <ul className="flex flex-col gap-5">
-                  {displayNavItems.map((item, idx) => (
-                    <motion.li
-                      key={item._id || item.sectionId}
-                      initial={{ opacity: 0, x: 30 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.05 * idx, type: 'spring' }}
-                    >
-                      <a
-                        href="#"
-                        target={item.active && item.openNewTab ? '_blank' : undefined}
-                        rel={item.active && item.openNewTab ? 'noopener noreferrer' : undefined}
-                        className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight"
-                        style={{
-                          color: item.active
-                            ? activeSection === item.sectionId
-                              ? settings.activeLinkColor
-                              : linkTextColor
-                            : linkTextColor,
-                        }}
-                        onClick={(e) => handleNavClick(e, item)}
+                  {displayNavItems.map((item, idx) => {
+                    const targetPath = resolveNavPath(item)
+                    const isActive = isNavPathActive(targetPath, location.pathname)
+
+                    return (
+                      <motion.li
+                        key={item._id || item.sectionId || targetPath}
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: 0.05 * idx, type: 'spring' }}
                       >
-                        <span className="group-hover:translate-x-2 transition-transform duration-300">
-                          {item.title}
-                        </span>
-                        <ChevronRight
-                          className="opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5"
-                          style={{ color: linkHoverColor }}
-                        />
-                      </a>
-                    </motion.li>
-                  ))}
+                        <a
+                          href={item.isExternal ? item.url : `#${targetPath}`}
+                          target={item.openNewTab ? '_blank' : undefined}
+                          rel={item.openNewTab ? 'noopener noreferrer' : undefined}
+                          className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight cursor-pointer"
+                          style={{
+                            color: isActive ? settings.activeLinkColor : linkTextColor,
+                          }}
+                          onClick={(e) => handleNavClick(e, item)}
+                        >
+                          <span className="group-hover:translate-x-2 transition-transform duration-300">
+                            {item.title}
+                          </span>
+                          <ChevronRight
+                            className={`transition-all duration-300 w-5 h-5 ${isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
+                            style={{ color: linkHoverColor }}
+                          />
+                        </a>
+                      </motion.li>
+                    )
+                  })}
                 </ul>
 
                 {ns?.resumeEnabled !== false && (
                 <a
                   href="#/cv"
-                  className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight mt-2"
-                  style={{ color: linkTextColor }}
+                  className="text-2xl font-black transition-all flex items-center justify-between group font-display tracking-tight mt-2 cursor-pointer"
+                  style={{ color: location.pathname === '/cv' ? settings.activeLinkColor : linkTextColor }}
                   onClick={(e) => {
                     e.preventDefault()
                     navigate('/cv')
                     setIsOpen(false)
+                    if (typeof window !== 'undefined') {
+                      window.scrollTo({ top: 0, behavior: 'smooth' })
+                    }
                   }}
                 >
                   <span className="group-hover:translate-x-2 transition-transform duration-300 flex items-center gap-2">
@@ -488,7 +491,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                     {ns?.resumeText || 'CV'}
                   </span>
                   <ChevronRight
-                    className="opacity-0 group-hover:opacity-100 transition-all duration-300 w-5 h-5"
+                    className={`transition-all duration-300 w-5 h-5 ${location.pathname === '/cv' ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`}
                     style={{ color: linkHoverColor }}
                   />
                 </a>
