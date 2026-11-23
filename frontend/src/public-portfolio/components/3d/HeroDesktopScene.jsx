@@ -1,5 +1,5 @@
 import { Suspense, useMemo, useState, useCallback, useRef, useEffect } from 'react'
-import { Canvas, useThree } from '@react-three/fiber'
+import { Canvas, useThree, useFrame } from '@react-three/fiber'
 import { OrbitControls, ContactShadows } from '@react-three/drei'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Minimize2, ZoomIn, ZoomOut } from 'lucide-react'
@@ -72,8 +72,26 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
     return o ? o.visible !== false : fallback
   }
 
-  // Workstation scale: 0.88 gives generous desk width span with clean edge clearance
-  const workstationScale = 0.88
+  // Baseline zoom-out scale: 0.88 (the existing baseline view)
+  const baseScale = 0.88
+  // Maximum zoom-in scale: 1.05 (magnifies all parts together by ~20% from floor base)
+  const maxScale = 1.05
+
+  useFrame(({ clock }) => {
+    // Smooth ~12-second sinusoidal breathing cycle: 0 -> 1 -> 0
+    const t = clock.getElapsedTime()
+    const cycleSpeed = 0.52
+    const progress = (1 - Math.cos(t * cycleSpeed)) / 2
+
+    // Scale all workstation parts proportionally from the floor anchor:
+    // - Group origin is at floorY so the table legs stay firmly planted and visible
+    // - Tabletop, monitor, plant, mug, speakers, PC, and legs all increase in size together
+    const currentScale = baseScale + progress * (maxScale - baseScale)
+    if (desktopGroupRef.current) {
+      desktopGroupRef.current.scale.setScalar(currentScale)
+    }
+  })
+
   // Group position: grounded at floorY = -0.46 so the desktop and table workstation are shifted down cleanly
   const floorY = -0.46
   const groupPos = [0, floorY, 0]
@@ -134,7 +152,7 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
       />
 
       {/* ── Workstation (Warm Oak Wood Table + Components + Blue Accents matching Image 1) ── */}
-      <group ref={desktopGroupRef} position={groupPos} scale={workstationScale}>
+      <group ref={desktopGroupRef} position={groupPos} scale={baseScale}>
         {vis('desk') && <Desk position={deskPos} />}
         {vis('monitor') && <Monitor position={monitorPos} screenMode="code" profileData={profileData} />}
         {/* Potted Plant and Flutter Coffee Mug on left of desk */}
