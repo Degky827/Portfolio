@@ -16,12 +16,12 @@ import MonitorStand from './MonitorStand'
  */
 export default function Monitor({ position = [0, 0, 0], screenMode = 'code', profileData }) {
   const workspace = useWorkspace()
-  const frameCenterY = 0.58
+  const frameCenterY = 0.68
 
   return (
     <group position={position}>
-      {/* Stand base resting on desk */}
-      <MonitorStand position={[0, 0, 0]} />
+      {/* Stand base resting on desk with cylindrical neck column */}
+      <MonitorStand position={[0, 0, 0]} frameCenterY={frameCenterY} />
 
       {/* Monitor head - frame + screen raised above desk */}
       <group position={[0, frameCenterY, 0.04]}>

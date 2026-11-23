@@ -11,10 +11,10 @@ import * as THREE from 'three'
  */
 export default function Keyboard({ position = [0, 0, 0] }) {
   const workspace = useWorkspace()
-  const keyColor = useMemo(() => new THREE.Color('#14151a'), [])
-  const bluePrimary = useMemo(() => new THREE.Color('#0084FF'), [])
-  const blueSoft = useMemo(() => new THREE.Color('#38BDF8'), [])
-  const bodyColor = useMemo(() => new THREE.Color('#0b0c10'), [])
+  const keyColor = useMemo(() => new THREE.Color('#121418'), [])
+  const bluePrimary = useMemo(() => new THREE.Color('#00A3FF'), [])
+  const blueSoft = useMemo(() => new THREE.Color('#70D6FF'), [])
+  const bodyColor = useMemo(() => new THREE.Color('#08090c'), [])
 
   const keyRows = [
     { z: -0.08, keys: 14, width: 0.052 },
