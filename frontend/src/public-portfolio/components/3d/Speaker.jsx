@@ -14,19 +14,20 @@ export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
   const workspace = useWorkspace()
   const wooferRingRef = useRef()
 
-  const cyanRing = useMemo(() => new THREE.Color('#00C8FF'), [])
-  const blueGlow = useMemo(() => new THREE.Color('#0088FF'), [])
-  const bodyColor = useMemo(() => new THREE.Color('#0d0e12'), [])
-  const baffleColor = useMemo(() => new THREE.Color('#08090c'), [])
-  const coneColor = useMemo(() => new THREE.Color('#14151b'), [])
+  const cyanNeon = useMemo(() => new THREE.Color('#00A3FF'), [])
+  const cyanCore = useMemo(() => new THREE.Color('#70D6FF'), [])
+  const blueGlow = useMemo(() => new THREE.Color('#0077EE'), [])
+  const bodyColor = useMemo(() => new THREE.Color('#0a0c10'), [])
+  const baffleColor = useMemo(() => new THREE.Color('#06070a'), [])
+  const coneColor = useMemo(() => new THREE.Color('#101217'), [])
 
-  // Inward rotation slightly towards user
-  const inwardRotation = side === 'left' ? 0.12 : -0.12
+  // Inward rotation slightly towards user (matching acoustic studio monitors)
+  const inwardRotation = side === 'left' ? 0.15 : -0.15
 
   useFrame((state) => {
     if (!wooferRingRef.current) return
     const t = state.clock.getElapsedTime()
-    wooferRingRef.current.material.emissiveIntensity = 1.4 + Math.sin(t * 1.5) * 0.2
+    wooferRingRef.current.material.emissiveIntensity = 1.8 + Math.sin(t * 2.0) * 0.25
   })
 
   return (
@@ -63,34 +64,34 @@ export default function Speaker({ position = [0, 0, 0], side = 'left' }) {
         </mesh>
       </group>
 
-      {/* ── Woofer (Bottom driver with Electric Cyan-Blue Halo Ring matching Image 1) ── */}
+      {/* ── Woofer (Bottom driver with Electric Cyan-Blue Halo Ring matching Image 2) ── */}
       <group position={[0, 0.15, 0.122]}>
         {/* Outer illuminated halo ring */}
         <mesh ref={wooferRingRef}>
-          <ringGeometry args={[0.062, 0.088, 36]} />
+          <ringGeometry args={[0.060, 0.090, 40]} />
           <meshStandardMaterial
-            color={cyanRing}
-            emissive={blueGlow}
-            emissiveIntensity={1.4}
+            color={cyanCore}
+            emissive={cyanNeon}
+            emissiveIntensity={1.8}
             side={THREE.DoubleSide}
           />
         </mesh>
         {/* Dark inner acoustic cone */}
         <mesh position={[0, 0, -0.008]}>
-          <cylinderGeometry args={[0.060, 0.028, 0.020, 24]} />
+          <cylinderGeometry args={[0.058, 0.026, 0.020, 28]} />
           <meshStandardMaterial color={coneColor} roughness={0.55} />
         </mesh>
         {/* Center dust cap */}
         <mesh position={[0, 0, 0.002]}>
           <sphereGeometry args={[0.022, 16, 16, 0, Math.PI * 2, 0, Math.PI / 2]} />
-          <meshStandardMaterial color="#08080a" roughness={0.25} />
+          <meshStandardMaterial color="#06070a" roughness={0.25} />
         </mesh>
       </group>
 
-      {/* ── Bottom LED Status Indicator Dot in Blue ── */}
+      {/* ── Bottom LED Status Indicator Dot in Electric Cyan ── */}
       <mesh position={[0, 0.024, 0.123]}>
-        <circleGeometry args={[0.0035, 12]} />
-        <meshBasicMaterial color={cyanRing} />
+        <circleGeometry args={[0.0035, 14]} />
+        <meshBasicMaterial color={cyanNeon} />
       </mesh>
     </group>
   )

@@ -38,16 +38,19 @@ function Hero({ content }) {
       {/* Background Guilloche Waves matching Image 1 & Image 3 */}
       <GuillocheWaves />
 
-      {/* ── Zone 0: Navbar spacer ── */}
-      <div className="h-6 sm:h-8 shrink-0" />
+      {/* ── Zone 0: Navbar spacer (positioned near navbar without touching) ── */}
+      <div className="h-2 sm:h-3 shrink-0" />
 
-      {/* ── Zone 1: 3D Header Banner matching Image 1 ── */}
-      <div className="w-full z-20 shrink-0 pointer-events-none pb-1 sm:pb-2">
+      {/* ── Zone 1: 3D Header Banner matching Target Reference ── */}
+      <div className="w-full z-20 shrink-0 pointer-events-none pb-0.5 sm:pb-1">
         <HeroHeaderBanner name="Desalegn Kasaye" />
       </div>
 
+      {/* ── Spacer: Generous separation moving the desktop & table workstation visibly down ── */}
+      <div className="h-6 sm:h-10 md:h-14 shrink-0" />
+
       {/* ── Zone 2: Full-Bleed 3D Workstation Scene matching Image 1 (NO zoom in / zoom out) ── */}
-      <div className="flex-1 w-full min-h-[500px] sm:min-h-[560px] md:min-h-[620px] relative z-10 pointer-events-auto">
+      <div className="flex-1 w-full min-h-[480px] sm:min-h-[540px] md:min-h-[600px] relative z-10 pointer-events-auto">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-[#0084FF]/30 border-t-[#0084FF] rounded-full animate-spin" />
