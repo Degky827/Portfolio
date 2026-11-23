@@ -72,21 +72,22 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
     return o ? o.visible !== false : fallback
   }
 
-  // Workstation scale: 0.90 gives ~90% desk width span matching Image 2
-  const workstationScale = 0.90
-  // Group position: elevated to y = -0.15 so the entire workstation (monitor, plant, PC, legs) fits inside the canvas with clean headroom
-  const groupPos = [0, -0.15, 0]
+  // Workstation scale: 0.88 gives generous desk width span with clean edge clearance
+  const workstationScale = 0.88
+  // Group position: grounded at floorY = -0.46 so the desktop and table workstation are shifted down cleanly
+  const floorY = -0.46
+  const groupPos = [0, floorY, 0]
 
   // Tabletop surface at y = 0.72 inside the group
   const deskPos = [0, 0, 0]
-  const monitorPos = [-0.04, 0.72, -0.06]
-  const keyboardPos = [-0.04, 0.72, 0.30]
-  const mousepadPos = [0.50, 0.72, 0.30]
-  const plantPos = [-1.24, 0.72, 0.06]
-  const coffeeMugPos = [-1.02, 0.72, 0.28]
-  const speakerLeftPos = [-0.86, 0.72, 0.04]
-  const speakerRightPos = [0.82, 0.72, 0.04]
-  const pcPos = [1.22, 0.72, 0.04]
+  const monitorPos = [0.0, 0.72, -0.06]
+  const keyboardPos = [-0.14, 0.722, 0.30]
+  const mousepadPos = [0.0, 0.72, 0.30]
+  const plantPos = [-1.52, 0.72, 0.06]
+  const coffeeMugPos = [-1.28, 0.72, 0.28]
+  const speakerLeftPos = [-1.06, 0.72, 0.04]
+  const speakerRightPos = [1.06, 0.72, 0.04]
+  const pcPos = [1.52, 0.72, 0.04]
 
   return (
     <>
@@ -116,19 +117,19 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
         color="#f0f6ff"
       />
 
-      {/* ── Floor Shadow Catcher (Positioned at table leg base y = -0.15) ── */}
-      <mesh position={[0, -0.15, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <planeGeometry args={[10, 7]} />
+      {/* ── Floor Shadow Catcher (Positioned dynamically at floorY) ── */}
+      <mesh position={[0, floorY, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[14, 10]} />
         <shadowMaterial transparent opacity={darkMode ? 0.55 : 0.25} />
       </mesh>
 
-      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs at y = -0.15) ── */}
+      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs at floorY) ── */}
       <ContactShadows
-        position={[0, -0.149, 0]}
+        position={[0, floorY + 0.001, 0]}
         opacity={darkMode ? 0.75 : 0.48}
-        scale={7.5}
+        scale={9.6}
         blur={1.8}
-        far={2.2}
+        far={2.5}
         color={darkMode ? '#080810' : '#141824'}
       />
 
@@ -136,39 +137,43 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
       <group ref={desktopGroupRef} position={groupPos} scale={workstationScale}>
         {vis('desk') && <Desk position={deskPos} />}
         {vis('monitor') && <Monitor position={monitorPos} screenMode="code" profileData={profileData} />}
-        {vis('keyboard') && <Keyboard position={keyboardPos} />}
-
         {/* Potted Plant and Flutter Coffee Mug on left of desk */}
         <Plant position={plantPos} />
         <CoffeeMug position={coffeeMugPos} />
 
-        {vis('mouse') && (
-          <group position={mousepadPos}>
-            {/* Charcoal Black Mousepad with Glowing Blue Neon Trim */}
-            <mesh receiveShadow position={[0, 0.002, 0]}>
-              <boxGeometry args={[0.38, 0.004, 0.28]} />
-              <meshStandardMaterial color="#0c0d11" roughness={0.75} />
-            </mesh>
-            <mesh position={[0, 0.001, 0]}>
-              <boxGeometry args={[0.388, 0.003, 0.288]} />
-              <meshBasicMaterial color={BLUE_CYAN} />
-            </mesh>
+        {/* ── Wide Unified Black Desk Mat (XL Mat under Keyboard & Mouse matching Target Reference) ── */}
+        <group position={[0.0, 0.72, 0.30]}>
+          {/* Main woven charcoal black mat surface */}
+          <mesh receiveShadow position={[0, 0.002, 0]}>
+            <boxGeometry args={[1.38, 0.004, 0.36]} />
+            <meshStandardMaterial color="#0b0c10" roughness={0.88} />
+          </mesh>
+          {/* Subtle anti-fray stitched perimeter border */}
+          <mesh position={[0, 0.001, 0]}>
+            <boxGeometry args={[1.386, 0.003, 0.366]} />
+            <meshStandardMaterial color="#161922" roughness={0.9} />
+          </mesh>
+        </group>
 
+        {vis('keyboard') && <Keyboard position={[-0.14, 0.722, 0.30]} />}
+
+        {vis('mouse') && (
+          <group position={[0.42, 0.722, 0.30]}>
             {/* Ergonomic Gaming Mouse in Matte Black */}
-            <group position={[0, 0.016, 0]}>
+            <group position={[0, 0.014, 0]}>
               <mesh castShadow>
-                <boxGeometry args={[0.080, 0.026, 0.126]} />
-                <meshStandardMaterial color="#0e0f14" roughness={0.35} metalness={0.65} />
+                <boxGeometry args={[0.078, 0.026, 0.124]} />
+                <meshStandardMaterial color="#0d0e13" roughness={0.35} metalness={0.65} />
               </mesh>
-              {/* Illuminated blue scroll wheel */}
+              {/* Illuminated electric cyan scroll wheel */}
               <mesh position={[0, 0.013, -0.026]}>
-                <cylinderGeometry args={[0.006, 0.006, 0.014, 12]} />
-                <meshBasicMaterial color={BLUE_CYAN} />
+                <cylinderGeometry args={[0.006, 0.006, 0.014, 16]} />
+                <meshBasicMaterial color="#00A3FF" />
               </mesh>
-              {/* Illuminated blue rear logo */}
+              {/* Illuminated rear logo */}
               <mesh position={[0, 0.014, 0.032]}>
-                <boxGeometry args={[0.020, 0.002, 0.020]} />
-                <meshBasicMaterial color={BLUE_CYAN} />
+                <boxGeometry args={[0.018, 0.002, 0.018]} />
+                <meshBasicMaterial color="#00A3FF" />
               </mesh>
             </group>
           </group>
@@ -180,7 +185,7 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
         {/* Accent Point Light at PC Fans (Electric Blue) */}
         <pointLight
-          position={[1.22, 1.05, 0.34]}
+          position={[1.52, 1.05, 0.34]}
           intensity={0.65}
           color={BLUE_PRIMARY}
           distance={2.2}
@@ -189,7 +194,7 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
         {/* Soft ambient blue reflection pool under PC fans onto warm oak tabletop */}
         <pointLight
-          position={[1.20, 0.76, 0.22]}
+          position={[1.50, 0.76, 0.22]}
           intensity={0.55}
           color={BLUE_PRIMARY}
           distance={1.0}
@@ -198,7 +203,7 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
         {/* Soft ambient blue reflection pool on tabletop under monitor & keyboard */}
         <pointLight
-          position={[-0.04, 0.76, 0.08]}
+          position={[0.0, 0.76, 0.08]}
           intensity={0.45}
           color={BLUE_PRIMARY}
           distance={1.1}
@@ -207,7 +212,7 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
 
         {/* Accent Point Light at Left Speaker (Electric Blue) */}
         <pointLight
-          position={[-0.86, 0.82, 0.18]}
+          position={[-1.06, 0.82, 0.18]}
           intensity={0.25}
           color={BLUE_PRIMARY}
           distance={1.0}
@@ -215,10 +220,10 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
         />
       </group>
 
-      {/* OrbitControls: Zoom disabled, constrained angles keep ideal close-up framing */}
+      {/* OrbitControls: Zoom disabled, aimed so workstation sits cleanly lower in frame */}
       <OrbitControls
         ref={controlsRef}
-        target={[0.0, 0.74, 0.0]}
+        target={[0.0, 0.58, 0.0]}
         enableZoom={false}
         enablePan={false}
         minPolarAngle={Math.PI / 3.4}
@@ -269,9 +274,9 @@ function FallbackScene({ darkMode }) {
 function CameraSync() {
   const { camera } = useThree()
   useEffect(() => {
-    camera.position.set(0.0, 1.35, 2.75)
-    camera.fov = 42
-    camera.lookAt(0.0, 0.74, 0.0)
+    camera.position.set(0.0, 1.28, 2.70)
+    camera.fov = 43
+    camera.lookAt(0.0, 0.58, 0.0)
     camera.updateProjectionMatrix()
   }, [camera])
   return null
@@ -318,10 +323,10 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [expanded])
 
-  // Prominent close-up framing (~14° downward angle, ~90% desk width, zero vertical clipping) matching Image 2
+  // Prominent close-up framing (~14.5° downward angle, workstation lowered significantly) matching Image 2
   const inlineCamera = useMemo(() => ({
-    position: [0.0, 1.35, 2.75],
-    fov: 42,
+    position: [0.0, 1.28, 2.70],
+    fov: 43,
     near: 0.1,
     far: 25,
   }), [])
@@ -391,7 +396,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
               <Canvas
                 shadows
                 key={`modal-${cameraKey}`}
-                camera={{ position: [0.0, 1.35, 2.75], fov: 42, near: 0.1, far: 25 }}
+                camera={{ position: [0.0, 1.36, 2.65], fov: 42, near: 0.1, far: 25 }}
                 dpr={[1, maxDpr]}
                 gl={inlineGl}
                 style={{ background: 'transparent' }}

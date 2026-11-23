@@ -16,33 +16,29 @@ const W = 1920
 const H = 1080
 
 const C = {
-  bg: '#0b0f17',
-  editorBg: '#0d131c',
-  activityBg: '#070b10',
-  sidebarBg: '#101520',
-  titleBarBg: '#131822',
-  tabBarBg: '#0d131c',
-  activeTabBg: '#141b27',
-  terminalBg: '#080c12',
-  statusBarBg: '#0084FF',
+  bg: '#0a0d14',
+  editorBg: '#0c1018',
+  activityBg: '#07090f',
+  sidebarBg: '#0f141f',
+  titleBarBg: '#121722',
+  tabBarBg: '#0c1018',
+  activeTabBg: '#151c2a',
+  statusBarBg: '#5B21B6',     // Deep royal purple/violet matching Target Reference Image
   statusBarText: '#ffffff',
-  lineNum: '#4e5a73',
-  activeLineBg: 'rgba(0, 132, 255, 0.12)',
-  cursor: '#38BDF8',
+  lineNum: '#4b5568',
+  activeLineBg: 'rgba(0, 163, 255, 0.14)',
+  cursor: '#00A3FF',
   border: 'rgba(255, 255, 255, 0.08)',
-  text: '#e6edf3',
-  keyword: '#ff7b72',      // import, export, default, function, return
-  hook: '#79c0ff',         // React, BrowserRouter
-  tag: '#7ee787',          // <div>, <h1>, <BrowserRouter>
-  attr: '#79c0ff',         // className
-  component: '#ffa657',    // App, BrowserRouter
-  string: '#a5d6ff',       // 'react', 'react-router-dom', "app"
-  termGreen: '#3fb950',    // Local URL
-  termCyan: '#38BDF8',     // Vite banner
-  termMuted: '#8b949e',    // helper text
+  text: '#e2e8f0',
+  keyword: '#f43f5e',         // import, export, default, function, return (vibrant rose/coral)
+  component: '#fbbf24',       // React, BrowserRouter, App (warm amber-yellow)
+  tag: '#4ade80',             // <div>, <h1> (mint green)
+  attr: '#38bdf8',            // className (sky cyan)
+  string: '#93c5fd',          // 'react', "app" (pastel sky blue)
+  white: '#ffffff',
 }
 
-export default function CodeScreenCanvas({ screenW = 1.84, screenH = 1.04 }) {
+export default function CodeScreenCanvas({ screenW = 1.72, screenH = 0.95 }) {
   const { gl } = useThree()
   const canvasRef = useRef(null)
   const textureRef = useRef(null)
@@ -116,7 +112,7 @@ function renderVSCode(ctx, cursorVisible) {
   ctx.fillStyle = C.border
   ctx.fillRect(0, 53, W, 1)
 
-  // Window traffic dots
+  // Window traffic dots (macOS style)
   const dots = ['#ff5f56', '#ffbd2e', '#27c93f']
   dots.forEach((color, i) => {
     ctx.beginPath()
@@ -126,76 +122,76 @@ function renderVSCode(ctx, cursorVisible) {
   })
 
   // Title text
-  ctx.fillStyle = '#8b949e'
+  ctx.fillStyle = '#94a3b8'
   ctx.font = '16px "Segoe UI", system-ui, sans-serif'
   ctx.textAlign = 'center'
   ctx.fillText('App.jsx — Portfolio — Visual Studio Code', W / 2, 33)
   ctx.textAlign = 'left'
 
-  // ── 2. Left Activity Bar (W = 64, H = H - 54 - 40) ──
+  // ── 2. Left Activity Bar (W = 64) ──
   const actW = 64
   ctx.fillStyle = C.activityBg
-  ctx.fillRect(0, 54, actW, H - 54 - 40)
+  ctx.fillRect(0, 54, actW, H - 54 - 42)
   ctx.fillStyle = C.border
-  ctx.fillRect(actW - 1, 54, 1, H - 54 - 40)
+  ctx.fillRect(actW - 1, 54, 1, H - 54 - 42)
 
-  // Active explorer indicator (purple line)
-  ctx.fillStyle = C.statusBarBg
+  // Active indicator (cyan accent line)
+  ctx.fillStyle = '#00A3FF'
   ctx.fillRect(0, 62, 4, 52)
 
   // Activity icons
   drawIcon(ctx, 'files', 18, 72, '#ffffff', 1.4)
-  drawIcon(ctx, 'search', 18, 140, '#8b949e', 1.4)
-  drawIcon(ctx, 'git', 18, 208, '#8b949e', 1.4)
-  drawIcon(ctx, 'debug', 18, 276, '#8b949e', 1.4)
-  drawIcon(ctx, 'extensions', 18, 344, '#8b949e', 1.4)
-  drawIcon(ctx, 'settings', 18, H - 40 - 60, '#8b949e', 1.4)
+  drawIcon(ctx, 'search', 18, 140, '#64748b', 1.4)
+  drawIcon(ctx, 'git', 18, 208, '#64748b', 1.4)
+  drawIcon(ctx, 'debug', 18, 276, '#64748b', 1.4)
+  drawIcon(ctx, 'extensions', 18, 344, '#64748b', 1.4)
+  drawIcon(ctx, 'settings', 18, H - 42 - 60, '#64748b', 1.4)
 
-  // ── 3. Sidebar: Explorer (W = 280) ──
-  const sbW = 280
+  // ── 3. Sidebar: Explorer (W = 310) ──
+  const sbW = 310
   const sbX = actW
   ctx.fillStyle = C.sidebarBg
-  ctx.fillRect(sbX, 54, sbW, H - 54 - 40)
+  ctx.fillRect(sbX, 54, sbW, H - 54 - 42)
   ctx.fillStyle = C.border
-  ctx.fillRect(sbX + sbW - 1, 54, 1, H - 54 - 40)
+  ctx.fillRect(sbX + sbW - 1, 54, 1, H - 54 - 42)
 
   // Explorer header
-  ctx.fillStyle = '#8b949e'
+  ctx.fillStyle = '#94a3b8'
   ctx.font = 'bold 15px "Segoe UI", system-ui, sans-serif'
-  ctx.fillText('EXPLORER', sbX + 22, 84)
+  ctx.fillText('EXPLORER', sbX + 22, 86)
 
-  // File tree matching Image 1
+  // File tree matching Target Reference Image
   const tree = [
-    { name: '▼ src', isDir: true },
-    { name: '  ▶ components', isDir: true },
-    { name: '  ▶ pages', isDir: true },
-    { name: '  ▶ routes', isDir: true },
-    { name: '  ▶ assets', isDir: true },
-    { name: '  ▶ styles', isDir: true },
-    { name: '    ⚛ App.jsx', active: true },
-    { name: '    ⚛ main.jsx' },
+    { name: '▼ src', isDir: true, indent: 0 },
+    { name: '▶ components', isDir: true, indent: 1 },
+    { name: '  pages', isDir: false, indent: 1 },
+    { name: '  routes', isDir: false, indent: 1 },
+    { name: '  assets', isDir: false, indent: 1 },
+    { name: '  styles', isDir: false, indent: 1 },
+    { name: '⚛ App.jsx', isDir: false, active: true, indent: 1 },
+    { name: '⚛ main.jsx', isDir: false, indent: 1 },
   ]
 
-  let treeY = 122
+  let treeY = 126
   tree.forEach((item) => {
+    const xPos = sbX + 20 + item.indent * 18
     if (item.active) {
-      ctx.fillStyle = 'rgba(0, 132, 255, 0.28)'
-      ctx.fillRect(sbX, treeY - 22, sbW, 34)
+      ctx.fillStyle = 'rgba(0, 163, 255, 0.25)'
+      ctx.fillRect(sbX, treeY - 24, sbW, 36)
       ctx.fillStyle = '#ffffff'
-      ctx.font = 'bold 17px "Segoe UI", system-ui, sans-serif'
+      ctx.font = 'bold 18px "Segoe UI", system-ui, sans-serif'
     } else {
-      ctx.fillStyle = item.isDir ? '#8b949e' : '#c9d1d9'
+      ctx.fillStyle = item.isDir ? '#94a3b8' : '#cbd5e1'
       ctx.font = '17px "Segoe UI", system-ui, sans-serif'
     }
-    ctx.fillText(item.name, sbX + 18, treeY)
-    treeY += 36
+    ctx.fillText(item.name, xPos, treeY)
+    treeY += 38
   })
 
-  // ── 4. Editor Area ──
+  // ── 4. Full-Height Code Editor Area (NO Terminal Panel matching Target Reference) ──
   const edX = sbX + sbW
   const edW = W - edX
-  const termH = 320
-  const edH = H - 54 - 40 - termH
+  const edH = H - 54 - 42 // Full height down to status bar
 
   // Tab bar
   ctx.fillStyle = C.tabBarBg
@@ -204,20 +200,23 @@ function renderVSCode(ctx, cursorVisible) {
   ctx.fillRect(edX, 105, edW, 1)
 
   // Active tab (App.jsx)
-  const tabW = 200
+  const tabW = 220
   ctx.fillStyle = C.activeTabBg
   ctx.fillRect(edX, 54, tabW, 51)
-  ctx.fillStyle = C.statusBarBg
-  ctx.fillRect(edX, 54, tabW, 3)
+  ctx.fillStyle = '#00A3FF'
+  ctx.fillRect(edX, 54, tabW, 3) // Glowing cyan top tab border
   ctx.fillStyle = '#ffffff'
-  ctx.font = 'bold 16px "Segoe UI", system-ui, sans-serif'
-  ctx.fillText('⚛ App.jsx', edX + 32, 86)
+  ctx.font = 'bold 17px "Segoe UI", system-ui, sans-serif'
+  ctx.fillText('⚛  App.jsx', edX + 32, 86)
+  ctx.fillStyle = '#94a3b8'
+  ctx.font = '15px "Segoe UI", system-ui, sans-serif'
+  ctx.fillText('✕', edX + tabW - 28, 85)
 
   // Editor background
   ctx.fillStyle = C.editorBg
   ctx.fillRect(edX, 106, edW, edH)
 
-  // Code lines matching Image 1
+  // Code lines matching Target Reference Image
   const codeLines = [
     [
       { t: 'import', c: C.keyword },
@@ -264,7 +263,7 @@ function renderVSCode(ctx, cursorVisible) {
       { t: '        <', c: C.text },
       { t: 'h1', c: C.tag },
       { t: '>', c: C.text },
-      { t: 'Welcome to My Portfolio', c: '#ffffff' },
+      { t: 'Welcome to My Portfolio', c: C.white },
       { t: '</', c: C.text },
       { t: 'h1', c: C.tag },
       { t: '>', c: C.text },
@@ -283,102 +282,65 @@ function renderVSCode(ctx, cursorVisible) {
       { t: '  );', c: C.text },
     ],
     [
-      { t: '}', c: C.text },
+      { t: '};', c: C.text },
     ],
+    [],
+    [],
+    [],
+    [],
+    [],
+    [],
   ]
 
-  const lineH = 34
-  const startY = 142
-  const lineNumW = 56
+  // Large, spacious code layout across full height
+  const lineH = 46
+  const startY = 160
+  const lineNumW = 68
+
+  // Draw 18 clean line numbers
+  for (let ln = 1; ln <= 18; ln++) {
+    const y = startY + (ln - 1) * lineH
+    ctx.fillStyle = C.lineNum
+    ctx.font = 'bold 22px "Fira Code", "Cascadia Code", Consolas, monospace'
+    ctx.textAlign = 'right'
+    ctx.fillText(String(ln), edX + lineNumW - 16, y)
+    ctx.textAlign = 'left'
+  }
 
   codeLines.forEach((tokens, i) => {
     const y = startY + i * lineH
 
-    // Line number
-    ctx.fillStyle = C.lineNum
-    ctx.font = 'bold 18px "Fira Code", "Cascadia Code", Consolas, monospace'
-    ctx.textAlign = 'right'
-    ctx.fillText(String(i + 1), edX + lineNumW - 14, y)
-    ctx.textAlign = 'left'
-
-    // Active line background for line 4
+    // Active line highlight for line 4
     if (i === 3) {
       ctx.fillStyle = C.activeLineBg
-      ctx.fillRect(edX + lineNumW, y - 22, edW - lineNumW, lineH)
+      ctx.fillRect(edX + lineNumW, y - 30, edW - lineNumW, lineH)
     }
 
     // Code tokens
-    let curX = edX + lineNumW + 16
+    let curX = edX + lineNumW + 20
     tokens.forEach((tok) => {
       ctx.fillStyle = tok.c
-      ctx.font = 'bold 19px "Fira Code", "Cascadia Code", Consolas, monospace'
+      ctx.font = 'bold 24px "Fira Code", "Cascadia Code", Consolas, monospace'
       ctx.fillText(tok.t, curX, y)
       curX += ctx.measureText(tok.t).width
     })
 
-    // Cursor on line 4
+    // Blinking cursor on line 4
     if (i === 3 && cursorVisible) {
       ctx.fillStyle = C.cursor
-      ctx.fillRect(curX + 3, y - 21, 3, 26)
+      ctx.fillRect(curX + 4, y - 28, 4, 34)
     }
   })
 
-  // ── 5. Integrated Terminal Panel (H = termH) ──
-  const termY = H - 40 - termH
-  ctx.fillStyle = C.terminalBg
-  ctx.fillRect(edX, termY, edW, termH)
-  ctx.fillStyle = C.border
-  ctx.fillRect(edX, termY, edW, 1)
-
-  // Terminal header tabs
-  ctx.fillStyle = '#8b949e'
-  ctx.font = '16px "Segoe UI", system-ui, sans-serif'
-  const termTabs = ['PROBLEMS  0', 'OUTPUT', 'DEBUG CONSOLE', 'TERMINAL']
-  let tabX = edX + 28
-  termTabs.forEach((tab) => {
-    const isAct = tab === 'TERMINAL'
-    if (isAct) {
-      ctx.fillStyle = '#ffffff'
-      ctx.font = 'bold 16px "Segoe UI", system-ui, sans-serif'
-      ctx.fillText(tab, tabX, termY + 30)
-      ctx.fillStyle = C.statusBarBg
-      ctx.fillRect(tabX, termY + 40, ctx.measureText(tab).width, 3)
-      ctx.fillStyle = '#8b949e'
-      ctx.font = '16px "Segoe UI", system-ui, sans-serif'
-    } else {
-      ctx.fillText(tab, tabX, termY + 30)
-    }
-    tabX += ctx.measureText(tab).width + 30
-  })
-
-  // Terminal output lines
-  const termLines = [
-    { text: '$ npm run dev', color: '#c9d1d9', bold: true },
-    { text: '  VITE v5.4.21  ready in 420 ms', color: C.termCyan, bold: true },
-    { text: '  ➜  Local:   http://localhost:5179/', color: C.termGreen, bold: true },
-    { text: '  ➜  Network: use --host to expose', color: C.termMuted },
-    { text: '  ➜  press h + enter to show help', color: C.termMuted },
-  ]
-
-  let tLineY = termY + 84
-  termLines.forEach((tl) => {
-    ctx.fillStyle = tl.color
-    ctx.font = tl.bold
-      ? 'bold 18px "Fira Code", "Cascadia Code", Consolas, monospace'
-      : '17px "Fira Code", "Cascadia Code", Consolas, monospace'
-    ctx.fillText(tl.text, edX + 28, tLineY)
-    tLineY += 34
-  })
-
-  // ── 6. Bottom Purple Status Bar (H = 40) ──
+  // ── 5. Bottom Deep Purple Status Bar (H = 42) matching Target Reference ──
   ctx.fillStyle = C.statusBarBg
-  ctx.fillRect(0, H - 40, W, 40)
+  ctx.fillRect(0, H - 42, W, 42)
   ctx.fillStyle = C.statusBarText
-  ctx.font = 'bold 15px "Segoe UI", system-ui, sans-serif'
-  ctx.fillText('main*  ✓ 0  ⚠ 0', 24, H - 14)
+  ctx.font = 'bold 17px "Segoe UI", system-ui, sans-serif'
+  ctx.fillText('{ }  main*   ✓ 0   ⚠ 0', 24, H - 15)
 
   ctx.textAlign = 'right'
-  ctx.fillText('UTF-8   JavaScript JSX   Prettier', W - 24, H - 14)
+  ctx.fillText('Ln 8, Col 32   Spaces: 2   UTF-8   LF   React', W - 28, H - 15)
   ctx.textAlign = 'left'
 }
 
