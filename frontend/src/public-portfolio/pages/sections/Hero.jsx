@@ -39,10 +39,10 @@ function Hero({ content }) {
       <GuillocheWaves />
 
       {/* ── Zone 0: Navbar spacer ── */}
-      <div className="h-10 sm:h-12 shrink-0" />
+      <div className="h-6 sm:h-8 shrink-0" />
 
       {/* ── Zone 1: 3D Header Banner matching Image 1 ── */}
-      <div className="w-full z-20 shrink-0 pointer-events-none pb-2 sm:pb-3">
+      <div className="w-full z-20 shrink-0 pointer-events-none pb-1 sm:pb-2">
         <HeroHeaderBanner name="Desalegn Kasaye" />
       </div>
 

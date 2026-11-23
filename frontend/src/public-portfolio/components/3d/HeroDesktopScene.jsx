@@ -72,10 +72,10 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
     return o ? o.visible !== false : fallback
   }
 
-  // Workstation scale: strictly 1.0 across all views — eliminates any self-zooming or scale jumps!
-  const workstationScale = 1.0
-  // Lowered group position (y = -0.24) to ensure comfortable gap between text banner and table content
-  const groupPos = [0, -0.24, 0]
+  // Workstation scale: 0.90 gives ~90% desk width span matching Image 2
+  const workstationScale = 0.90
+  // Group position: elevated to y = -0.15 so the entire workstation (monitor, plant, PC, legs) fits inside the canvas with clean headroom
+  const groupPos = [0, -0.15, 0]
 
   // Tabletop surface at y = 0.72 inside the group
   const deskPos = [0, 0, 0]
@@ -116,15 +116,15 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
         color="#f0f6ff"
       />
 
-      {/* ── Floor Shadow Catcher (Positioned at table leg base y = -0.24) ── */}
-      <mesh position={[0, -0.24, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+      {/* ── Floor Shadow Catcher (Positioned at table leg base y = -0.15) ── */}
+      <mesh position={[0, -0.15, 0]} rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <planeGeometry args={[10, 7]} />
         <shadowMaterial transparent opacity={darkMode ? 0.55 : 0.25} />
       </mesh>
 
-      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs at y = -0.24) ── */}
+      {/* ── Soft Ambient Contact Shadow on Floor (Grounds the table legs at y = -0.15) ── */}
       <ContactShadows
-        position={[0, -0.239, 0]}
+        position={[0, -0.149, 0]}
         opacity={darkMode ? 0.75 : 0.48}
         scale={7.5}
         blur={1.8}
@@ -218,10 +218,10 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
       {/* OrbitControls: Zoom disabled, constrained angles keep ideal close-up framing */}
       <OrbitControls
         ref={controlsRef}
-        target={[0.0, 0.52, 0.0]}
+        target={[0.0, 0.74, 0.0]}
         enableZoom={false}
         enablePan={false}
-        minPolarAngle={Math.PI / 3.2}
+        minPolarAngle={Math.PI / 3.4}
         maxPolarAngle={Math.PI / 2.05}
         minAzimuthAngle={-Math.PI / 6}
         maxAzimuthAngle={Math.PI / 6}
@@ -265,6 +265,18 @@ function FallbackScene({ darkMode }) {
   )
 }
 
+// Ensures camera position and orientation are firmly locked across HMR and viewport resizes
+function CameraSync() {
+  const { camera } = useThree()
+  useEffect(() => {
+    camera.position.set(0.0, 1.35, 2.75)
+    camera.fov = 42
+    camera.lookAt(0.0, 0.74, 0.0)
+    camera.updateProjectionMatrix()
+  }, [camera])
+  return null
+}
+
 /* ─── Main Component ─── */
 export default function HeroDesktopScene({ className = '', profileData, scene3D }) {
   const darkMode = useDarkModeScene()
@@ -306,9 +318,9 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [expanded])
 
-  // Prominent close-up framing with comfortable vertical clearance below header banner
+  // Prominent close-up framing (~14° downward angle, ~90% desk width, zero vertical clipping) matching Image 2
   const inlineCamera = useMemo(() => ({
-    position: [0.0, 0.90, 2.05],
+    position: [0.0, 1.35, 2.75],
     fov: 42,
     near: 0.1,
     far: 25,
@@ -339,6 +351,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
           frameloop="always"
           style={{ background: 'transparent' }}
         >
+          <CameraSync />
           <SceneContent
             darkMode={darkMode}
             profileData={profileData}
@@ -378,7 +391,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
               <Canvas
                 shadows
                 key={`modal-${cameraKey}`}
-                camera={{ position: [0.0, 1.10, 2.70], fov: 36, near: 0.1, far: 25 }}
+                camera={{ position: [0.0, 1.35, 2.75], fov: 42, near: 0.1, far: 25 }}
                 dpr={[1, maxDpr]}
                 gl={inlineGl}
                 style={{ background: 'transparent' }}
