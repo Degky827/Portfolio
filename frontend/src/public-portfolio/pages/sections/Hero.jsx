@@ -2,8 +2,6 @@ import { lazy, Suspense, useCallback, memo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useSiteSettings } from '../../../shared/context/SiteSettingsContext'
-import GuillocheWaves from '../../components/ui/GuillocheWaves'
-import HeroHeaderBanner from '../../components/ui/HeroHeaderBanner'
 
 const HeroDesktopScene = lazy(() =>
   import('../../components/3d/HeroDesktopScene')
@@ -32,25 +30,11 @@ function Hero({ content }) {
   return (
     <section
       id="home"
-      className="flex flex-col min-h-[100svh] min-h-screen bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative"
+      className="w-full h-screen min-h-[100svh] bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative select-none"
       aria-label="Hero section"
     >
-      {/* Background Guilloche Waves matching Image 1 & Image 3 */}
-      <GuillocheWaves />
-
-      {/* ── Zone 0: Navbar spacer (positioned near navbar without touching) ── */}
-      <div className="h-2 sm:h-3 shrink-0" />
-
-      {/* ── Zone 1: 3D Header Banner matching Target Reference ── */}
-      <div className="w-full z-20 shrink-0 pointer-events-none pb-0.5 sm:pb-1">
-        <HeroHeaderBanner name="Desalegn Kasaye" />
-      </div>
-
-      {/* ── Spacer: Generous separation moving the desktop & table workstation visibly down ── */}
-      <div className="h-6 sm:h-10 md:h-14 shrink-0" />
-
-      {/* ── Zone 2: Full-Bleed 3D Workstation Scene matching Image 1 (NO zoom in / zoom out) ── */}
-      <div className="flex-1 w-full min-h-[480px] sm:min-h-[540px] md:min-h-[600px] relative z-10 pointer-events-auto">
+      {/* ── True 3D Home Scene: 3D Workstation, 3D Extruded Title & 3D Background Curves ── */}
+      <div className="absolute inset-0 z-10 w-full h-full">
         <Suspense fallback={
           <div className="w-full h-full flex items-center justify-center">
             <div className="w-8 h-8 border-2 border-[#0084FF]/30 border-t-[#0084FF] rounded-full animate-spin" />
@@ -61,32 +45,34 @@ function Hero({ content }) {
       </div>
 
       {/* ── Zone 3: Subtle Scroll Indicator at bottom ── */}
-      <motion.div
-        {...fadeIn(1.2)}
-        onClick={scrollToAbout}
-        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') scrollToAbout() }}
-        className="hidden md:flex justify-center py-2 shrink-0 cursor-pointer group pointer-events-auto text-slate-500 dark:text-[#7a8599] z-20"
-        role="button"
-        tabIndex={0}
-        aria-label="Scroll to explore"
-      >
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-[9px] font-semibold uppercase tracking-[0.18em] group-hover:text-[#0084FF] dark:group-hover:text-[#38BDF8] transition-colors duration-200">
-            Scroll to explore
-          </span>
-          <motion.div
-            animate={{ y: [0, 4, 0] }}
-            transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-[16px] h-[24px] border-[1.5px] border-slate-300 dark:border-[#2a3454] rounded-full flex justify-center pt-1 group-hover:border-[#0084FF] dark:group-hover:border-[#38BDF8] transition-colors duration-200"
-          >
+      <div className="absolute bottom-2 left-0 right-0 z-20 flex justify-center pointer-events-none">
+        <motion.div
+          {...fadeIn(1.2)}
+          onClick={scrollToAbout}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') scrollToAbout() }}
+          className="hidden md:flex justify-center py-2 cursor-pointer group pointer-events-auto text-slate-500 dark:text-[#7a8599]"
+          role="button"
+          tabIndex={0}
+          aria-label="Scroll to explore"
+        >
+          <div className="flex flex-col items-center gap-1">
+            <span className="text-[9px] font-semibold uppercase tracking-[0.18em] group-hover:text-[#0084FF] dark:group-hover:text-[#38BDF8] transition-colors duration-200">
+              Scroll to explore
+            </span>
             <motion.div
-              animate={{ y: [0, 6, 0], opacity: [1, 0.3, 1] }}
+              animate={{ y: [0, 4, 0] }}
               transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
-              className="w-[2px] h-[5px] bg-[#0084FF] dark:bg-[#38BDF8] rounded-full"
-            />
-          </motion.div>
-        </div>
-      </motion.div>
+              className="w-[16px] h-[24px] border-[1.5px] border-slate-300 dark:border-[#2a3454] rounded-full flex justify-center pt-1 group-hover:border-[#0084FF] dark:group-hover:border-[#38BDF8] transition-colors duration-200"
+            >
+              <motion.div
+                animate={{ y: [0, 6, 0], opacity: [1, 0.3, 1] }}
+                transition={{ duration: 1.8, repeat: Infinity, ease: 'easeInOut' }}
+                className="w-[2px] h-[5px] bg-[#0084FF] dark:bg-[#38BDF8] rounded-full"
+              />
+            </motion.div>
+          </div>
+        </motion.div>
+      </div>
     </section>
   )
 }

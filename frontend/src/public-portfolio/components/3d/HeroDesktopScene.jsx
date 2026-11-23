@@ -12,6 +12,7 @@ import PC from './PC'
 import Speaker from './Speaker'
 import Plant from './Plant'
 import CoffeeMug from './CoffeeMug'
+import Hero3DHeader from './Hero3DHeader'
 
 const BLUE_PRIMARY = new THREE.Color('#0088FF')
 const BLUE_CYAN = new THREE.Color('#00C8FF')
@@ -53,7 +54,13 @@ function getS3(scene3D) {
 
 /* ─── Scene Content ─── */
 function SceneContent({ darkMode, profileData, s3, controlsRef }) {
+  const { gl } = useThree()
   const desktopGroupRef = useRef()
+
+  const homeDomElement = useMemo(() => {
+    if (typeof document === 'undefined') return undefined
+    return document.getElementById('home') || gl.domElement
+  }, [gl.domElement])
 
   const castShadows = s3.shadows !== false
   const shadowSize = s3.performance.shadowQuality === 'high' ? 2048 : s3.performance.shadowQuality === 'low' ? 512 : 1024
@@ -238,20 +245,24 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
         />
       </group>
 
-      {/* OrbitControls: Zoom disabled, aimed so workstation sits cleanly lower in frame */}
+      {/* ── True 3D Header: 3D Extruded Title & 3D Background Curves ── */}
+      <Hero3DHeader name={profileData?.name} darkMode={darkMode} />
+
+      {/* OrbitControls: Interactive rotation showing 3D sides of table, desktop & text */}
       <OrbitControls
         ref={controlsRef}
-        target={[0.0, 0.58, 0.0]}
+        target={[0.0, 0.65, 0.0]}
         enableZoom={false}
         enablePan={false}
-        minPolarAngle={Math.PI / 3.4}
-        maxPolarAngle={Math.PI / 2.05}
-        minAzimuthAngle={-Math.PI / 6}
-        maxAzimuthAngle={Math.PI / 6}
-        enableDamping
-        dampingFactor={0.05}
-        rotateSpeed={0.45}
+        enableRotate={true}
         autoRotate={false}
+        rotateSpeed={0.85}
+        enableDamping
+        dampingFactor={0.07}
+        minAzimuthAngle={-Math.PI / 2.1}
+        maxAzimuthAngle={Math.PI / 2.1}
+        minPolarAngle={Math.PI / 4.4}
+        maxPolarAngle={Math.PI / 2.02}
       />
     </>
   )
@@ -292,9 +303,9 @@ function FallbackScene({ darkMode }) {
 function CameraSync() {
   const { camera } = useThree()
   useEffect(() => {
-    camera.position.set(0.0, 1.28, 2.70)
-    camera.fov = 43
-    camera.lookAt(0.0, 0.58, 0.0)
+    camera.position.set(0.0, 1.40, 3.10)
+    camera.fov = 45
+    camera.lookAt(0.0, 0.65, 0.0)
     camera.updateProjectionMatrix()
   }, [camera])
   return null
@@ -341,10 +352,10 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
     return () => document.removeEventListener('keydown', handleKeyDown)
   }, [expanded])
 
-  // Prominent close-up framing (~14.5° downward angle, workstation lowered significantly) matching Image 2
+  // Prominent close-up framing encompassing 3D header, workstation, and background
   const inlineCamera = useMemo(() => ({
-    position: [0.0, 1.28, 2.70],
-    fov: 43,
+    position: [0.0, 1.40, 3.10],
+    fov: 45,
     near: 0.1,
     far: 25,
   }), [])
