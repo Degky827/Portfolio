@@ -2,29 +2,24 @@ import { useRef, useEffect, useCallback } from 'react'
 import { useScrollData } from '../../shared/context/ScrollContext'
 
 /**
- * Section Depth Wrapper
+ * Section Depth Wrapper with 3D Scroll Rotation
  *
- * Applies section-specific parallax and subtle rotation based on
- * the section's position in the viewport. Uses RAF for performance.
+ * Rotates sections in 3D space as you scroll through the page:
+ * - Entering sections tilt up from the back (+rotateX, -translateZ)
+ * - Centered sections stand flat and clear (0deg, 0px)
+ * - Exiting sections rotate away backwards (-rotateX, -translateZ)
  *
- * Each section gets a unique depth layer:
- * - Hero: strongest effect
- * - About: subtle tilt
- * - Skills: mostly stable
- * - Projects: moderate parallax
- * - Experience: timeline animation support
- * - Testimonials: subtle horizontal parallax
- * - Contact: calm and stable
+ * Gives a 3D cylindrical / flip-card turn between sections.
  */
 
 const DEPTH_PRESETS = {
-  hero: { parallax: 0, rotation: 0, scale: false },
-  about: { parallax: 0.04, rotation: 0.3, scale: false },
-  skills: { parallax: 0.02, rotation: 0.15, scale: false },
-  projects: { parallax: 0.05, rotation: 0.35, scale: true },
-  experience: { parallax: 0.03, rotation: 0.2, scale: false },
-  testimonials: { parallax: 0.03, rotation: 0.2, scale: false },
-  contact: { parallax: 0.01, rotation: 0.05, scale: false },
+  hero: { parallax: 0, rotation: 10, scale: true },
+  about: { parallax: 0.04, rotation: 14, scale: true },
+  skills: { parallax: 0.02, rotation: 12, scale: true },
+  projects: { parallax: 0.05, rotation: 15, scale: true },
+  experience: { parallax: 0.03, rotation: 13, scale: true },
+  testimonials: { parallax: 0.03, rotation: 12, scale: true },
+  contact: { parallax: 0.01, rotation: 8, scale: true },
 }
 
 export default function SectionDepth({ children, sectionId, className = '', style = {} }) {
@@ -32,14 +27,16 @@ export default function SectionDepth({ children, sectionId, className = '', styl
   const scrollData = useScrollData()
   const rafRef = useRef(null)
   const reducedMotion = useRef(false)
-  const stateRef = useRef({ currentRotX: 0, currentRotY: 0, currentParallax: 0 })
+  const stateRef = useRef({ currentRotX: 0, currentRotY: 0, currentZ: 0, currentParallax: 0 })
 
   const preset = DEPTH_PRESETS[sectionId] || DEPTH_PRESETS.about
 
   useEffect(() => {
     const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
     reducedMotion.current = mq.matches
-    const handler = () => { reducedMotion.current = mq.matches }
+    const handler = () => {
+      reducedMotion.current = mq.matches
+    }
     mq.addEventListener('change', handler)
     return () => mq.removeEventListener('change', handler)
   }, [])
@@ -55,40 +52,47 @@ export default function SectionDepth({ children, sectionId, className = '', styl
     const rect = el.getBoundingClientRect()
     const vh = window.innerHeight
 
-    // Section position in viewport (-1 to 1)
+    // Section position relative to viewport center (-1 to 1)
     const sectionCenter = rect.top + rect.height / 2
     const normalizedPos = (sectionCenter - vh / 2) / (vh / 2)
 
-    // Only apply effects when section is near viewport
-    if (Math.abs(normalizedPos) > 1.5) {
+    // Skip expensive math when section is far away
+    if (Math.abs(normalizedPos) > 1.8) {
       rafRef.current = requestAnimationFrame(update)
       return
     }
 
     const st = stateRef.current
 
-    // Target rotation from section position
-    const targetRotX = normalizedPos * preset.rotation
-    const targetRotY = normalizedPos * preset.rotation * 0.3
+    // 3D Rotation along X-axis (tilts back when entering from bottom or exiting at top)
+    const clampedPos = Math.max(-1.2, Math.min(1.2, normalizedPos))
+    const targetRotX = clampedPos * preset.rotation
 
-    // Velocity influence
-    const velInfluence = s.velocity * 0.08 * preset.rotation
-    const targetRotYWithVel = Math.max(-1.2, Math.min(1.2, targetRotY + velInfluence))
+    // Velocity-induced dynamic yaw tilt
+    const velInfluence = Math.max(-2.5, Math.min(2.5, s.velocity * 0.12))
+    const targetRotY = clampedPos * 1.5 + velInfluence
 
-    // Smooth interpolation
-    const sm = 0.06
+    // 3D Z recession (pulls back into space when not at viewport center)
+    const targetZ = -Math.abs(clampedPos) * 110
+
+    // Subtle parallax
+    const targetParallax = -clampedPos * preset.parallax * 35
+
+    // Smooth physics damping
+    const sm = 0.08
     st.currentRotX += (targetRotX - st.currentRotX) * sm
-    st.currentRotY += (targetRotYWithVel - st.currentRotY) * sm
-
-    // Parallax
-    const targetParallax = -normalizedPos * preset.parallax * 30
+    st.currentRotY += (targetRotY - st.currentRotY) * sm
+    st.currentZ += (targetZ - st.currentZ) * sm
     st.currentParallax += (targetParallax - st.currentParallax) * sm
 
-    // Scale effect (subtle)
-    const scale = preset.scale ? 1 + Math.abs(normalizedPos) * 0.005 : 1
+    // Dynamic transform-origin based on entrance vs exit
+    const originY = clampedPos > 0.1 ? '20%' : clampedPos < -0.1 ? '80%' : '50%'
 
-    el.style.transform = `translate3d(0, ${st.currentParallax}px, 0) perspective(1000px) rotateX(${st.currentRotX}deg) rotateY(${st.currentRotY}deg) scale(${scale})`
-    el.style.transformOrigin = 'center center'
+    // Scale down slightly when rotated away
+    const scale = 1 - Math.abs(clampedPos) * 0.04
+
+    el.style.transform = `translate3d(0, ${st.currentParallax}px, ${st.currentZ}px) perspective(1400px) rotateX(${st.currentRotX}deg) rotateY(${st.currentRotY}deg) scale(${scale})`
+    el.style.transformOrigin = `center ${originY}`
 
     rafRef.current = requestAnimationFrame(update)
   }, [scrollData, preset])
@@ -116,6 +120,7 @@ export default function SectionDepth({ children, sectionId, className = '', styl
       style={{
         willChange: 'transform',
         transformStyle: 'preserve-3d',
+        backfaceVisibility: 'hidden',
         ...style,
       }}
     >

@@ -4,6 +4,7 @@ import { useDarkMode, usePageTracking } from './shared/hooks'
 import ErrorBoundary from './shared/components/ErrorBoundary'
 import ScrollProgressBar from './public-portfolio/shared/ScrollProgressBar'
 import ScrollDrivenEffects from './public-portfolio/shared/ScrollDrivenEffects'
+import PageFlipTransition from './public-portfolio/shared/PageFlipTransition'
 import IntroSystem from './public-portfolio/intro/IntroSystem'
 import CursorSystem from './components/cursor/CursorSystem'
 import { ScrollProvider } from './shared/context/ScrollContext'
@@ -54,14 +55,17 @@ function PublicLayout() {
   const handleChatClose = useCallback(() => setChatOpen(false), [])
 
   return (
-    <div className="min-h-screen transition-colors duration-300" style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}>
+    <div
+      className="min-h-screen transition-colors duration-300 overflow-x-hidden"
+      style={{ backgroundColor: 'var(--bg-primary)', color: 'var(--text-primary)' }}
+    >
       <ScrollProgressBar />
       <Suspense fallback={null}>
         <Navbar darkMode={darkMode} onToggleDark={toggleDarkMode} />
       </Suspense>
       <ScrollDrivenEffects>
-        <main className="pt-28 sm:pt-32">
-          <Outlet />
+        <main className="pt-28 sm:pt-32 relative">
+          <PageFlipTransition />
         </main>
       </ScrollDrivenEffects>
       <Suspense fallback={null}>
