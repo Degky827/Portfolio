@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import About from './sections/About'
 import SectionDepth from '../shared/SectionDepth'
-import PageNavigationHeader from '../shared/PageNavigationHeader'
 import { getAboutContent } from '../../shared/services/aboutService'
 import { getHomeContent } from '../../shared/services/homeContentService'
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
@@ -27,8 +26,7 @@ export default function AboutPage() {
   useSocketRefresh('content:updated', fetchContent, { type: 'homepage' })
 
   return (
-    <SectionDepth sectionId="about" className="py-4 sm:py-8">
-      <PageNavigationHeader title="About" subtitle="Bio & Background" />
+    <SectionDepth sectionId="about" className="py-2 sm:py-4">
       <About
         content={homeContent?.about}
         hero={homeContent?.hero}
