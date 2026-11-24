@@ -8,13 +8,15 @@ import { getNavigation, getNavbarSettings } from '../../shared/services/navigati
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 import { resolveNavPath, isNavPathActive } from '../shared/navUtils'
 
-const FALLBACK_NAV_IDS = ['about', 'projects', 'contact']
+const FALLBACK_NAV_IDS = ['about', 'skills', 'experience', 'projects', 'contact']
 
 function buildFallbackItems() {
   return [
     { _id: 'about', title: 'About', sectionId: 'about', url: '/about', order: 0, visible: true, active: true },
-    { _id: 'projects', title: 'Work', sectionId: 'projects', url: '/projects', order: 1, visible: true, active: true },
-    { _id: 'contact', title: 'Contact', sectionId: 'contact', url: '/contact', order: 2, visible: true, active: true },
+    { _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 1, visible: true, active: true },
+    { _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 2, visible: true, active: true },
+    { _id: 'projects', title: 'Work', sectionId: 'projects', url: '/projects', order: 3, visible: true, active: true },
+    { _id: 'contact', title: 'Contact', sectionId: 'contact', url: '/contact', order: 4, visible: true, active: true },
   ]
 }
 
@@ -67,9 +69,26 @@ export default function Navbar({ darkMode, onToggleDark }) {
   // Theme is controlled by useDarkMode hook (backend is default, user toggle persists)
 
   const displayNavItems = useMemo(() => {
-    if (!navLoaded) return buildFallbackItems()
-    if (navItems && navItems.length > 0) return navItems
-    return buildFallbackItems()
+    const fallback = buildFallbackItems()
+    if (!navLoaded || !navItems || navItems.length === 0) return fallback
+
+    const hasSkills = navItems.some((i) => {
+      const k = (i.sectionId || i.title || i.url || '').toLowerCase()
+      return k.includes('skill')
+    })
+    const hasExp = navItems.some((i) => {
+      const k = (i.sectionId || i.title || i.url || '').toLowerCase()
+      return k.includes('experience')
+    })
+
+    let merged = [...navItems]
+    if (!hasSkills) {
+      merged.push({ _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 1.5, visible: true, active: true })
+    }
+    if (!hasExp) {
+      merged.push({ _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 2.5, visible: true, active: true })
+    }
+    return merged.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
   }, [navItems, navLoaded])
 
   // ── Active Section Detection ──────────────────────────────────
@@ -267,12 +286,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
   }, [darkMode])
 
   const desktopNavItems = useMemo(() => {
-    const allowed = ['about', 'work', 'projects', 'contact']
-    const filtered = displayNavItems.filter((i) => {
-      const key = (i.sectionId || i.title || '').toLowerCase()
-      return allowed.includes(key)
-    })
-    return filtered.length > 0 ? filtered : buildFallbackItems()
+    return displayNavItems.filter((i) => i.visible !== false)
   }, [displayNavItems])
 
   return (
@@ -299,18 +313,15 @@ export default function Navbar({ darkMode, onToggleDark }) {
           }} />
         </div>
 
-        {/* Desktop: Navigation links positioned on the right matching reference image */}
-        <div className="hidden md:flex items-center gap-7 lg:gap-8">
+        {/* Desktop: Navigation links + CV + Theme Mode */}
+        <div className="hidden md:flex items-center gap-5 lg:gap-7">
           <ul
             className="flex items-center"
-            style={{ gap: (settings.menuGap || 32) + 'px' }}
+            style={{ gap: Math.min(settings.menuGap || 28, 28) + 'px' }}
           >
             {desktopNavItems.map((item, idx) => {
               const targetPath = resolveNavPath(item)
-              const isActive = (location.pathname === '/' || location.pathname === '')
-                ? (item.sectionId === 'about' || item.title?.toLowerCase() === 'about')
-                : isNavPathActive(targetPath, location.pathname)
-              const isClickable = item.active !== false
+              const isActive = isNavPathActive(targetPath, location.pathname)
               const displayTitle = item.title === 'Projects' ? 'Work' : item.title
 
               return (
@@ -347,18 +358,101 @@ export default function Navbar({ darkMode, onToggleDark }) {
               )
             })}
           </ul>
+
+          {/* Desktop Actions: CV button + Theme mode toggle */}
+          <div className="flex items-center gap-3 pl-3 border-l border-slate-200/80 dark:border-white/10 ml-1">
+            {ns?.resumeEnabled !== false && (
+              <a
+                href="#/cv"
+                onClick={(e) => {
+                  e.preventDefault()
+                  navigate('/cv')
+                  if (typeof window !== 'undefined') {
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }
+                }}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                  location.pathname === '/cv'
+                    ? 'bg-[#6C2BFF] text-white shadow-sm shadow-[#6C2BFF]/30'
+                    : 'text-slate-700 dark:text-slate-200 hover:text-[#6C2BFF] dark:hover:text-[#6C2BFF] bg-slate-100 dark:bg-white/10 hover:bg-[#6C2BFF]/10'
+                }`}
+                title="View CV / Resume"
+              >
+                <FileText size={14} className={location.pathname === '/cv' ? 'text-white' : 'text-[#6C2BFF]'} />
+                <span>{ns?.resumeText || 'CV'}</span>
+              </a>
+            )}
+
+            {settings.themeEnabled && (
+              <button
+                onClick={onToggleDark}
+                className="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer border border-slate-200/80 dark:border-white/10 hover:border-[#6C2BFF]/50 relative overflow-hidden"
+                style={{ backgroundColor: controlBg, color: controlTextColor }}
+                aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+                title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+              >
+                <AnimatePresence mode="wait" initial={false}>
+                  <motion.div
+                    key={darkMode ? 'desktop-dark' : 'desktop-light'}
+                    initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                    exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                    transition={{ duration: 0.3, ease: 'easeOut' }}
+                    className="flex items-center justify-center"
+                  >
+                    {darkMode ? (
+                      <Sun size={16} className="text-amber-400" />
+                    ) : (
+                      <Moon size={16} className="text-indigo-400" />
+                    )}
+                  </motion.div>
+                </AnimatePresence>
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Mobile Controls: Theme toggle + Hamburger */}
+        {/* Mobile Controls: CV + Theme toggle + Hamburger */}
         <div className="md:hidden flex items-center gap-2">
+          {ns?.resumeEnabled !== false && (
+            <button
+              onClick={() => {
+                navigate('/cv')
+                if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
+              }}
+              className={`h-9 px-2.5 flex items-center gap-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
+                location.pathname === '/cv'
+                  ? 'bg-[#6C2BFF] text-white'
+                  : 'text-slate-700 dark:text-slate-200 hover:text-[#6C2BFF]'
+              }`}
+              style={{ backgroundColor: location.pathname === '/cv' ? '#6C2BFF' : controlBg }}
+              aria-label="View CV"
+            >
+              <FileText size={14} />
+              <span>{ns?.resumeText || 'CV'}</span>
+            </button>
+          )}
+
           {settings.themeEnabled && (
             <button
               onClick={onToggleDark}
-              className="w-9 h-9 flex items-center justify-center rounded-lg transition-colors cursor-pointer"
+              className="w-9 h-9 flex items-center justify-center rounded-lg transition-colors cursor-pointer relative overflow-hidden"
               style={{ backgroundColor: controlBg, color: controlTextColor }}
               aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
             >
-              {darkMode ? <Sun size={16} /> : <Moon size={16} />}
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={darkMode ? 'mob-dark' : 'mob-light'}
+                  initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                  animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                  exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  className="flex items-center justify-center"
+                >
+                  {darkMode ? <Sun size={16} className="text-amber-400" /> : <Moon size={16} className="text-indigo-400" />}
+                </motion.div>
+              </AnimatePresence>
             </button>
           )}
           <button
@@ -467,15 +561,30 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 </a>
                 )}
 
-                <div className="mt-auto pt-8">
-                  <div className="flex justify-center">
+                <div className="mt-auto pt-6 border-t border-slate-200/60 dark:border-white/10">
+                  <div className="flex items-center justify-between px-1">
+                    <span className="text-sm font-medium text-slate-600 dark:text-slate-400">
+                      {darkMode ? 'Dark Theme' : 'Light Theme'}
+                    </span>
                     <button
                       onClick={onToggleDark}
-                      className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-[#6C2BFF] hover:text-white transition-all cursor-pointer"
+                      className="w-10 h-10 rounded-xl flex items-center justify-center hover:bg-[#6C2BFF] hover:text-white transition-all cursor-pointer border border-slate-200/80 dark:border-white/10 relative overflow-hidden"
                       style={{ backgroundColor: controlBg, color: controlTextColor }}
                       aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+                      title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
                     >
-                      {darkMode ? <Sun size={18} /> : <Moon size={18} />}
+                      <AnimatePresence mode="wait" initial={false}>
+                        <motion.div
+                          key={darkMode ? 'drawer-dark' : 'drawer-light'}
+                          initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                          animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                          exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                          transition={{ duration: 0.3, ease: 'easeOut' }}
+                          className="flex items-center justify-center"
+                        >
+                          {darkMode ? <Sun size={18} className="text-amber-400" /> : <Moon size={18} className="text-indigo-400" />}
+                        </motion.div>
+                      </AnimatePresence>
                     </button>
                   </div>
                 </div>

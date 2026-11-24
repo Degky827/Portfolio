@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { usePublicSocket } from '../context/PublicSocketContext'
+import { triggerThemeWave } from '../utils/themeWave'
 
 export function useDarkMode() {
   const { on } = usePublicSocket()
@@ -49,13 +50,18 @@ export function useDarkMode() {
     document.documentElement.classList.toggle('dark', darkMode)
   }, [darkMode])
 
-  const toggleDarkMode = useCallback(() => {
-    setDarkMode((prev) => {
-      const next = !prev
-      localStorage.setItem('darkModeUserChoice', JSON.stringify(next))
-      return next
+  const toggleDarkMode = useCallback((event) => {
+    const next = !darkMode
+    triggerThemeWave({
+      event,
+      nextDarkMode: next,
+      onApply: (val) => {
+        setDarkMode(val)
+        localStorage.setItem('darkModeUserChoice', JSON.stringify(val))
+        document.documentElement.classList.toggle('dark', val)
+      },
     })
-  }, [])
+  }, [darkMode])
 
   const resetDarkMode = useCallback(() => {
     localStorage.removeItem('darkModeUserChoice')
