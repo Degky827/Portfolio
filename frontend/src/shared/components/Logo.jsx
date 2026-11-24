@@ -1,16 +1,12 @@
 import { motion } from 'framer-motion'
-import { getMediaUrl } from '../services/api'
-import { sanitizeSvg } from '../utils/sanitize'
 
 export default function Logo({ settings, showText = true, linkTo = '#home', onNavClick, className = '' }) {
-  const logoImage = settings?.logoImage || ''
-  const logoSvg = settings?.logoSvg || ''
   const logoText = settings?.logoText || ''
   const brandName = settings?.brandName || 'DESALEGN'
   const logoEnabled = settings?.logoEnabled !== false
   const logoWidth = settings?.logoWidth || 40
   const logoHeight = settings?.logoHeight || 40
-  const logoBorderRadius = settings?.logoBorderRadius ?? 8
+  const logoBorderRadius = settings?.logoBorderRadius ?? 10
   const logoBgColor = settings?.logoBgColor || 'transparent'
   const logoPosition = settings?.logoPosition || 'left'
 
@@ -35,19 +31,10 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
         className="overflow-hidden flex items-center justify-center transition-all duration-200"
         style={iconStyle}
       >
-        {logoSvg ? (
-          <div className="w-full h-full flex items-center justify-center" dangerouslySetInnerHTML={{ __html: sanitizeSvg(logoSvg) }} />
-        ) : logoImage ? (
-          <img
-            src={getMediaUrl(logoImage)}
-            alt={logoText || brandName}
-            className="w-full h-full object-contain p-0.5"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center rounded-xl bg-[#6C2BFF] text-white font-mono font-bold text-xs sm:text-sm tracking-tight shadow-sm shadow-[#6C2BFF]/30 select-none">
-            &#123;N&#125;
-          </div>
-        )}
+        {/* Portfolio Logo: </> Code Icon (Electric Cyan to Blue) */}
+        <div className="w-full h-full flex items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 text-white font-mono font-black text-xs sm:text-sm tracking-tight shadow-md shadow-cyan-500/35 border border-cyan-400/40 select-none hover:scale-105 transition-transform">
+          &lt;/&gt;
+        </div>
       </div>
       {showText && (
         <span
