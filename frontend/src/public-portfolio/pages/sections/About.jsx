@@ -128,10 +128,10 @@ export default function About({ content, hero, aboutContent }) {
         <GlobalAtmosphere />
       </div>
 
-      {/* Subtle background glow orbs (Cyan & Blue tones) */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-cyan-500/10 dark:bg-cyan-950/20 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-blue-500/10 dark:bg-blue-950/15 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-teal-500/10 dark:bg-teal-950/15 rounded-full blur-[100px] pointer-events-none" />
+      {/* Subtle background glow orbs (Charcoal & Slate tones) */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-slate-700/15 dark:bg-slate-800/25 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="relative z-10 container mx-auto px-4 sm:px-6 max-w-7xl">
         {/* ── Section Header (3D Title & Subtitle) ── */}
@@ -152,32 +152,32 @@ export default function About({ content, hero, aboutContent }) {
             {subtitle}
           </p>
 
-          {/* Decorative Diamond Accent Line: <> ◇ <> */}
+          {/* Decorative Diamond Accent Line: <> ◇ <> (Charcoal) */}
           <div className="flex items-center justify-center gap-3 mt-5">
-            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
-            <div className="w-2.5 h-2.5 rotate-45 border-2 border-cyan-500 shadow-[0_0_12px_#06B6D4]" />
-            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-cyan-500/50 to-transparent" />
+            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] to-transparent" />
+            <div className="w-2.5 h-2.5 rotate-45 border-2 border-[#36454F] dark:border-slate-400 shadow-[0_0_12px_rgba(54,69,79,0.6)]" />
+            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] to-transparent" />
           </div>
         </motion.div>
 
         {/* ── DESKTOP PANORAMIC STAGE (Screen width >= 1024px) ── */}
         <div className="hidden lg:block relative w-full mb-16">
-          {/* Glowing Energy Tracer Arcs (SVG) in Electric Cyan / Blue */}
+          {/* Glowing Energy Tracer Arcs (SVG) in Smoked Charcoal / Graphite */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none z-0"
             viewBox="0 0 1200 520"
             preserveAspectRatio="none"
           >
             <defs>
-              <linearGradient id="neonTracerL" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stopColor="#06B6D4" stopOpacity="0.9" />
-                <stop offset="50%" stopColor="#0284C7" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#2563EB" stopOpacity="0.9" />
+              <linearGradient id="charcoalTracerL" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#4A5568" stopOpacity="0.85" />
+                <stop offset="50%" stopColor="#36454F" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#1E252B" stopOpacity="0.85" />
               </linearGradient>
-              <linearGradient id="neonTracerR" x1="100%" y1="0%" x2="0%" y2="100%">
-                <stop offset="0%" stopColor="#2563EB" stopOpacity="0.9" />
-                <stop offset="50%" stopColor="#0284C7" stopOpacity="0.4" />
-                <stop offset="100%" stopColor="#06B6D4" stopOpacity="0.9" />
+              <linearGradient id="charcoalTracerR" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#1E252B" stopOpacity="0.85" />
+                <stop offset="50%" stopColor="#36454F" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#4A5568" stopOpacity="0.85" />
               </linearGradient>
               <filter id="tracerGlow" x="-20%" y="-20%" width="140%" height="140%">
                 <feGaussianBlur stdDeviation="3" result="blur" />
@@ -189,7 +189,7 @@ export default function About({ content, hero, aboutContent }) {
             <motion.path
               d="M 360 140 C 440 140, 480 210, 520 240"
               fill="none"
-              stroke="url(#neonTracerL)"
+              stroke="url(#charcoalTracerL)"
               strokeWidth="2.5"
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
@@ -202,7 +202,7 @@ export default function About({ content, hero, aboutContent }) {
             <motion.path
               d="M 360 380 C 440 380, 480 430, 520 430"
               fill="none"
-              stroke="url(#neonTracerL)"
+              stroke="url(#charcoalTracerL)"
               strokeWidth="2.5"
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
@@ -215,7 +215,7 @@ export default function About({ content, hero, aboutContent }) {
             <motion.path
               d="M 840 140 C 760 140, 720 210, 680 240"
               fill="none"
-              stroke="url(#neonTracerR)"
+              stroke="url(#charcoalTracerR)"
               strokeWidth="2.5"
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
@@ -228,7 +228,7 @@ export default function About({ content, hero, aboutContent }) {
             <motion.path
               d="M 840 380 C 760 380, 720 430, 680 430"
               fill="none"
-              stroke="url(#neonTracerR)"
+              stroke="url(#charcoalTracerR)"
               strokeWidth="2.5"
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
@@ -290,7 +290,7 @@ export default function About({ content, hero, aboutContent }) {
         {/* ── TABLET & MOBILE RESPONSIVE LAYOUT (Screen width < 1024px) ── */}
         <div className="lg:hidden space-y-8 mb-16">
           {/* Centerpiece Hero (Appears first with shockwave) */}
-          <div className="p-3 rounded-2xl bg-slate-900/10 dark:bg-cyan-950/20 border border-slate-200 dark:border-cyan-500/30 backdrop-blur-sm shadow-xl">
+          <div className="p-3 rounded-2xl bg-slate-900/10 dark:bg-slate-900/40 border border-slate-200 dark:border-slate-700 backdrop-blur-sm shadow-xl">
             <AboutCenterpiece isInView={isInView} />
           </div>
 
@@ -320,7 +320,7 @@ export default function About({ content, hero, aboutContent }) {
         {/* ── Certifications & Achievements Showcase ── */}
         <div className="mt-16 sm:mt-20">
           <div className="text-center mb-8">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-cyan-600 dark:text-cyan-400 mb-1">
+            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#36454F] dark:text-slate-400 mb-1">
               // Verified Credentials
             </h3>
             <h4 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">

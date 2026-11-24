@@ -31,8 +31,8 @@ export default function Logo({ settings, showText = true, linkTo = '#home', onNa
         className="overflow-hidden flex items-center justify-center transition-all duration-200"
         style={iconStyle}
       >
-        {/* Portfolio Logo: </> Code Icon (Electric Cyan to Blue) */}
-        <div className="w-full h-full flex items-center justify-center rounded-xl bg-gradient-to-br from-cyan-500 via-blue-600 to-indigo-600 text-white font-mono font-black text-xs sm:text-sm tracking-tight shadow-md shadow-cyan-500/35 border border-cyan-400/40 select-none hover:scale-105 transition-transform">
+        {/* Portfolio Logo: </> Code Icon (Charcoal / Smoked Graphite) */}
+        <div className="w-full h-full flex items-center justify-center rounded-xl bg-gradient-to-br from-[#36454F] via-[#2C3539] to-[#1E252B] text-white font-mono font-black text-xs sm:text-sm tracking-tight shadow-md shadow-black/40 border border-[#4A5568] select-none hover:scale-105 transition-transform">
           &lt;/&gt;
         </div>
       </div>

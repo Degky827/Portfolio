@@ -29,7 +29,7 @@ function AboutPillarModal({ pillar, isOpen, onClose }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={onClose}
-            className="fixed inset-0 bg-slate-950/70 backdrop-blur-md"
+            className="fixed inset-0 bg-slate-950/75 backdrop-blur-md"
           />
 
           {/* Modal Dialog */}
@@ -38,19 +38,19 @@ function AboutPillarModal({ pillar, isOpen, onClose }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-lg bg-white dark:bg-[#111728] border border-slate-200 dark:border-cyan-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 overflow-hidden"
+            className="relative w-full max-w-lg bg-white dark:bg-[#111728] border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 overflow-hidden"
           >
-            {/* Top decorative gradient glow */}
-            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-cyan-500 via-blue-600 to-teal-400" />
+            {/* Top decorative gradient glow (Charcoal) */}
+            <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#4A5568] via-[#36454F] to-[#1E252B]" />
 
             {/* Header */}
             <div className="flex items-start justify-between gap-4 mb-5">
               <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-cyan-500/15 to-blue-600/25 border border-cyan-400/30 flex items-center justify-center text-cyan-600 dark:text-cyan-300 shadow-sm">
+                <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#36454F] via-[#283238] to-[#1E252B] border border-[#4A5568] flex items-center justify-center text-slate-100 shadow-sm">
                   {Icon && <Icon size={24} />}
                 </div>
                 <div>
-                  <span className="text-xs font-black uppercase tracking-wider text-cyan-600 dark:text-cyan-400">
+                  <span className="text-xs font-black uppercase tracking-wider text-[#36454F] dark:text-slate-400">
                     // Pillar {number}
                   </span>
                   <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -82,7 +82,7 @@ function AboutPillarModal({ pillar, isOpen, onClose }) {
                 </h4>
                 {details.map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                    <CheckCircle2 size={16} className="text-cyan-500 shrink-0 mt-0.5" />
+                    <CheckCircle2 size={16} className="text-[#36454F] dark:text-slate-400 shrink-0 mt-0.5" />
                     <span>{item}</span>
                   </div>
                 ))}
@@ -107,7 +107,7 @@ function AboutPillarModal({ pillar, isOpen, onClose }) {
                     navigate(targetUrl)
                     if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
                   }}
-                  className="px-5 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-600 hover:to-blue-700 text-white flex items-center gap-2 transition-all shadow-md shadow-cyan-500/25 hover:scale-105 active:scale-95 cursor-pointer"
+                  className="px-5 py-2.5 rounded-xl text-sm font-bold bg-gradient-to-r from-[#36454F] via-[#2C3539] to-[#1E252B] hover:from-[#435460] hover:to-[#36454F] text-white flex items-center gap-2 transition-all shadow-md shadow-black/35 hover:scale-105 active:scale-95 cursor-pointer border border-[#4A5568]"
                 >
                   <span>{targetLabel || 'Explore More'}</span>
                   <ArrowRight size={15} />
