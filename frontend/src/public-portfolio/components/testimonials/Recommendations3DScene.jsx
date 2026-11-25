@@ -218,7 +218,7 @@ export default function Recommendations3DScene({
             >
               {/* ── Face 0: Front (Emily Rodriguez) ── */}
               <div
-                className="absolute inset-0 p-5 sm:p-6 rounded-[26px] flex flex-col justify-between border-2 border-purple-300/80 shadow-[0_0_35px_rgba(168,85,247,0.3),inset_0_0_25px_rgba(255,255,255,0.9)] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-purple-50/90 to-white/90 text-slate-900"
+                className="absolute inset-0 p-5 sm:p-6 rounded-[26px] flex flex-col justify-between border-2 border-[#36454F]/85 dark:border-slate-500/85 shadow-[0_0_35px_rgba(54,69,79,0.35),inset_0_0_25px_rgba(255,255,255,0.9)] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-purple-50/90 to-white/90 text-slate-900"
                 style={{
                   transform: `translateZ(${halfSize}px)`,
                   backfaceVisibility: 'hidden',
@@ -257,7 +257,7 @@ export default function Recommendations3DScene({
 
               {/* ── Face 1: Right (Daniel Tesfaye) ── */}
               <div
-                className="absolute inset-0 p-5 sm:p-6 rounded-[26px] flex flex-col justify-between border-2 border-purple-300/80 shadow-[0_0_35px_rgba(168,85,247,0.3),inset_0_0_25px_rgba(255,255,255,0.9)] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-purple-50/90 to-white/90 text-slate-900"
+                className="absolute inset-0 p-5 sm:p-6 rounded-[26px] flex flex-col justify-between border-2 border-[#36454F]/85 dark:border-slate-500/85 shadow-[0_0_35px_rgba(54,69,79,0.35),inset_0_0_25px_rgba(255,255,255,0.9)] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-purple-50/90 to-white/90 text-slate-900"
                 style={{
                   transform: `rotateY(90deg) translateZ(${halfSize}px)`,
                   backfaceVisibility: 'hidden',
@@ -296,7 +296,7 @@ export default function Recommendations3DScene({
 
               {/* ── Face 2: Back (Abebe Kebede) ── */}
               <div
-                className="absolute inset-0 p-5 sm:p-6 rounded-[26px] flex flex-col justify-between border-2 border-purple-300/80 shadow-[0_0_35px_rgba(168,85,247,0.3),inset_0_0_25px_rgba(255,255,255,0.9)] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-purple-50/90 to-white/90 text-slate-900"
+                className="absolute inset-0 p-5 sm:p-6 rounded-[26px] flex flex-col justify-between border-2 border-[#36454F]/85 dark:border-slate-500/85 shadow-[0_0_35px_rgba(54,69,79,0.35),inset_0_0_25px_rgba(255,255,255,0.9)] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-purple-50/90 to-white/90 text-slate-900"
                 style={{
                   transform: `rotateY(180deg) translateZ(${halfSize}px)`,
                   backfaceVisibility: 'hidden',
@@ -335,7 +335,7 @@ export default function Recommendations3DScene({
 
               {/* ── Face 3: Left (Sara Mohammed) ── */}
               <div
-                className="absolute inset-0 p-5 sm:p-6 rounded-[26px] flex flex-col justify-between border-2 border-purple-300/80 shadow-[0_0_35px_rgba(168,85,247,0.3),inset_0_0_25px_rgba(255,255,255,0.9)] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-purple-50/90 to-white/90 text-slate-900"
+                className="absolute inset-0 p-5 sm:p-6 rounded-[26px] flex flex-col justify-between border-2 border-[#36454F]/85 dark:border-slate-500/85 shadow-[0_0_35px_rgba(54,69,79,0.35),inset_0_0_25px_rgba(255,255,255,0.9)] backdrop-blur-2xl bg-gradient-to-br from-white/95 via-purple-50/90 to-white/90 text-slate-900"
                 style={{
                   transform: `rotateY(270deg) translateZ(${halfSize}px)`,
                   backfaceVisibility: 'hidden',
@@ -372,24 +372,24 @@ export default function Recommendations3DScene({
                 </div>
               </div>
 
-              {/* ── Top Face: Frosted Lavender Glass with Quotation Mark ── */}
+              {/* ── Top Face: Frosted Smoked Glass with Charcoal Black Edges ── */}
               <div
-                className="absolute inset-0 rounded-[26px] flex items-center justify-center border-2 border-purple-300/80 bg-gradient-to-br from-white/90 via-purple-100/70 to-white/85 backdrop-blur-xl shadow-[inset_0_0_30px_rgba(168,85,247,0.3)]"
+                className="absolute inset-0 rounded-[26px] flex items-center justify-center border-2 border-[#36454F]/85 dark:border-slate-500/85 bg-gradient-to-br from-white/90 via-slate-100/70 to-white/85 backdrop-blur-xl shadow-[inset_0_0_30px_rgba(54,69,79,0.3)]"
                 style={{
                   transform: `rotateX(90deg) translateZ(${halfSize}px)`,
                   backfaceVisibility: 'hidden',
                 }}
               >
-                <div className="w-14 h-14 rounded-full bg-purple-500/15 flex items-center justify-center border border-purple-300/50 shadow-inner">
-                  <span className="text-purple-600 font-serif text-3xl font-black">
+                <div className="w-14 h-14 rounded-full bg-slate-800/10 flex items-center justify-center border border-slate-400/50 shadow-inner">
+                  <span className="text-slate-800 dark:text-slate-200 font-serif text-3xl font-black">
                     &ldquo;&ldquo;
                   </span>
                 </div>
               </div>
 
-              {/* ── Bottom Face: Purple Underglow Plate ── */}
+              {/* ── Bottom Face: Charcoal Black Underglow Plate ── */}
               <div
-                className="absolute inset-0 rounded-[26px] bg-purple-600/40 blur-md"
+                className="absolute inset-0 rounded-[26px] bg-[#1E252B]/40 blur-md"
                 style={{
                   transform: `rotateX(-90deg) translateZ(${halfSize}px)`,
                 }}
@@ -397,7 +397,7 @@ export default function Recommendations3DScene({
             </div>
           </div>
 
-          {/* ── Glowing Purple Orbital Ring Beneath the Cube Base ── */}
+          {/* ── Charcoal Black Orbital Ring Beneath the Cube Base ── */}
           <div
             className="relative z-10 w-[270px] h-[48px] sm:w-[310px] sm:h-[56px] -mt-5 pointer-events-none"
             style={{
@@ -405,11 +405,11 @@ export default function Recommendations3DScene({
               transition: isDragging ? 'none' : 'transform 0.08s linear',
             }}
           >
-            {/* Primary Neon Purple Ring */}
-            <div className="w-full h-full rounded-[100%] border-[2px] border-purple-400 shadow-[0_0_24px_#a855f7,inset_0_0_12px_#c084fc] bg-gradient-to-r from-purple-500/15 via-white/35 to-purple-500/15 blur-[0.3px] animate-pulse" />
+            {/* Primary Charcoal Black Ring */}
+            <div className="w-full h-full rounded-[100%] border-[2px] border-[#36454F] shadow-[0_0_24px_rgba(54,69,79,0.5),inset_0_0_12px_rgba(74,85,104,0.4)] bg-gradient-to-r from-slate-700/20 via-white/40 to-slate-700/20 blur-[0.3px] animate-pulse" />
             
             {/* Outer Subtle Orbital Ring */}
-            <div className="absolute -inset-2.5 rounded-[100%] border border-purple-300/40 shadow-[0_0_15px_rgba(168,85,247,0.25)] pointer-events-none" />
+            <div className="absolute -inset-2.5 rounded-[100%] border border-slate-400/40 shadow-[0_0_15px_rgba(54,69,79,0.3)] pointer-events-none" />
           </div>
 
           {/* ── Realistic Human Hand (Palm-Up from Image, Navy Suit Sleeve, 5 Fingers) Supporting the Cube ── */}
@@ -423,7 +423,7 @@ export default function Recommendations3DScene({
             <img
               src="/recommendations-hand-front.png"
               alt="Realistic human hand supporting the 3D rotating cube with its fingertips"
-              className="w-full h-auto object-contain filter drop-shadow-[0_15px_30px_rgba(124,58,237,0.22)]"
+              className="w-full h-auto object-contain filter drop-shadow-[0_15px_30px_rgba(30,37,43,0.3)]"
             />
           </div>
 
@@ -431,7 +431,7 @@ export default function Recommendations3DScene({
           <AnimatePresence>
             {isPopoverOpen && (
               <div
-                className="absolute inset-0 z-40 flex items-center justify-center p-3 sm:p-4 bg-purple-950/25 backdrop-blur-[3px] rounded-3xl"
+                className="absolute inset-0 z-40 flex items-center justify-center p-3 sm:p-4 bg-slate-950/25 backdrop-blur-[3px] rounded-3xl"
                 onClick={() => setIsPopoverOpen(false)}
               >
                 <motion.div
@@ -440,7 +440,7 @@ export default function Recommendations3DScene({
                   exit={{ opacity: 0, scale: 0.85, y: 8 }}
                   transition={{ type: 'spring', damping: 25, stiffness: 320 }}
                   onClick={(e) => e.stopPropagation()}
-                  className="relative w-full max-w-[340px] sm:max-w-[380px] p-6 rounded-[28px] bg-white/95 backdrop-blur-2xl border-2 border-purple-400 shadow-[0_22px_55px_rgba(168,85,247,0.4),0_0_30px_rgba(168,85,247,0.25)] text-slate-900"
+                  className="relative w-full max-w-[340px] sm:max-w-[380px] p-6 rounded-[28px] bg-white/95 backdrop-blur-2xl border-2 border-[#36454F] shadow-[0_22px_55px_rgba(54,69,79,0.35),0_0_30px_rgba(54,69,79,0.2)] text-slate-900"
                 >
                   {/* Close button */}
                   <button

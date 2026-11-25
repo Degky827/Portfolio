@@ -184,34 +184,22 @@ export default function Testimonials() {
           transition={{ duration: shouldReduceMotion ? 0.1 : 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-center mb-8 sm:mb-12"
         >
-          {/* Headline: What People Say in 3D */}
-          <div className="perspective-[800px] my-3">
-            <h2
-              className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight select-none inline-block transition-transform duration-300 hover:scale-[1.02]"
-              style={{
-                color: '#1e1b4b',
-                textShadow: `
-                  0 1px 0 #c4b5fd,
-                  0 2px 0 #a78bfa,
-                  0 3px 0 #8b5cf6,
-                  0 4px 0 #7c3aed,
-                  0 5px 0 #6d28d9,
-                  0 6px 1px rgba(0, 0, 0, 0.12),
-                  0 8px 14px rgba(79, 70, 229, 0.32),
-                  0 14px 28px rgba(109, 40, 217, 0.22)
-                `,
-                letterSpacing: '-0.025em',
-                transform: 'rotateX(8deg)',
-              }}
-            >
-              What People Say
-            </h2>
-          </div>
+          {/* 3D Extruded Title: WHAT PEOPLE SAY matching About page */}
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
+            WHAT PEOPLE SAY
+          </h2>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4 font-normal">
             Real experiences from people I&apos;ve worked with.
           </p>
+
+          {/* Decorative Diamond Accent Line: <> ◇ <> matching About page */}
+          <div className="flex items-center justify-center gap-3 mt-5">
+            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+            <div className="w-2.5 h-2.5 rotate-45 border-2 border-[#36454F] dark:border-slate-300 shadow-[0_0_12px_rgba(54,69,79,0.6)] dark:shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
+            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+          </div>
         </motion.div>
 
         {/* ── Content Area: 3D Hologram Rotating Cube ── */}
