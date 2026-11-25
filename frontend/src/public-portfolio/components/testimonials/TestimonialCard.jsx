@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect, useMemo } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
-import { BadgeCheck, ChevronDown, ExternalLink, Briefcase, CalendarDays } from 'lucide-react'
+import { BadgeCheck, ChevronDown, ExternalLink, Briefcase, CalendarDays, Star } from 'lucide-react'
 import { FaLinkedin } from 'react-icons/fa'
 import { getMediaUrl } from '../../../shared/services/api'
 
@@ -13,17 +13,17 @@ const cardVariants = {
       type: 'spring',
       stiffness: 90,
       damping: 18,
-      delay: i * 0.1,
+      delay: i * 0.08,
     },
   }),
 }
 
 const RELATIONSHIP_STYLES = {
-  Supervisor: 'bg-[#0f172a] text-white border-[#0f172a] dark:bg-[#70b5f9] dark:text-[#0f172a] dark:border-[#70b5f9]',
-  'Direct Supervisor': 'bg-[#0f172a] text-white border-[#0f172a] dark:bg-[#70b5f9] dark:text-[#0f172a] dark:border-[#70b5f9]',
-  'Team Lead': 'bg-[#1e293b]/8 text-[#1e293b] border-[#1e293b]/15 dark:bg-slate-700/50 dark:text-slate-200 dark:border-slate-600',
-  Mentor: 'bg-[#1e293b]/8 text-[#1e293b] border-[#1e293b]/15 dark:bg-slate-700/50 dark:text-slate-200 dark:border-slate-600',
-  Client: 'bg-[#0a66c2]/8 text-[#0a66c2] border-[#0a66c2]/20 dark:bg-[#70b5f9]/10 dark:text-[#70b5f9] dark:border-[#70b5f9]/25',
+  Supervisor: 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800',
+  'Direct Supervisor': 'bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-950/60 dark:text-purple-300 dark:border-purple-800',
+  'Team Lead': 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800',
+  Mentor: 'bg-indigo-50 text-indigo-700 border-indigo-200 dark:bg-indigo-950/50 dark:text-indigo-300 dark:border-indigo-800',
+  Client: 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800/60',
   Colleague: 'bg-slate-100 text-slate-700 border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700',
 }
 
@@ -59,7 +59,7 @@ function highlightContent(text, highlights) {
     lower.has(part.toLowerCase()) ? (
       <mark
         key={i}
-        className="bg-transparent font-semibold text-[#0f172a] dark:text-white"
+        className="bg-purple-100/80 dark:bg-purple-900/40 text-purple-900 dark:text-purple-200 font-semibold px-1 rounded"
       >
         {part}
       </mark>
@@ -95,6 +95,7 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
     verified,
     featured,
     publishedAt,
+    rating = 5,
   } = testimonial
 
   const avatarUrl = avatar ? getMediaUrl(avatar) : null
@@ -123,14 +124,14 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
       whileInView="visible"
       viewport={{ once: true, margin: '-40px' }}
       whileHover={reduceMotion ? {} : { y: -6, transition: { duration: 0.25, ease: 'easeOut' } }}
-      className="group relative flex flex-col w-full h-full bg-white dark:bg-[#111827] border border-slate-200/80 dark:border-[#1e293b] shadow-[0_1px_2px_rgba(15,23,42,0.04),0_4px_16px_-4px_rgba(15,23,42,0.06)] dark:shadow-[0_1px_3px_rgba(0,0,0,0.4)] hover:shadow-[0_2px_4px_rgba(15,23,42,0.04),0_16px_40px_-8px_rgba(15,23,42,0.14)] dark:hover:shadow-[0_16px_40px_-8px_rgba(0,0,0,0.6)] transition-shadow duration-300 ease-out rounded-[20px]"
+      className="group relative flex flex-col w-full h-full bg-white/90 dark:bg-slate-900/90 backdrop-blur-md border border-slate-200/80 dark:border-purple-900/30 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)] dark:shadow-[0_4px_20px_-4px_rgba(0,0,0,0.5)] hover:border-purple-400/60 dark:hover:border-purple-500/50 hover:shadow-[0_15px_35px_-5px_rgba(147,51,234,0.18)] dark:hover:shadow-[0_15px_35px_-5px_rgba(147,51,234,0.25)] transition-all duration-300 ease-out rounded-2xl"
       aria-label={`Recommendation from ${name}`}
     >
       <div className="flex flex-col flex-1 p-6">
         {/* Header */}
-        <header className="flex items-start gap-4 mb-5">
+        <header className="flex items-start gap-4 mb-4">
           <div className="relative shrink-0">
-            <div className="w-[80px] h-[80px] rounded-full overflow-hidden ring-2 ring-slate-100 dark:ring-slate-800 group-hover:ring-[#0f172a]/15 dark:group-hover:ring-[#70b5f9]/30 transition-all duration-300 bg-slate-100 dark:bg-slate-800">
+            <div className="w-14 h-14 rounded-full overflow-hidden ring-2 ring-purple-200 dark:ring-purple-800/60 group-hover:ring-purple-500 transition-all duration-300 bg-purple-50 dark:bg-purple-950/40">
               {avatarUrl && !imgFailed ? (
                 <img
                   src={avatarUrl}
@@ -141,7 +142,7 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
-                  <div className="text-xl font-bold text-slate-500 dark:text-slate-400">
+                  <div className="text-base font-bold text-purple-600 dark:text-purple-300">
                     {avatarFallback || initials}
                   </div>
                 </div>
@@ -149,13 +150,13 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
             </div>
             {logoUrl && !logoFailed && (
               <div
-                className="absolute -bottom-1 -right-1 w-7 h-7 rounded-full bg-white dark:bg-[#111827] ring-2 ring-white dark:ring-[#111827] shadow-sm flex items-center justify-center overflow-hidden"
+                className="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-white dark:bg-slate-900 ring-2 ring-white dark:ring-slate-900 shadow-sm flex items-center justify-center overflow-hidden"
                 title={organization}
               >
                 <img
                   src={logoUrl}
                   alt={`${organization} logo`}
-                  className="w-5 h-5 object-contain"
+                  className="w-4 h-4 object-contain"
                   loading="lazy"
                   onError={() => setLogoFailed(true)}
                 />
@@ -166,20 +167,20 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
           <div className="flex-1 min-w-0">
             <div className="flex items-start justify-between gap-2">
               <div className="min-w-0">
-                <h3 className="text-[16px] font-bold text-[#0f172a] dark:text-white leading-tight truncate">
+                <h3 className="text-[16px] font-bold text-slate-900 dark:text-white leading-tight truncate">
                   {name}
                 </h3>
-                <div className="text-[13px] font-medium text-[#1e293b] dark:text-slate-300 mt-1 leading-snug">
+                <div className="text-[13px] font-medium text-slate-600 dark:text-slate-300 mt-0.5 leading-snug">
                   {role}
                 </div>
                 {organization && (
-                  <div className="text-[13px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug truncate">
+                  <div className="text-[12px] text-slate-500 dark:text-slate-400 mt-0.5 leading-snug truncate">
                     {organizationUrl ? (
                       <a
                         href={organizationUrl}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="hover:text-[#0a66c2] dark:hover:text-[#70b5f9] hover:underline transition-colors"
+                        className="hover:text-purple-600 dark:hover:text-purple-400 hover:underline transition-colors"
                       >
                         {organization}
                       </a>
@@ -195,7 +196,7 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
                   href={linkedinUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-[#0a66c2] dark:text-[#70b5f9] bg-[#0a66c2]/6 dark:bg-[#70b5f9]/10 hover:bg-[#0a66c2] hover:text-white dark:hover:bg-[#70b5f9] dark:hover:text-[#0f172a] transition-colors"
+                  className="shrink-0 w-8 h-8 rounded-lg flex items-center justify-center text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/60 hover:bg-purple-600 hover:text-white dark:hover:bg-purple-500 dark:hover:text-white transition-colors"
                   aria-label={`${name}'s LinkedIn profile`}
                 >
                   <FaLinkedin size={16} />
@@ -203,19 +204,19 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
               )}
             </div>
 
-            {isVerified && (
-              <div className="inline-flex items-center gap-1 mt-2 px-2 py-0.5 rounded-md text-[11px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200/80 dark:text-emerald-300 dark:bg-emerald-500/10 dark:border-emerald-500/20">
-                <BadgeCheck size={12} aria-hidden="true" />
-                Verified recommendation
-              </div>
-            )}
+            {/* 5 Purple Stars */}
+            <div className="flex items-center gap-1 mt-2 text-purple-600 dark:text-purple-400">
+              {Array.from({ length: rating }, (_, i) => (
+                <Star key={i} className="w-3.5 h-3.5 fill-purple-600 text-purple-600 dark:fill-purple-400 dark:text-purple-400" />
+              ))}
+            </div>
           </div>
         </header>
 
         {/* Content */}
         <div className="relative flex-1 text-slate-600 dark:text-slate-300">
           <div
-            className="absolute -top-3 -left-1 font-serif text-[64px] leading-none text-[#0f172a]/8 dark:text-white/8 select-none pointer-events-none"
+            className="absolute -top-3 -left-1 font-serif text-[56px] leading-none text-purple-500/15 dark:text-purple-400/20 select-none pointer-events-none"
             aria-hidden="true"
           >
             &ldquo;
@@ -223,7 +224,7 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
 
           <blockquote
             ref={textRef}
-            className={`relative pl-6 text-[14.5px] leading-[1.7] ${
+            className={`relative pl-5 text-[14px] leading-relaxed ${
               !expanded ? 'line-clamp-4' : ''
             }`}
           >
@@ -234,7 +235,7 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
             <button
               type="button"
               onClick={() => setExpanded((v) => !v)}
-              className="inline-flex items-center gap-1 mt-2 ml-6 text-[13px] font-semibold text-[#0a66c2] dark:text-[#70b5f9] hover:underline transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1 mt-2 ml-5 text-[12px] font-semibold text-purple-600 dark:text-purple-400 hover:underline transition-colors cursor-pointer"
               aria-expanded={expanded}
             >
               {expanded ? 'Show less' : 'Read more'}
@@ -248,54 +249,48 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
         </div>
 
         {/* Footer */}
-        <footer className="flex flex-wrap items-center gap-2 mt-5 pt-4 border-t border-slate-100 dark:border-slate-800/80">
+        <footer className="flex flex-wrap items-center gap-2 mt-4 pt-3.5 border-t border-slate-100 dark:border-slate-800">
           {project && (
             projectUrl ? (
               <a
                 href={projectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11.5px] font-semibold bg-slate-50 text-slate-700 border border-slate-200 hover:border-slate-300 hover:bg-slate-100 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700/60 dark:hover:border-slate-600 transition-colors max-w-full"
+                className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-purple-50 text-purple-700 border border-purple-200 hover:border-purple-300 dark:bg-purple-950/40 dark:text-purple-300 dark:border-purple-800/60 transition-colors max-w-full"
               >
-                <Briefcase size={12} className="shrink-0 opacity-70" aria-hidden="true" />
+                <Briefcase size={11} className="shrink-0 opacity-70" aria-hidden="true" />
                 <span className="truncate">{project}</span>
-                <ExternalLink size={10} className="shrink-0 opacity-50" aria-hidden="true" />
+                <ExternalLink size={9} className="shrink-0 opacity-50" aria-hidden="true" />
               </a>
             ) : (
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11.5px] font-semibold bg-slate-50 text-slate-700 border border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700/60 max-w-full">
-                <Briefcase size={12} className="shrink-0 opacity-70" aria-hidden="true" />
+              <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[11px] font-semibold bg-slate-50 text-slate-700 border border-slate-200 dark:bg-slate-800/60 dark:text-slate-300 dark:border-slate-700/60 max-w-full">
+                <Briefcase size={11} className="shrink-0 opacity-70" aria-hidden="true" />
                 <span className="truncate">{project}</span>
               </div>
             )
           )}
 
           {relationship && (
-            <div className={`inline-flex items-center px-2.5 py-1 rounded-md text-[11.5px] font-semibold border ${relStyle}`}>
+            <div className={`inline-flex items-center px-2 py-0.5 rounded-md text-[11px] font-semibold border ${relStyle}`}>
               {relationship}
             </div>
           )}
 
           <div className="ml-auto flex items-center gap-2 text-slate-400 dark:text-slate-500">
+            {isVerified && (
+              <span className="inline-flex items-center gap-1 text-[11px] font-medium text-purple-600 dark:text-purple-400">
+                <BadgeCheck size={13} />
+                Verified
+              </span>
+            )}
             {dateLabel && (
               <time
                 dateTime={publishedAt}
-                className="inline-flex items-center gap-1 text-[11.5px] font-medium whitespace-nowrap"
+                className="inline-flex items-center gap-1 text-[11px] font-medium whitespace-nowrap"
               >
-                <CalendarDays size={12} aria-hidden="true" />
+                <CalendarDays size={11} aria-hidden="true" />
                 {dateLabel}
               </time>
-            )}
-            {linkedinUrl && (
-              <a
-                href={linkedinUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-[#0a66c2] dark:hover:text-[#70b5f9] transition-colors"
-                aria-label={`View ${name}'s recommendation on LinkedIn`}
-                title="Recommendation on LinkedIn"
-              >
-                <FaLinkedin size={14} />
-              </a>
             )}
           </div>
         </footer>
