@@ -1,6 +1,7 @@
 import { useState, useMemo, useRef, memo } from 'react'
 import { motion, useInView, useReducedMotion } from 'framer-motion'
 import { GraduationCap, Briefcase, Gem, Target } from 'lucide-react'
+import { useDarkMode } from '../../../shared/hooks/useDarkMode'
 import GuillocheWaves from '../../components/ui/GuillocheWaves'
 import AboutCenterpiece from '../../components/about/AboutCenterpiece'
 import AboutPillarCard from '../../components/about/AboutPillarCard'
@@ -81,6 +82,7 @@ const hardcodedAchievements = [
 ]
 
 export default function About({ content, hero, aboutContent }) {
+  const { darkMode } = useDarkMode()
   const shouldReduceMotion = useReducedMotion()
   const [selectedPillar, setSelectedPillar] = useState(null)
 
@@ -162,7 +164,7 @@ export default function About({ content, hero, aboutContent }) {
 
         {/* ── DESKTOP PANORAMIC STAGE (Screen width >= 1024px) ── */}
         <div className="hidden lg:block relative w-full mb-16">
-          {/* Glowing Energy Tracer Arcs (SVG) in Smoked Charcoal / Graphite */}
+          {/* Glowing Energy Tracer Arcs (SVG) in Smoked Charcoal / White in Dark Mode */}
           <svg
             className="absolute inset-0 w-full h-full pointer-events-none z-0"
             viewBox="0 0 1200 520"
@@ -179,8 +181,19 @@ export default function About({ content, hero, aboutContent }) {
                 <stop offset="50%" stopColor="#36454F" stopOpacity="0.45" />
                 <stop offset="100%" stopColor="#4A5568" stopOpacity="0.85" />
               </linearGradient>
+              {/* White Tracer Gradients for Dark Mode */}
+              <linearGradient id="whiteTracerL" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+                <stop offset="50%" stopColor="#E2E8F0" stopOpacity="0.75" />
+                <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.95" />
+              </linearGradient>
+              <linearGradient id="whiteTracerR" x1="100%" y1="0%" x2="0%" y2="100%">
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.95" />
+                <stop offset="50%" stopColor="#E2E8F0" stopOpacity="0.75" />
+                <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.95" />
+              </linearGradient>
               <filter id="tracerGlow" x="-20%" y="-20%" width="140%" height="140%">
-                <feGaussianBlur stdDeviation="3" result="blur" />
+                <feGaussianBlur stdDeviation={darkMode ? "4" : "3"} result="blur" />
                 <feComposite in="SourceGraphic" in2="blur" operator="over" />
               </filter>
             </defs>
@@ -189,12 +202,12 @@ export default function About({ content, hero, aboutContent }) {
             <motion.path
               d="M 360 140 C 440 140, 480 210, 520 240"
               fill="none"
-              stroke="url(#charcoalTracerL)"
+              stroke={darkMode ? "url(#whiteTracerL)" : "url(#charcoalTracerL)"}
               strokeWidth="2.5"
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: 0.9 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : {}}
               transition={{ duration: 0.8, delay: 1.3, ease: 'easeOut' }}
             />
 
@@ -202,12 +215,12 @@ export default function About({ content, hero, aboutContent }) {
             <motion.path
               d="M 360 380 C 440 380, 480 430, 520 430"
               fill="none"
-              stroke="url(#charcoalTracerL)"
+              stroke={darkMode ? "url(#whiteTracerL)" : "url(#charcoalTracerL)"}
               strokeWidth="2.5"
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: 0.9 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : {}}
               transition={{ duration: 0.8, delay: 1.9, ease: 'easeOut' }}
             />
 
@@ -215,12 +228,12 @@ export default function About({ content, hero, aboutContent }) {
             <motion.path
               d="M 840 140 C 760 140, 720 210, 680 240"
               fill="none"
-              stroke="url(#charcoalTracerR)"
+              stroke={darkMode ? "url(#whiteTracerR)" : "url(#charcoalTracerR)"}
               strokeWidth="2.5"
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: 0.9 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : {}}
               transition={{ duration: 0.8, delay: 2.5, ease: 'easeOut' }}
             />
 
@@ -228,12 +241,12 @@ export default function About({ content, hero, aboutContent }) {
             <motion.path
               d="M 840 380 C 760 380, 720 430, 680 430"
               fill="none"
-              stroke="url(#charcoalTracerR)"
+              stroke={darkMode ? "url(#whiteTracerR)" : "url(#charcoalTracerR)"}
               strokeWidth="2.5"
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: 0.9 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : {}}
               transition={{ duration: 0.8, delay: 3.1, ease: 'easeOut' }}
             />
           </svg>

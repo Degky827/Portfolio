@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Code, Database, Users, Terminal, ExternalLink, Calendar, MapPin, CheckCircle2, X, Sparkles } from 'lucide-react'
+import { useDarkMode } from '../../../shared/hooks/useDarkMode'
 import GuillocheWaves from '../ui/GuillocheWaves'
 
 /* ─── Technology & Language Brand Icons ──────────────────────────── */
@@ -91,26 +92,27 @@ const Floating3DCube = ({ className, size = 38, delay = 0 }) => (
     <svg width={size} height={size * 1.15} viewBox="0 0 100 115" fill="none">
       <defs>
         <linearGradient id={`cubeTop-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#E9D5FF" stopOpacity="0.85" />
-          <stop offset="100%" stopColor="#C084FC" stopOpacity="0.65" />
+          <stop offset="0%" stopColor="#CBD5E1" stopOpacity="0.85" />
+          <stop offset="100%" stopColor="#94A3B8" stopOpacity="0.65" />
         </linearGradient>
         <linearGradient id={`cubeLeft-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#A855F7" stopOpacity="0.75" />
-          <stop offset="100%" stopColor="#7E22CE" stopOpacity="0.85" />
+          <stop offset="0%" stopColor="#475569" stopOpacity="0.75" />
+          <stop offset="100%" stopColor="#1E252B" stopOpacity="0.85" />
         </linearGradient>
         <linearGradient id={`cubeRight-${size}`} x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" stopColor="#C084FC" stopOpacity="0.6" />
-          <stop offset="100%" stopColor="#9333EA" stopOpacity="0.75" />
+          <stop offset="0%" stopColor="#64748B" stopOpacity="0.6" />
+          <stop offset="100%" stopColor="#334155" stopOpacity="0.75" />
         </linearGradient>
       </defs>
-      <polygon points="50,5 95,30 50,55 5,30" fill={`url(#cubeTop-${size})`} stroke="#E9D5FF" strokeWidth="1.5" />
-      <polygon points="5,30 50,55 50,110 5,85" fill={`url(#cubeLeft-${size})`} stroke="#C084FC" strokeWidth="1.5" />
-      <polygon points="50,55 95,30 95,85 50,110" fill={`url(#cubeRight-${size})`} stroke="#A855F7" strokeWidth="1.5" />
+      <polygon points="50,5 95,30 50,55 5,30" fill={`url(#cubeTop-${size})`} stroke="#4A5568" strokeWidth="1.5" />
+      <polygon points="5,30 50,55 50,110 5,85" fill={`url(#cubeLeft-${size})`} stroke="#36454F" strokeWidth="1.5" />
+      <polygon points="50,55 95,30 95,85 50,110" fill={`url(#cubeRight-${size})`} stroke="#1E252B" strokeWidth="1.5" />
     </svg>
   </motion.div>
 )
 
 export default function Experience3DRoadmap({ customExperiences = [] }) {
+  const { darkMode } = useDarkMode()
   const [selectedMilestone, setSelectedMilestone] = useState(null)
 
   // Real Experience Data with 75px Branch Length (Half of prior length) and 3 Languages With Icons
@@ -281,21 +283,25 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
         >
           <defs>
             <linearGradient id="trackHighlight2" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#4338ca" stopOpacity="0.85" />
-              <stop offset="40%" stopColor="#6366f1" stopOpacity="0.9" />
-              <stop offset="70%" stopColor="#818cf8" stopOpacity="0.7" />
-              <stop offset="100%" stopColor="#312e81" stopOpacity="0.8" />
+              <stop offset="0%" stopColor="#64748b" stopOpacity="0.85" />
+              <stop offset="40%" stopColor="#94a3b8" stopOpacity="0.9" />
+              <stop offset="70%" stopColor="#cbd5e1" stopOpacity="0.7" />
+              <stop offset="100%" stopColor="#475569" stopOpacity="0.8" />
             </linearGradient>
 
-            <filter id="purpleGlow2" x="-50%" y="-50%" width="200%" height="200%">
-              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#a855f7" floodOpacity="0.8" />
+            <filter id="charcoalGlow2" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#36454f" floodOpacity="0.7" />
+            </filter>
+
+            <filter id="whiteGlow2" x="-50%" y="-50%" width="200%" height="200%">
+              <feDropShadow dx="0" dy="0" stdDeviation="6" floodColor="#ffffff" floodOpacity="0.85" />
             </filter>
           </defs>
 
           {/* 1. Track Deep Shadow on Floor */}
           <path
             d="M 15,255 C 180,262 400,268 560,275 C 760,285 1070,320 1095,430 C 1110,520 990,570 860,590 C 720,612 530,642 410,655 C 290,670 190,685 100,695"
-            stroke="rgba(109, 40, 217, 0.2)"
+            stroke="rgba(30, 41, 59, 0.22)"
             strokeWidth="18"
             strokeLinecap="round"
             transform="translate(4, 14)"
@@ -312,10 +318,10 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
             filter="blur(5px)"
           />
 
-          {/* 3. Main Dark 3D Tube Track */}
+          {/* 3. Main Dark 3D Tube Track (Charcoal Black) */}
           <path
             d="M 15,255 C 180,262 400,268 560,275 C 760,285 1070,320 1095,430 C 1110,520 990,570 860,590 C 720,612 530,642 410,655 C 290,670 190,685 100,695"
-            stroke="#1e1b4b"
+            stroke="#1e252b"
             strokeWidth="8.5"
             strokeLinecap="round"
           />
@@ -328,53 +334,64 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
             strokeLinecap="round"
           />
 
-          {/* ── Vertical Branches (75px half-length stems) ── */}
+          {/* ── Vertical Branches (75px half-length stems pointing to cards: White in Dark Mode) ── */}
           {milestones.map((m) => {
             const isHovered = selectedMilestone === m.id
+            const branchColor = darkMode ? '#ffffff' : '#1e252b'
             return (
               <g key={m.id} className="transition-all duration-300">
-                {/* 75px Branch Stem Line */}
+                {/* 75px Branch Stem Line (Charcoal Black in Light, White in Dark Mode) */}
                 <line
                   x1={m.stemX}
                   y1={m.stemStartY}
                   x2={m.nodeX}
                   y2={m.nodeY}
-                  stroke="#1e1b4b"
+                  stroke={branchColor}
                   strokeWidth="3.5"
                   strokeLinecap="round"
+                  className="stroke-[#1e252b] dark:stroke-white transition-colors duration-300"
                 />
 
-                {/* Branch Stem Top Joint Pin at bottom of card */}
-                <circle cx={m.stemX} cy={m.stemStartY} r="4.5" fill="#1e1b4b" />
+                {/* Branch Stem Top Joint Pin at bottom of card (White in Dark Mode) */}
+                <circle
+                  cx={m.stemX}
+                  cy={m.stemStartY}
+                  r="4.5"
+                  fill={branchColor}
+                  className="fill-[#1e252b] dark:fill-white transition-colors duration-300"
+                />
 
-                {/* Node Outer Glowing Purple Halo on Track */}
+                {/* Node Outer Glowing Halo on Track */}
                 <circle
                   cx={m.nodeX}
                   cy={m.nodeY}
                   r="16"
-                  fill="#f5f3ff"
-                  stroke="#a855f7"
+                  fill={darkMode ? '#0f172a' : '#f8fafc'}
+                  stroke={darkMode ? '#ffffff' : '#36454f'}
                   strokeWidth="2.2"
-                  filter="url(#purpleGlow2)"
-                  opacity={isHovered ? 1 : 0.8}
+                  filter={darkMode ? 'url(#whiteGlow2)' : 'url(#charcoalGlow2)'}
+                  opacity={isHovered ? 1 : 0.85}
+                  className="stroke-[#36454f] dark:stroke-white transition-colors duration-300"
                 />
 
-                {/* Node Middle White Rim */}
+                {/* Node Middle Rim */}
                 <circle
                   cx={m.nodeX}
                   cy={m.nodeY}
                   r="10.5"
-                  fill="#ffffff"
-                  stroke="#1e1b4b"
+                  fill={darkMode ? '#1e293b' : '#ffffff'}
+                  stroke={branchColor}
                   strokeWidth="3.2"
+                  className="stroke-[#1e252b] dark:stroke-white transition-colors duration-300"
                 />
 
-                {/* Node Center Black Core */}
+                {/* Node Center Core (White in Dark Mode) */}
                 <circle
                   cx={m.nodeX}
                   cy={m.nodeY}
                   r="4.8"
-                  fill="#1e1b4b"
+                  fill={branchColor}
+                  className="fill-[#1e252b] dark:fill-white transition-colors duration-300"
                 />
               </g>
             )
@@ -465,7 +482,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
           MOBILE & TABLET RESPONSIVE 3D TIMELINE TRACK (< lg screens)
           ═════════════════════════════════════════════════════════════════ */}
       <div className="block lg:hidden relative w-full py-4 space-y-6">
-        <div className="absolute left-[34px] top-6 bottom-6 w-[7px] bg-[#1e1b4b] rounded-full shadow-[0_0_12px_rgba(168,85,247,0.35)] pointer-events-none" />
+        <div className="absolute left-[34px] top-6 bottom-6 w-[7px] bg-[#1e252b] rounded-full shadow-[0_0_12px_rgba(54,69,79,0.4)] pointer-events-none" />
 
         {milestones.map((m, index) => {
           const Icon = m.icon
@@ -482,10 +499,11 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
               className="relative flex items-start gap-4 pl-2 cursor-pointer"
             >
               <div className="relative z-10 shrink-0 mt-6 flex items-center">
-                <div className="w-9 h-9 rounded-full border-2 border-purple-400 bg-white shadow-[0_0_15px_rgba(168,85,247,0.6)] flex items-center justify-center">
-                  <div className="w-4 h-4 rounded-full bg-[#1e1b4b]" />
+                <div className="w-9 h-9 rounded-full border-2 border-[#36454F] dark:border-white bg-white dark:bg-slate-900 shadow-[0_0_15px_rgba(54,69,79,0.5)] dark:shadow-[0_0_15px_rgba(255,255,255,0.6)] flex items-center justify-center">
+                  <div className="w-4 h-4 rounded-full bg-[#1e252b] dark:bg-white transition-colors duration-300" />
                 </div>
-                <div className="w-3 h-[3px] bg-[#1e1b4b]" />
+                {/* Connector line pointing to card: White in Dark Mode */}
+                <div className="w-3 h-[3px] bg-[#1e252b] dark:bg-white transition-colors duration-300" />
               </div>
 
               <div
