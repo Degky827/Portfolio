@@ -15,6 +15,7 @@ export default function Recommendations3DScene({
   const [isPopoverOpen, setIsPopoverOpen] = useState(false)
   const [activeFaceIndex, setActiveFaceIndex] = useState(0)
   const [cubeSize, setCubeSize] = useState(250)
+  const [isFastSpinning, setIsFastSpinning] = useState(false)
 
   const dragStartX = useRef(0)
   const dragStartY = useRef(0)
@@ -23,7 +24,20 @@ export default function Recommendations3DScene({
   const lastRotX = useRef(-16)
   const requestRef = useRef(null)
   const containerRef = useRef(null)
-  const isInView = useInView(containerRef, { once: true, amount: 0.15 })
+  const isInView = useInView(containerRef, { once: false, amount: 0.15 })
+
+  // Trigger fast 3D rotation during entrance and 4-second hover
+  useEffect(() => {
+    if (isInView) {
+      setIsFastSpinning(true)
+      const timer = setTimeout(() => {
+        setIsFastSpinning(false)
+      }, 5800)
+      return () => clearTimeout(timer)
+    } else {
+      setIsFastSpinning(false)
+    }
+  }, [isInView])
 
   // Measure responsive cube size
   useEffect(() => {
@@ -98,18 +112,19 @@ export default function Recommendations3DScene({
     return Math.round(targetAngle / 90) % 4
   }, [])
 
-  // Smooth continuous auto-rotation
+  // Continuous auto-rotation (Fast while hovering/waiting for 4s, then serene)
   const animateRotation = useCallback(() => {
     if (isAutoRotating && !isDragging && !isPopoverOpen) {
       setRotationY((prev) => {
-        const next = prev - 0.3
+        const speed = isFastSpinning ? 2.8 : 0.3
+        const next = prev - speed
         const frontIdx = calculateFrontFaceIndex(next)
         setActiveFaceIndex(frontIdx)
         return next
       })
     }
     requestRef.current = requestAnimationFrame(animateRotation)
-  }, [isAutoRotating, isDragging, isPopoverOpen, calculateFrontFaceIndex])
+  }, [isAutoRotating, isDragging, isPopoverOpen, isFastSpinning, calculateFrontFaceIndex])
 
   useEffect(() => {
     requestRef.current = requestAnimationFrame(animateRotation)
@@ -197,7 +212,7 @@ export default function Recommendations3DScene({
         {/* ── 3D Scene Container ── */}
         <div className="relative w-full flex flex-col items-center justify-center pt-2">
           
-          {/* ── The Real 3D Glass Cube: Floats from top right, hovers/rotates above hand for 2 seconds, then softly sits ── */}
+          {/* ── The Real 3D Glass Cube: Floats from top right, hovers/rotates FAST above hand for 4 seconds, then softly sits ── */}
           <motion.div
             className="relative z-20 cursor-pointer"
             onClick={handleCubeClick}
@@ -217,12 +232,18 @@ export default function Recommendations3DScene({
                     scale: [0.52, 1, 1, 1, 1],
                     rotateZ: [26, 0, 0, 0, 0],
                   }
-                : {}
+                : {
+                    opacity: 0,
+                    x: 210,
+                    y: -230,
+                    scale: 0.52,
+                    rotateZ: 26,
+                  }
             }
             transition={{
-              duration: 4.0,
-              delay: 0.9,
-              times: [0, 0.28, 0.52, 0.78, 1],
+              duration: 5.8,
+              delay: 0.8,
+              times: [0, 0.17, 0.52, 0.86, 1],
               ease: ['easeOut', 'easeInOut', 'easeInOut', [0.16, 1, 0.3, 1]],
             }}
             style={{
@@ -425,8 +446,8 @@ export default function Recommendations3DScene({
           {/* ── Charcoal Black Orbital Ring Beneath the Cube Base (Fades in as cube touches down) ── */}
           <motion.div
             initial={{ opacity: 0, scale: 0.6 }}
-            animate={isInView ? { opacity: 1, scale: 1 } : {}}
-            transition={{ duration: 0.9, delay: 4.0, ease: 'easeOut' }}
+            animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
+            transition={{ duration: 0.9, delay: 5.6, ease: 'easeOut' }}
             className="relative z-10 w-[270px] h-[48px] sm:w-[310px] sm:h-[56px] -mt-5 pointer-events-none"
             style={{
               transform: `rotateY(${rotationY * 0.25}deg)`,
@@ -443,7 +464,7 @@ export default function Recommendations3DScene({
           {/* ── Realistic Human Hand (Palm-Up from Image: Sits in place first before cube arrives) ── */}
           <motion.div
             initial={{ opacity: 0, y: 70, scale: 0.95 }}
-            animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+            animate={isInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 70, scale: 0.95 }}
             transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="relative z-15 w-[310px] sm:w-[350px] -mt-6 sm:-mt-7 pointer-events-none flex justify-center"
             style={{
@@ -561,7 +582,7 @@ export default function Recommendations3DScene({
         {/* Active Testimonial Detailed Preview: Comes in rotating as cube descends */}
         <motion.div
           initial={{ opacity: 0, y: 40, rotateX: 20 }}
-          animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
+          animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : { opacity: 0, y: 40, rotateX: 20 }}
           transition={{ duration: 0.9, delay: 1.3, ease: [0.16, 1, 0.3, 1] }}
           style={{ transformStyle: 'preserve-3d', perspective: '800px' }}
           className="w-full p-4 rounded-2xl bg-gradient-to-r from-purple-50/70 via-white to-purple-50/70 dark:from-slate-800/80 dark:via-slate-900/90 dark:to-slate-800/80 border border-purple-200/80 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"

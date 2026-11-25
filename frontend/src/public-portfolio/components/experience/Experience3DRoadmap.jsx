@@ -115,7 +115,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
   const { darkMode } = useDarkMode()
   const [selectedMilestone, setSelectedMilestone] = useState(null)
   const stageRef = useRef(null)
-  const isInView = useInView(stageRef, { once: true, amount: 0.15 })
+  const isInView = useInView(stageRef, { once: false, amount: 0.15 })
 
   // Sequential Entrance Offsets for Cards (Different angles and positions)
   const cardEntranceOffsets = [
@@ -317,7 +317,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
             transform="translate(4, 14)"
             filter="blur(10px)"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+            animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
             transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
 
@@ -330,7 +330,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
             transform="translate(2, 7)"
             filter="blur(5px)"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+            animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
             transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
 
@@ -341,7 +341,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
             strokeWidth="8.5"
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+            animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
             transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
 
@@ -352,7 +352,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
             strokeWidth="2.5"
             strokeLinecap="round"
             initial={{ pathLength: 0, opacity: 0 }}
-            animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+            animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
             transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
 
@@ -374,7 +374,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   strokeLinecap="round"
                   className="stroke-[#1e252b] dark:stroke-white transition-colors duration-300"
                   initial={{ pathLength: 0, opacity: 0 }}
-                  animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+                  animate={isInView ? { pathLength: 1, opacity: 1 } : { pathLength: 0, opacity: 0 }}
                   transition={{ duration: 0.45, delay: stemDelay, ease: 'easeOut' }}
                 />
 
@@ -386,7 +386,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   fill={branchColor}
                   className="fill-[#1e252b] dark:fill-white transition-colors duration-300"
                   initial={{ scale: 0 }}
-                  animate={isInView ? { scale: 1 } : {}}
+                  animate={isInView ? { scale: 1 } : { scale: 0 }}
                   transition={{ duration: 0.3, delay: stemDelay + 0.15 }}
                 />
 
@@ -402,7 +402,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   opacity={isHovered ? 1 : 0.85}
                   className="stroke-[#36454f] dark:stroke-white transition-colors duration-300"
                   initial={{ scale: 0, opacity: 0 }}
-                  animate={isInView ? { scale: 1, opacity: isHovered ? 1 : 0.85 } : {}}
+                  animate={isInView ? { scale: 1, opacity: isHovered ? 1 : 0.85 } : { scale: 0, opacity: 0 }}
                   transition={{ duration: 0.4, delay: stemDelay - 0.1, type: 'spring', stiffness: 220 }}
                 />
 
@@ -416,7 +416,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   strokeWidth="3.2"
                   className="stroke-[#1e252b] dark:stroke-white transition-colors duration-300"
                   initial={{ scale: 0 }}
-                  animate={isInView ? { scale: 1 } : {}}
+                  animate={isInView ? { scale: 1 } : { scale: 0 }}
                   transition={{ duration: 0.3, delay: stemDelay - 0.1 }}
                 />
 
@@ -428,7 +428,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   fill={branchColor}
                   className="fill-[#1e252b] dark:fill-white transition-colors duration-300"
                   initial={{ scale: 0 }}
-                  animate={isInView ? { scale: 1 } : {}}
+                  animate={isInView ? { scale: 1 } : { scale: 0 }}
                   transition={{ duration: 0.3, delay: stemDelay - 0.1 }}
                 />
               </g>
@@ -447,7 +447,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
             <motion.div
               key={m.id}
               initial={{ opacity: 0, x: entrance.x, y: entrance.y, scale: 0.92 }}
-              animate={isInView ? { opacity: 1, x: 0, y: 0, scale: 1 } : {}}
+              animate={isInView ? { opacity: 1, x: 0, y: 0, scale: 1 } : { opacity: 0, x: entrance.x, y: entrance.y, scale: 0.92 }}
               transition={{ duration: 0.65, delay: cardDelay, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -4, scale: 1.02 }}
               onClick={() => setSelectedMilestone(m.id)}

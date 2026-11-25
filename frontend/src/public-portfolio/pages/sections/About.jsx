@@ -87,7 +87,7 @@ export default function About({ content, hero, aboutContent }) {
   const [selectedPillar, setSelectedPillar] = useState(null)
 
   const stageRef = useRef(null)
-  const isInView = useInView(stageRef, { once: true, amount: 0.15 })
+  const isInView = useInView(stageRef, { once: false, amount: 0.15 })
 
   const title = aboutContent?.title || content?.title || 'Who Am I'
   const subtitle =
@@ -140,7 +140,7 @@ export default function About({ content, hero, aboutContent }) {
         <motion.div
           initial={{ opacity: 0, y: 25 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-80px' }}
+          viewport={{ once: false, margin: '-80px' }}
           transition={{ duration: 0.7 }}
           className="text-center mb-10 sm:mb-14 md:mb-16"
         >
@@ -207,7 +207,7 @@ export default function About({ content, hero, aboutContent }) {
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : { pathLength: 0, opacity: 0 }}
               transition={{ duration: 0.8, delay: 1.3, ease: 'easeOut' }}
             />
 
@@ -220,7 +220,7 @@ export default function About({ content, hero, aboutContent }) {
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : { pathLength: 0, opacity: 0 }}
               transition={{ duration: 0.8, delay: 1.9, ease: 'easeOut' }}
             />
 
@@ -233,7 +233,7 @@ export default function About({ content, hero, aboutContent }) {
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : { pathLength: 0, opacity: 0 }}
               transition={{ duration: 0.8, delay: 2.5, ease: 'easeOut' }}
             />
 
@@ -246,7 +246,7 @@ export default function About({ content, hero, aboutContent }) {
               strokeDasharray="6 6"
               filter="url(#tracerGlow)"
               initial={{ pathLength: 0, opacity: 0 }}
-              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : {}}
+              animate={isInView ? { pathLength: 1, opacity: darkMode ? 1 : 0.9 } : { pathLength: 0, opacity: 0 }}
               transition={{ duration: 0.8, delay: 3.1, ease: 'easeOut' }}
             />
           </svg>
