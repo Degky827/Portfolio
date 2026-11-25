@@ -17,6 +17,7 @@ const SkillsPage = lazy(() => import('./public-portfolio/pages/SkillsPage'))
 const ProjectsPage = lazy(() => import('./public-portfolio/pages/ProjectsPage'))
 const ExperiencePage = lazy(() => import('./public-portfolio/pages/ExperiencePage'))
 const ContactPage = lazy(() => import('./public-portfolio/pages/ContactPage'))
+const RecommendationsPage = lazy(() => import('./public-portfolio/pages/RecommendationsPage'))
 const CVPage = lazy(() => import('./public-portfolio/pages/cv/CVPage'))
 const DynamicCustomPage = lazy(() => import('./public-portfolio/pages/DynamicCustomPage'))
 const AIButton = lazy(() => import('./ai/components/AIButton'))
@@ -116,6 +117,16 @@ function App() {
               <Route path="/contact" element={
                 <Suspense fallback={sectionSpinner}>
                   <ContactPage />
+                </Suspense>
+              } />
+              <Route path="/recommendations" element={
+                <Suspense fallback={sectionSpinner}>
+                  <RecommendationsPage />
+                </Suspense>
+              } />
+              <Route path="/testimonials" element={
+                <Suspense fallback={sectionSpinner}>
+                  <RecommendationsPage />
                 </Suspense>
               } />
               <Route path="/cv" element={

@@ -6,7 +6,7 @@
  * or external URLs.
  */
 
-const KNOWN_SECTIONS = ['about', 'skills', 'projects', 'experience', 'contact', 'cv']
+const KNOWN_SECTIONS = ['about', 'skills', 'projects', 'experience', 'testimonials', 'recommendations', 'contact', 'cv']
 
 export function resolveNavPath(item) {
   if (!item) return '/'
@@ -44,6 +44,7 @@ export function resolveNavPath(item) {
     if (rawTitle.includes('skill')) return '/skills'
     if (rawTitle.includes('project') || rawTitle.includes('work') || rawTitle.includes('portfolio')) return '/projects'
     if (rawTitle.includes('experience') || rawTitle.includes('resume') || rawTitle.includes('timeline') || rawTitle.includes('history')) return '/experience'
+    if (rawTitle.includes('testimonial') || rawTitle.includes('recommendation')) return '/recommendations'
     if (rawTitle.includes('contact') || rawTitle.includes('touch') || rawTitle.includes('reach') || rawTitle.includes('message')) return '/contact'
     if (rawTitle === 'cv') return '/cv'
 
