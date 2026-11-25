@@ -26,13 +26,13 @@ export default function Recommendations3DScene({
   const containerRef = useRef(null)
   const isInView = useInView(containerRef, { once: false, amount: 0.15 })
 
-  // Trigger fast 3D rotation during entrance and 4-second hover
+  // Trigger fast 3D rotation during entrance and 3-second hover
   useEffect(() => {
     if (isInView) {
       setIsFastSpinning(true)
       const timer = setTimeout(() => {
         setIsFastSpinning(false)
-      }, 5800)
+      }, 4600)
       return () => clearTimeout(timer)
     } else {
       setIsFastSpinning(false)
@@ -112,11 +112,11 @@ export default function Recommendations3DScene({
     return Math.round(targetAngle / 90) % 4
   }, [])
 
-  // Continuous auto-rotation (Fast while hovering/waiting for 4s, then serene)
+  // Continuous auto-rotation (Very fast while hovering/waiting for 3s, then serene)
   const animateRotation = useCallback(() => {
     if (isAutoRotating && !isDragging && !isPopoverOpen) {
       setRotationY((prev) => {
-        const speed = isFastSpinning ? 2.8 : 0.3
+        const speed = isFastSpinning ? 7.5 : 0.3
         const next = prev - speed
         const frontIdx = calculateFrontFaceIndex(next)
         setActiveFaceIndex(frontIdx)
@@ -212,38 +212,38 @@ export default function Recommendations3DScene({
         {/* ── 3D Scene Container ── */}
         <div className="relative w-full flex flex-col items-center justify-center pt-2">
           
-          {/* ── The Real 3D Glass Cube: Floats from top right, hovers/rotates FAST above hand for 4 seconds, then softly sits ── */}
+          {/* ── The Real 3D Glass Cube: Floats straight down from above, hovers/rotates VERY FAST above hand for 3 seconds, then softly sits ── */}
           <motion.div
             className="relative z-20 cursor-pointer"
             onClick={handleCubeClick}
             initial={{
               opacity: 0,
-              x: 210,
-              y: -230,
-              scale: 0.52,
-              rotateZ: 26,
+              x: 0,
+              y: -280,
+              scale: 0.55,
+              rotateZ: 0,
             }}
             animate={
               isInView
                 ? {
                     opacity: [0, 1, 1, 1, 1],
-                    x: [210, 0, 0, 0, 0],
-                    y: [-230, -42, -38, -36, 0],
-                    scale: [0.52, 1, 1, 1, 1],
-                    rotateZ: [26, 0, 0, 0, 0],
+                    x: [0, 0, 0, 0, 0],
+                    y: [-280, -42, -38, -36, 0],
+                    scale: [0.55, 1, 1, 1, 1],
+                    rotateZ: [0, 0, 0, 0, 0],
                   }
                 : {
                     opacity: 0,
-                    x: 210,
-                    y: -230,
-                    scale: 0.52,
-                    rotateZ: 26,
+                    x: 0,
+                    y: -280,
+                    scale: 0.55,
+                    rotateZ: 0,
                   }
             }
             transition={{
-              duration: 5.8,
+              duration: 4.6,
               delay: 0.8,
-              times: [0, 0.17, 0.52, 0.86, 1],
+              times: [0, 0.174, 0.50, 0.826, 1],
               ease: ['easeOut', 'easeInOut', 'easeInOut', [0.16, 1, 0.3, 1]],
             }}
             style={{
@@ -447,7 +447,7 @@ export default function Recommendations3DScene({
           <motion.div
             initial={{ opacity: 0, scale: 0.6 }}
             animate={isInView ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.6 }}
-            transition={{ duration: 0.9, delay: 5.6, ease: 'easeOut' }}
+            transition={{ duration: 0.9, delay: 4.6, ease: 'easeOut' }}
             className="relative z-10 w-[270px] h-[48px] sm:w-[310px] sm:h-[56px] -mt-5 pointer-events-none"
             style={{
               transform: `rotateY(${rotationY * 0.25}deg)`,
