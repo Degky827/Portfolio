@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Star, BadgeCheck, X } from 'lucide-react'
+import GuillocheWaves from '../ui/GuillocheWaves'
 
 export default function Recommendations3DScene({
   testimonials = [],
@@ -170,49 +171,11 @@ export default function Recommendations3DScene({
       ref={containerRef}
       className="relative w-full max-w-5xl mx-auto flex flex-col items-center select-none"
     >
-      {/* ── Background: Prominent Flowing Purple Wave Lines matching reference image ── */}
+      {/* ── Background: About-Page Style Guilloche Waves + Glow Orbs ── */}
       <div className="absolute -inset-x-12 sm:-inset-x-28 -inset-y-20 pointer-events-none overflow-hidden -z-10">
-        {/* Subtle lavender ambient lighting */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[550px] bg-purple-500/[0.08] rounded-full blur-[150px] pointer-events-none" />
-
-        {/* 22-line flowing purple wave ribbon curving diagonally across from top-right to bottom-left */}
-        <svg
-          className="absolute inset-0 w-full h-full pointer-events-none opacity-90"
-          viewBox="0 0 1440 850"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          preserveAspectRatio="none"
-        >
-          <defs>
-            <linearGradient id="purpleRibbonMain" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#7C3AED" stopOpacity="0.8" />
-              <stop offset="35%" stopColor="#A855F7" stopOpacity="0.65" />
-              <stop offset="70%" stopColor="#C084FC" stopOpacity="0.4" />
-              <stop offset="100%" stopColor="#DDD6FE" stopOpacity="0.05" />
-            </linearGradient>
-            <linearGradient id="purpleRibbonSoft" x1="100%" y1="0%" x2="0%" y2="100%">
-              <stop offset="0%" stopColor="#9333EA" stopOpacity="0.65" />
-              <stop offset="50%" stopColor="#C084FC" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="#F3E8FF" stopOpacity="0.0" />
-            </linearGradient>
-          </defs>
-
-          {/* Harmonic wave lines creating rich flowing wave ribbon effect */}
-          {Array.from({ length: 22 }, (_, i) => {
-            const offset = i * 15
-            const opacity = Math.sin((i / 22) * Math.PI) * 0.75 + 0.18
-            const strokeWidth = i % 3 === 0 ? 2.0 : i % 2 === 0 ? 1.5 : 1.1
-            return (
-              <path
-                key={i}
-                d={`M 1440,${20 + offset} C 1100,${90 + offset * 0.9} 850,${280 + offset * 0.8} 600,${240 + offset * 0.7} C 380,${200 + offset * 0.6} 180,${340 + offset * 0.5} 0,${440 + offset * 0.4}`}
-                stroke={i % 2 === 0 ? 'url(#purpleRibbonMain)' : 'url(#purpleRibbonSoft)'}
-                strokeWidth={strokeWidth}
-                strokeOpacity={opacity}
-              />
-            )
-          })}
-        </svg>
+        {/* Monochromatic purple Guilloche mathematical ribbon wave background matching About page */}
+        <GuillocheWaves className="absolute inset-0 z-0 opacity-55 dark:opacity-40 pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[750px] h-[550px] bg-purple-500/[0.08] dark:bg-purple-900/20 rounded-full blur-[150px] pointer-events-none" />
       </div>
 
       {/* ── Main 3D Stage: Hand Supporting the Glowing Tray with 3D Glass Cube ── */}
@@ -493,9 +456,12 @@ export default function Recommendations3DScene({
                     &ldquo;&ldquo;
                   </span>
 
-                  <p className="mt-3 text-xs sm:text-sm font-medium leading-relaxed text-slate-800">
-                    {activeReview.content}
-                  </p>
+                  {/* Scrollable Testimonial Text Reading */}
+                  <div className="mt-3 max-h-44 overflow-y-auto pr-2 custom-scrollbar">
+                    <p className="text-xs sm:text-sm font-medium leading-relaxed text-slate-800 dark:text-slate-200">
+                      {activeReview.content}
+                    </p>
+                  </div>
 
                   <div className="flex items-center gap-1.5 mt-3.5 text-purple-600">
                     {Array.from({ length: 5 }, (_, i) => (
@@ -582,9 +548,11 @@ export default function Recommendations3DScene({
             </div>
           </div>
 
-          <p className="text-xs sm:text-sm text-slate-700 font-medium italic max-w-md">
-            &ldquo;{activeReview.content}&rdquo;
-          </p>
+          <div className="max-h-24 overflow-y-auto pr-2 custom-scrollbar max-w-md">
+            <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-300 font-medium italic">
+              &ldquo;{activeReview.content}&rdquo;
+            </p>
+          </div>
         </div>
       </div>
     </div>

@@ -5,6 +5,7 @@ import { getTestimonials } from '../../../shared/services/testimonialService'
 import TestimonialCard from '../../components/testimonials/TestimonialCard'
 import TestimonialSkeleton from '../../components/testimonials/TestimonialSkeleton'
 import Recommendations3DScene from '../../components/testimonials/Recommendations3DScene'
+import GuillocheWaves from '../../components/ui/GuillocheWaves'
 import { usePublicSocket } from '../../../shared/context/PublicSocketContext'
 
 const DEFAULT_TESTIMONIALS = [
@@ -163,9 +164,17 @@ export default function Testimonials() {
   return (
     <section
       id="testimonials"
-      className="relative py-16 sm:py-24 bg-white overflow-hidden"
+      className="relative min-h-screen py-16 sm:py-24 bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
       aria-label="Testimonials and Recommendations"
     >
+      {/* ── Monochromatic Purple Guilloche Ribbon Wave Background (matching About page) ── */}
+      <GuillocheWaves className="absolute inset-0 z-0 opacity-45 dark:opacity-35 pointer-events-none" />
+
+      {/* Subtle background glow orbs matching About page */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-slate-700/15 dark:bg-slate-800/25 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* ── Top Header Exactly Matching 3D Reference Image ── */}
         <motion.div
@@ -175,14 +184,6 @@ export default function Testimonials() {
           transition={{ duration: shouldReduceMotion ? 0.1 : 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-center mb-8 sm:mb-12"
         >
-          {/* Badge: ★ Testimonials */}
-          <div className="inline-flex items-center gap-1.5 px-3.5 py-1 mb-3.5 rounded-full bg-[#f3eeff] border border-purple-200/80 shadow-sm">
-            <span className="text-purple-600 text-xs font-black">★</span>
-            <span className="text-xs font-bold tracking-wide text-purple-700">
-              Testimonials
-            </span>
-          </div>
-
           {/* Headline: What People Say in 3D */}
           <div className="perspective-[800px] my-3">
             <h2
@@ -211,38 +212,9 @@ export default function Testimonials() {
           <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
             Real experiences from people I&apos;ve worked with.
           </p>
-
-          {/* View Mode Toggle: 3D Scene vs All Reviews Grid */}
-          <div className="inline-flex items-center gap-1.5 p-1 mt-6 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700 shadow-sm">
-            <button
-              type="button"
-              onClick={() => setViewMode('3d')}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                viewMode === '3d'
-                  ? 'bg-[#4f46e5] hover:bg-[#4338ca] text-white shadow-md shadow-indigo-500/30 border border-indigo-400/30'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-indigo-900 dark:hover:text-white hover:bg-white/70'
-              }`}
-            >
-              <Sparkles size={13} />
-              <span>3D Hologram Cube</span>
-            </button>
-
-            <button
-              type="button"
-              onClick={() => setViewMode('grid')}
-              className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
-                viewMode === 'grid'
-                  ? 'bg-[#4f46e5] hover:bg-[#4338ca] text-white shadow-md shadow-indigo-500/30 border border-indigo-400/30'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-indigo-900 dark:hover:text-white hover:bg-white/70'
-              }`}
-            >
-              <Layers size={13} />
-              <span>All Recommendations ({testimonials.length})</span>
-            </button>
-          </div>
         </motion.div>
 
-        {/* ── Content Area ── */}
+        {/* ── Content Area: 3D Hologram Rotating Cube ── */}
         {loading ? (
           <motion.div
             initial={{ opacity: 0 }}
@@ -277,90 +249,12 @@ export default function Testimonials() {
             </button>
           </motion.div>
         ) : (
-          <AnimatePresence mode="wait">
-            {viewMode === '3d' ? (
-              <motion.div
-                key="3d-mode"
-                initial={{ opacity: 0, scale: 0.98 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.98 }}
-                transition={{ duration: 0.4 }}
-                className="w-full"
-              >
-                {/* The 3D Scene */}
-                <Recommendations3DScene
-                  testimonials={testimonials}
-                  onSelectTestimonial={() => {}}
-                />
-
-                {/* Rating & Trust Strip */}
-                <div className="mt-12 text-center flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs sm:text-sm font-medium text-slate-600 dark:text-slate-300">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center text-purple-600 dark:text-purple-400">
-                      {Array.from({ length: 5 }, (_, i) => (
-                        <Star key={i} className="w-4 h-4 fill-purple-600 text-purple-600 dark:fill-purple-400 dark:text-purple-400" />
-                      ))}
-                    </div>
-                    <span className="font-bold text-slate-900 dark:text-white">5.0 Star Rating</span>
-                  </div>
-
-                  <div className="flex items-center gap-1.5">
-                    <BadgeCheck className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-                    <span>100% Verified Recommendations</span>
-                  </div>
-
-                  <button
-                    type="button"
-                    onClick={() => setViewMode('grid')}
-                    className="text-purple-600 dark:text-purple-400 font-semibold hover:underline cursor-pointer"
-                  >
-                    Explore all reviews →
-                  </button>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="grid-mode"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.4 }}
-                className="w-full max-w-6xl mx-auto"
-              >
-                {/* Category Filter Pills */}
-                {categories.length > 2 && (
-                  <div className="flex flex-wrap items-center justify-center gap-2 mb-8">
-                    {categories.map((cat) => (
-                      <button
-                        key={cat}
-                        type="button"
-                        onClick={() => setSelectedCategory(cat)}
-                        className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
-                          selectedCategory === cat
-                            ? 'bg-[#4f46e5] text-white shadow-md shadow-indigo-500/25 border border-indigo-400/40'
-                            : 'bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 hover:bg-indigo-50/50'
-                        }`}
-                      >
-                        {cat === 'ALL' ? 'All Roles' : cat}
-                      </button>
-                    ))}
-                  </div>
-                )}
-
-                {/* Cards Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredTestimonials.map((t, index) => (
-                    <TestimonialCard
-                      key={t._id || t.id || index}
-                      testimonial={t}
-                      index={index}
-                      shouldReduceMotion={shouldReduceMotion}
-                    />
-                  ))}
-                </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
+          <div className="w-full">
+            <Recommendations3DScene
+              testimonials={testimonials}
+              onSelectTestimonial={() => {}}
+            />
+          </div>
         )}
       </div>
     </section>

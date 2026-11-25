@@ -225,7 +225,7 @@ export default function TestimonialCard({ testimonial, index = 0, shouldReduceMo
           <blockquote
             ref={textRef}
             className={`relative pl-5 text-[14px] leading-relaxed ${
-              !expanded ? 'line-clamp-4' : ''
+              !expanded ? 'line-clamp-4' : 'max-h-56 overflow-y-auto pr-2 custom-scrollbar'
             }`}
           >
             {renderedContent}
