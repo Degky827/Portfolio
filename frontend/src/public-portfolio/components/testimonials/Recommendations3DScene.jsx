@@ -436,7 +436,7 @@ export default function Recommendations3DScene({
 
           {/* ── Glowing Purple Orbital Ring Beneath the Cube Base ── */}
           <div
-            className="relative z-10 w-[280px] h-[50px] sm:w-[330px] sm:h-[60px] -mt-6 pointer-events-none"
+            className="relative z-10 w-[270px] h-[48px] sm:w-[310px] sm:h-[56px] -mt-5 pointer-events-none"
             style={{
               transform: `rotateY(${rotationY * 0.25}deg)`,
               transition: isDragging ? 'none' : 'transform 0.08s linear',
@@ -449,18 +449,18 @@ export default function Recommendations3DScene({
             <div className="absolute -inset-2.5 rounded-[100%] border border-purple-300/40 shadow-[0_0_15px_rgba(168,85,247,0.25)] pointer-events-none" />
           </div>
 
-          {/* ── Realistic Human Hand (Navy Suit Sleeve, 5 Fingers) Supporting the Tray ── */}
+          {/* ── Realistic Human Hand (Palm-Up from Image, Navy Suit Sleeve, 5 Fingers) Supporting the Cube ── */}
           <div
-            className="relative z-15 w-[380px] sm:w-[480px] -mt-7 sm:-mt-8 pointer-events-none flex justify-center"
+            className="relative z-15 w-[310px] sm:w-[350px] -mt-6 sm:-mt-7 pointer-events-none flex justify-center"
             style={{
-              transform: `rotateY(${Math.sin((rotationY * Math.PI) / 180) * 3}deg) translateY(${Math.cos((rotationY * Math.PI) / 90) * 1.5}px)`,
+              transform: `rotateY(${Math.sin((rotationY * Math.PI) / 180) * 2.5}deg) translateY(${Math.cos((rotationY * Math.PI) / 90) * 1.5}px)`,
               transition: isDragging ? 'none' : 'transform 0.1s ease-out',
             }}
           >
             <img
-              src="/recommendations-hand-tray-clean.png"
+              src="/recommendations-hand-front.png"
               alt="Realistic human hand supporting the 3D rotating cube with its fingertips"
-              className="w-full h-auto object-contain filter drop-shadow-[0_15px_30px_rgba(124,58,237,0.2)]"
+              className="w-full h-auto object-contain filter drop-shadow-[0_15px_30px_rgba(124,58,237,0.22)]"
             />
           </div>
 
@@ -483,7 +483,7 @@ export default function Recommendations3DScene({
                   <button
                     type="button"
                     onClick={() => setIsPopoverOpen(false)}
-                    className="absolute top-4 right-4 w-7 h-7 rounded-full bg-purple-100 hover:bg-purple-200 text-purple-700 flex items-center justify-center transition-colors cursor-pointer"
+                    className="absolute top-4 right-4 w-7 h-7 rounded-full bg-slate-100 hover:bg-indigo-100 text-slate-600 hover:text-indigo-700 flex items-center justify-center transition-colors cursor-pointer"
                     aria-label="Close popover"
                   >
                     <X size={15} />
@@ -501,7 +501,9 @@ export default function Recommendations3DScene({
                     {Array.from({ length: 5 }, (_, i) => (
                       <Star key={i} className="w-4 h-4 fill-purple-600 text-purple-600" />
                     ))}
-                    <span className="ml-1.5 text-xs font-bold text-purple-700">5.0 Star Rating</span>
+                    <span className="ml-1.5 text-xs font-bold text-indigo-700 bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
+                      5.0 Star Rating
+                    </span>
                   </div>
 
                   <div className="flex items-center gap-3 mt-4 pt-3 border-t border-purple-100">
@@ -538,10 +540,10 @@ export default function Recommendations3DScene({
               key={face.name}
               type="button"
               onClick={() => rotateToFace(index)}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
+              className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 activeFaceIndex === index
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-500/25 scale-105'
-                  : 'bg-white/80 border border-purple-100 text-slate-700 hover:bg-purple-50'
+                  ? 'bg-[#4f46e5] hover:bg-[#4338ca] text-white shadow-md shadow-indigo-500/30 scale-105 border border-indigo-400/40'
+                  : 'bg-white/95 border border-slate-200/90 text-slate-700 hover:bg-indigo-50/70 hover:border-indigo-300 hover:text-indigo-900'
               }`}
             >
               <img

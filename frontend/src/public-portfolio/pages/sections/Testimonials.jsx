@@ -183,10 +183,29 @@ export default function Testimonials() {
             </span>
           </div>
 
-          {/* Headline: What People Say */}
-          <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-[#1a0b3b] mb-2.5 tracking-tight">
-            What People Say
-          </h2>
+          {/* Headline: What People Say in 3D */}
+          <div className="perspective-[800px] my-3">
+            <h2
+              className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight select-none inline-block transition-transform duration-300 hover:scale-[1.02]"
+              style={{
+                color: '#1e1b4b',
+                textShadow: `
+                  0 1px 0 #c4b5fd,
+                  0 2px 0 #a78bfa,
+                  0 3px 0 #8b5cf6,
+                  0 4px 0 #7c3aed,
+                  0 5px 0 #6d28d9,
+                  0 6px 1px rgba(0, 0, 0, 0.12),
+                  0 8px 14px rgba(79, 70, 229, 0.32),
+                  0 14px 28px rgba(109, 40, 217, 0.22)
+                `,
+                letterSpacing: '-0.025em',
+                transform: 'rotateX(8deg)',
+              }}
+            >
+              What People Say
+            </h2>
+          </div>
 
           {/* Subtitle */}
           <p className="text-sm sm:text-base text-slate-600 max-w-xl mx-auto leading-relaxed">
@@ -194,14 +213,14 @@ export default function Testimonials() {
           </p>
 
           {/* View Mode Toggle: 3D Scene vs All Reviews Grid */}
-          <div className="inline-flex items-center gap-1.5 p-1 mt-6 rounded-2xl bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700">
+          <div className="inline-flex items-center gap-1.5 p-1 mt-6 rounded-2xl bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200/90 dark:border-slate-700 shadow-sm">
             <button
               type="button"
               onClick={() => setViewMode('3d')}
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === '3d'
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-[#4f46e5] hover:bg-[#4338ca] text-white shadow-md shadow-indigo-500/30 border border-indigo-400/30'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-indigo-900 dark:hover:text-white hover:bg-white/70'
               }`}
             >
               <Sparkles size={13} />
@@ -213,8 +232,8 @@ export default function Testimonials() {
               onClick={() => setViewMode('grid')}
               className={`flex items-center gap-1.5 px-4 py-1.5 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
                 viewMode === 'grid'
-                  ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20'
-                  : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white'
+                  ? 'bg-[#4f46e5] hover:bg-[#4338ca] text-white shadow-md shadow-indigo-500/30 border border-indigo-400/30'
+                  : 'text-slate-600 dark:text-slate-300 hover:text-indigo-900 dark:hover:text-white hover:bg-white/70'
               }`}
             >
               <Layers size={13} />
@@ -318,8 +337,8 @@ export default function Testimonials() {
                         onClick={() => setSelectedCategory(cat)}
                         className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                           selectedCategory === cat
-                            ? 'bg-purple-600 text-white shadow-md shadow-purple-500/20'
-                            : 'bg-white/80 dark:bg-slate-800/80 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-purple-300'
+                            ? 'bg-[#4f46e5] text-white shadow-md shadow-indigo-500/25 border border-indigo-400/40'
+                            : 'bg-white/90 dark:bg-slate-800/90 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-indigo-300 hover:bg-indigo-50/50'
                         }`}
                       >
                         {cat === 'ALL' ? 'All Roles' : cat}
