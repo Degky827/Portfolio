@@ -38,13 +38,13 @@ function AboutPillarModal({ pillar, isOpen, onClose }) {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.95, y: 20 }}
             transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-            className="relative w-full max-w-lg bg-white dark:bg-[#111728] border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 overflow-hidden"
+            className="relative w-full max-w-lg max-h-[85vh] flex flex-col bg-white dark:bg-[#111728] border border-slate-200 dark:border-slate-700 rounded-3xl p-6 sm:p-8 shadow-2xl z-10 overflow-hidden"
           >
             {/* Top decorative gradient glow (Charcoal) */}
             <div className="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-[#4A5568] via-[#36454F] to-[#1E252B]" />
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-4 mb-5">
+            <div className="flex items-start justify-between gap-4 mb-4 shrink-0">
               <div className="flex items-center gap-3">
                 <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#36454F] via-[#283238] to-[#1E252B] border border-[#4A5568] flex items-center justify-center text-slate-100 shadow-sm">
                   {Icon && <Icon size={24} />}
@@ -69,28 +69,31 @@ function AboutPillarModal({ pillar, isOpen, onClose }) {
               </button>
             </div>
 
-            {/* Main Description */}
-            <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 leading-relaxed mb-6 font-medium">
-              {description}
-            </p>
+            {/* Scrollable Reading Content Body */}
+            <div className="overflow-y-auto pr-2 custom-scrollbar flex-1 my-2">
+              {/* Main Description */}
+              <p className="text-sm sm:text-base text-slate-700 dark:text-slate-200 leading-relaxed mb-5 font-medium">
+                {description}
+              </p>
 
-            {/* Key Highlights */}
-            {details.length > 0 && (
-              <div className="space-y-3 mb-8 bg-slate-50 dark:bg-white/[0.03] p-4 rounded-2xl border border-slate-100 dark:border-white/5">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
-                  Key Focus & Core Competencies
-                </h4>
-                {details.map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
-                    <CheckCircle2 size={16} className="text-[#36454F] dark:text-slate-400 shrink-0 mt-0.5" />
-                    <span>{item}</span>
-                  </div>
-                ))}
-              </div>
-            )}
+              {/* Key Highlights */}
+              {details.length > 0 && (
+                <div className="space-y-3 mb-4 bg-slate-50 dark:bg-white/[0.03] p-4 rounded-2xl border border-slate-100 dark:border-white/5">
+                  <h4 className="text-xs font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500 mb-2">
+                    Key Focus & Core Competencies
+                  </h4>
+                  {details.map((item, idx) => (
+                    <div key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-slate-600 dark:text-slate-300">
+                      <CheckCircle2 size={16} className="text-[#36454F] dark:text-slate-400 shrink-0 mt-0.5" />
+                      <span>{item}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             {/* Actions */}
-            <div className="flex items-center justify-end gap-3 pt-2">
+            <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-100 dark:border-white/5 shrink-0">
               <button
                 type="button"
                 onClick={onClose}
