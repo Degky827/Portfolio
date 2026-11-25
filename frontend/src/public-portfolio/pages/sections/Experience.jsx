@@ -130,38 +130,6 @@ const DEFAULT_EXPERIENCES = [
   },
 ]
 
-/* ─── 4 Stat Cards in 2x2 Grid ─────────────────────────────────── */
-const statsData = [
-  {
-    id: 'years',
-    value: '4+',
-    line1: 'Years',
-    line2: 'Experience',
-    icon: Calendar,
-  },
-  {
-    id: 'projects',
-    value: '18+',
-    line1: 'Projects',
-    line2: 'Shipped',
-    icon: Layers,
-  },
-  {
-    id: 'tech',
-    value: '15+',
-    line1: 'Technologies',
-    line2: 'Mastered',
-    icon: Code,
-  },
-  {
-    id: 'clients',
-    value: '10+',
-    line1: 'Teams &',
-    line2: 'Clients',
-    icon: Users,
-  },
-]
-
 export default function Experience() {
   const [experienceData, setExperienceData] = useState([])
   const { on, off } = usePublicSocket()
@@ -186,10 +154,6 @@ export default function Experience() {
     return () => off('content:updated', handler)
   }, [on, off, fetchExperiences])
 
-  const toggleExpand = useCallback((id) => {
-    setExpandedId((prev) => (prev === id ? null : id))
-  }, [])
-
   return (
     <section
       id="experience"
@@ -213,9 +177,22 @@ export default function Experience() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8 sm:mb-12"
         >
-          {/* 3D Extruded Title: WORK EXPERIENCE matching About page */}
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
-            WORK EXPERIENCE
+          {/* 3D Extruded Title: WORK EXPERIENCE in Charcoal Black */}
+          <h2
+            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
+            style={{
+              textShadow: `
+                0 1px 0 #64748b,
+                0 2px 0 #475569,
+                0 3px 0 #334155,
+                0 4px 0 #1e293b,
+                0 5px 0 #1e252b,
+                0 6px 1px rgba(0, 0, 0, 0.3),
+                0 8px 18px rgba(30, 37, 43, 0.4)
+              `,
+            }}
+          >
+            Work Experience
           </h2>
 
           {/* Subtitle */}

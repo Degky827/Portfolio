@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { Star, BadgeCheck, X } from 'lucide-react'
 import GuillocheWaves from '../ui/GuillocheWaves'
 
@@ -23,6 +23,7 @@ export default function Recommendations3DScene({
   const lastRotX = useRef(-16)
   const requestRef = useRef(null)
   const containerRef = useRef(null)
+  const isInView = useInView(containerRef, { once: true, amount: 0.15 })
 
   // Measure responsive cube size
   useEffect(() => {
@@ -196,10 +197,34 @@ export default function Recommendations3DScene({
         {/* ── 3D Scene Container ── */}
         <div className="relative w-full flex flex-col items-center justify-center pt-2">
           
-          {/* ── The Real 3D Glass Cube ── */}
-          <div
+          {/* ── The Real 3D Glass Cube: Floats from top right, hovers/rotates above hand for 2 seconds, then softly sits ── */}
+          <motion.div
             className="relative z-20 cursor-pointer"
             onClick={handleCubeClick}
+            initial={{
+              opacity: 0,
+              x: 210,
+              y: -230,
+              scale: 0.52,
+              rotateZ: 26,
+            }}
+            animate={
+              isInView
+                ? {
+                    opacity: [0, 1, 1, 1, 1],
+                    x: [210, 0, 0, 0, 0],
+                    y: [-230, -42, -38, -36, 0],
+                    scale: [0.52, 1, 1, 1, 1],
+                    rotateZ: [26, 0, 0, 0, 0],
+                  }
+                : {}
+            }
+            transition={{
+              duration: 4.0,
+              delay: 0.9,
+              times: [0, 0.28, 0.52, 0.78, 1],
+              ease: ['easeOut', 'easeInOut', 'easeInOut', [0.16, 1, 0.3, 1]],
+            }}
             style={{
               width: `${cubeSize}px`,
               height: `${cubeSize}px`,
@@ -395,10 +420,13 @@ export default function Recommendations3DScene({
                 }}
               />
             </div>
-          </div>
+          </motion.div>
 
-          {/* ── Charcoal Black Orbital Ring Beneath the Cube Base ── */}
-          <div
+          {/* ── Charcoal Black Orbital Ring Beneath the Cube Base (Fades in as cube touches down) ── */}
+          <motion.div
+            initial={{ opacity: 0, scale: 0.6 }}
+            animate={isInView ? { opacity: 1, scale: 1 } : {}}
+            transition={{ duration: 0.9, delay: 4.0, ease: 'easeOut' }}
             className="relative z-10 w-[270px] h-[48px] sm:w-[310px] sm:h-[56px] -mt-5 pointer-events-none"
             style={{
               transform: `rotateY(${rotationY * 0.25}deg)`,
@@ -410,10 +438,13 @@ export default function Recommendations3DScene({
             
             {/* Outer Subtle Orbital Ring */}
             <div className="absolute -inset-2.5 rounded-[100%] border border-slate-400/40 shadow-[0_0_15px_rgba(54,69,79,0.3)] pointer-events-none" />
-          </div>
+          </motion.div>
 
-          {/* ── Realistic Human Hand (Palm-Up from Image, Navy Suit Sleeve, 5 Fingers) Supporting the Cube ── */}
-          <div
+          {/* ── Realistic Human Hand (Palm-Up from Image: Sits in place first before cube arrives) ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 70, scale: 0.95 }}
+            animate={isInView ? { opacity: 1, y: 0, scale: 1 } : {}}
+            transition={{ duration: 0.8, delay: 0.2, ease: [0.25, 0.46, 0.45, 0.94] }}
             className="relative z-15 w-[310px] sm:w-[350px] -mt-6 sm:-mt-7 pointer-events-none flex justify-center"
             style={{
               transform: `rotateY(${Math.sin((rotationY * Math.PI) / 180) * 2.5}deg) translateY(${Math.cos((rotationY * Math.PI) / 90) * 1.5}px)`,
@@ -425,7 +456,7 @@ export default function Recommendations3DScene({
               alt="Realistic human hand supporting the 3D rotating cube with its fingertips"
               className="w-full h-auto object-contain filter drop-shadow-[0_15px_30px_rgba(30,37,43,0.3)]"
             />
-          </div>
+          </motion.div>
 
           {/* ── Popover over the Cube on Click ── */}
           <AnimatePresence>
@@ -500,7 +531,12 @@ export default function Recommendations3DScene({
       {/* ── Reviewer Selector Tabs & Active Testimonial Card ── */}
       <div className="w-full max-w-2xl mt-2 px-4 flex flex-col gap-3">
         {/* Face Selector Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-2">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={isInView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.6, delay: 1.1 }}
+          className="flex flex-wrap items-center justify-center gap-2"
+        >
           {cubeFaces.map((face, index) => (
             <button
               key={face.name}
@@ -509,7 +545,7 @@ export default function Recommendations3DScene({
               className={`flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all cursor-pointer ${
                 activeFaceIndex === index
                   ? 'bg-[#4f46e5] hover:bg-[#4338ca] text-white shadow-md shadow-indigo-500/30 scale-105 border border-indigo-400/40'
-                  : 'bg-white/95 border border-slate-200/90 text-slate-700 hover:bg-indigo-50/70 hover:border-indigo-300 hover:text-indigo-900'
+                  : 'bg-white/95 dark:bg-slate-800 border border-slate-200/90 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-indigo-50/70 dark:hover:bg-slate-700 hover:border-indigo-300 hover:text-indigo-900'
               }`}
             >
               <img
@@ -520,10 +556,16 @@ export default function Recommendations3DScene({
               <span>{face.name}</span>
             </button>
           ))}
-        </div>
+        </motion.div>
 
-        {/* Active Testimonial Detailed Preview */}
-        <div className="w-full p-4 rounded-2xl bg-gradient-to-r from-purple-50/70 via-white to-purple-50/70 border border-purple-200/80 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        {/* Active Testimonial Detailed Preview: Comes in rotating as cube descends */}
+        <motion.div
+          initial={{ opacity: 0, y: 40, rotateX: 20 }}
+          animate={isInView ? { opacity: 1, y: 0, rotateX: 0 } : {}}
+          transition={{ duration: 0.9, delay: 1.3, ease: [0.16, 1, 0.3, 1] }}
+          style={{ transformStyle: 'preserve-3d', perspective: '800px' }}
+          className="w-full p-4 rounded-2xl bg-gradient-to-r from-purple-50/70 via-white to-purple-50/70 dark:from-slate-800/80 dark:via-slate-900/90 dark:to-slate-800/80 border border-purple-200/80 dark:border-slate-700 shadow-sm flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4"
+        >
           <div className="flex items-center gap-3">
             <img
               src={activeReview.avatar}
@@ -553,7 +595,7 @@ export default function Recommendations3DScene({
               &ldquo;{activeReview.content}&rdquo;
             </p>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   )

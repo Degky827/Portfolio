@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
+import { useState, useRef } from 'react'
+import { motion, AnimatePresence, useInView } from 'framer-motion'
 import { Code, Database, Users, Terminal, ExternalLink, Calendar, MapPin, CheckCircle2, X, Sparkles } from 'lucide-react'
 import { useDarkMode } from '../../../shared/hooks/useDarkMode'
 import GuillocheWaves from '../ui/GuillocheWaves'
@@ -114,6 +114,16 @@ const Floating3DCube = ({ className, size = 38, delay = 0 }) => (
 export default function Experience3DRoadmap({ customExperiences = [] }) {
   const { darkMode } = useDarkMode()
   const [selectedMilestone, setSelectedMilestone] = useState(null)
+  const stageRef = useRef(null)
+  const isInView = useInView(stageRef, { once: true, amount: 0.15 })
+
+  // Sequential Entrance Offsets for Cards (Different angles and positions)
+  const cardEntranceOffsets = [
+    { x: -50, y: -45 }, // Card 0: from top-left
+    { x: 0, y: -65 },   // Card 1: from top
+    { x: 65, y: -15 },  // Card 2: from right
+    { x: -45, y: 55 },  // Card 3: from bottom-left
+  ]
 
   // Real Experience Data with 75px Branch Length (Half of prior length) and 3 Languages With Icons
   const defaultMilestones = [
@@ -273,7 +283,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       {/* ═════════════════════════════════════════════════════════════════
           DESKTOP WIDESCREEN 3D CURVED ROADMAP (lg & xl screens)
           ═════════════════════════════════════════════════════════════════ */}
-      <div className="hidden lg:block relative w-full h-[740px] my-4">
+      <div ref={stageRef} className="hidden lg:block relative w-full h-[740px] my-4">
         {/* ── The 3D Curved Track Vector Layer ── */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none overflow-visible"
@@ -298,50 +308,63 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
             </filter>
           </defs>
 
-          {/* 1. Track Deep Shadow on Floor */}
-          <path
+          {/* 1. Track Deep Shadow on Floor (Draws dynamically first) */}
+          <motion.path
             d="M 15,255 C 180,262 400,268 560,275 C 760,285 1070,320 1095,430 C 1110,520 990,570 860,590 C 720,612 530,642 410,655 C 290,670 190,685 100,695"
             stroke="rgba(30, 41, 59, 0.22)"
             strokeWidth="18"
             strokeLinecap="round"
             transform="translate(4, 14)"
             filter="blur(10px)"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+            transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
 
           {/* 2. Track Soft Ambient Drop Shadow */}
-          <path
+          <motion.path
             d="M 15,255 C 180,262 400,268 560,275 C 760,285 1070,320 1095,430 C 1110,520 990,570 860,590 C 720,612 530,642 410,655 C 290,670 190,685 100,695"
             stroke="rgba(15, 23, 42, 0.16)"
             strokeWidth="12"
             strokeLinecap="round"
             transform="translate(2, 7)"
             filter="blur(5px)"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+            transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
 
           {/* 3. Main Dark 3D Tube Track (Charcoal Black) */}
-          <path
+          <motion.path
             d="M 15,255 C 180,262 400,268 560,275 C 760,285 1070,320 1095,430 C 1110,520 990,570 860,590 C 720,612 530,642 410,655 C 290,670 190,685 100,695"
             stroke="#1e252b"
             strokeWidth="8.5"
             strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+            transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
 
           {/* 4. Upper Specular Tube Highlight */}
-          <path
+          <motion.path
             d="M 15,255 C 180,262 400,268 560,275 C 760,285 1070,320 1095,430 C 1110,520 990,570 860,590 C 720,612 530,642 410,655 C 290,670 190,685 100,695"
             stroke="url(#trackHighlight2)"
             strokeWidth="2.5"
             strokeLinecap="round"
+            initial={{ pathLength: 0, opacity: 0 }}
+            animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+            transition={{ duration: 1.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           />
 
-          {/* ── Vertical Branches (75px half-length stems pointing to cards: White in Dark Mode) ── */}
-          {milestones.map((m) => {
+          {/* ── Vertical Branches (75px half-length stems connecting sequentially) ── */}
+          {milestones.map((m, index) => {
             const isHovered = selectedMilestone === m.id
             const branchColor = darkMode ? '#ffffff' : '#1e252b'
+            const stemDelay = 1.3 + index * 0.5
             return (
               <g key={m.id} className="transition-all duration-300">
-                {/* 75px Branch Stem Line (Charcoal Black in Light, White in Dark Mode) */}
-                <line
+                {/* 75px Branch Stem Line (Draws as card arrives) */}
+                <motion.line
                   x1={m.stemX}
                   y1={m.stemStartY}
                   x2={m.nodeX}
@@ -350,19 +373,25 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   strokeWidth="3.5"
                   strokeLinecap="round"
                   className="stroke-[#1e252b] dark:stroke-white transition-colors duration-300"
+                  initial={{ pathLength: 0, opacity: 0 }}
+                  animate={isInView ? { pathLength: 1, opacity: 1 } : {}}
+                  transition={{ duration: 0.45, delay: stemDelay, ease: 'easeOut' }}
                 />
 
-                {/* Branch Stem Top Joint Pin at bottom of card (White in Dark Mode) */}
-                <circle
+                {/* Branch Stem Top Joint Pin at bottom of card */}
+                <motion.circle
                   cx={m.stemX}
                   cy={m.stemStartY}
                   r="4.5"
                   fill={branchColor}
                   className="fill-[#1e252b] dark:fill-white transition-colors duration-300"
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { scale: 1 } : {}}
+                  transition={{ duration: 0.3, delay: stemDelay + 0.15 }}
                 />
 
                 {/* Node Outer Glowing Halo on Track */}
-                <circle
+                <motion.circle
                   cx={m.nodeX}
                   cy={m.nodeY}
                   r="16"
@@ -372,10 +401,13 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   filter={darkMode ? 'url(#whiteGlow2)' : 'url(#charcoalGlow2)'}
                   opacity={isHovered ? 1 : 0.85}
                   className="stroke-[#36454f] dark:stroke-white transition-colors duration-300"
+                  initial={{ scale: 0, opacity: 0 }}
+                  animate={isInView ? { scale: 1, opacity: isHovered ? 1 : 0.85 } : {}}
+                  transition={{ duration: 0.4, delay: stemDelay - 0.1, type: 'spring', stiffness: 220 }}
                 />
 
                 {/* Node Middle Rim */}
-                <circle
+                <motion.circle
                   cx={m.nodeX}
                   cy={m.nodeY}
                   r="10.5"
@@ -383,32 +415,40 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   stroke={branchColor}
                   strokeWidth="3.2"
                   className="stroke-[#1e252b] dark:stroke-white transition-colors duration-300"
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { scale: 1 } : {}}
+                  transition={{ duration: 0.3, delay: stemDelay - 0.1 }}
                 />
 
-                {/* Node Center Core (White in Dark Mode) */}
-                <circle
+                {/* Node Center Core */}
+                <motion.circle
                   cx={m.nodeX}
                   cy={m.nodeY}
                   r="4.8"
                   fill={branchColor}
                   className="fill-[#1e252b] dark:fill-white transition-colors duration-300"
+                  initial={{ scale: 0 }}
+                  animate={isInView ? { scale: 1 } : {}}
+                  transition={{ duration: 0.3, delay: stemDelay - 0.1 }}
                 />
               </g>
             )
           })}
         </svg>
 
-        {/* ── 4 Floating Frosted Glass Cards (Clickable, with 3 languages & icons) ── */}
-        {milestones.map((m) => {
+        {/* ── 4 Floating Frosted Glass Cards (Sequentially animated from distinct positions) ── */}
+        {milestones.map((m, index) => {
           const Icon = m.icon
           const isSelected = selectedMilestone === m.id
+          const entrance = cardEntranceOffsets[index] || { x: 0, y: 30 }
+          const cardDelay = 1.4 + index * 0.5
 
           return (
             <motion.div
               key={m.id}
-              initial={{ opacity: 0, y: 15 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.1 }}
+              initial={{ opacity: 0, x: entrance.x, y: entrance.y, scale: 0.92 }}
+              animate={isInView ? { opacity: 1, x: 0, y: 0, scale: 1 } : {}}
+              transition={{ duration: 0.65, delay: cardDelay, ease: [0.16, 1, 0.3, 1] }}
               whileHover={{ y: -4, scale: 1.02 }}
               onClick={() => setSelectedMilestone(m.id)}
               style={{
