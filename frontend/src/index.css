@@ -192,6 +192,12 @@ body {
   perspective: 1200px;
 }
 
+/* Smooth native scroll behavior */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
 /* Section depth wrapper */
 .section-depth {
   transform-style: preserve-3d;
