@@ -9,3 +9,10 @@ export { default as AnimatedSkillIcon } from './AnimatedSkillIcon'
 export { default as SkillsErrorBoundary } from './SkillsErrorBoundary'
 export { default as StatsDashboard3D } from './StatsDashboard3D'
 export { skillIcons, getSkillIcon, defaultIcon } from './SkillIconMapper'
+export { default as EcosystemInteractiveView } from './ecosystem/EcosystemInteractiveView'
+export { default as EcosystemScene3D } from './ecosystem/EcosystemScene3D'
+export { default as BackendEngine3D } from './ecosystem/BackendEngine3D'
+export { default as TechDetailModal } from './ecosystem/TechDetailModal'
+export { default as ArchitectureListView } from './ecosystem/ArchitectureListView'
+
+
