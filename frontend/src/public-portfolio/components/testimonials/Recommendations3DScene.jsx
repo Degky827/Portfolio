@@ -196,7 +196,7 @@ export default function Recommendations3DScene({
 
       {/* ── Main 3D Stage: Hand Supporting the Glowing Tray with 3D Glass Cube ── */}
       <div
-        className="relative w-full max-w-lg aspect-[4/3.4] sm:aspect-[4/3.2] max-h-[52vh] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing p-2 select-none"
+        className="relative w-full max-w-lg aspect-[4/3.2] sm:aspect-[4/3.0] flex flex-col items-center justify-center cursor-grab active:cursor-grabbing p-2 select-none"
         onMouseDown={(e) => handleDragStart(e.clientX, e.clientY)}
         onMouseMove={(e) => handleDragMove(e.clientX, e.clientY)}
         onMouseUp={handleDragEnd}
