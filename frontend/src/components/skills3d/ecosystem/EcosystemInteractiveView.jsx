@@ -10,8 +10,8 @@ export default function EcosystemInteractiveView() {
     <div
       className="w-full relative transition-colors duration-300 overflow-hidden bg-transparent"
       style={{
-        height: 'calc(100vh - 5.5rem)',
-        maxHeight: '840px',
+        height: '750px',
+        maxHeight: '800px',
       }}
     >
       <Suspense

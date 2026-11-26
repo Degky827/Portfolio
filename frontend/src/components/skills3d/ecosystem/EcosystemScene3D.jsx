@@ -3815,9 +3815,6 @@ export default function EcosystemScene3D({ darkMode = true }) {
       {/* Auto-Rotating Camera Tour with Dynamic Front Zoom-in */}
       <CameraTourController tourStationRef={tourStationRef} />
 
-      {/* 3D Title at Top: Large Black Extruded "What am I know ?" (Static & Solid) */}
-      <FloatingTitle3D darkMode={darkMode} />
-
       {/* Central 3D Developer Character (First seat appears, then man sits) */}
       <CentralDeveloper darkMode={darkMode} daisRef={daisRef} manRef={manRef} />
 
