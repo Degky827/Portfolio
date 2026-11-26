@@ -212,9 +212,6 @@ export default function Footer() {
                           if (item.isExternal) return
                           e.preventDefault()
                           navigate(targetPath)
-                          if (typeof window !== 'undefined') {
-                            window.scrollTo({ top: 0, behavior: 'smooth' })
-                          }
                         }}
                         className="text-sm sm:text-base md:text-lg hover:text-primary transition-colors flex items-center gap-2 sm:gap-3 group font-medium sm:font-bold cursor-pointer"
                         style={{ color: 'var(--footer-text-secondary)' }}

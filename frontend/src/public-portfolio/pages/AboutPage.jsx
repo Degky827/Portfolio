@@ -26,7 +26,7 @@ export default function AboutPage() {
   useSocketRefresh('content:updated', fetchContent, { type: 'homepage' })
 
   return (
-    <SectionDepth sectionId="about" className="py-2 sm:py-4">
+    <SectionDepth sectionId="about" className="py-4 sm:py-8">
       <About
         content={homeContent?.about}
         hero={homeContent?.hero}
