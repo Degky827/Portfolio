@@ -18,7 +18,12 @@ const IntroContext = createContext(null)
 
 export function IntroProvider({ children }) {
   const [introComplete, setIntroComplete] = useState(() => {
-    try { return sessionStorage.getItem(SESSION_KEY) === 'true' } catch { return false }
+    try {
+      const stored = sessionStorage.getItem(SESSION_KEY)
+      return stored !== null ? stored === 'true' : true
+    } catch {
+      return true
+    }
   })
   const [currentScene, setCurrentScene] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
