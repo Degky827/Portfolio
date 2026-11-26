@@ -16,24 +16,22 @@ export function resolveNavPath(item) {
   const rawUrl = (typeof item.url === 'string' ? item.url : '').trim()
   if (rawUrl && !rawUrl.startsWith('http://') && !rawUrl.startsWith('https://') && !rawUrl.startsWith('mailto:')) {
     const cleanUrl = rawUrl.replace(/^#\/?/, '').replace(/^\//, '').trim().toLowerCase()
-    if (cleanUrl && cleanUrl !== 'home' && cleanUrl !== '#') {
-      for (const k of KNOWN_SECTIONS) {
-        if (cleanUrl === k || cleanUrl.startsWith(k)) return `/${k}`
-      }
-      return `/${cleanUrl}`
+    if (!cleanUrl || cleanUrl === 'home' || cleanUrl === '#') return '/'
+    for (const k of KNOWN_SECTIONS) {
+      if (cleanUrl === k || cleanUrl.startsWith(k)) return `/${k}`
     }
+    return `/${cleanUrl}`
   }
 
   // 2. Section ID
   const rawSec = (typeof item.sectionId === 'string' ? item.sectionId : '').trim().toLowerCase()
   if (rawSec) {
     const cleanSec = rawSec.replace(/^#\/?/, '').replace(/^\//, '')
-    if (cleanSec && cleanSec !== 'home' && cleanSec !== 'hero') {
-      for (const k of KNOWN_SECTIONS) {
-        if (cleanSec === k || cleanSec.startsWith(k)) return `/${k}`
-      }
-      return `/${cleanSec}`
+    if (!cleanSec || cleanSec === 'home' || cleanSec === 'hero') return '/'
+    for (const k of KNOWN_SECTIONS) {
+      if (cleanSec === k || cleanSec.startsWith(k)) return `/${k}`
     }
+    return `/${cleanSec}`
   }
 
   // 3. Title / label heuristic fallback

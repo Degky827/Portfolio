@@ -8,15 +8,16 @@ import { getNavigation, getNavbarSettings } from '../../shared/services/navigati
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 import { resolveNavPath, isNavPathActive } from '../shared/navUtils'
 
-const FALLBACK_NAV_IDS = ['about', 'skills', 'experience', 'projects', 'contact']
+const FALLBACK_NAV_IDS = ['about', 'skills', 'experience', 'projects', 'testimonials', 'contact']
 
 function buildFallbackItems() {
   return [
-    { _id: 'about', title: 'About', sectionId: 'about', url: '/about', order: 0, visible: true, active: true },
-    { _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 1, visible: true, active: true },
-    { _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 2, visible: true, active: true },
-    { _id: 'projects', title: 'Work', sectionId: 'projects', url: '/projects', order: 3, visible: true, active: true },
-    { _id: 'contact', title: 'Contact', sectionId: 'contact', url: '/contact', order: 4, visible: true, active: true },
+    { _id: 'about', title: 'About', sectionId: 'about', url: '/about', order: 1, visible: true, active: true },
+    { _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 2, visible: true, active: true },
+    { _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 3, visible: true, active: true },
+    { _id: 'projects', title: 'Work', sectionId: 'projects', url: '/projects', order: 4, visible: true, active: true },
+    { _id: 'testimonials', title: 'Testimonials', sectionId: 'testimonials', url: '/testimonials', order: 5, visible: true, active: true },
+    { _id: 'contact', title: 'Contact', sectionId: 'contact', url: '/contact', order: 6, visible: true, active: true },
   ]
 }
 
@@ -80,13 +81,23 @@ export default function Navbar({ darkMode, onToggleDark }) {
       const k = (i.sectionId || i.title || i.url || '').toLowerCase()
       return k.includes('experience')
     })
+    const hasTestimonials = navItems.some((i) => {
+      const k = (i.sectionId || i.title || i.url || '').toLowerCase()
+      return k.includes('testimonial') || k.includes('recommend')
+    })
 
-    let merged = [...navItems]
+    let merged = navItems.filter((i) => {
+      const k = (i.sectionId || i.title || i.url || '').toLowerCase()
+      return k !== 'home' && k !== '/' && k !== '#home'
+    })
     if (!hasSkills) {
-      merged.push({ _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 1.5, visible: true, active: true })
+      merged.push({ _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 2, visible: true, active: true })
     }
     if (!hasExp) {
-      merged.push({ _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 2.5, visible: true, active: true })
+      merged.push({ _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 3, visible: true, active: true })
+    }
+    if (!hasTestimonials) {
+      merged.push({ _id: 'testimonials', title: 'Testimonials', sectionId: 'testimonials', url: '/testimonials', order: 5, visible: true, active: true })
     }
     return merged.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
   }, [navItems, navLoaded])
@@ -268,9 +279,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
     const targetPath = resolveNavPath(item)
     navigate(targetPath)
-    if (typeof window !== 'undefined') {
-      window.scrollTo({ top: 0, behavior: 'smooth' })
-    }
   }, [navigate])
 
   const hoverUnderlineStyle = useMemo(() => ({
@@ -306,9 +314,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
           <Logo settings={mergedSettings} linkTo="/" onNavClick={(e) => {
             e.preventDefault()
             navigate('/')
-            if (typeof window !== 'undefined') {
-              window.scrollTo({ top: 0, behavior: 'smooth' })
-            }
             setIsOpen(false)
           }} />
         </div>
@@ -367,9 +372,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 onClick={(e) => {
                   e.preventDefault()
                   navigate('/cv')
-                  if (typeof window !== 'undefined') {
-                    window.scrollTo({ top: 0, behavior: 'smooth' })
-                  }
                 }}
                 className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-all duration-200 cursor-pointer ${
                   location.pathname === '/cv'
@@ -418,7 +420,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
             <button
               onClick={() => {
                 navigate('/cv')
-                if (typeof window !== 'undefined') window.scrollTo({ top: 0, behavior: 'smooth' })
+                setIsOpen(false)
               }}
               className={`h-9 px-2.5 flex items-center gap-1 rounded-lg text-xs font-semibold transition-colors cursor-pointer ${
                 location.pathname === '/cv'
@@ -545,9 +547,6 @@ export default function Navbar({ darkMode, onToggleDark }) {
                     e.preventDefault()
                     navigate('/cv')
                     setIsOpen(false)
-                    if (typeof window !== 'undefined') {
-                      window.scrollTo({ top: 0, behavior: 'smooth' })
-                    }
                   }}
                 >
                   <span className="group-hover:translate-x-2 transition-transform duration-300 flex items-center gap-2">
