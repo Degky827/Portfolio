@@ -30,7 +30,7 @@ function Hero({ content }) {
   return (
     <section
       id="home"
-      className="w-full h-screen min-h-[100svh] bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden relative select-none"
+      className="w-full min-h-[calc(100vh-5rem)] h-[calc(100vh-5rem)] bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 relative select-none"
       aria-label="Hero section"
     >
       {/* ── True 3D Home Scene: 3D Workstation, 3D Extruded Title & 3D Background Curves ── */}

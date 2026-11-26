@@ -79,10 +79,10 @@ function SceneContent({ darkMode, profileData, s3, controlsRef }) {
     return o ? o.visible !== false : fallback
   }
 
-  // Baseline zoom-out scale: 0.88 (the existing baseline view)
-  const baseScale = 0.88
-  // Maximum zoom-in scale: 1.05 (magnifies all parts together by ~20% from floor base)
-  const maxScale = 1.05
+  // Baseline zoom-out scale: scaled down proportionally for clean framing
+  const baseScale = 0.68
+  // Maximum zoom-in scale
+  const maxScale = 0.78
 
   useFrame(({ clock }) => {
     // Smooth ~12-second sinusoidal breathing cycle: 0 -> 1 -> 0
@@ -354,7 +354,7 @@ export default function HeroDesktopScene({ className = '', profileData, scene3D 
 
   // Prominent close-up framing encompassing 3D header, workstation, and background
   const inlineCamera = useMemo(() => ({
-    position: [0.0, 1.40, 3.10],
+    position: [0.0, 1.45, 3.35],
     fov: 45,
     near: 0.1,
     far: 25,
