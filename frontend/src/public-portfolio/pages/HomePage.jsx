@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback, lazy, Suspense } from 'react'
+import { useEffect, useState, useCallback, lazy, Suspense, memo } from 'react'
 import Hero from './sections/Hero'
 import About from './sections/About'
 import Experience from './sections/Experience'
@@ -18,7 +18,7 @@ const spinner = (
   </div>
 )
 
-export default function HomePage() {
+function HomePage() {
   const [content, setContent] = useState(null)
   const [aboutContent, setAboutContent] = useState(null)
 
@@ -100,3 +100,5 @@ export default function HomePage() {
     </>
   )
 }
+
+export default memo(HomePage)
