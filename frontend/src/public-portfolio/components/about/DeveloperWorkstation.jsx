@@ -102,7 +102,7 @@ const DeveloperWorkstation = memo(function DeveloperWorkstation({
           transformStyle: 'preserve-3d',
           perspective: '1200px',
           cursor: isDragging ? 'grabbing' : 'grab',
-          touchAction: 'none', // Prevent scroll on touch devices
+          touchAction: 'pan-y', // Allow smooth vertical scroll on touch devices
           userSelect: 'none', // Prevent text selection while dragging
         }}
       >
