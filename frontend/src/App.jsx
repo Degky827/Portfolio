@@ -65,7 +65,7 @@ function PublicLayout() {
         <Navbar darkMode={darkMode} onToggleDark={toggleDarkMode} />
       </Suspense>
       <ScrollDrivenEffects>
-        <main className="pt-28 sm:pt-32 relative">
+        <main className="pt-20 sm:pt-24 relative">
           <PageFlipTransition />
         </main>
       </ScrollDrivenEffects>
