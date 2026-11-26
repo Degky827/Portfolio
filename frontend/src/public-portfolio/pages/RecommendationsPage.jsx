@@ -3,7 +3,7 @@ import SectionDepth from '../shared/SectionDepth'
 
 export default function RecommendationsPage() {
   return (
-    <SectionDepth sectionId="testimonials" className="py-4 sm:py-8">
+    <SectionDepth sectionId="testimonials" className="p-0">
       <Testimonials />
     </SectionDepth>
   )

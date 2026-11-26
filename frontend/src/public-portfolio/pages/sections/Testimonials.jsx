@@ -164,7 +164,7 @@ export default function Testimonials() {
   return (
     <section
       id="testimonials"
-      className="relative min-h-screen py-16 sm:py-24 bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
+      className="relative min-h-[calc(100vh-5.5rem)] py-3 sm:py-5 lg:py-6 bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden flex flex-col justify-between"
       aria-label="Testimonials and Recommendations"
     >
       {/* ── Monochromatic Purple Guilloche Ribbon Wave Background (matching About page) ── */}
@@ -175,30 +175,30 @@ export default function Testimonials() {
       <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
       <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full flex-1 flex flex-col justify-center">
         {/* ── Top Header Exactly Matching 3D Reference Image ── */}
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: false, margin: '-60px' }}
           transition={{ duration: shouldReduceMotion ? 0.1 : 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
-          className="text-center mb-8 sm:mb-12"
+          className="text-center mb-3 sm:mb-4"
         >
           {/* 3D Extruded Title: WHAT PEOPLE SAY matching About page */}
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black mb-1.5 sm:mb-2 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
             WHAT PEOPLE SAY
           </h2>
 
           {/* Subtitle */}
-          <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4 font-normal">
+          <p className="text-xs sm:text-sm md:text-base text-slate-600 dark:text-slate-300 max-w-xl mx-auto leading-relaxed px-4 font-normal">
             Real experiences from people I&apos;ve worked with.
           </p>
 
           {/* Decorative Diamond Accent Line: <> ◇ <> matching About page */}
-          <div className="flex items-center justify-center gap-3 mt-5">
-            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
-            <div className="w-2.5 h-2.5 rotate-45 border-2 border-[#36454F] dark:border-slate-300 shadow-[0_0_12px_rgba(54,69,79,0.6)] dark:shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
-            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+          <div className="flex items-center justify-center gap-3 mt-2 sm:mt-2.5">
+            <div className="h-[1.5px] w-12 sm:w-16 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+            <div className="w-2 h-2 rotate-45 border-2 border-[#36454F] dark:border-slate-300 shadow-[0_0_12px_rgba(54,69,79,0.6)] dark:shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
+            <div className="h-[1.5px] w-12 sm:w-16 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
           </div>
         </motion.div>
 
