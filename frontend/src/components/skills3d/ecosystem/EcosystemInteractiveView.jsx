@@ -8,12 +8,10 @@ export default function EcosystemInteractiveView() {
 
   return (
     <div
-      className={`w-full relative transition-colors duration-300 overflow-hidden ${
-        darkMode ? 'bg-[#0A0E17]' : 'bg-[#FFFFFF]'
-      }`}
+      className="w-full relative transition-colors duration-300 overflow-hidden bg-transparent"
       style={{
-        height: 'calc(100vh - 80px)',
-        minHeight: '750px',
+        height: 'calc(100vh - 5.5rem)',
+        maxHeight: '840px',
       }}
     >
       <Suspense
@@ -30,8 +28,9 @@ export default function EcosystemInteractiveView() {
             antialias: true,
             powerPreference: 'high-performance',
             toneMappingExposure: 1.15,
+            alpha: true,
           }}
-          style={{ width: '100%', height: '100%' }}
+          style={{ width: '100%', height: '100%', background: 'transparent' }}
         >
           <EcosystemScene3D darkMode={darkMode} />
         </Canvas>
