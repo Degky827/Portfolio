@@ -26,7 +26,7 @@ export default function Skills() {
           transition={{ duration: 0.6 }}
           className="text-center mb-6 sm:mb-8"
         >
-          {/* 3D Extruded Title: WHAT I KNOW (Matches other pages) */}
+          {/* 3D Extruded Title: What am I know? (Matches other pages) */}
           <h2
             className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
             style={{
@@ -41,7 +41,7 @@ export default function Skills() {
               `,
             }}
           >
-            What I Know
+            What am I know?
           </h2>
 
           {/* Subtitle */}
