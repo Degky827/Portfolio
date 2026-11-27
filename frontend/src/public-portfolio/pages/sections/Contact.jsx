@@ -37,7 +37,7 @@ const YoutubeIcon = ({ size = 20, className = '' }) => (
   </svg>
 )
 
-// 3D Physical Claymorphic Info Card with Layered Z-Depth and Real Raised 3D Podium Showing 3D Sides
+// 3D Physical Claymorphic Info Card with Layered Z-Depth and High-Contrast Visibility in Both Themes
 function ContactInfoCard3D({ icon: Icon, title, subtitle, href }) {
   const cardRef = useRef(null)
   const [rotX, setRotX] = useState(0)
@@ -75,49 +75,23 @@ function ContactInfoCard3D({ icon: Icon, title, subtitle, href }) {
       style={{
         transformStyle: 'preserve-3d',
         perspective: 800,
-        background: 'linear-gradient(160deg, #ffffff 0%, #edf1f7 100%)',
         borderRadius: '1.25rem',
-        boxShadow: isHover
-          ? `0 5px 0 #cfd8e5,
-             3px 6px 0 #c2cee0,
-             -1px 4px 0 #dbe4ef,
-             0 12px 24px rgba(145, 165, 190, 0.45),
-             -8px -8px 20px rgba(255, 255, 255, 0.98),
-             inset 1px 1px 2px #ffffff`
-          : `0 3.5px 0 #d9e2ee,
-             2px 4px 0 #cdd8e6,
-             -1px 3px 0 #e4ecf6,
-             0 7px 16px rgba(155, 172, 195, 0.35),
-             -6px -6px 14px rgba(255, 255, 255, 0.95),
-             inset 1px 1px 2px #ffffff`,
-        border: '1px solid rgba(255, 255, 255, 0.9)',
       }}
-      className="relative py-3.5 px-2.5 sm:px-3 flex flex-col items-center justify-center text-center cursor-pointer select-none group h-full"
+      className="relative py-3.5 px-2.5 sm:px-3 flex flex-col items-center justify-center text-center cursor-pointer select-none group h-full bg-[#f4f7fb] dark:bg-[#1e293b] border border-white/90 dark:border-slate-700/80 shadow-[0_6px_16px_rgba(155,172,195,0.35)] dark:shadow-[0_8px_20px_rgba(0,0,0,0.5)] transition-colors"
     >
-      {/* 3D Raised Circular Button / Podium with Visible Extruded 3D Sides */}
+      {/* 3D Raised Circular Button / Podium */}
       <div
-        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 transition-transform duration-300"
+        className="w-11 h-11 sm:w-12 sm:h-12 rounded-full flex items-center justify-center mb-2 transition-transform duration-300 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md group-hover:scale-105"
         style={{
           transform: 'translateZ(26px)',
-          background: 'linear-gradient(145deg, #ffffff 0%, #e9edf4 100%)',
-          boxShadow: `
-            0 3px 0 #cfd9e7,
-            2px 3.5px 0 #c2cee0,
-            -1px 2px 0 #d9e3ee,
-            2px 5px 9px rgba(150, 168, 192, 0.4),
-            -2px -2px 6px rgba(255, 255, 255, 0.95),
-            inset 1px 1px 2px #ffffff,
-            inset -1px -1px 2px rgba(160, 175, 195, 0.25)
-          `,
-          border: '1px solid rgba(255, 255, 255, 0.95)',
         }}
       >
-        <Icon size={19} className="text-[#1e2530] transition-transform duration-300 group-hover:scale-110 drop-shadow-[0_1px_1px_rgba(255,255,255,0.8)]" />
+        <Icon size={19} className="text-slate-800 dark:text-cyan-400 transition-colors" />
       </div>
 
       {/* Title with Elevated 3D Depth */}
       <span
-        className="text-xs font-bold text-[#111827] tracking-tight block transition-transform duration-300"
+        className="text-xs font-bold text-slate-900 dark:text-white tracking-tight block transition-colors"
         style={{ transform: 'translateZ(18px)' }}
       >
         {title}
@@ -125,7 +99,7 @@ function ContactInfoCard3D({ icon: Icon, title, subtitle, href }) {
 
       {/* Subtitle with Elevated 3D Depth */}
       <span
-        className="text-[10px] sm:text-[11px] text-[#4b5563] font-medium mt-0.5 leading-tight truncate max-w-full block transition-transform duration-300 px-1"
+        className="text-[10px] sm:text-[11px] text-slate-600 dark:text-slate-300 font-medium mt-0.5 leading-tight truncate max-w-full block transition-colors px-1"
         style={{ transform: 'translateZ(12px)' }}
       >
         {subtitle}
@@ -164,31 +138,14 @@ function SocialCoinButton3D({ icon: Icon, name, url }) {
         transition={{ type: 'spring', stiffness: 380, damping: 22 }}
         style={{
           transformStyle: 'preserve-3d',
-          background: 'linear-gradient(150deg, #ffffff 10%, #eef3f9 90%)',
-          boxShadow: isHover
-            ? `0 4.5px 0 #cfd9e6,
-               2px 5px 0 #c1cde0,
-               -1px 3px 0 #dbe4ef,
-               0 12px 20px rgba(140, 160, 185, 0.5),
-               -5px -5px 12px rgba(255, 255, 255, 0.98),
-               inset 0 1.5px 2px #ffffff,
-               inset 0 -2px 3px rgba(160, 175, 195, 0.3)`
-            : `0 3.5px 0 #d8e2ee,
-               1.5px 4px 0 #cbd7e6,
-               -1px 2.5px 0 #e4ecf6,
-               0 7px 14px rgba(150, 170, 195, 0.4),
-               -4px -4px 10px rgba(255, 255, 255, 0.95),
-               inset 0 1.5px 2px #ffffff,
-               inset 0 -2px 3px rgba(160, 175, 195, 0.25)`,
-          border: '1px solid rgba(255, 255, 255, 0.9)',
         }}
-        className="relative z-10 w-12 h-12 sm:w-13 sm:h-13 rounded-full flex items-center justify-center text-[#1e2530] hover:text-black cursor-pointer"
+        className="relative z-10 w-12 h-12 sm:w-13 sm:h-13 rounded-full flex items-center justify-center text-slate-800 dark:text-white bg-white dark:bg-[#1e293b] hover:bg-slate-50 dark:hover:bg-slate-700 border border-white/90 dark:border-slate-700 shadow-[0_6px_14px_rgba(0,0,0,0.12)] dark:shadow-[0_8px_18px_rgba(0,0,0,0.5)] cursor-pointer transition-colors"
         title={name}
         aria-label={name}
       >
         <span
           style={{ transform: 'translateZ(12px)' }}
-          className="block drop-shadow-[0_1px_0_rgba(255,255,255,0.85)]"
+          className="block"
         >
           <Icon size={20} />
         </span>
@@ -425,9 +382,9 @@ export default function Contact() {
           transition={{ duration: 0.6 }}
           className="text-center mb-10 sm:mb-14"
         >
-          {/* 3D Extruded Title: Let's collaborate! */}
+          {/* 3D Extruded Title: Let's collaborate! (Refined minimized text size) */}
           <h2
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
+            className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
             style={{
               textShadow: `
                 0 1px 0 #64748b,

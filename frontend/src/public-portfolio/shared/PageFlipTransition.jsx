@@ -7,13 +7,13 @@ export default function PageFlipTransition() {
 
   return (
     <div className="relative w-full">
-      <AnimatePresence mode="popLayout" initial={false}>
+      <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={location.pathname}
-          initial={prefersReduced ? { opacity: 0 } : { opacity: 0, y: 12 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={prefersReduced ? { opacity: 0 } : { opacity: 0, y: -12 }}
-          transition={{ duration: 0.22, ease: [0.25, 1, 0.5, 1] }}
+          initial={prefersReduced ? { opacity: 1 } : { opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={prefersReduced ? { opacity: 1 } : { opacity: 0 }}
+          transition={{ duration: 0.15, ease: 'easeOut' }}
           className="w-full relative"
         >
           <Outlet />
