@@ -132,8 +132,10 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       period: '2023 – Present',
       dateSub: 'Jan 2023 – Present',
       role: 'Software Development Intern',
-      company: 'Askuala',
-      description: 'Joined Askuala building scalable web apps and modern frontend practices with React, Node.js, and MongoDB.',
+      company: 'Askuala Link',
+      companyUrl: 'https://www.askualalink.com/',
+      logoUrl: '/assets/logos/askuala-logo.png',
+      description: 'Joined Askuala Link building scalable web apps and modern frontend practices with React, Node.js, and MongoDB.',
       icon: Code,
       iconType: 'code',
       // Coordinates in 1150 x 740 coordinate space
@@ -144,7 +146,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       cardLeft: '20px',
       cardTop: '50px',
       cardWidth: '350px',
-      cardHeight: '135px',
+      cardHeight: '140px',
       languages: [
         { name: 'React', icon: ReactIcon },
         { name: 'Node.js', icon: NodeIcon },
@@ -158,12 +160,14 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       ],
     },
     {
-      id: 'freelance',
+      id: 'alyah',
       period: '2022',
       dateSub: 'Jun 2022 – Dec 2022',
       role: 'Full Stack Developer',
-      company: 'Freelance Projects',
-      description: 'Delivered custom production applications and automated CI/CD deployment pipelines for international clients.',
+      company: 'Alyah Technologies',
+      companyUrl: 'https://alyahsoftware.com/',
+      logoUrl: '/assets/logos/alyah-logo.png',
+      description: 'Delivered custom production applications and automated CI/CD deployment pipelines for enterprise clients.',
       icon: DockerIcon,
       iconType: 'docker',
       // Coordinates in 1150 x 740 coordinate space
@@ -174,7 +178,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       cardLeft: '480px',
       cardTop: '65px',
       cardWidth: '350px',
-      cardHeight: '135px',
+      cardHeight: '140px',
       languages: [
         { name: 'Vue.js', icon: VueIcon },
         { name: 'Laravel', icon: LaravelIcon },
@@ -182,7 +186,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       ],
       tags: ['Vue.js', 'Laravel', 'PostgreSQL', 'TailwindCSS'],
       contributions: [
-        'Built 5+ production applications for international clients',
+        'Built 5+ production applications for enterprise clients',
         'Implemented secure authentication and role-based access control',
         'Set up automated deployment pipelines with CI/CD',
       ],
@@ -193,6 +197,8 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       dateSub: 'Sep 2019 – Jun 2023',
       role: 'Computer Science Student',
       company: 'Bahir Dar University',
+      companyUrl: 'https://www.bdu.edu.et/',
+      logoUrl: '/assets/logos/bdu-logo.png',
       description: 'Promoted research on computer vision, algorithms, data structures, and software engineering architecture.',
       icon: Database,
       iconType: 'database',
@@ -204,7 +210,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       cardLeft: '640px',
       cardTop: '380px',
       cardWidth: '350px',
-      cardHeight: '135px',
+      cardHeight: '140px',
       languages: [
         { name: 'Python', icon: PythonIcon },
         { name: 'C++', icon: CppIcon },
@@ -222,7 +228,9 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       period: '2024 – Present',
       dateSub: '2024 – Present',
       role: 'Distributed Systems & Mobile Developer',
-      company: 'Askuals Link',
+      company: 'Askuala Link',
+      companyUrl: 'https://www.askualalink.com/',
+      logoUrl: '/assets/logos/askuala-logo.png',
       description: 'Contributed to transport microservices, mobile driver workflows, and containerized Docker deployments.',
       icon: Users,
       iconType: 'team',
@@ -234,7 +242,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
       cardLeft: '175px',
       cardTop: '445px',
       cardWidth: '350px',
-      cardHeight: '135px',
+      cardHeight: '140px',
       languages: [
         { name: 'Flutter', icon: FlutterIcon },
         { name: 'Node.js', icon: NodeIcon },
@@ -436,7 +444,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
           })}
         </svg>
 
-        {/* ── 4 Floating Frosted Glass Cards (Sequentially animated from distinct positions) ── */}
+        {/* ── 4 Floating 3D Cards (Sequentially animated with True 3D Depth) ── */}
         {milestones.map((m, index) => {
           const Icon = m.icon
           const isSelected = selectedMilestone === m.id
@@ -449,7 +457,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
               initial={{ opacity: 0, x: entrance.x, y: entrance.y, scale: 0.92 }}
               animate={isInView ? { opacity: 1, x: 0, y: 0, scale: 1 } : { opacity: 0, x: entrance.x, y: entrance.y, scale: 0.92 }}
               transition={{ duration: 0.65, delay: cardDelay, ease: [0.16, 1, 0.3, 1] }}
-              whileHover={{ y: -4, scale: 1.02 }}
+              whileHover={{ y: -8, rotateX: 5, rotateY: -3, scale: 1.025 }}
               onClick={() => setSelectedMilestone(m.id)}
               style={{
                 position: 'absolute',
@@ -457,31 +465,46 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                 top: m.cardTop,
                 width: m.cardWidth,
                 height: m.cardHeight,
+                transformStyle: 'preserve-3d',
+                perspective: 1000,
+                boxShadow: isSelected
+                  ? '0 6px 0 #2563eb, 0 18px 36px rgba(37,99,235,0.28)'
+                  : darkMode
+                    ? '0 6px 0 #0f172a, 0 16px 28px rgba(0,0,0,0.55)'
+                    : '0 6px 0 #cbd5e1, 0 14px 24px rgba(0,0,0,0.08)',
               }}
               className={`rounded-[24px] px-4.5 py-3 backdrop-blur-2xl transition-all duration-300 cursor-pointer flex flex-col justify-between ${
                 isSelected
-                  ? 'bg-white/98 dark:bg-slate-900/95 border-2 border-indigo-500 shadow-[0_20px_45px_rgba(168,85,247,0.32)] ring-2 ring-indigo-400/30'
-                  : 'bg-white/92 dark:bg-slate-900/85 border border-white/90 dark:border-slate-800 shadow-[0_14px_35px_rgba(168,85,247,0.14),0_2px_10px_rgba(0,0,0,0.03)] hover:shadow-[0_20px_45px_rgba(168,85,247,0.25)] hover:border-purple-400/80'
+                  ? 'bg-white dark:bg-slate-900 border-2 border-blue-600'
+                  : 'bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 hover:border-slate-400 dark:hover:border-slate-600'
               }`}
               title="Click to view detailed experience"
             >
-              {/* Top Row: Icon + Period + Company */}
-              <div className="flex items-start gap-3 w-full">
-                <div className="w-11 h-11 shrink-0 rounded-2xl bg-gradient-to-br from-[#1e1b4b] to-[#0f172a] flex items-center justify-center text-white shadow-md shadow-indigo-950/25 ring-1 ring-white/20 mt-0.5">
-                  <Icon />
+              {/* Top Row: 3D Raised Logo Podium + Period + Company */}
+              <div className="flex items-start gap-3 w-full" style={{ transform: 'translateZ(12px)' }}>
+                {/* 3D Raised Logo Coin */}
+                <div
+                  className="w-11 h-11 shrink-0 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center p-1.5 transition-transform group-hover:scale-105"
+                  style={{ transform: 'translateZ(18px)' }}
+                >
+                  {m.logoUrl ? (
+                    <img src={m.logoUrl} alt={m.company} className="w-full h-full object-contain select-none" />
+                  ) : (
+                    <Icon />
+                  )}
                 </div>
 
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center justify-between gap-1">
-                    <h3 className="text-sm font-black text-[#1e1b4b] dark:text-white tracking-tight">
+                    <h3 className="text-sm font-black text-slate-900 dark:text-white tracking-tight">
                       {m.period}
                     </h3>
-                    <span className="text-[9.5px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-purple-50 dark:bg-purple-950/40 text-indigo-700 dark:text-purple-300 border border-purple-100 dark:border-purple-900/50 shrink-0">
+                    <span className="text-[9.5px] font-bold tracking-wider uppercase px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300 border border-slate-200 dark:border-slate-700 shrink-0">
                       {m.company}
                     </span>
                   </div>
 
-                  <p className="text-[10.5px] font-bold text-indigo-600 dark:text-indigo-400 truncate">
+                  <p className="text-[10.5px] font-bold text-blue-600 dark:text-blue-400 truncate">
                     {m.role}
                   </p>
 
@@ -492,14 +515,14 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
               </div>
 
               {/* 3 Languages With Brand Icons Under the Card */}
-              <div className="flex items-center justify-between pt-1.5 border-t border-purple-100/70 dark:border-purple-900/30">
+              <div className="flex items-center justify-between pt-1.5 border-t border-slate-100 dark:border-slate-800/80" style={{ transform: 'translateZ(8px)' }}>
                 <div className="flex items-center gap-1.5">
                   {m.languages.map((lang) => {
                     const LangIcon = lang.icon
                     return (
                       <span
                         key={lang.name}
-                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-bold bg-slate-100/85 dark:bg-slate-800/85 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700"
+                        className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md text-[9.5px] font-bold bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/70 dark:border-slate-700"
                       >
                         <LangIcon />
                         <span>{lang.name}</span>
@@ -508,7 +531,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   })}
                 </div>
 
-                <span className="text-[9px] font-bold text-indigo-500 dark:text-indigo-400 flex items-center gap-0.5 opacity-80 hover:opacity-100">
+                <span className="text-[9px] font-bold text-blue-600 dark:text-blue-400 flex items-center gap-0.5 opacity-80 hover:opacity-100">
                   <span>Details</span>
                   <ExternalLink size={9} />
                 </span>
@@ -549,38 +572,42 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
               <div
                 className={`flex-1 rounded-[24px] p-5 backdrop-blur-2xl transition-all duration-300 ${
                   isSelected
-                    ? 'bg-white/98 border-2 border-indigo-500 shadow-xl'
-                    : 'bg-white/92 border border-white/90 shadow-[0_12px_30px_rgba(168,85,247,0.12)]'
+                    ? 'bg-white dark:bg-slate-900 border-2 border-blue-600 shadow-xl'
+                    : 'bg-white/95 dark:bg-slate-900/95 border border-slate-200 dark:border-slate-800 shadow-[0_12px_24px_rgba(0,0,0,0.06)]'
                 }`}
               >
                 <div className="flex items-start gap-3.5">
-                  <div className="w-12 h-12 shrink-0 rounded-2xl bg-gradient-to-br from-[#1e1b4b] to-[#0f172a] flex items-center justify-center text-white shadow-md">
-                    <Icon />
+                  <div className="w-12 h-12 shrink-0 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center p-1.5">
+                    {m.logoUrl ? (
+                      <img src={m.logoUrl} alt={m.company} className="w-full h-full object-contain select-none" />
+                    ) : (
+                      <Icon />
+                    )}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between">
-                      <h3 className="text-base font-black text-[#1e1b4b] tracking-tight">
+                      <h3 className="text-base font-black text-slate-900 dark:text-white tracking-tight">
                         {m.period}
                       </h3>
-                      <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-purple-50 text-indigo-700 border border-purple-100">
+                      <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300 border border-slate-200 dark:border-slate-700">
                         {m.company}
                       </span>
                     </div>
-                    <p className="text-[11px] font-bold text-indigo-600 mt-0.5">
+                    <p className="text-[11px] font-bold text-blue-600 dark:text-blue-400 mt-0.5">
                       {m.role}
                     </p>
-                    <p className="mt-1 text-xs font-medium text-slate-700 leading-relaxed">
+                    <p className="mt-1 text-xs font-medium text-slate-700 dark:text-slate-300 leading-relaxed">
                       {m.description}
                     </p>
 
                     {/* 3 Languages With Icons in Mobile */}
-                    <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-purple-50">
+                    <div className="flex flex-wrap gap-1.5 mt-2.5 pt-2 border-t border-slate-100 dark:border-slate-800">
                       {m.languages.map((lang) => {
                         const LangIcon = lang.icon
                         return (
                           <span
                             key={lang.name}
-                            className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-50 text-slate-600 border border-slate-200/60"
+                            className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-md bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200/60 dark:border-slate-700"
                           >
                             <LangIcon />
                             <span>{lang.name}</span>
@@ -609,7 +636,7 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
               exit={{ opacity: 0, scale: 0.9, y: 20 }}
               transition={{ duration: 0.25, ease: 'easeOut' }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-lg max-h-[85vh] flex flex-col p-6 sm:p-8 rounded-[32px] bg-white/95 dark:bg-slate-900/95 border-2 border-purple-300/80 dark:border-purple-800/80 shadow-[0_25px_60px_rgba(79,70,229,0.3)] backdrop-blur-2xl overflow-hidden"
+              className="relative w-full max-w-lg max-h-[85vh] flex flex-col p-6 sm:p-8 rounded-[32px] bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl backdrop-blur-2xl overflow-hidden"
             >
               {/* Close Button */}
               <button
@@ -628,19 +655,23 @@ export default function Experience3DRoadmap({ customExperiences = [] }) {
                   <div className="flex flex-col flex-1 min-h-0">
                     {/* Header */}
                     <div className="flex items-start gap-4 shrink-0 pb-2">
-                      <div className="w-14 h-14 shrink-0 rounded-2xl bg-gradient-to-br from-[#1e1b4b] to-[#0f172a] flex items-center justify-center text-white shadow-lg shadow-indigo-950/30 ring-1 ring-white/20">
-                        <ActiveIcon />
+                      <div className="w-14 h-14 shrink-0 rounded-2xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 shadow-md flex items-center justify-center p-2">
+                        {active.logoUrl ? (
+                          <img src={active.logoUrl} alt={active.company} className="w-full h-full object-contain select-none" />
+                        ) : (
+                          <ActiveIcon />
+                        )}
                       </div>
                       <div className="min-w-0 flex-1 pr-6">
                         <div className="flex items-center gap-2">
-                          <span className="text-xs font-black px-3 py-1 rounded-full bg-[#4f46e5] text-white tracking-wide shadow-sm">
+                          <span className="text-xs font-black px-3 py-1 rounded-full bg-blue-600 text-white tracking-wide shadow-sm">
                             {active.period}
                           </span>
-                          <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-purple-100 dark:bg-purple-950/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-800">
+                          <span className="text-xs font-bold px-2.5 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-blue-700 dark:text-blue-300 border border-slate-200 dark:border-slate-700">
                             {active.company}
                           </span>
                         </div>
-                        <h3 className="mt-2 text-xl font-black text-[#1e1b4b] dark:text-white">
+                        <h3 className="mt-2 text-xl font-black text-slate-900 dark:text-white">
                           {active.role}
                         </h3>
                       </div>

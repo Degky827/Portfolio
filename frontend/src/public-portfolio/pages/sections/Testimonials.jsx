@@ -114,7 +114,7 @@ const DEFAULT_TESTIMONIALS = [
   },
 ]
 
-export default function Testimonials() {
+export default function Testimonials({ embedded = false }) {
   const shouldReduceMotion = useReducedMotion()
   const [testimonials, setTestimonials] = useState([])
   const [loading, setLoading] = useState(true)
@@ -161,22 +161,28 @@ export default function Testimonials() {
     return testimonials.filter((t) => t.relationship === selectedCategory)
   }, [testimonials, selectedCategory])
 
+  const ContainerTag = embedded ? 'div' : 'section'
+
   return (
-    <section
+    <ContainerTag
       id="testimonials"
-      className="relative min-h-screen py-16 sm:py-20 lg:py-24 bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
+      className={embedded ? "relative w-full overflow-hidden" : "relative min-h-screen py-16 sm:py-20 lg:py-24 bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"}
       aria-label="Testimonials and Recommendations"
     >
-      {/* ── Monochromatic Purple Guilloche Ribbon Wave Background (matching About page) ── */}
-      <GuillocheWaves className="absolute inset-0 z-0 opacity-45 dark:opacity-35 pointer-events-none" />
+      {!embedded && (
+        <>
+          {/* ── Monochromatic Purple Guilloche Ribbon Wave Background (matching About page) ── */}
+          <GuillocheWaves className="absolute inset-0 z-0 opacity-45 dark:opacity-35 pointer-events-none" />
 
-      {/* Subtle background glow orbs matching About page */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-slate-700/15 dark:bg-slate-800/25 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
+          {/* Subtle background glow orbs matching About page */}
+          <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-slate-700/15 dark:bg-slate-800/25 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
+          <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
+        </>
+      )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full">
-        {/* ── Top Header Exactly Matching 3D Reference Image ── */}
+        {/* ── Top Header (Refined minimized text size) ── */}
         <motion.div
           initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -184,8 +190,8 @@ export default function Testimonials() {
           transition={{ duration: shouldReduceMotion ? 0.1 : 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}
           className="text-center mb-8 sm:mb-12"
         >
-          {/* 3D Extruded Title: What peoples say ? matching other pages */}
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
+          {/* 3D Extruded Title: What peoples say ? */}
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
             What peoples say ?
           </h2>
 
@@ -248,6 +254,6 @@ export default function Testimonials() {
           </div>
         )}
       </div>
-    </section>
+    </ContainerTag>
   )
 }

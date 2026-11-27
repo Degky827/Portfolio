@@ -4,27 +4,31 @@ import Experience3DRoadmap from '../../components/experience/Experience3DRoadmap
 import GuillocheWaves from '../../components/ui/GuillocheWaves'
 import { getExperiences } from '../../../shared/services/experienceService'
 import { usePublicSocket } from '../../../shared/context/PublicSocketContext'
+import Testimonials from './Testimonials'
 
-/* ─── Inline SVG Logos ─────────────────────────────────────────── */
+/* ─── Company & University Brand Logos from Assets ─────────────── */
 const AskualaLogo = () => (
-  <svg viewBox="0 0 40 40" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="10" fill="#6366f1"/>
-    <text x="20" y="26" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold" fontFamily="Arial,sans-serif">AL</text>
-  </svg>
+  <img
+    src="/assets/logos/askuala-logo.png"
+    alt="Askuala Link Logo"
+    className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-sm select-none"
+  />
 )
 
-const FreelanceLogo = () => (
-  <svg viewBox="0 0 40 40" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="10" fill="#10b981"/>
-    <text x="20" y="26" textAnchor="middle" fill="white" fontSize="16" fontWeight="bold" fontFamily="Arial,sans-serif">FP</text>
-  </svg>
+const AlyahLogo = () => (
+  <img
+    src="/assets/logos/alyah-logo.png"
+    alt="Alyah Technologies Logo"
+    className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-sm select-none"
+  />
 )
 
 const BduLogo = () => (
-  <svg viewBox="0 0 40 40" width="28" height="28" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="40" height="40" rx="10" fill="#f59e0b"/>
-    <text x="20" y="26" textAnchor="middle" fill="white" fontSize="14" fontWeight="bold" fontFamily="Arial,sans-serif">BDU</text>
-  </svg>
+  <img
+    src="/assets/logos/bdu-logo.png"
+    alt="Bahir Dar University Logo"
+    className="w-8 h-8 sm:w-9 sm:h-9 object-contain drop-shadow-sm select-none"
+  />
 )
 
 const DEFAULT_EXPERIENCES = [
@@ -32,8 +36,8 @@ const DEFAULT_EXPERIENCES = [
     _id: '1',
     badge: 'INTERNSHIP',
     role: 'Software Development Intern',
-    company: 'Askuala',
-    companyUrl: '',
+    company: 'Askuala Link',
+    companyUrl: 'https://www.askualalink.com/',
     logo: AskualaLogo,
     period: 'Jan 2023 – Present',
     dateYear: '2023',
@@ -55,16 +59,16 @@ const DEFAULT_EXPERIENCES = [
   },
   {
     _id: '2',
-    badge: 'FREELANCE',
+    badge: 'SOFTWARE ENGINEER',
     role: 'Full Stack Developer',
-    company: 'Freelance Projects',
-    companyUrl: '',
-    logo: FreelanceLogo,
+    company: 'Alyah Technologies',
+    companyUrl: 'https://alyahsoftware.com/',
+    logo: AlyahLogo,
     period: 'Jun 2022 – Dec 2022',
     dateYear: '2022',
     dateSub: 'Dec 2022',
     location: 'Remote',
-    summary: 'Delivered custom web solutions and production applications for clients worldwide.',
+    summary: 'Delivered custom web solutions, enterprise architectures, and production applications.',
     primaryTags: ['Vue.js', 'Laravel', 'PostgreSQL', 'TailwindCSS'],
     extraTags: ['GraphQL', 'Redis', 'CI/CD'],
     contributions: [
@@ -83,7 +87,7 @@ const DEFAULT_EXPERIENCES = [
     badge: 'EDUCATION',
     role: 'Computer Science Student',
     company: 'Bahir Dar University',
-    companyUrl: '',
+    companyUrl: 'https://www.bdu.edu.et/',
     logo: BduLogo,
     period: 'Sep 2019 – Jun 2023',
     dateYear: '2019',
@@ -107,8 +111,8 @@ const DEFAULT_EXPERIENCES = [
     _id: '4',
     badge: 'DISTRIBUTED & MOBILE',
     role: 'Distributed Systems & Mobile Developer',
-    company: 'Askuals Link',
-    companyUrl: '',
+    company: 'Askuala Link',
+    companyUrl: 'https://www.askualalink.com/',
     logo: AskualaLogo,
     period: '2024 – Present',
     dateYear: '2024',
@@ -177,9 +181,9 @@ export default function Experience() {
           transition={{ duration: 0.6 }}
           className="text-center mb-8 sm:mb-12"
         >
-          {/* 3D Extruded Title: WORK EXPERIENCE in Charcoal Black */}
+          {/* 3D Extruded Title: WORK EXPERIENCE (Refined minimized text size) */}
           <h2
-            className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
+            className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
             style={{
               textShadow: `
                 0 1px 0 #64748b,
@@ -202,15 +206,20 @@ export default function Experience() {
 
           {/* Decorative Diamond Accent Line: <> ◇ <> matching About page */}
           <div className="flex items-center justify-center gap-3 mt-5">
-            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+            <div className="h-[1.5px] w-14 sm:w-20 bg-slate-300 dark:bg-slate-700" />
             <div className="w-2.5 h-2.5 rotate-45 border-2 border-[#36454F] dark:border-slate-300 shadow-[0_0_12px_rgba(54,69,79,0.6)] dark:shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
-            <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+            <div className="h-[1.5px] w-14 sm:w-20 bg-slate-300 dark:bg-slate-700" />
           </div>
         </motion.div>
 
         {/* ── Centerpiece 3D Curved Roadmap Matching Reference Image ── */}
         <div className="w-full">
           <Experience3DRoadmap customExperiences={experienceData} />
+        </div>
+
+        {/* ── Testimonials & Recommendations within Experience Section ── */}
+        <div className="mt-16 sm:mt-24 pt-12 sm:pt-16 border-t border-slate-200/80 dark:border-slate-800">
+          <Testimonials embedded={true} />
         </div>
       </div>
     </section>
