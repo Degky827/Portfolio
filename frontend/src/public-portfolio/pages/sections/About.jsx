@@ -330,16 +330,8 @@ export default function About({ content, hero, aboutContent }) {
           onClose={() => setSelectedPillar(null)}
         />
 
-        {/* ── Certifications & Achievements Showcase ── */}
-        <div className="mt-16 sm:mt-20">
-          <div className="text-center mb-8">
-            <h3 className="text-xs font-black uppercase tracking-[0.2em] text-[#36454F] dark:text-slate-400 mb-1">
-              // Verified Credentials
-            </h3>
-            <h4 className="text-xl sm:text-2xl font-extrabold text-slate-900 dark:text-white">
-              Certifications & Recognitions
-            </h4>
-          </div>
+        {/* ── Certifications & Achievements Showcase Matching Reference ── */}
+        <div className="mt-16 sm:mt-24">
           <CertificateGallery certificates={achievementsList} />
         </div>
       </div>

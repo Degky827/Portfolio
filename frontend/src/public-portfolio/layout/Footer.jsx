@@ -6,6 +6,7 @@ import { getFooterContent } from '../../shared/services/footerService'
 import { getNavbarSettings } from '../../shared/services/navigationService'
 import { useSiteSettings } from '../../shared/context/SiteSettingsContext'
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
+import Logo from '../../shared/components/Logo'
 
 export default function Footer() {
   const currentYear = new Date().getFullYear()

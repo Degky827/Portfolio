@@ -219,7 +219,10 @@ function AboutPillarCard({
               type="button"
               onClick={onOpenDetails}
               aria-label={`Learn more about ${title}`}
-              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-[#36454F]/10 dark:bg-slate-800/80 hover:bg-[#36454F] dark:hover:bg-slate-700 text-[#2C3539] dark:text-slate-200 hover:text-white border border-[#4A5568]/30 dark:border-slate-600 flex items-center justify-center transition-all duration-200 cursor-pointer shadow-sm group/btn hover:scale-115 active:scale-95"
+              className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-gradient-to-b from-white to-slate-100 dark:from-[#36454F] dark:to-[#1e252b] hover:brightness-110 text-[#2C3539] dark:text-slate-100 border border-white/80 dark:border-slate-600/60 flex items-center justify-center transition-all duration-200 cursor-pointer active:translate-y-0.5 group/btn"
+              style={{
+                boxShadow: '0 3px 0 #cbd5e1, 0 3px 6px rgba(0,0,0,0.08), inset 0 1px 1px #fff',
+              }}
             >
               <ArrowRight size={14} className="group-hover/btn:translate-x-0.5 transition-transform" />
             </button>
