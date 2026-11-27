@@ -8,6 +8,7 @@ import { getSettings } from '../../../shared/services/settingsService'
 import { useSocketRefresh } from '../../../shared/hooks/useSocketRefresh'
 import { MouseParallaxProvider, useMouseParallaxSubscribe } from '../../../components/contact3d/MouseParallaxProvider'
 import { createContainerVariants, defaultViewport } from '../../shared/animations'
+import GuillocheWaves from '../../components/ui/GuillocheWaves'
 
 const ContactScene = lazy(() => import('../../../components/contact3d/ContactScene'))
 const GlobeScene = lazy(() => import('../../../components/contact3d/GlobeScene'))
@@ -83,188 +84,31 @@ const ContactContent = memo(function ContactContent({ content, contactFormEnable
         <div className="relative mb-12 sm:mb-16 md:mb-20">
           <Suspense fallback={null}>
             <ContactScene>
-              <div className="relative min-h-[320px] sm:min-h-[380px] md:min-h-[420px] flex flex-col items-center justify-center py-10 sm:py-14">
-                {/* Floating glass badge */}
+              <div className="relative min-h-[300px] sm:min-h-[340px] flex flex-col items-center justify-center py-10 sm:py-14">
+                {/* 3D Extruded Title: LET'S COLLABORATE */}
                 <motion.div
-                  initial={{ opacity: 0, y: 20, scale: 0.8 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-                  className="relative mb-5 sm:mb-7"
-                  style={{
-                    transform: `perspective(800px) rotateY(${heroTransforms.badge.ry}deg) rotateX(${heroTransforms.badge.rx}deg) translateZ(${Math.abs(heroTransforms.badge.rx * heroTransforms.badge.ry) * 0.3}px)`,
-                    transformStyle: 'preserve-3d',
-                    willChange: 'transform',
-                  }}
-                >
-                  <motion.div
-                    animate={{ y: [0, -6, 0] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                    className="relative"
-                  >
-                    <div className="absolute inset-0 rounded-full bg-primary/20 blur-2xl scale-150" />
-                    <div className="relative px-6 sm:px-8 py-2.5 sm:py-3 rounded-full border border-[var(--border-default)] backdrop-blur-xl bg-white/[0.06] shadow-[0_0_30px_rgba(99,102,241,0.08)]">
-                      <motion.div
-                        className="absolute inset-0 rounded-full"
-                        animate={{ opacity: [0.3, 0.6, 0.3] }}
-                        transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{
-                          background: 'linear-gradient(135deg, rgba(99,102,241,0.08) 0%, rgba(99,102,241,0.04) 50%, rgba(99,102,241,0.08) 100%)',
-                        }}
-                      />
-                      <motion.div
-                        className="absolute inset-[-1px] rounded-full"
-                        animate={{ opacity: [0.4, 0.8, 0.4] }}
-                        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                        style={{
-                          background: 'conic-gradient(from 0deg, rgba(99,102,241,0.4), rgba(99,102,241,0.15), rgba(99,102,241,0.4))',
-                          mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                          maskComposite: 'exclude',
-                          WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-                          WebkitMaskComposite: 'xor',
-                          padding: '1px',
-                        }}
-                      />
-                  <motion.span
-                      className="text-xs sm:text-sm font-bold tracking-[0.25em] uppercase"
-                      style={{ color: 'var(--text-secondary)' }}
-                    >
-                        Contact
-                      </motion.span>
-                    </div>
-                  </motion.div>
-                </motion.div>
-
-                {/* Layered 3D Title */}
-                <motion.div
-                  initial={{ opacity: 0, y: 30 }}
+                  initial={{ opacity: 0, y: 25 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.9, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{ duration: 0.7 }}
                   className="relative text-center mb-4 sm:mb-5"
-                  style={{
-                    transform: `perspective(1000px) rotateY(${heroTransforms.title.ry}deg) rotateX(${heroTransforms.title.rx}deg)`,
-                    transformStyle: 'preserve-3d',
-                    willChange: 'transform',
-                  }}
                 >
-                  <h2
-                    className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight select-none pointer-events-none"
-                    style={{
-                      color: 'transparent',
-                      WebkitTextStroke: '1px rgba(99,102,241,0.06)',
-                      transform: 'translateZ(-20px) scale(1.02)',
-                      filter: 'blur(2px)',
-                    }}
-                    aria-hidden="true"
-                  >
-                    Let's Collaborate
+                  <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
+                    LET'S COLLABORATE
                   </h2>
-                  <h2
-                    className="absolute inset-0 text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tight select-none pointer-events-none"
-                    style={{
-                      color: 'transparent',
-                      WebkitTextStroke: '1px rgba(99,102,241,0.1)',
-                      transform: 'translateZ(-10px) scale(1.01)',
-                      filter: 'blur(1px)',
-                    }}
-                    aria-hidden="true"
-                  >
-                    Let's Collaborate
-                  </h2>
-                  <motion.h2
-                    className="relative text-3xl sm:text-4xl md:text-5xl font-black tracking-tight"
-                    style={{ color: 'var(--text-primary)' }}
-                  >
-                    Let's Collaborate
-                  </motion.h2>
-                  <motion.div
-                    className="absolute inset-0 pointer-events-none"
-                    animate={{ opacity: [0.3, 0.6, 0.3] }}
-                    transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut' }}
-                    style={{
-                      background: 'radial-gradient(ellipse at center, rgba(99,102,241,0.1) 0%, transparent 70%)',
-                      filter: 'blur(30px)',
-                    }}
-                  />
+
+                  {/* Subtitle */}
+                  <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4 font-normal">
+                    {content?.subtitle || "Ready to bring your vision to life? Reach out and let's start a conversation about your next big project."}
+                  </p>
+
+                  {/* Decorative Diamond Accent Line: <> ◇ <> (Charcoal / Slate) */}
+                  <div className="flex items-center justify-center gap-3 mt-5">
+                    <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+                    <div className="w-2.5 h-2.5 rotate-45 border-2 border-[#36454F] dark:border-slate-300 shadow-[0_0_12px_rgba(54,69,79,0.6)] dark:shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
+                    <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+                  </div>
                 </motion.div>
-
-                {/* Holographic subtitle */}
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-sm sm:text-base md:text-lg max-w-xl mx-auto leading-relaxed px-4 text-center"
-                  style={{
-                    transform: `perspective(800px) rotateY(${heroTransforms.subtitle.ry}deg)`,
-                    willChange: 'transform',
-                  }}
-                >
-                  <motion.span
-                    className="text-[var(--text-secondary)]"
-                    animate={{ opacity: [0.7, 1, 0.7] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: 'easeInOut' }}
-                  >
-                    Ready to bring your vision to life? Reach out and let's start a conversation about your next big project.
-                  </motion.span>
-                </motion.p>
-
-                {/* Floating light rays */}
-                <div className="absolute inset-0 pointer-events-none overflow-hidden">
-                  {[...Array(5)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute"
-                      animate={{
-                        y: [-20, 20, -20],
-                        opacity: [0.03, 0.08, 0.03],
-                        rotate: [15 + i * 8, 20 + i * 8, 15 + i * 8],
-                      }}
-                      transition={{ duration: 6 + i * 2, repeat: Infinity, ease: 'easeInOut', delay: i * 1.2 }}
-                      style={{
-                        left: `${15 + i * 18}%`,
-                        top: '5%',
-                        width: i % 2 === 0 ? '2px' : '1px',
-                        height: '90%',
-                        background: `linear-gradient(to bottom, transparent, ${i % 2 === 0 ? 'rgba(99,102,241,0.12)' : 'rgba(129,140,248,0.08)'}, transparent)`,
-                        filter: `blur(${i % 2 === 0 ? 4 : 3}px)`,
-                      }}
-                    />
-                  ))}
-                </div>
-
-                {/* Holographic scan lines overlay */}
-                <div
-                  className="absolute inset-0 pointer-events-none opacity-[0.015]"
-                  style={{
-                    backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(99,102,241,0.1) 2px, rgba(99,102,241,0.1) 4px)',
-                  }}
-                />
-
-                {/* Volumetric fog effect */}
-                <div
-                  className="absolute inset-0 pointer-events-none"
-                  style={{
-                    background: 'radial-gradient(ellipse at 30% 60%, rgba(99,102,241,0.03) 0%, transparent 50%), radial-gradient(ellipse at 70% 40%, rgba(129,140,248,0.02) 0%, transparent 50%)',
-                  }}
-                />
-
-                {/* Lens flare */}
-                <motion.div
-                  className="absolute pointer-events-none"
-                  animate={{ opacity: [0.15, 0.35, 0.15], scale: [0.9, 1.1, 0.9] }}
-                  transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-                  style={{
-                    top: '15%',
-                    right: '20%',
-                    width: '120px',
-                    height: '120px',
-                    background: 'radial-gradient(circle, rgba(99,102,241,0.15) 0%, rgba(99,102,241,0.08) 30%, transparent 70%)',
-                    filter: 'blur(20px)',
-                    borderRadius: '50%',
-                  }}
-                />
               </div>
             </ContactScene>
           </Suspense>
@@ -632,25 +476,39 @@ export default function Contact() {
   }
 
   return (
-    <section id="contact" className="py-16 sm:py-20 md:py-24 transition-colors duration-500 relative overflow-hidden" style={{ backgroundColor: 'var(--bg-primary)' }} aria-label="Contact section">
-      <MouseParallaxProvider>
-        <ContactContent
-          content={content}
-          contactFormEnabled={contactFormEnabled}
-          values={values}
-          errors={errors}
-          touched={touched}
-          fieldError={fieldError}
-          handleChange={handleChange}
-          handleBlur={handleBlur}
-          handleSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
-          isValid={isValid}
-          result={result}
-          resultType={resultType}
-          form={form}
-        />
-      </MouseParallaxProvider>
+    <section
+      id="contact"
+      className="relative min-h-screen py-14 sm:py-20 md:py-24 overflow-hidden bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300"
+      aria-label="Contact section"
+    >
+      {/* ── Monochromatic Purple Guilloche Ribbon Wave Background ── */}
+      <GuillocheWaves className="absolute inset-0 z-0 opacity-45 dark:opacity-35 pointer-events-none" />
+
+      {/* ── Ambient Background Glow Orbs (Charcoal & Slate Tones) ── */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-slate-700/15 dark:bg-slate-800/25 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
+
+      <div className="relative z-10">
+        <MouseParallaxProvider>
+          <ContactContent
+            content={content}
+            contactFormEnabled={contactFormEnabled}
+            values={values}
+            errors={errors}
+            touched={touched}
+            fieldError={fieldError}
+            handleChange={handleChange}
+            handleBlur={handleBlur}
+            handleSubmit={handleSubmit}
+            isSubmitting={isSubmitting}
+            isValid={isValid}
+            result={result}
+            resultType={resultType}
+            form={form}
+          />
+        </MouseParallaxProvider>
+      </div>
     </section>
   )
 }
