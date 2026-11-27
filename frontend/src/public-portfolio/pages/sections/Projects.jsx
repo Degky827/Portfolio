@@ -1,6 +1,6 @@
-import { motion, useReducedMotion } from 'framer-motion'
-import { ExternalLink, Monitor, Wifi, Layers, Globe, Rocket, Code, Search, X, Smartphone, Heart, BookOpen, ShoppingBag, MessageCircle, Wallet, Star, Download, Apple, Play, CheckCircle, Clock, AlertCircle } from 'lucide-react'
 import { useState, useMemo, useEffect, useCallback } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
+import { Search, Filter, Layers, Globe, Smartphone, Sparkles, RefreshCw } from 'lucide-react'
 import projectsData from '../../../shared/data/projects.json'
 import mobileAppsData from '../../../shared/data/mobileApps.json'
 import { getProjects } from '../../../shared/services/projectService'
@@ -11,55 +11,12 @@ import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 import HolographicSearch from '../../../components/projects3d/HolographicSearch'
 import AppShowcaseCard from '../../../components/projects3d/AppShowcaseCard'
 import ProjectMonitorCard from '../../../components/projects3d/ProjectMonitorCard'
+import GuillocheWaves from '../../components/ui/GuillocheWaves'
 import { createContainerVariants, defaultViewport } from '../../shared/animations'
-
-const iconMap = {
-  Globe,
-  Rocket,
-  Wifi,
-  Layers,
-  Monitor,
-  Code,
-}
-
-const statusIconMap = {
-  completed: CheckCircle,
-  in_progress: Clock,
-  planned: AlertCircle,
-}
-
-const statusLabels = {
-  completed: 'Completed',
-  in_progress: 'In Progress',
-  planned: 'Planned',
-}
-
-const statusColors = {
-  completed: '#10b981',
-  in_progress: '#f59e0b',
-  planned: '#3b82f6',
-}
-
-const mobileIconMap = {
-  Smartphone,
-  Heart,
-  BookOpen,
-  ShoppingBag,
-  MessageCircle,
-  Wallet
-}
-
-const GithubIcon = ({ size = 24, className = '' }) => (
-  <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
-  </svg>
-)
-
-const DEFAULT_THUMBNAIL = 'https://placehold.co/600x400/1E293B/94A3B8?text=Project'
 
 export default function Projects() {
   const shouldReduceMotion = useReducedMotion()
-  const [activeTab, setActiveTab] = useState('web')
+  const [activeTab, setActiveTab] = useState('all') // 'all' | 'web' | 'mobile'
   const [searchTerm, setSearchTerm] = useState('')
   const [dbProjects, setDbProjects] = useState([])
   const [dbMobileApps, setDbMobileApps] = useState([])
@@ -89,216 +46,223 @@ export default function Projects() {
 
   useSocketRefresh('content:updated', fetchProjects, { type: 'projects' })
 
-  const hasDbProjects = dbProjects.length > 0
-  const webOnlyProjects = dbProjects.filter(p => p.category !== 'Mobile App')
-  const displayProjects = hasDbProjects ? webOnlyProjects : projectsData
+  // Standardized Web Projects
+  const webProjects = useMemo(() => {
+    if (dbProjects.length > 0) {
+      return dbProjects.filter((p) => p.category !== 'Mobile App')
+    }
+    return projectsData
+  }, [dbProjects])
 
-  const filteredProjects = useMemo(() => {
-    return displayProjects.filter(project => {
-      if (!searchTerm) return true
-      const term = searchTerm.toLowerCase()
-      const title = (project.title || '').toLowerCase()
-      const desc = (project.shortDescription || project.description || '').toLowerCase()
-      const techs = project.technologies || project.tags || []
-      return title.includes(term) || desc.includes(term) || techs.some(tag => tag.toLowerCase().includes(term))
-    })
-  }, [searchTerm, displayProjects])
-
-  const containerVariants = createContainerVariants(shouldReduceMotion, 0.15)
-
-  // Left-right alternating variants for project cards
-  const itemVariants = {
-    hidden: (index) => ({
-      opacity: 0,
-      x: shouldReduceMotion ? 0 : (index % 2 === 0 ? -60 : 60),
-      y: 0,
-    }),
-    visible: (index) => ({
-      opacity: 1,
-      x: 0,
-      y: 0,
-      transition: {
-        type: 'spring',
-        stiffness: 100,
-        damping: 15,
-        delay: shouldReduceMotion ? 0 : index * 0.15,
-      },
-    }),
-  }
-
-  const renderIcon = (iconName, color) => {
-    const IconComponent = iconMap[iconName] || Globe
-    return <IconComponent size={32} />
-  }
-
-  const renderMobileIcon = (iconName, color) => {
-    const IconComponent = mobileIconMap[iconName] || Smartphone
-    return <IconComponent size={28} className="text-white" />
-  }
-
-  // Map DB projects to the shape AppShowcaseCard expects
-  const mappedMobileApps = useMemo(() => {
-    if (dbMobileApps.length === 0) return mobileAppsData
-    return dbMobileApps.map((p) => ({
-      title: p.title || '',
-      description: p.shortDescription || '',
-      features: p.features?.length ? p.features : (p.technologies || []).slice(0, 4),
-      platform: p.platform || 'Web',
-      icon: p.icon || 'Smartphone',
-      color: p.accentColor || '#6366f1',
-      appUrl: p.appUrl || p.liveDemoUrl || '#',
-      repoUrl: p.githubUrl || '',
-      rating: p.rating || 0,
-      thumbnail: p.thumbnail || (p.images && p.images[0]) || '',
-      _id: p._id,
+  // Standardized Mobile/Application Projects
+  const mobileProjects = useMemo(() => {
+    if (dbMobileApps.length > 0) {
+      return dbMobileApps.map((p) => ({
+        title: p.title || '',
+        description: p.shortDescription || p.description || '',
+        features: p.features?.length ? p.features : (p.technologies || []).slice(0, 4),
+        platform: p.platform || 'Mobile App',
+        icon: p.icon || 'Smartphone',
+        color: '#6C2BFF',
+        appUrl: p.appUrl || p.liveDemoUrl || '#',
+        repoUrl: p.githubUrl || '',
+        rating: p.rating || 4.8,
+        thumbnail: p.thumbnail || (p.images && p.images[0]) || '',
+        _id: p._id,
+        isMobile: true,
+      }))
+    }
+    return mobileAppsData.map((app) => ({
+      ...app,
+      color: '#6C2BFF',
+      isMobile: true,
     }))
   }, [dbMobileApps])
 
-  const filteredMobileApps = useMemo(() => {
-    if (!searchTerm) return mappedMobileApps
-    const term = searchTerm.toLowerCase()
-    return mappedMobileApps.filter(app =>
-      (app.title || '').toLowerCase().includes(term) ||
-      (app.description || '').toLowerCase().includes(term) ||
-      (app.features || []).some(f => f.toLowerCase().includes(term)) ||
-      (app.platform || '').toLowerCase().includes(term)
-    )
-  }, [searchTerm, mappedMobileApps])
+  // Combined and filtered project list
+  const filteredList = useMemo(() => {
+    let list = []
+    if (activeTab === 'all') {
+      list = [
+        ...webProjects.map((p) => ({ ...p, isMobile: false })),
+        ...mobileProjects,
+      ]
+    } else if (activeTab === 'web') {
+      list = webProjects.map((p) => ({ ...p, isMobile: false }))
+    } else {
+      list = mobileProjects
+    }
+
+    // Apply Search Term
+    if (searchTerm.trim()) {
+      const term = searchTerm.toLowerCase()
+      list = list.filter((item) => {
+        const title = (item.title || '').toLowerCase()
+        const desc = (item.shortDescription || item.description || '').toLowerCase()
+        const techs = item.technologies || item.tags || item.features || []
+        return (
+          title.includes(term) ||
+          desc.includes(term) ||
+          techs.some((t) => t.toLowerCase().includes(term))
+        )
+      })
+    }
+
+    return list
+  }, [activeTab, webProjects, mobileProjects, searchTerm])
+
+  const containerVariants = createContainerVariants(shouldReduceMotion, 0.08)
+
+  const clearAllFilters = useCallback(() => {
+    setSearchTerm('')
+    setActiveTab('all')
+  }, [])
 
   return (
-    <ProjectsScene>
-    <section id="projects" className="py-16 sm:py-20 md:py-24 min-h-screen" aria-label="Projects section">
-      <div className="container mx-auto px-4 sm:px-6">
-        <motion.div
-          initial={{ opacity: 0, y: shouldReduceMotion ? 0 : 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: shouldReduceMotion ? 0.1 : 0.8 }}
-          className="text-center mb-12 sm:mb-16 md:mb-20"
-        >
-          <motion.span
-            initial={{ opacity: 0, scale: shouldReduceMotion ? 1 : 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            className="inline-block px-3 sm:px-4 py-1.5 mb-3 sm:mb-4 text-[10px] sm:text-xs font-bold tracking-[0.18em] text-[var(--accent-projects)] uppercase bg-[var(--accent-projects)]/10 rounded-full border border-[var(--accent-projects)]/20"
+    <section
+      id="projects"
+      className="relative min-h-screen py-16 sm:py-20 lg:py-24 bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
+      aria-label="Projects showcase"
+    >
+      {/* ── Monochromatic Purple Guilloche Ribbon Wave Background (matching other pages) ── */}
+      <GuillocheWaves className="absolute inset-0 z-0 opacity-45 dark:opacity-35 pointer-events-none" />
+
+      {/* ── Ambient Background Glow Orbs (matching About, Skills, and Experience) ── */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-slate-700/15 dark:bg-slate-800/25 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* ── 3D Scene Layer (Transparent Canvas with Stars, Floating Particles & Holographic Lines) ── */}
+      <ProjectsScene>
+        <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10 w-full">
+          {/* ── Header with 3D Extruded Title ── */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: false, margin: '-60px' }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-8 sm:mb-12"
           >
-            Portfolio
-          </motion.span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-black text-[var(--text-primary)] mb-3 sm:mb-4 tracking-tight">
-            Featured Projects
-          </h2>
-          <p className="text-xs sm:text-sm md:text-base text-[var(--text-secondary)] max-w-2xl mx-auto leading-relaxed px-4">
-            A showcase of my recent work across web development and enterprise network architecture.
-          </p>
-        </motion.div>
+            {/* 3D Extruded Title: What have I done ? (Matching About, Skills & Experience) */}
+            <h2
+              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
+              style={{
+                textShadow: `
+                  0 1px 0 #64748b,
+                  0 2px 0 #475569,
+                  0 3px 0 #334155,
+                  0 4px 0 #1e293b,
+                  0 5px 0 #1e252b,
+                  0 6px 1px rgba(0, 0, 0, 0.3),
+                  0 8px 18px rgba(30, 37, 43, 0.4)
+                `,
+              }}
+            >
+              What have I done ?
+            </h2>
 
-        {/* Tab Navigation */}
-        <HolographicTabs
-          activeTab={activeTab}
-          setActiveTab={setActiveTab}
-          webCount={filteredProjects.length}
-          mobileCount={filteredMobileApps.length}
-        />
+            {/* Subtitle */}
+            <p className="text-sm sm:text-base md:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed px-4 font-normal">
+              A showcase of my recent work across full-stack web applications, mobile architectures, and enterprise systems.
+            </p>
 
-        {activeTab === 'web' ? (
-        <>
-        <HolographicSearch
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          onClear={() => setSearchTerm('')}
-          placeholder="Search projects, technologies, stacks..."
-          ariaLabel="Search web projects"
-        />
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          whileInView="visible"
-          viewport={defaultViewport}
-          className="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-5 max-w-6xl mx-auto"
-          role="tabpanel"
-        >
-          {filteredProjects.length > 0 ? (
-            filteredProjects.map((project, index) => (
-              <ProjectMonitorCard
-                key={project._id || index}
-                project={project}
-                index={index}
-                shouldReduceMotion={shouldReduceMotion}
-                getMediaUrl={getMediaUrl}
-              />
-            ))
-          ) : (
-            <div className="col-span-full text-center py-16">
-              <div className="w-20 h-20 mx-auto mb-6 bg-[var(--surface)] rounded-full flex items-center justify-center border border-[var(--border-default)]">
-                <Search className="w-10 h-10 text-[var(--text-secondary)]" />
-              </div>
-              <p className="text-xl font-bold text-[var(--text-primary)] mb-2">No projects found</p>
-              <p className="text-[var(--text-secondary)] mb-6">Try adjusting your search or filter criteria</p>
-              <button
-                onClick={() => { setSearchTerm('') }}
-                className="px-6 py-3 text-white font-bold rounded-full transition-colors"
-                style={{ backgroundColor: 'var(--accent-projects)' }}
-              >
-                Clear Filters
-              </button>
+            {/* Decorative Diamond Accent Line: <> ◇ <> matching other pages */}
+            <div className="flex items-center justify-center gap-3 mt-5">
+              <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+              <div className="w-2.5 h-2.5 rotate-45 border-2 border-[#36454F] dark:border-slate-300 shadow-[0_0_12px_rgba(54,69,79,0.6)] dark:shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
+              <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
             </div>
-          )}
-        </motion.div>
-        </>
-      ) : (
-        /* Mobile Apps Section */
-        <div className="max-w-5xl lg:max-w-7xl mx-auto">
-          {/* Mobile Apps Search */}
+          </motion.div>
+
+          {/* ── Structured Controls: Holographic Category Tabs ── */}
+          <HolographicTabs
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            allCount={webProjects.length + mobileProjects.length}
+            webCount={webProjects.length}
+            mobileCount={mobileProjects.length}
+          />
+
+          {/* ── Holographic Search Bar ── */}
           <HolographicSearch
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             onClear={() => setSearchTerm('')}
-            placeholder="Search mobile apps, features, platforms..."
-            ariaLabel="Search mobile apps"
+            placeholder="Search projects, stacks, or keywords..."
+            ariaLabel="Search all projects"
           />
 
-          <p className="text-center text-sm text-[var(--text-secondary)] mb-6">
-            Showing {filteredMobileApps.length} of {mappedMobileApps.length} apps
-          </p>
+          {/* ── Active Filters Status Bar ── */}
+          {(searchTerm || activeTab !== 'all') && (
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 max-w-6xl mx-auto mb-6 px-2">
+              <span>
+                Showing <strong className="text-slate-900 dark:text-white">{filteredList.length}</strong> {filteredList.length === 1 ? 'project' : 'projects'}
+                {searchTerm && <> matching &quot;{searchTerm}&quot;</>}
+              </span>
+              <button
+                type="button"
+                onClick={clearAllFilters}
+                className="text-xs font-semibold text-[var(--accent-projects)] hover:underline flex items-center gap-1"
+              >
+                <RefreshCw size={12} />
+                Reset Filters
+              </button>
+            </div>
+          )}
 
+          {/* ── Responsive 3D Project Cards Grid ── */}
           <motion.div
             variants={containerVariants}
             initial="hidden"
             whileInView="visible"
             viewport={defaultViewport}
-            className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6"
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto"
+            role="region"
+            aria-label="Projects grid"
           >
-            {filteredMobileApps.length > 0 ? (
-              filteredMobileApps.map((app, index) => (
-                <AppShowcaseCard
-                  key={app._id || index}
-                  app={app}
-                  index={index}
-                  shouldReduceMotion={shouldReduceMotion}
-                  onOpen={() => window.open(app.appUrl, '_blank', 'noopener noreferrer')}
-                  getMediaUrl={getMediaUrl}
-                />
-              ))
+            {filteredList.length > 0 ? (
+              filteredList.map((project, index) =>
+                project.isMobile ? (
+                  <AppShowcaseCard
+                    key={project._id || `mobile-${index}`}
+                    app={project}
+                    index={index}
+                    shouldReduceMotion={shouldReduceMotion}
+                    getMediaUrl={getMediaUrl}
+                  />
+                ) : (
+                  <ProjectMonitorCard
+                    key={project._id || `web-${index}`}
+                    project={project}
+                    index={index}
+                    shouldReduceMotion={shouldReduceMotion}
+                    getMediaUrl={getMediaUrl}
+                  />
+                )
+              )
             ) : (
-              <div className="col-span-full text-center py-16">
-                <div className="w-20 h-20 mx-auto mb-6 bg-[var(--surface)] rounded-full flex items-center justify-center border border-[var(--border-default)]">
-                  <Smartphone className="w-10 h-10 text-[var(--text-secondary)]" />
+              <div className="col-span-full text-center py-16 px-4 rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--accent-projects)]/10 text-[var(--accent-projects)] flex items-center justify-center">
+                  <Search className="w-8 h-8" />
                 </div>
-                <p className="text-xl font-bold text-[var(--text-primary)] mb-2">No apps found</p>
-                <p className="text-[var(--text-secondary)] mb-6">Try adjusting your search</p>
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
+                  No matching projects found
+                </h3>
+                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md mx-auto">
+                  Try adjusting your search keywords, clear stack filters, or switch categories.
+                </p>
                 <button
-                  onClick={() => setSearchTerm('')}
-                  className="px-6 py-3 text-white font-bold rounded-full transition-colors"
-                  style={{ backgroundColor: 'var(--accent-projects)' }}
+                  type="button"
+                  onClick={clearAllFilters}
+                  className="px-6 py-2.5 text-xs font-bold rounded-xl text-white bg-[var(--accent-projects)] hover:opacity-95 shadow-md transition-all"
                 >
-                  Clear Search
+                  Clear All Filters
                 </button>
               </div>
             )}
           </motion.div>
         </div>
-      )}
-      </div>
+      </ProjectsScene>
     </section>
-    </ProjectsScene>
   )
 }
