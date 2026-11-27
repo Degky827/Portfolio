@@ -144,8 +144,8 @@ export default function About({ content, hero, aboutContent }) {
           transition={{ duration: 0.7 }}
           className="text-center mb-10 sm:mb-14 md:mb-16"
         >
-          {/* 3D Extruded Title: WHO AM I ? */}
-          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
+          {/* 3D Extruded Title: WHO AM I ? (Refined minimized text size) */}
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 tracking-wider uppercase font-sans text-slate-900 dark:text-white text-3d-extruded select-none transition-transform duration-300 hover:scale-[1.02]">
             WHO AM I ?
           </h2>
 

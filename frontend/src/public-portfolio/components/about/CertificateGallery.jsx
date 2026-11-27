@@ -300,9 +300,9 @@ const CertificateGallery = memo(function CertificateGallery() {
         {/* ══════════════════════════════════════════════════════
             CENTERPIECE: Stepped Chrome Pedestal & Glowing 3D Brain
            ══════════════════════════════════════════════════════ */}
-        <div className="relative z-10 flex flex-col items-center justify-center pointer-events-none">
+        <div className="relative z-30 flex flex-col items-center justify-center pointer-events-none">
           {/* Glowing 3D Brain */}
-          <div className="relative z-20 -mb-2 pointer-events-auto">
+          <div className="relative z-40 -mb-2 pointer-events-auto">
             <Certificate3DBrain />
           </div>
 
@@ -332,6 +332,11 @@ const CertificateGallery = memo(function CertificateGallery() {
                 boxShadow: '0 14px 34px rgba(0,0,0,0.4)',
               }}
             />
+            {/* 3D Interactive Helper Badge */}
+            <div className="mt-3 px-3 py-1 rounded-full bg-slate-100/90 dark:bg-slate-800/90 border border-slate-200 dark:border-slate-700/80 text-[11px] font-bold text-slate-600 dark:text-slate-300 flex items-center gap-1.5 shadow-sm select-none pointer-events-none">
+              <Sparkles size={12} className="text-cyan-500 animate-pulse" />
+              <span>3D INTERACTIVE • DRAG TO ROTATE</span>
+            </div>
           </div>
         </div>
 
@@ -339,7 +344,7 @@ const CertificateGallery = memo(function CertificateGallery() {
             THE 4 FLOATING ACRYLIC GLASSMORHPIC CERTIFICATION PLAQUES
             (100% Clickable, Accessible, with Hover Highlights & Action Badges)
            ══════════════════════════════════════════════════════ */}
-        <div className="absolute inset-0 z-30 pointer-events-auto overflow-visible flex items-center justify-center">
+        <div className="absolute inset-0 z-20 pointer-events-none overflow-visible flex items-center justify-center">
           {/* ── 1. Top-Left Plaque: Ethio Coders ── */}
           <motion.div
             role="button"
@@ -365,7 +370,7 @@ const CertificateGallery = memo(function CertificateGallery() {
               rotateY: 10,
               rotateX: 4,
             }}
-            className={`group absolute top-4 left-2 sm:left-6 md:left-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
+            className={`group absolute top-4 left-2 sm:left-6 md:left-12 z-30 w-[240px] sm:w-[280px] pointer-events-auto cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
               activeTab === 'code' ? 'ring-4 ring-cyan-400 shadow-cyan-400/50 scale-105' : ''
             }`}
           >
@@ -430,7 +435,7 @@ const CertificateGallery = memo(function CertificateGallery() {
               rotateY: -10,
               rotateX: 4,
             }}
-            className={`group absolute top-4 right-2 sm:right-6 md:right-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
+            className={`group absolute top-4 right-2 sm:right-6 md:right-12 z-30 w-[240px] sm:w-[280px] pointer-events-auto cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
               activeTab === 'education' ? 'ring-4 ring-teal-400 shadow-teal-400/50 scale-105' : ''
             }`}
           >
@@ -495,7 +500,7 @@ const CertificateGallery = memo(function CertificateGallery() {
               rotateY: 8,
               rotateX: -2,
             }}
-            className={`group absolute bottom-6 left-2 sm:left-6 md:left-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
+            className={`group absolute bottom-6 left-2 sm:left-6 md:left-12 z-30 w-[240px] sm:w-[280px] pointer-events-auto cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
               activeTab === 'award' ? 'ring-4 ring-indigo-400 shadow-indigo-400/50 scale-105' : ''
             }`}
           >
@@ -560,7 +565,7 @@ const CertificateGallery = memo(function CertificateGallery() {
               rotateY: -8,
               rotateX: -2,
             }}
-            className={`group absolute bottom-6 right-2 sm:right-6 md:right-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
+            className={`group absolute bottom-6 right-2 sm:right-6 md:right-12 z-30 w-[240px] sm:w-[280px] pointer-events-auto cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
               activeTab === 'trophy' ? 'ring-4 ring-amber-400 shadow-amber-400/50 scale-105' : ''
             }`}
           >

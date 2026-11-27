@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from 'react'
+﻿import { useState, useEffect, useMemo, useCallback } from 'react'
 import { motion } from 'framer-motion'
 import { Mail, Phone, MapPin, Send, Heart, ChevronRight, ArrowUp } from 'lucide-react'
 import { FaGithub, FaLinkedin, FaTelegram, FaYoutube } from 'react-icons/fa6'
@@ -83,7 +83,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="relative w-full py-12 px-3 sm:px-6 bg-[#f1f5f9] dark:bg-[#0b0f17] flex flex-col items-center justify-center transition-colors duration-300">
+    <footer className="relative w-full py-12 px-3 sm:px-6 bg-white dark:bg-[#1a1a2e] flex flex-col items-center justify-center transition-colors duration-300">
       {/* ── Outer Monitor Unit Container ── */}
       <div className="relative w-full max-w-6xl mx-auto flex flex-col items-center">
         {/* Top-Mounted Monitor Webcam (matches reference photo) */}
@@ -102,15 +102,15 @@ export default function Footer() {
             <div className="w-1.5 h-1.5 rounded-full bg-slate-800" />
           </div>
           {/* Webcam monitor mount clip */}
-          <div className="w-10 h-2 bg-[#252833] border-b border-slate-700/90 rounded-b" />
+          <div className="w-10 h-2 bg-[#252833] rounded-b" />
         </div>
 
-        {/* ── Monitor Bezel Frame ── */}
-        <div className="relative w-full rounded-[2rem] border-[3px] border-[#1e232d] bg-white dark:bg-[#0f141f] shadow-[0_25px_60px_-15px_rgba(0,0,0,0.35),0_0_0_1px_rgba(0,0,0,0.1)] overflow-hidden">
+        {/* ── Monitor Bezel Frame (Clean edge without dark outline) ── */}
+        <div className="relative w-full rounded-[2rem] bg-white dark:bg-[#1a1a2e] shadow-[0_20px_50px_-15px_rgba(0,0,0,0.25)] overflow-hidden">
           {/* ══════════════════════════════════════════════════════
               UPPER SECTION (White background matching reference)
              ══════════════════════════════════════════════════════ */}
-          <div className="pt-10 sm:pt-14 pb-8 sm:pb-10 px-4 sm:px-8 text-center bg-white dark:bg-[#0f141f]">
+          <div className="pt-10 sm:pt-14 pb-8 sm:pb-10 px-4 sm:px-8 text-center bg-white dark:bg-[#1a1a2e]">
             {/* Header with decorative flanking lines */}
             <div className="flex items-center justify-center gap-4 sm:gap-8 max-w-2xl mx-auto mb-2">
               <div className="h-[1px] flex-1 bg-slate-300 dark:bg-slate-700" />
@@ -151,13 +151,22 @@ export default function Footer() {
           {/* ══════════════════════════════════════════════════════
               LOWER SECTION (Dark Charcoal Card matching reference)
              ══════════════════════════════════════════════════════ */}
-          <div className="mx-3 sm:mx-6 md:mx-8 mb-4 sm:mb-6 rounded-[1.75rem] sm:rounded-[2rem] bg-[#111827] text-white p-6 sm:p-9 md:p-11 shadow-2xl border border-slate-800/80">
+          <div className="mx-3 sm:mx-6 md:mx-8 mb-4 sm:mb-6 rounded-[1.75rem] sm:rounded-[2rem] bg-[#111827] text-white p-6 sm:p-9 md:p-11 shadow-2xl">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 text-left">
-              {/* ── Column 1: Profile & Initials Badge ── */}
+              {/* ── Column 1: Profile & Home Page Logo ── */}
               <div className="flex flex-col items-start">
-                {/* Circular "DK" Initials Badge */}
-                <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-white/90 flex items-center justify-center text-white font-extrabold text-xl sm:text-2xl tracking-wider mb-4 shadow-sm select-none">
-                  DK
+                {/* Home Page Portfolio Logo */}
+                <div className="mb-4">
+                  <Logo
+                    settings={{
+                      ...mergedSettings,
+                      logoWidth: 46,
+                      logoHeight: 46,
+                      logoBorderRadius: 12,
+                    }}
+                    showText={false}
+                    linkTo="#home"
+                  />
                 </div>
                 <h3 className="text-lg sm:text-xl font-bold text-white tracking-tight mb-0.5">
                   {brandName}
