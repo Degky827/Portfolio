@@ -216,31 +216,97 @@ export default function Projects() {
             initial="hidden"
             whileInView="visible"
             viewport={defaultViewport}
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto"
             role="region"
             aria-label="Projects grid"
           >
             {filteredList.length > 0 ? (
-              filteredList.map((project, index) =>
-                project.isMobile ? (
-                  <AppShowcaseCard
+            activeTab === 'all' ? (
+              <div className="space-y-12">
+                {/* Web Applications (3 columns) */}
+                {filteredList.some((p) => !p.isMobile) && (
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+                    {filteredList
+                      .filter((p) => !p.isMobile)
+                      .map((project, index) => (
+                        <div
+                          key={project._id || `web-${index}`}
+                          className="col-span-1 w-full flex justify-center h-full"
+                        >
+                          <ProjectMonitorCard
+                            project={project}
+                            index={index}
+                            shouldReduceMotion={shouldReduceMotion}
+                            getMediaUrl={getMediaUrl}
+                          />
+                        </div>
+                      ))}
+                  </div>
+                )}
+
+                {/* Mobile Applications (Showcase Stages Matching Reference) */}
+                {filteredList.some((p) => p.isMobile) && (
+                  <div>
+                    <div className="flex items-center gap-3 my-8 max-w-5xl mx-auto">
+                      <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent" />
+                      <span className="text-xs font-black uppercase tracking-[0.2em] text-[#36454F] dark:text-slate-400">
+                        // Mobile Applications
+                      </span>
+                      <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent" />
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+                      {filteredList
+                        .filter((p) => p.isMobile)
+                        .map((project, index) => (
+                          <div
+                            key={project._id || `mobile-${index}`}
+                            className="col-span-1 w-full flex justify-center h-full"
+                          >
+                            <AppShowcaseCard
+                              app={project}
+                              index={index}
+                              shouldReduceMotion={shouldReduceMotion}
+                              getMediaUrl={getMediaUrl}
+                            />
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ) : activeTab === 'mobile' ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+                {filteredList.map((project, index) => (
+                  <div
                     key={project._id || `mobile-${index}`}
-                    app={project}
-                    index={index}
-                    shouldReduceMotion={shouldReduceMotion}
-                    getMediaUrl={getMediaUrl}
-                  />
-                ) : (
-                  <ProjectMonitorCard
-                    key={project._id || `web-${index}`}
-                    project={project}
-                    index={index}
-                    shouldReduceMotion={shouldReduceMotion}
-                    getMediaUrl={getMediaUrl}
-                  />
-                )
-              )
+                    className="col-span-1 w-full flex justify-center h-full"
+                  >
+                    <AppShowcaseCard
+                      app={project}
+                      index={index}
+                      shouldReduceMotion={shouldReduceMotion}
+                      getMediaUrl={getMediaUrl}
+                    />
+                  </div>
+                ))}
+              </div>
             ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+                {filteredList.map((project, index) => (
+                  <div
+                    key={project._id || `web-${index}`}
+                    className="col-span-1 w-full flex justify-center h-full"
+                  >
+                    <ProjectMonitorCard
+                      project={project}
+                      index={index}
+                      shouldReduceMotion={shouldReduceMotion}
+                      getMediaUrl={getMediaUrl}
+                    />
+                  </div>
+                ))}
+              </div>
+            )
+          ) : (
               <div className="col-span-full text-center py-16 px-4 rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
                 <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--accent-projects)]/10 text-[var(--accent-projects)] flex items-center justify-center">
                   <Search className="w-8 h-8" />
@@ -254,7 +320,10 @@ export default function Projects() {
                 <button
                   type="button"
                   onClick={clearAllFilters}
-                  className="px-6 py-2.5 text-xs font-bold rounded-xl text-white bg-[var(--accent-projects)] hover:opacity-95 shadow-md transition-all"
+                  className="px-6 py-2.5 text-xs font-bold rounded-xl text-white bg-gradient-to-r from-[var(--accent-projects)] via-[#7c3aed] to-[#6d28d9] hover:brightness-110 active:translate-y-0.5 transition-all cursor-pointer"
+                  style={{
+                    boxShadow: '0 3.5px 0 #4c1d95, 0 6px 14px rgba(108, 43, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
+                  }}
                 >
                   Clear All Filters
                 </button>
