@@ -11,6 +11,7 @@ import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 import HolographicSearch from '../../../components/projects3d/HolographicSearch'
 import AppShowcaseCard from '../../../components/projects3d/AppShowcaseCard'
 import ProjectMonitorCard from '../../../components/projects3d/ProjectMonitorCard'
+import GuillocheWaves from '../../components/ui/GuillocheWaves'
 
 export default function Projects() {
   const shouldReduceMotion = useReducedMotion()
@@ -130,7 +131,15 @@ export default function Projects() {
       className="relative min-h-screen py-16 sm:py-20 lg:py-24 bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
       aria-label="Projects showcase"
     >
-      {/* ── 3D Scene Layer (Transparent Canvas with Stars, Floating Particles & Holographic Lines) ── */}
+      {/* ── Monochromatic Guilloche Ribbon Wave Background (matching Home & About page) ── */}
+      <GuillocheWaves className="absolute inset-0 z-0 opacity-45 dark:opacity-35 pointer-events-none" />
+
+      {/* Subtle background glow orbs matching Home & About page */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-slate-700/15 dark:bg-slate-800/25 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
+      <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
+
+      {/* ── 3D Scene Layer ── */}
       <ProjectsScene>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10 w-full">
           {/* ── Header with 3D Extruded Title ── */}

@@ -13,18 +13,6 @@ function SceneEnvironment({ isMobile }) {
     <>
       <SmoothCamera isMobile={isMobile} />
       <CinematicLighting isMobile={isMobile} />
-      <HolographicLines />
-      <FloatingParticles key={isMobile ? 'particles-mobile' : 'particles-desktop'} count={isMobile ? 25 : 60} />
-      <Stars
-        key={isMobile ? 'stars-mobile' : 'stars-desktop'}
-        radius={45}
-        depth={40}
-        count={isMobile ? 120 : 350}
-        factor={2}
-        saturation={0.2}
-        fade
-        speed={0.3}
-      />
     </>
   )
 }

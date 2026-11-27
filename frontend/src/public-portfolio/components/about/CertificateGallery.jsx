@@ -2,6 +2,7 @@ import { memo, useRef, useState, useCallback } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion'
 import { GraduationCap, Trophy, Code2, Award, ExternalLink, ShieldCheck, CheckCircle2, X, Sparkles } from 'lucide-react'
 import Certificate3DBrain from './Certificate3DBrain'
+import GuillocheWaves from '../ui/GuillocheWaves'
 
 // ── Chrome Corner Screw Bolt ──
 const ChromeBolt = ({ className = '' }) => (
@@ -223,6 +224,9 @@ const CertificateGallery = memo(function CertificateGallery() {
         }}
         className="relative min-h-[580px] sm:min-h-[640px] flex items-center justify-center overflow-visible"
       >
+        {/* Monochromatic Guilloche Ribbon Wave Background (matching Home page) */}
+        <GuillocheWaves className="absolute inset-0 z-0 opacity-40 dark:opacity-30 pointer-events-none" />
+
         {/* SVG Concentric Orbital Chrome Wire Loops */}
         <svg
           className="absolute inset-0 w-full h-full pointer-events-none z-0 overflow-visible"
