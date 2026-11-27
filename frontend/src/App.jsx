@@ -40,12 +40,22 @@ const sectionSpinner = (
 )
 
 function ScrollToTop() {
-  const { pathname } = useLocation()
+  const { pathname, hash } = useLocation()
   useEffect(() => {
     if (typeof window !== 'undefined') {
+      if (hash) {
+        const id = hash.replace(/^#/, '')
+        const el = document.getElementById(id)
+        if (el) {
+          const navHeight = 72
+          const top = el.getBoundingClientRect().top + window.scrollY - navHeight
+          window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+          return
+        }
+      }
       window.scrollTo({ top: 0, behavior: 'instant' })
     }
-  }, [pathname])
+  }, [pathname, hash])
   return null
 }
 

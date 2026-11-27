@@ -234,7 +234,7 @@ function ScreenContent({ app, color, isHovered, thumbUrl }) {
                 target="_blank"
                 rel="noopener noreferrer"
                 onClick={(e) => e.stopPropagation()}
-                className="pointer-events-auto inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-cyan-500 hover:brightness-110 active:translate-y-0.5 transition-all shadow-[0_4px_0_#4338ca,0_8px_16px_rgba(99,102,241,0.5),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-indigo-300/40 select-none cursor-pointer"
+                className="pointer-events-auto inline-flex items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 active:translate-y-0.5 transition-all shadow-[0_4px_0_#1d4ed8,0_8px_16px_rgba(37,99,235,0.4)] border border-blue-400/40 select-none cursor-pointer"
                 aria-label={`Open app ${app.title}`}
               >
                 <span>↗ Open App</span>
