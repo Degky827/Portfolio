@@ -1,172 +1,45 @@
-import { useRef, useState, useCallback, useEffect } from 'react'
-import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
 import { Layers, Globe, Smartphone } from 'lucide-react'
 
-const SPRING = { stiffness: 300, damping: 30, mass: 0.5 }
-
-function TabParticles({ color, isActive }) {
-  if (!isActive) return null
+function HolographicTab({ id, label, icon: Icon, isActive, onClick, count }) {
   return (
-    <div className="absolute inset-0 pointer-events-none overflow-hidden rounded-2xl">
-      {[...Array(8)].map((_, i) => (
-        <motion.div
-          key={i}
-          className="absolute rounded-full"
-          style={{
-            width: 2 + (i % 3),
-            height: 2 + (i % 3),
-            backgroundColor: color,
-            left: `${15 + (i * 10)}%`,
-            top: `${20 + (i * 7)}%`,
-          }}
-          animate={{
-            y: [-12, 12, -12],
-            opacity: [0, 0.7, 0],
-            scale: [0.6, 1.2, 0.6],
-          }}
-          transition={{
-            duration: 2.2 + (i * 0.2),
-            repeat: Infinity,
-            ease: 'easeInOut',
-            delay: i * 0.1,
-          }}
-        />
-      ))}
-    </div>
-  )
-}
-
-function HolographicTab({ id, label, icon: Icon, isActive, onClick, count, accentColor = '#6C2BFF' }) {
-  const cardRef = useRef(null)
-  const [isHovered, setIsHovered] = useState(false)
-  const [isDark, setIsDark] = useState(() =>
-    typeof document !== 'undefined' ? document.documentElement.classList.contains('dark') : true
-  )
-
-  useEffect(() => {
-    const observer = new MutationObserver(() => {
-      setIsDark(document.documentElement.classList.contains('dark'))
-    })
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] })
-    return () => observer.disconnect()
-  }, [])
-
-  const mouseX = useMotionValue(0)
-  const mouseY = useMotionValue(0)
-
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), SPRING)
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), SPRING)
-  const scale = useSpring(isHovered ? 1.04 : 1, SPRING)
-
-  const handleMouseMove = useCallback((e) => {
-    if (!cardRef.current) return
-    const rect = cardRef.current.getBoundingClientRect()
-    const x = (e.clientX - rect.left) / rect.width - 0.5
-    const y = (e.clientY - rect.top) / rect.height - 0.5
-    mouseX.set(x)
-    mouseY.set(y)
-  }, [mouseX, mouseY])
-
-  const handleMouseEnter = useCallback(() => setIsHovered(true), [])
-  const handleMouseLeave = useCallback(() => {
-    setIsHovered(false)
-    mouseX.set(0)
-    mouseY.set(0)
-  }, [mouseX, mouseY])
-
-  const activeColor = isDark ? '#8B5CF6' : '#6C2BFF'
-
-  return (
-    <motion.button
-      ref={cardRef}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+    <button
       onClick={onClick}
-      style={{
-        rotateX,
-        rotateY,
-        scale,
-        transformStyle: 'preserve-3d',
-      }}
-      className="relative group focus:outline-none select-none"
       type="button"
+      className={`relative px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl transition-all duration-200 flex items-center gap-2.5 sm:gap-3 cursor-pointer select-none active:scale-[0.98] ${
+        isActive
+          ? 'bg-[#6C2BFF] text-white shadow-md shadow-[#6C2BFF]/25 border border-[#5b21b6]'
+          : 'bg-white dark:bg-slate-800/80 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700'
+      }`}
     >
+      {/* Tab Icon */}
       <div
-        className={`relative px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl overflow-hidden transition-all duration-300 flex items-center gap-2.5 sm:gap-3 active:translate-y-0.5 ${
+        className={`w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center transition-colors ${
           isActive
-            ? 'border-2'
-            : 'border'
+            ? 'bg-white/20 text-white'
+            : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
         }`}
-        style={{
-          background: isActive
-            ? isDark
-              ? 'linear-gradient(135deg, rgba(139,92,246,0.25) 0%, rgba(30,42,58,0.95) 100%)'
-              : 'linear-gradient(135deg, rgba(108,43,255,0.12) 0%, rgba(255,255,255,0.98) 100%)'
-            : isDark
-              ? 'rgba(30, 42, 58, 0.7)'
-              : 'rgba(255, 255, 255, 0.85)',
-          borderColor: isActive
-            ? activeColor
-            : isDark
-              ? 'rgba(255,255,255,0.12)'
-              : 'rgba(0,0,0,0.08)',
-          boxShadow: isActive
-            ? `0 4px 0 ${isDark ? '#4c1d95' : '#7c3aed'}, 0 8px 25px ${activeColor}35, inset 0 1px 1.5px rgba(255,255,255,0.4)`
-            : isDark
-              ? '0 3px 0 #0f172a, 0 3px 6px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.06)'
-              : '0 3px 0 #d1d5db, 0 3px 6px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.9)',
-          backdropFilter: 'blur(16px)',
-        }}
       >
-        <TabParticles color={activeColor} isActive={isActive} />
-
-        {/* Tab Icon */}
-        <div
-          className="w-7 h-7 sm:w-8 sm:h-8 rounded-xl flex items-center justify-center transition-all duration-300"
-          style={{
-            background: isActive
-              ? `${activeColor}25`
-              : isDark
-                ? 'rgba(255,255,255,0.05)'
-                : 'rgba(0,0,0,0.04)',
-            color: isActive ? activeColor : isDark ? '#94a3b8' : '#64748b',
-          }}
-        >
-          <Icon size={16} />
-        </div>
-
-        {/* Tab Label */}
-        <div className="text-left">
-          <span
-            className="text-xs sm:text-sm font-bold tracking-wide transition-colors block"
-            style={{
-              color: isActive
-                ? isDark ? '#ffffff' : activeColor
-                : isDark ? '#94a3b8' : '#475569',
-            }}
-          >
-            {label}
-          </span>
-        </div>
-
-        {/* Count Badge */}
-        {count !== undefined && (
-          <span
-            className="px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold transition-all"
-            style={{
-              background: isActive
-                ? `${activeColor}25`
-                : isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)',
-              color: isActive ? activeColor : isDark ? '#cbd5e1' : '#64748b',
-              border: `1px solid ${isActive ? `${activeColor}40` : 'transparent'}`,
-            }}
-          >
-            {count}
-          </span>
-        )}
+        <Icon size={16} />
       </div>
-    </motion.button>
+
+      {/* Tab Label */}
+      <span className="text-xs sm:text-sm font-bold tracking-wide whitespace-nowrap">
+        {label}
+      </span>
+
+      {/* Count Badge */}
+      {count !== undefined && (
+        <span
+          className={`px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold transition-colors ${
+            isActive
+              ? 'bg-white/20 text-white'
+              : 'bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300'
+          }`}
+        >
+          {count}
+        </span>
+      )}
+    </button>
   )
 }
 
@@ -179,7 +52,7 @@ export default function HolographicTabs({
 }) {
   return (
     <div className="flex justify-center mb-8 sm:mb-10 w-full px-2">
-      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-1.5 rounded-2xl bg-slate-100/60 dark:bg-slate-900/40 border border-slate-200/60 dark:border-slate-800/60 backdrop-blur-md">
+      <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 p-1.5 rounded-2xl bg-slate-100 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800">
         <HolographicTab
           id="all"
           label="All Projects"

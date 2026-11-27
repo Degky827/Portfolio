@@ -1,6 +1,7 @@
 import { memo, useRef, useState, useCallback } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, AnimatePresence } from 'framer-motion'
 import { GraduationCap, Trophy, Code2, Award, ExternalLink, ShieldCheck, CheckCircle2, X, Sparkles } from 'lucide-react'
+import Certificate3DBrain from './Certificate3DBrain'
 
 // ── Chrome Corner Screw Bolt ──
 const ChromeBolt = ({ className = '' }) => (
@@ -50,93 +51,8 @@ const RibbonSeal = () => (
   </div>
 )
 
-// ── 3D Sculpted Porcelain Brain SVG Centerpiece with Neural Energy ──
-const Sculpted3DBrain = () => (
-  <div className="relative w-44 h-44 sm:w-56 sm:h-56 flex items-center justify-center select-none pointer-events-none">
-    {/* Base Neural Aura Glow */}
-    <div
-      className="absolute bottom-4 inset-x-8 h-20 rounded-full blur-xl pointer-events-none"
-      style={{
-        background: 'radial-gradient(circle, rgba(56, 189, 248, 0.6) 0%, rgba(99, 102, 241, 0.35) 50%, transparent 75%)',
-      }}
-    />
-
-    {/* Layered Porcelain Brain Graphics */}
-    <svg viewBox="0 0 300 300" className="w-full h-full drop-shadow-[0_20px_35px_rgba(0,0,0,0.35)]">
-      <defs>
-        <radialGradient id="brainSurface" cx="40%" cy="35%" r="65%">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="35%" stopColor="#f1f5f9" />
-          <stop offset="70%" stopColor="#cbd5e1" />
-          <stop offset="100%" stopColor="#94a3b8" />
-        </radialGradient>
-        <linearGradient id="neuralLightning" x1="0%" y1="0%" x2="0%" y2="100%">
-          <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.9" />
-          <stop offset="60%" stopColor="#818cf8" stopOpacity="0.8" />
-          <stop offset="100%" stopColor="#c084fc" stopOpacity="0.95" />
-        </linearGradient>
-        <filter id="brainGlow" x="-20%" y="-20%" width="140%" height="140%">
-          <feGaussianBlur stdDeviation="3" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-      </defs>
-
-      {/* Neural Core Light Synapses (Base) */}
-      <path
-        d="M 120 220 Q 150 190, 180 220 Q 150 250, 120 220 Z"
-        fill="url(#neuralLightning)"
-        filter="url(#brainGlow)"
-        className="animate-pulse"
-      />
-      <circle cx="150" cy="225" r="14" fill="#67e8f9" filter="url(#brainGlow)" opacity="0.8" />
-
-      {/* Main Cerebral Silhouette */}
-      <g filter="url(#brainGlow)">
-        {/* Left Hemisphere Sulci & Gyri */}
-        <path
-          d="M 150 70 C 110 65, 75 90, 70 125 C 65 155, 75 180, 95 195 C 105 205, 125 210, 148 215 C 148 160, 149 110, 150 70 Z"
-          fill="url(#brainSurface)"
-          stroke="#ffffff"
-          strokeWidth="1.5"
-        />
-        {/* Right Hemisphere Sulci & Gyri */}
-        <path
-          d="M 150 70 C 190 65, 225 90, 230 125 C 235 155, 225 180, 205 195 C 195 205, 175 210, 152 215 C 152 160, 151 110, 150 70 Z"
-          fill="url(#brainSurface)"
-          stroke="#ffffff"
-          strokeWidth="1.5"
-        />
-        {/* Intricate Convolutions / Folds (Left) */}
-        <path d="M 90 110 Q 115 115, 130 100 Q 145 90, 148 120" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" opacity="0.6" />
-        <path d="M 80 140 Q 105 135, 125 145 Q 145 155, 147 175" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" opacity="0.6" />
-        <path d="M 95 170 Q 115 160, 135 180" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-        <path d="M 105 90 Q 125 75, 145 85" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-
-        {/* Intricate Convolutions / Folds (Right) */}
-        <path d="M 210 110 Q 185 115, 170 100 Q 155 90, 152 120" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" opacity="0.6" />
-        <path d="M 220 140 Q 195 135, 175 145 Q 155 155, 153 175" fill="none" stroke="#64748b" strokeWidth="2.5" strokeLinecap="round" opacity="0.6" />
-        <path d="M 205 170 Q 185 160, 165 180" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-        <path d="M 195 90 Q 175 75, 155 85" fill="none" stroke="#64748b" strokeWidth="2" strokeLinecap="round" opacity="0.5" />
-
-        {/* Specular Porcelain Highlights */}
-        <path d="M 100 85 Q 125 75, 145 80" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
-        <path d="M 200 85 Q 175 75, 155 80" fill="none" stroke="#ffffff" strokeWidth="3" strokeLinecap="round" opacity="0.8" />
-        <path d="M 75 130 Q 85 110, 105 105" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" opacity="0.75" />
-        <path d="M 225 130 Q 215 110, 195 105" fill="none" stroke="#ffffff" strokeWidth="2.5" strokeLinecap="round" opacity="0.75" />
-
-        {/* Brainstem / Cerebellum (Bottom) */}
-        <path
-          d="M 125 210 Q 150 200, 175 210 L 165 240 Q 150 245, 135 240 Z"
-          fill="url(#brainSurface)"
-          stroke="#ffffff"
-          strokeWidth="1.5"
-        />
-        <path d="M 135 220 Q 150 215, 165 220" fill="none" stroke="#64748b" strokeWidth="2" opacity="0.7" />
-        <path d="M 140 230 Q 150 225, 160 230" fill="none" stroke="#64748b" strokeWidth="1.8" opacity="0.7" />
-      </g>
-    </svg>
-  </div>
-)
+// ── 3D Sculpted Porcelain Brain Centerpiece ──
+const Sculpted3DBrain = Certificate3DBrain
 
 // ── The 4 Target Credentials Matching Reference Image ──
 const CREDENTIALS = [
@@ -271,7 +187,7 @@ const CertificateGallery = memo(function CertificateGallery() {
       {/* ── Extruded 3D Headline matching reference ── */}
       <div className="text-center mb-10 sm:mb-14">
         <h2
-          className="text-3xl sm:text-4xl md:text-5xl font-black text-slate-900 dark:text-white tracking-tight uppercase"
+          className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 dark:text-white tracking-tight uppercase"
           style={{
             textShadow: `
               0 1px 0 #64748b,
@@ -386,8 +302,8 @@ const CertificateGallery = memo(function CertificateGallery() {
            ══════════════════════════════════════════════════════ */}
         <div className="relative z-10 flex flex-col items-center justify-center pointer-events-none">
           {/* Glowing 3D Brain */}
-          <div className="relative z-20 -mb-6">
-            <Sculpted3DBrain />
+          <div className="relative z-20 -mb-2 pointer-events-auto">
+            <Certificate3DBrain />
           </div>
 
           {/* Multi-Tiered Concentric Circular Stepped Chrome Pedestal */}
@@ -439,21 +355,19 @@ const CertificateGallery = memo(function CertificateGallery() {
                 setSelectedCert(certData[0])
               }
             }}
+            initial={{ opacity: 0, y: 35, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: '-20px' }}
+            transition={{ duration: 0.6, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ scale: 1.05, y: -6 }}
             whileTap={{ scale: 0.98 }}
             animate={{
               rotateY: 10,
               rotateX: 4,
             }}
-            className={`group absolute top-4 left-2 sm:left-6 md:left-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none ${
+            className={`group absolute top-4 left-2 sm:left-6 md:left-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
               activeTab === 'code' ? 'ring-4 ring-cyan-400 shadow-cyan-400/50 scale-105' : ''
             }`}
-            style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.85) 100%)',
-              backdropFilter: 'blur(16px)',
-              border: '2px solid rgba(255, 255, 255, 0.95)',
-              boxShadow: '0 16px 36px rgba(100, 116, 139, 0.3), 0 4px 10px rgba(0,0,0,0.06), inset 0 1.5px 2px #fff',
-            }}
           >
             <ChromeBolt className="top-2 left-2" />
             <ChromeBolt className="top-2 right-2" />
@@ -464,20 +378,20 @@ const CertificateGallery = memo(function CertificateGallery() {
               <div className="flex items-center gap-3">
                 <CredentialIcon type={certData[0].iconType} />
                 <div className="text-left">
-                  <h4 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight group-hover:text-blue-600 transition-colors">
+                  <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-blue-600 dark:group-hover:text-cyan-400 transition-colors">
                     {certData[0].title}
                   </h4>
                 </div>
               </div>
-              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 shadow-sm">
+              <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-slate-300 shadow-sm">
                 <ExternalLink size={12} />
               </div>
             </div>
             <div className="text-center my-1.5">
-              <p className="text-xs sm:text-sm font-bold text-slate-800 leading-snug">
+              <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug">
                 {certData[0].type}
               </p>
-              <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5">
                 {certData[0].detail}
               </p>
             </div>
@@ -485,7 +399,7 @@ const CertificateGallery = memo(function CertificateGallery() {
               <RibbonSeal />
             </div>
             <div className="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-[10px] font-bold text-blue-600 uppercase tracking-wider bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">
+              <span className="text-[10px] font-bold text-blue-600 dark:text-cyan-400 uppercase tracking-wider bg-blue-50 dark:bg-cyan-950/70 px-2 py-0.5 rounded-full border border-blue-200 dark:border-cyan-800/70">
                 Click to View Details ↗
               </span>
             </div>
@@ -506,21 +420,19 @@ const CertificateGallery = memo(function CertificateGallery() {
                 setSelectedCert(certData[1])
               }
             }}
+            initial={{ opacity: 0, y: 35, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: '-20px' }}
+            transition={{ duration: 0.6, delay: 0.25, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ scale: 1.05, y: -6 }}
             whileTap={{ scale: 0.98 }}
             animate={{
               rotateY: -10,
               rotateX: 4,
             }}
-            className={`group absolute top-4 right-2 sm:right-6 md:right-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none ${
+            className={`group absolute top-4 right-2 sm:right-6 md:right-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
               activeTab === 'education' ? 'ring-4 ring-teal-400 shadow-teal-400/50 scale-105' : ''
             }`}
-            style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.85) 100%)',
-              backdropFilter: 'blur(16px)',
-              border: '2px solid rgba(255, 255, 255, 0.95)',
-              boxShadow: '0 16px 36px rgba(100, 116, 139, 0.3), 0 4px 10px rgba(0,0,0,0.06), inset 0 1.5px 2px #fff',
-            }}
           >
             <ChromeBolt className="top-2 left-2" />
             <ChromeBolt className="top-2 right-2" />
@@ -531,20 +443,20 @@ const CertificateGallery = memo(function CertificateGallery() {
               <div className="flex items-center gap-3">
                 <CredentialIcon type={certData[1].iconType} />
                 <div className="text-left">
-                  <h4 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight group-hover:text-teal-600 transition-colors">
+                  <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-teal-600 dark:group-hover:text-teal-400 transition-colors">
                     {certData[1].title}
                   </h4>
                 </div>
               </div>
-              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 shadow-sm">
+              <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-slate-300 shadow-sm">
                 <ExternalLink size={12} />
               </div>
             </div>
             <div className="text-center my-1.5">
-              <p className="text-xs sm:text-sm font-bold text-slate-800 leading-snug">
+              <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug">
                 {certData[1].type}
               </p>
-              <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5">
                 {certData[1].detail}
               </p>
             </div>
@@ -552,7 +464,7 @@ const CertificateGallery = memo(function CertificateGallery() {
               <RibbonSeal />
             </div>
             <div className="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-[10px] font-bold text-teal-600 uppercase tracking-wider bg-teal-50 px-2 py-0.5 rounded-full border border-teal-200">
+              <span className="text-[10px] font-bold text-teal-600 dark:text-teal-400 uppercase tracking-wider bg-teal-50 dark:bg-teal-950/70 px-2 py-0.5 rounded-full border border-teal-200 dark:border-teal-800/70">
                 Click to View Details ↗
               </span>
             </div>
@@ -573,21 +485,19 @@ const CertificateGallery = memo(function CertificateGallery() {
                 setSelectedCert(certData[2])
               }
             }}
+            initial={{ opacity: 0, y: 35, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: '-20px' }}
+            transition={{ duration: 0.6, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ scale: 1.05, y: -6 }}
             whileTap={{ scale: 0.98 }}
             animate={{
               rotateY: 8,
               rotateX: -2,
             }}
-            className={`group absolute bottom-6 left-2 sm:left-6 md:left-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none ${
+            className={`group absolute bottom-6 left-2 sm:left-6 md:left-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
               activeTab === 'award' ? 'ring-4 ring-indigo-400 shadow-indigo-400/50 scale-105' : ''
             }`}
-            style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.85) 100%)',
-              backdropFilter: 'blur(16px)',
-              border: '2px solid rgba(255, 255, 255, 0.95)',
-              boxShadow: '0 16px 36px rgba(100, 116, 139, 0.3), 0 4px 10px rgba(0,0,0,0.06), inset 0 1.5px 2px #fff',
-            }}
           >
             <ChromeBolt className="top-2 left-2" />
             <ChromeBolt className="top-2 right-2" />
@@ -598,20 +508,20 @@ const CertificateGallery = memo(function CertificateGallery() {
               <div className="flex items-center gap-3">
                 <CredentialIcon type={certData[2].iconType} />
                 <div className="text-left">
-                  <h4 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight group-hover:text-indigo-600 transition-colors">
+                  <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                     {certData[2].title}
                   </h4>
                 </div>
               </div>
-              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 shadow-sm">
+              <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-slate-300 shadow-sm">
                 <ExternalLink size={12} />
               </div>
             </div>
             <div className="text-center my-1.5">
-              <p className="text-xs sm:text-sm font-bold text-slate-800 leading-snug">
+              <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug">
                 {certData[2].type}
               </p>
-              <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5">
                 {certData[2].detail}
               </p>
             </div>
@@ -619,7 +529,7 @@ const CertificateGallery = memo(function CertificateGallery() {
               <RibbonSeal />
             </div>
             <div className="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-200">
+              <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wider bg-indigo-50 dark:bg-indigo-950/70 px-2 py-0.5 rounded-full border border-indigo-200 dark:border-indigo-800/70">
                 Click to View Details ↗
               </span>
             </div>
@@ -640,21 +550,19 @@ const CertificateGallery = memo(function CertificateGallery() {
                 setSelectedCert(certData[3])
               }
             }}
+            initial={{ opacity: 0, y: 35, scale: 0.9 }}
+            whileInView={{ opacity: 1, y: 0, scale: 1 }}
+            viewport={{ once: true, margin: '-20px' }}
+            transition={{ duration: 0.6, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
             whileHover={{ scale: 1.05, y: -6 }}
             whileTap={{ scale: 0.98 }}
             animate={{
               rotateY: -8,
               rotateX: -2,
             }}
-            className={`group absolute bottom-6 right-2 sm:right-6 md:right-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none ${
+            className={`group absolute bottom-6 right-2 sm:right-6 md:right-12 z-30 w-[240px] sm:w-[280px] cursor-pointer rounded-2xl p-4 sm:p-5 transition-all duration-300 select-auto outline-none bg-white/95 dark:bg-[#161f30]/95 backdrop-blur-md border-2 border-white/90 dark:border-slate-700/80 shadow-[0_16px_36px_rgba(100,116,139,0.25)] dark:shadow-[0_16px_36px_rgba(0,0,0,0.6),0_0_24px_rgba(30,41,59,0.5)] ${
               activeTab === 'trophy' ? 'ring-4 ring-amber-400 shadow-amber-400/50 scale-105' : ''
             }`}
-            style={{
-              background: 'linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(241, 245, 249, 0.85) 100%)',
-              backdropFilter: 'blur(16px)',
-              border: '2px solid rgba(255, 255, 255, 0.95)',
-              boxShadow: '0 16px 36px rgba(100, 116, 139, 0.3), 0 4px 10px rgba(0,0,0,0.06), inset 0 1.5px 2px #fff',
-            }}
           >
             <ChromeBolt className="top-2 left-2" />
             <ChromeBolt className="top-2 right-2" />
@@ -665,20 +573,20 @@ const CertificateGallery = memo(function CertificateGallery() {
               <div className="flex items-center gap-3">
                 <CredentialIcon type={certData[3].iconType} />
                 <div className="text-left">
-                  <h4 className="text-base sm:text-lg font-black text-slate-900 tracking-tight leading-tight group-hover:text-amber-600 transition-colors">
+                  <h4 className="text-base sm:text-lg font-black text-slate-900 dark:text-white tracking-tight leading-tight group-hover:text-amber-600 dark:group-hover:text-amber-400 transition-colors">
                     {certData[3].title}
                   </h4>
                 </div>
               </div>
-              <div className="w-6 h-6 rounded-full bg-slate-100 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 shadow-sm">
+              <div className="w-6 h-6 rounded-full bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity text-slate-700 dark:text-slate-300 shadow-sm">
                 <ExternalLink size={12} />
               </div>
             </div>
             <div className="text-center my-1.5">
-              <p className="text-xs sm:text-sm font-bold text-slate-800 leading-snug">
+              <p className="text-xs sm:text-sm font-bold text-slate-800 dark:text-slate-200 leading-snug">
                 {certData[3].type}
               </p>
-              <p className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">
+              <p className="text-[11px] sm:text-xs text-slate-600 dark:text-slate-400 font-medium mt-0.5">
                 {certData[3].detail}
               </p>
             </div>
@@ -686,7 +594,7 @@ const CertificateGallery = memo(function CertificateGallery() {
               <RibbonSeal />
             </div>
             <div className="text-center mt-2 opacity-0 group-hover:opacity-100 transition-opacity">
-              <span className="text-[10px] font-bold text-amber-600 uppercase tracking-wider bg-amber-50 px-2 py-0.5 rounded-full border border-amber-200">
+              <span className="text-[10px] font-bold text-amber-600 dark:text-amber-400 uppercase tracking-wider bg-amber-50 dark:bg-amber-950/70 px-2 py-0.5 rounded-full border border-amber-200 dark:border-amber-800/70">
                 Click to View Details ↗
               </span>
             </div>
