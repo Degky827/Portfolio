@@ -8,16 +8,16 @@ import { getNavigation, getNavbarSettings } from '../../shared/services/navigati
 import { useSocketRefresh } from '../../shared/hooks/useSocketRefresh'
 import { resolveNavPath, isNavPathActive } from '../shared/navUtils'
 
-const FALLBACK_NAV_IDS = ['about', 'skills', 'experience', 'projects', 'testimonials', 'contact']
+const FALLBACK_NAV_IDS = ['home', 'about', 'skills', 'experience', 'projects', 'contact']
 
 function buildFallbackItems() {
   return [
+    { _id: 'home', title: 'Home', sectionId: 'home', url: '/', order: 0, visible: true, active: true },
     { _id: 'about', title: 'About', sectionId: 'about', url: '/about', order: 1, visible: true, active: true },
-    { _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 2, visible: true, active: true },
-    { _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 3, visible: true, active: true },
+    { _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 2, visible: true, active: true },
+    { _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 3, visible: true, active: true },
     { _id: 'projects', title: 'Work', sectionId: 'projects', url: '/projects', order: 4, visible: true, active: true },
-    { _id: 'testimonials', title: 'Testimonials', sectionId: 'testimonials', url: '/testimonials', order: 5, visible: true, active: true },
-    { _id: 'contact', title: 'Contact', sectionId: 'contact', url: '/contact', order: 6, visible: true, active: true },
+    { _id: 'contact', title: 'Contact', sectionId: 'contact', url: '/contact', order: 5, visible: true, active: true },
   ]
 }
 
@@ -73,6 +73,10 @@ export default function Navbar({ darkMode, onToggleDark }) {
     const fallback = buildFallbackItems()
     if (!navLoaded || !navItems || navItems.length === 0) return fallback
 
+    const hasHome = navItems.some((i) => {
+      const k = (i.sectionId || i.title || i.url || '').toLowerCase()
+      return k === 'home' || k === '/' || k === '#home'
+    })
     const hasSkills = navItems.some((i) => {
       const k = (i.sectionId || i.title || i.url || '').toLowerCase()
       return k.includes('skill')
@@ -88,25 +92,72 @@ export default function Navbar({ darkMode, onToggleDark }) {
 
     let merged = navItems.filter((i) => {
       const k = (i.sectionId || i.title || i.url || '').toLowerCase()
-      return k !== 'home' && k !== '/' && k !== '#home'
+      return (
+        !k.includes('testimonial') &&
+        !k.includes('recommend')
+      )
     })
-    if (!hasSkills) {
-      merged.push({ _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 2, visible: true, active: true })
+    if (!hasHome) {
+      merged.unshift({ _id: 'home', title: 'Home', sectionId: 'home', url: '/', order: 0, visible: true, active: true })
     }
     if (!hasExp) {
-      merged.push({ _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 3, visible: true, active: true })
+      merged.push({ _id: 'experience', title: 'Experience', sectionId: 'experience', url: '/experience', order: 2, visible: true, active: true })
     }
-    if (!hasTestimonials) {
-      merged.push({ _id: 'testimonials', title: 'Testimonials', sectionId: 'testimonials', url: '/testimonials', order: 5, visible: true, active: true })
+    if (!hasSkills) {
+      merged.push({ _id: 'skills', title: 'Skills', sectionId: 'skills', url: '/skills', order: 3, visible: true, active: true })
     }
     return merged.sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
   }, [navItems, navLoaded])
 
-  // ── Active Section Detection ──────────────────────────────────
-  const activeSection = useMemo(() => {
-    const rawPath = location.pathname.replace(/^\//, '').trim()
-    if (!rawPath || rawPath === 'home') return 'home'
-    return rawPath
+  // ── Active Section Detection (Scroll Spy + Route Detection) ──
+  const [activeSection, setActiveSection] = useState('home')
+
+  useEffect(() => {
+    const isRoot = location.pathname === '/' || location.pathname === '/home' || location.pathname === ''
+    if (!isRoot) {
+      const rawPath = location.pathname.replace(/^\//, '').trim()
+      setActiveSection(rawPath || 'home')
+      return
+    }
+
+    const sectionIds = ['home', 'about', 'experience', 'skills', 'projects', 'contact']
+    let ticking = false
+
+    const handleScrollSpy = () => {
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        ticking = false
+        const scrollY = window.scrollY
+        const navHeight = 90
+
+        if (scrollY < 120) {
+          setActiveSection('home')
+          return
+        }
+
+        if (window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 80) {
+          setActiveSection('contact')
+          return
+        }
+
+        let current = 'home'
+        for (const id of sectionIds) {
+          const el = document.getElementById(id) || (id === 'home' ? document.getElementById('hero') : null)
+          if (el) {
+            const top = el.getBoundingClientRect().top + scrollY - navHeight
+            if (scrollY >= top - 60) {
+              current = id
+            }
+          }
+        }
+        setActiveSection(current)
+      })
+    }
+
+    window.addEventListener('scroll', handleScrollSpy, { passive: true })
+    handleScrollSpy()
+    return () => window.removeEventListener('scroll', handleScrollSpy)
   }, [location.pathname])
 
   // ── Scroll Handler ────────────────────────────────────────────
@@ -271,15 +322,80 @@ export default function Navbar({ darkMode, onToggleDark }) {
   const drawerWidthClass = 'w-full max-w-sm sm:max-w-md'
   const rightControlsGap = Math.round(settings.menuGap / 3)
 
+  const isItemActive = useCallback((item) => {
+    const isRoot = location.pathname === '/' || location.pathname === '/home' || location.pathname === ''
+    if (!isRoot) {
+      const targetPath = resolveNavPath(item)
+      return isNavPathActive(targetPath, location.pathname)
+    }
+    const rawId = (item.sectionId || item.title || '').toLowerCase()
+    const mappedId = rawId.includes('home') || rawId === 'hero' ? 'home'
+      : rawId.includes('about') ? 'about'
+      : rawId.includes('exp') ? 'experience'
+      : rawId.includes('skill') ? 'skills'
+      : rawId.includes('project') || rawId.includes('work') ? 'projects'
+      : rawId.includes('contact') ? 'contact'
+      : rawId
+    return activeSection === mappedId
+  }, [location.pathname, activeSection])
+
   const handleNavClick = useCallback((e, item) => {
     if (item?.isExternal || item?.openNewTab) return
     e.preventDefault()
     setIsOpen(false)
     if (item?.active === false) return
 
-    const targetPath = resolveNavPath(item)
-    navigate(targetPath)
-  }, [navigate])
+    const rawId = (item.sectionId || item.title || '').toLowerCase()
+    const targetId = rawId.includes('home') || rawId === 'hero' ? 'home'
+      : rawId.includes('about') ? 'about'
+      : rawId.includes('exp') ? 'experience'
+      : rawId.includes('skill') ? 'skills'
+      : rawId.includes('project') || rawId.includes('work') ? 'projects'
+      : rawId.includes('contact') ? 'contact'
+      : rawId
+
+    const isRoot = location.pathname === '/' || location.pathname === '/home' || location.pathname === ''
+
+    if (isRoot) {
+      if (targetId === 'home') {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setActiveSection('home')
+        return
+      }
+
+      const el = document.getElementById(targetId) || (targetId === 'home' ? document.getElementById('hero') : null)
+      if (el) {
+        const navHeight = 72
+        const top = el.getBoundingClientRect().top + window.scrollY - navHeight
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+        setActiveSection(targetId)
+        return
+      }
+    }
+
+    // If on a sub-page (e.g. /cv), navigate to root and smooth scroll
+    if (targetId === 'home') {
+      navigate('/')
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+        setActiveSection('home')
+      }, 50)
+      return
+    }
+
+    navigate(`/#${targetId}`)
+    setTimeout(() => {
+      const el = document.getElementById(targetId) || (targetId === 'home' ? document.getElementById('hero') : null)
+      if (el) {
+        const navHeight = 72
+        const top = el.getBoundingClientRect().top + window.scrollY - navHeight
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' })
+        setActiveSection(targetId)
+      } else {
+        window.scrollTo({ top: 0, behavior: 'smooth' })
+      }
+    }, 120)
+  }, [location.pathname, navigate])
 
   const hoverUnderlineStyle = useMemo(() => ({
     backgroundColor: linkHoverColor || '#6C2BFF',
@@ -309,24 +425,28 @@ export default function Navbar({ darkMode, onToggleDark }) {
         className={`${settings.fullWidth ? 'w-full' : 'container'} mx-auto px-4 sm:px-8 flex justify-between items-center`}
         style={settings.fullWidth ? {} : { maxWidth: settings.containerWidth }}
       >
-        {/* Logo — left */}
-        <div className="shrink-0" style={settings.logoMargin ? { marginLeft: settings.logoMargin + 'px', marginRight: settings.logoMargin + 'px' } : {}}>
+        {/* Top Left Corner: Logo */}
+        <div className="shrink-0 flex items-center" style={settings.logoMargin ? { marginLeft: settings.logoMargin + 'px', marginRight: settings.logoMargin + 'px' } : {}}>
           <Logo settings={mergedSettings} linkTo="/" onNavClick={(e) => {
             e.preventDefault()
-            navigate('/')
+            if (location.pathname === '/' || location.pathname === '/home') {
+              window.scrollTo({ top: 0, behavior: 'smooth' })
+            } else {
+              navigate('/')
+            }
             setIsOpen(false)
           }} />
         </div>
 
-        {/* Desktop: Navigation links + CV + Theme Mode */}
-        <div className="hidden md:flex items-center gap-5 lg:gap-7">
+        {/* Center: Desktop Navigation links */}
+        <div className="hidden md:flex items-center justify-center flex-1 mx-6 lg:mx-8">
           <ul
             className="flex items-center"
             style={{ gap: Math.min(settings.menuGap || 28, 28) + 'px' }}
           >
             {desktopNavItems.map((item, idx) => {
               const targetPath = resolveNavPath(item)
-              const isActive = isNavPathActive(targetPath, location.pathname)
+              const isActive = isItemActive(item)
               const displayTitle = item.title === 'Projects' ? 'Work' : item.title
 
               return (
@@ -363,55 +483,55 @@ export default function Navbar({ darkMode, onToggleDark }) {
               )
             })}
           </ul>
+        </div>
 
-          {/* Desktop Actions: CV button + Theme mode toggle */}
-          <div className="flex items-center gap-3 pl-3 border-l border-slate-200/80 dark:border-white/10 ml-1">
-            {ns?.resumeEnabled !== false && (
-              <a
-                href="#/cv"
-                onClick={(e) => {
-                  e.preventDefault()
-                  navigate('/cv')
-                }}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-all duration-200 cursor-pointer ${
-                  location.pathname === '/cv'
-                    ? 'bg-[#6C2BFF] text-white shadow-sm shadow-[#6C2BFF]/30'
-                    : 'text-slate-700 dark:text-slate-200 hover:text-[#6C2BFF] dark:hover:text-[#6C2BFF] bg-slate-100 dark:bg-white/10 hover:bg-[#6C2BFF]/10'
-                }`}
-                title="View CV / Resume"
-              >
-                <FileText size={14} className={location.pathname === '/cv' ? 'text-white' : 'text-[#6C2BFF]'} />
-                <span>{ns?.resumeText || 'CV'}</span>
-              </a>
-            )}
+        {/* Top Right Corner: Desktop Actions (CV + Theme toggle) */}
+        <div className="hidden md:flex items-center gap-3 shrink-0">
+          {ns?.resumeEnabled !== false && (
+            <a
+              href="#/cv"
+              onClick={(e) => {
+                e.preventDefault()
+                navigate('/cv')
+              }}
+              className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs lg:text-sm font-semibold transition-all duration-200 cursor-pointer ${
+                location.pathname === '/cv'
+                  ? 'bg-[#6C2BFF] text-white shadow-sm shadow-[#6C2BFF]/30'
+                  : 'text-slate-700 dark:text-slate-200 hover:text-[#6C2BFF] dark:hover:text-[#6C2BFF] bg-slate-100 dark:bg-white/10 hover:bg-[#6C2BFF]/10'
+              }`}
+              title="View CV / Resume"
+            >
+              <FileText size={14} className={location.pathname === '/cv' ? 'text-white' : 'text-[#6C2BFF]'} />
+              <span>{ns?.resumeText || 'CV'}</span>
+            </a>
+          )}
 
-            {settings.themeEnabled && (
-              <button
-                onClick={onToggleDark}
-                className="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer border border-slate-200/80 dark:border-white/10 hover:border-[#6C2BFF]/50 relative overflow-hidden"
-                style={{ backgroundColor: controlBg, color: controlTextColor }}
-                aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
-                title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
-              >
-                <AnimatePresence mode="wait" initial={false}>
-                  <motion.div
-                    key={darkMode ? 'desktop-dark' : 'desktop-light'}
-                    initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
-                    animate={{ rotate: 0, scale: 1, opacity: 1 }}
-                    exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
-                    transition={{ duration: 0.3, ease: 'easeOut' }}
-                    className="flex items-center justify-center"
-                  >
-                    {darkMode ? (
-                      <Sun size={16} className="text-amber-400" />
-                    ) : (
-                      <Moon size={16} className="text-indigo-400" />
-                    )}
-                  </motion.div>
-                </AnimatePresence>
-              </button>
-            )}
-          </div>
+          {settings.themeEnabled && (
+            <button
+              onClick={onToggleDark}
+              className="w-9 h-9 flex items-center justify-center rounded-full transition-all duration-200 hover:scale-105 active:scale-95 cursor-pointer border border-slate-200/80 dark:border-white/10 hover:border-[#6C2BFF]/50 relative overflow-hidden"
+              style={{ backgroundColor: controlBg, color: controlTextColor }}
+              aria-label={darkMode ? 'Switch to light theme' : 'Switch to dark theme'}
+              title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div
+                  key={darkMode ? 'desktop-dark' : 'desktop-light'}
+                  initial={{ rotate: -90, scale: 0.5, opacity: 0 }}
+                  animate={{ rotate: 0, scale: 1, opacity: 1 }}
+                  exit={{ rotate: 90, scale: 0.5, opacity: 0 }}
+                  transition={{ duration: 0.3, ease: 'easeOut' }}
+                  className="flex items-center justify-center"
+                >
+                  {darkMode ? (
+                    <Sun size={16} className="text-amber-400" />
+                  ) : (
+                    <Moon size={16} className="text-indigo-400" />
+                  )}
+                </motion.div>
+              </AnimatePresence>
+            </button>
+          )}
         </div>
 
         {/* Mobile Controls: CV + Theme toggle + Hamburger */}
@@ -505,7 +625,7 @@ export default function Navbar({ darkMode, onToggleDark }) {
                 <ul className="flex flex-col gap-5">
                   {displayNavItems.map((item, idx) => {
                     const targetPath = resolveNavPath(item)
-                    const isActive = isNavPathActive(targetPath, location.pathname)
+                    const isActive = isItemActive(item)
                     const displayTitle = item.title === 'Projects' ? 'Work' : item.title
 
                     return (

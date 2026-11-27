@@ -88,11 +88,6 @@ function HomePage() {
         </SectionDepth>
       </Suspense>
       <Suspense fallback={spinner}>
-        <SectionDepth sectionId="testimonials">
-          <Testimonials />
-        </SectionDepth>
-      </Suspense>
-      <Suspense fallback={spinner}>
         <SectionDepth sectionId="contact">
           <Contact />
         </SectionDepth>
