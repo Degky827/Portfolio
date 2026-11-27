@@ -62,9 +62,9 @@ const particleFragmentShader = `
   }
 `
 
-const TEAL = new THREE.Color('#06b6d4')
 const PURPLE = new THREE.Color('#8b5cf6')
-const CYAN = new THREE.Color('#22d3ee')
+const INDIGO = new THREE.Color('#6366f1')
+const LAVENDER = new THREE.Color('#a78bfa')
 
 export default function FloatingParticles({ count = 120 }) {
   const pointsRef = useRef()
@@ -100,9 +100,9 @@ export default function FloatingParticles({ count = 120 }) {
   const uniforms = useMemo(
     () => ({
       uTime: { value: 0 },
-      uColorA: { value: TEAL },
-      uColorB: { value: PURPLE },
-      uColorC: { value: CYAN },
+      uColorA: { value: PURPLE },
+      uColorB: { value: INDIGO },
+      uColorC: { value: LAVENDER },
     }),
     []
   )
