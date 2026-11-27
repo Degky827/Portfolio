@@ -148,14 +148,17 @@ export default function ProjectDetailsModal({ project, isOpen, onClose, getMedia
                 </div>
               )}
 
-              {/* Action Buttons */}
+              {/* Action Buttons (3D Physical Buttons) */}
               <div className="flex flex-wrap items-center gap-3 pt-6 border-t border-slate-200 dark:border-slate-800">
                 {liveUrl && liveUrl !== '#' && (
                   <a
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl text-white shadow-lg shadow-[var(--accent-projects)]/25 hover:shadow-[var(--accent-projects)]/40 hover:scale-[1.02] transition-all bg-[var(--accent-projects)]"
+                    className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl text-white bg-gradient-to-r from-[var(--accent-projects)] via-[#7c3aed] to-[#6d28d9] hover:brightness-110 active:translate-y-0.5 transition-all select-none cursor-pointer"
+                    style={{
+                      boxShadow: '0 3.5px 0 #4c1d95, 0 6px 14px rgba(108, 43, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
+                    }}
                   >
                     <ExternalLink size={16} />
                     Live Preview
@@ -166,7 +169,10 @@ export default function ProjectDetailsModal({ project, isOpen, onClose, getMedia
                     href={repoUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 hover:scale-[1.02] transition-all"
+                    className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl text-slate-700 dark:text-slate-200 bg-slate-100 dark:bg-[#1e2532] hover:bg-slate-200 dark:hover:bg-[#283244] border border-slate-200/90 dark:border-slate-700/80 active:translate-y-0.5 transition-all select-none cursor-pointer"
+                    style={{
+                      boxShadow: '0 3px 0 #cbd5e1, 0 3px 6px rgba(0,0,0,0.06), inset 0 1px 1px rgba(255,255,255,0.8)',
+                    }}
                   >
                     <GithubIcon size={16} />
                     View Source
@@ -175,7 +181,10 @@ export default function ProjectDetailsModal({ project, isOpen, onClose, getMedia
                 <button
                   type="button"
                   onClick={onClose}
-                  className="ml-auto px-4 py-2 text-sm font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:white transition-colors"
+                  className="ml-auto px-4 py-2 text-sm font-bold rounded-xl text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 active:translate-y-0.5 transition-all border border-slate-200 dark:border-slate-700 select-none cursor-pointer"
+                  style={{
+                    boxShadow: '0 3px 0 #cbd5e1, 0 3px 6px rgba(0,0,0,0.06)',
+                  }}
                 >
                   Close
                 </button>
