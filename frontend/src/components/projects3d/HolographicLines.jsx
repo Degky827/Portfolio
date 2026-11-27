@@ -12,8 +12,8 @@ function HoloGrid() {
 
   const uniforms = useMemo(() => ({
     uTime: { value: 0 },
-    uColorA: { value: new THREE.Color('#06b6d4') },
-    uColorB: { value: new THREE.Color('#8b5cf6') },
+    uColorA: { value: new THREE.Color('#8b5cf6') },
+    uColorB: { value: new THREE.Color('#6366f1') },
   }), [])
 
   return (
@@ -49,7 +49,7 @@ function HoloGrid() {
             float fade = 1.0 - smoothstep(0.2, 1.0, dist);
 
             float pulse = 0.5 + 0.5 * sin(uTime * 0.4 + dist * 4.0);
-            float alpha = grid * fade * 0.18 * pulse;
+            float alpha = grid * fade * 0.14 * pulse;
 
             float depthFade = 1.0 - smoothstep(3.0, 25.0, vDist);
             alpha *= depthFade;
@@ -68,59 +68,18 @@ function HoloGrid() {
   )
 }
 
-function HoloWalls() {
-  const groupRef = useRef()
-
-  useFrame((state) => {
-    if (!groupRef.current) return
-    const time = state.clock.getElapsedTime()
-    groupRef.current.children.forEach((child, i) => {
-      if (child.material) {
-        child.material.opacity = 0.03 + Math.sin(time * 0.5 + i * 1.5) * 0.015
-      }
-    })
-  })
-
-  return (
-    <group ref={groupRef}>
-      {[-12, 12].map((x) => (
-        <mesh key={`v-${x}`} position={[x, 3, -8]}>
-          <planeGeometry args={[0.02, 14]} />
-          <meshBasicMaterial
-            color="#06b6d4"
-            transparent
-            opacity={0.04}
-            blending={THREE.AdditiveBlending}
-          />
-        </mesh>
-      ))}
-      {[-15, -5, 5, 15].map((z) => (
-        <mesh key={`h-${z}`} position={[0, 0, z]} rotation={[0, Math.PI / 2, 0]}>
-          <planeGeometry args={[0.02, 14]} />
-          <meshBasicMaterial
-            color="#8b5cf6"
-            transparent
-            opacity={0.025}
-            blending={THREE.AdditiveBlending}
-          />
-        </mesh>
-      ))}
-    </group>
-  )
-}
-
 function DataStreams() {
   const groupRef = useRef()
-  const streamCount = 8
+  const streamCount = 6
 
   const streams = useMemo(() =>
     Array.from({ length: streamCount }, (_, i) => ({
       x: (Math.random() - 0.5) * 20,
       z: -3 - Math.random() * 12,
-      speed: 0.5 + Math.random() * 1.5,
-      length: 2 + Math.random() * 4,
+      speed: 0.5 + Math.random() * 1.2,
+      length: 2 + Math.random() * 3,
       phase: Math.random() * Math.PI * 2,
-      color: i % 3 === 0 ? '#06b6d4' : i % 3 === 1 ? '#8b5cf6' : '#22d3ee',
+      color: i % 2 === 0 ? '#8b5cf6' : '#6366f1',
     })),
     []
   )
@@ -133,7 +92,7 @@ function DataStreams() {
       if (!s || !child.material) return
       const y = ((time * s.speed + s.phase) % 14) - 4
       child.position.y = y
-      child.material.opacity = 0.06 + Math.sin(time * 2 + s.phase) * 0.03
+      child.material.opacity = 0.05 + Math.sin(time * 2 + s.phase) * 0.02
     })
   })
 
@@ -145,7 +104,7 @@ function DataStreams() {
           <meshBasicMaterial
             color={s.color}
             transparent
-            opacity={0.06}
+            opacity={0.05}
             blending={THREE.AdditiveBlending}
           />
         </mesh>
@@ -158,7 +117,6 @@ export default function HolographicLines() {
   return (
     <group>
       <HoloGrid />
-      <HoloWalls />
       <DataStreams />
     </group>
   )
