@@ -230,7 +230,10 @@ export default function Testimonials() {
             </p>
             <button
               onClick={fetchTestimonials}
-              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-semibold text-white bg-purple-600 rounded-xl hover:bg-purple-700 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold text-white bg-gradient-to-r from-purple-600 via-indigo-600 to-purple-700 rounded-xl hover:brightness-110 active:translate-y-0.5 transition-all cursor-pointer"
+              style={{
+                boxShadow: '0 3.5px 0 #4338ca, 0 6px 14px rgba(79, 70, 229, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
+              }}
             >
               <RefreshCw size={16} />
               Try Again

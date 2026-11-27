@@ -93,27 +93,29 @@ function HolographicTab({ id, label, icon: Icon, isActive, onClick, count, accen
       type="button"
     >
       <div
-        className={`relative px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl overflow-hidden transition-all duration-300 flex items-center gap-2.5 sm:gap-3 ${
+        className={`relative px-4 sm:px-6 py-2.5 sm:py-3 rounded-2xl overflow-hidden transition-all duration-300 flex items-center gap-2.5 sm:gap-3 active:translate-y-0.5 ${
           isActive
-            ? 'shadow-lg border-2'
+            ? 'border-2'
             : 'border'
         }`}
         style={{
           background: isActive
             ? isDark
-              ? 'linear-gradient(135deg, rgba(139,92,246,0.2) 0%, rgba(30,42,58,0.9) 100%)'
-              : 'linear-gradient(135deg, rgba(108,43,255,0.1) 0%, rgba(255,255,255,0.95) 100%)'
+              ? 'linear-gradient(135deg, rgba(139,92,246,0.25) 0%, rgba(30,42,58,0.95) 100%)'
+              : 'linear-gradient(135deg, rgba(108,43,255,0.12) 0%, rgba(255,255,255,0.98) 100%)'
             : isDark
-              ? 'rgba(30, 42, 58, 0.6)'
-              : 'rgba(255, 255, 255, 0.75)',
+              ? 'rgba(30, 42, 58, 0.7)'
+              : 'rgba(255, 255, 255, 0.85)',
           borderColor: isActive
             ? activeColor
             : isDark
-              ? 'rgba(255,255,255,0.1)'
+              ? 'rgba(255,255,255,0.12)'
               : 'rgba(0,0,0,0.08)',
           boxShadow: isActive
-            ? `0 8px 25px ${activeColor}30`
-            : 'none',
+            ? `0 4px 0 ${isDark ? '#4c1d95' : '#7c3aed'}, 0 8px 25px ${activeColor}35, inset 0 1px 1.5px rgba(255,255,255,0.4)`
+            : isDark
+              ? '0 3px 0 #0f172a, 0 3px 6px rgba(0,0,0,0.25), inset 0 1px 1px rgba(255,255,255,0.06)'
+              : '0 3px 0 #d1d5db, 0 3px 6px rgba(0,0,0,0.05), inset 0 1px 1px rgba(255,255,255,0.9)',
           backdropFilter: 'blur(16px)',
         }}
       >
