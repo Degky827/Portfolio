@@ -1,5 +1,5 @@
 import { useState, useMemo, useEffect, useCallback } from 'react'
-import { motion, useReducedMotion } from 'framer-motion'
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion'
 import { Search, Filter, Layers, Globe, Smartphone, Sparkles, RefreshCw } from 'lucide-react'
 import projectsData from '../../../shared/data/projects.json'
 import mobileAppsData from '../../../shared/data/mobileApps.json'
@@ -11,29 +11,21 @@ import HolographicTabs from '../../../components/projects3d/HolographicTabs'
 import HolographicSearch from '../../../components/projects3d/HolographicSearch'
 import AppShowcaseCard from '../../../components/projects3d/AppShowcaseCard'
 import ProjectMonitorCard from '../../../components/projects3d/ProjectMonitorCard'
-import GuillocheWaves from '../../components/ui/GuillocheWaves'
-import { createContainerVariants, defaultViewport } from '../../shared/animations'
 
 export default function Projects() {
   const shouldReduceMotion = useReducedMotion()
   const [activeTab, setActiveTab] = useState('all') // 'all' | 'web' | 'mobile'
   const [searchTerm, setSearchTerm] = useState('')
   const [dbProjects, setDbProjects] = useState([])
-  const [dbMobileApps, setDbMobileApps] = useState([])
   const [projectsLoading, setProjectsLoading] = useState(true)
 
   const fetchProjects = useCallback(() => {
     (async () => {
       try {
-        const [webData, mobileData] = await Promise.all([
-          getProjects({ public: true, limit: 50 }),
-          getProjects({ public: true, category: 'Mobile App', limit: 50 }),
-        ])
-        setDbProjects(webData.projects || [])
-        setDbMobileApps(mobileData.projects || [])
+        const res = await getProjects({ public: true, limit: 100 })
+        setDbProjects(res.projects || [])
       } catch {
         setDbProjects([])
-        setDbMobileApps([])
       } finally {
         setProjectsLoading(false)
       }
@@ -46,18 +38,34 @@ export default function Projects() {
 
   useSocketRefresh('content:updated', fetchProjects, { type: 'projects' })
 
+  const isMobileProject = useCallback((p) => {
+    const cat = (p?.category || '').toLowerCase()
+    const plat = (p?.platform || '').toLowerCase()
+    const title = (p?.title || '').toLowerCase()
+    return (
+      cat.includes('mobile') ||
+      cat.includes('app') ||
+      cat.includes('flutter') ||
+      cat.includes('android') ||
+      cat.includes('ios') ||
+      plat.includes('mobile') ||
+      plat.includes('app') ||
+      p?.isMobile === true
+    )
+  }, [])
+
   // Standardized Web Projects
   const webProjects = useMemo(() => {
-    if (dbProjects.length > 0) {
-      return dbProjects.filter((p) => p.category !== 'Mobile App')
-    }
+    const fromDb = dbProjects.filter((p) => !isMobileProject(p))
+    if (fromDb.length > 0) return fromDb
     return projectsData
-  }, [dbProjects])
+  }, [dbProjects, isMobileProject])
 
   // Standardized Mobile/Application Projects
   const mobileProjects = useMemo(() => {
-    if (dbMobileApps.length > 0) {
-      return dbMobileApps.map((p) => ({
+    const fromDb = dbProjects.filter(isMobileProject)
+    if (fromDb.length > 0) {
+      return fromDb.map((p) => ({
         title: p.title || '',
         description: p.shortDescription || p.description || '',
         features: p.features?.length ? p.features : (p.technologies || []).slice(0, 4),
@@ -77,7 +85,7 @@ export default function Projects() {
       color: '#6C2BFF',
       isMobile: true,
     }))
-  }, [dbMobileApps])
+  }, [dbProjects, isMobileProject])
 
   // Combined and filtered project list
   const filteredList = useMemo(() => {
@@ -111,8 +119,6 @@ export default function Projects() {
     return list
   }, [activeTab, webProjects, mobileProjects, searchTerm])
 
-  const containerVariants = createContainerVariants(shouldReduceMotion, 0.08)
-
   const clearAllFilters = useCallback(() => {
     setSearchTerm('')
     setActiveTab('all')
@@ -124,14 +130,6 @@ export default function Projects() {
       className="relative min-h-screen py-16 sm:py-20 lg:py-24 bg-white dark:bg-[#1a1a2e] text-slate-900 dark:text-white transition-colors duration-300 overflow-hidden"
       aria-label="Projects showcase"
     >
-      {/* ── Monochromatic Purple Guilloche Ribbon Wave Background (matching other pages) ── */}
-      <GuillocheWaves className="absolute inset-0 z-0 opacity-45 dark:opacity-35 pointer-events-none" />
-
-      {/* ── Ambient Background Glow Orbs (matching About, Skills, and Experience) ── */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-slate-700/15 dark:bg-slate-800/25 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 left-10 w-[350px] h-[350px] bg-slate-800/10 dark:bg-slate-900/30 rounded-full blur-[100px] pointer-events-none" />
-      <div className="absolute top-1/3 right-10 w-[350px] h-[350px] bg-[#2C3539]/10 dark:bg-black/30 rounded-full blur-[100px] pointer-events-none" />
-
       {/* ── 3D Scene Layer (Transparent Canvas with Stars, Floating Particles & Holographic Lines) ── */}
       <ProjectsScene>
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10 w-full">
@@ -143,9 +141,9 @@ export default function Projects() {
             transition={{ duration: 0.6 }}
             className="text-center mb-8 sm:mb-12"
           >
-            {/* 3D Extruded Title: What have I done ? (Matching About, Skills & Experience) */}
+            {/* 3D Extruded Title: What have I done ? (Refined minimized text size) */}
             <h2
-              className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black mb-4 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
+              className="text-2xl sm:text-3xl md:text-4xl font-extrabold mb-3 tracking-wider uppercase font-sans select-none transition-transform duration-300 hover:scale-[1.02] text-[#1E252B] dark:text-[#E2E8F0]"
               style={{
                 textShadow: `
                   0 1px 0 #64748b,
@@ -168,9 +166,9 @@ export default function Projects() {
 
             {/* Decorative Diamond Accent Line: <> ◇ <> matching other pages */}
             <div className="flex items-center justify-center gap-3 mt-5">
-              <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+              <div className="h-[1.5px] w-14 sm:w-20 bg-slate-300 dark:bg-slate-700" />
               <div className="w-2.5 h-2.5 rotate-45 border-2 border-[#36454F] dark:border-slate-300 shadow-[0_0_12px_rgba(54,69,79,0.6)] dark:shadow-[0_0_12px_rgba(255,255,255,0.4)]" />
-              <div className="h-[1.5px] w-14 sm:w-20 bg-gradient-to-r from-transparent via-[#36454F] dark:via-slate-400 to-transparent" />
+              <div className="h-[1.5px] w-14 sm:w-20 bg-slate-300 dark:bg-slate-700" />
             </div>
           </motion.div>
 
@@ -211,58 +209,31 @@ export default function Projects() {
           )}
 
           {/* ── Responsive 3D Project Cards Grid ── */}
-          <motion.div
-            variants={containerVariants}
-            initial="hidden"
-            whileInView="visible"
-            viewport={defaultViewport}
-            role="region"
-            aria-label="Projects grid"
-          >
-            {filteredList.length > 0 ? (
-            activeTab === 'all' ? (
-              <div className="space-y-12">
-                {/* Web Applications (3 columns) */}
-                {filteredList.some((p) => !p.isMobile) && (
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
-                    {filteredList
-                      .filter((p) => !p.isMobile)
-                      .map((project, index) => (
-                        <div
-                          key={project._id || `web-${index}`}
-                          className="col-span-1 w-full flex justify-center h-full"
-                        >
-                          <ProjectMonitorCard
-                            project={project}
-                            index={index}
-                            shouldReduceMotion={shouldReduceMotion}
-                            getMediaUrl={getMediaUrl}
-                          />
-                        </div>
-                      ))}
-                  </div>
-                )}
-
-                {/* Mobile Applications (Showcase Stages Matching Reference) */}
-                {filteredList.some((p) => p.isMobile) && (
-                  <div>
-                    <div className="flex items-center gap-3 my-8 max-w-5xl mx-auto">
-                      <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent" />
-                      <span className="text-xs font-black uppercase tracking-[0.2em] text-[#36454F] dark:text-slate-400">
-                        // Mobile Applications
-                      </span>
-                      <div className="h-[1.5px] flex-1 bg-gradient-to-r from-transparent via-slate-300 dark:via-slate-700 to-transparent" />
-                    </div>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={activeTab}
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -15 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              role="region"
+              aria-label="Projects grid"
+            >
+              {filteredList.length > 0 ? (
+              activeTab === 'all' ? (
+                <div className="space-y-12">
+                  {/* Web Applications (3 columns) */}
+                  {filteredList.some((p) => !p.isMobile) && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
                       {filteredList
-                        .filter((p) => p.isMobile)
+                        .filter((p) => !p.isMobile)
                         .map((project, index) => (
                           <div
-                            key={project._id || `mobile-${index}`}
+                            key={project._id || `web-${index}`}
                             className="col-span-1 w-full flex justify-center h-full"
                           >
-                            <AppShowcaseCard
-                              app={project}
+                            <ProjectMonitorCard
+                              project={project}
                               index={index}
                               shouldReduceMotion={shouldReduceMotion}
                               getMediaUrl={getMediaUrl}
@@ -270,66 +241,93 @@ export default function Projects() {
                           </div>
                         ))}
                     </div>
-                  </div>
-                )}
-              </div>
-            ) : activeTab === 'mobile' ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
-                {filteredList.map((project, index) => (
-                  <div
-                    key={project._id || `mobile-${index}`}
-                    className="col-span-1 w-full flex justify-center h-full"
-                  >
-                    <AppShowcaseCard
-                      app={project}
-                      index={index}
-                      shouldReduceMotion={shouldReduceMotion}
-                      getMediaUrl={getMediaUrl}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
-                {filteredList.map((project, index) => (
-                  <div
-                    key={project._id || `web-${index}`}
-                    className="col-span-1 w-full flex justify-center h-full"
-                  >
-                    <ProjectMonitorCard
-                      project={project}
-                      index={index}
-                      shouldReduceMotion={shouldReduceMotion}
-                      getMediaUrl={getMediaUrl}
-                    />
-                  </div>
-                ))}
-              </div>
-            )
-          ) : (
-              <div className="col-span-full text-center py-16 px-4 rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
-                <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[var(--accent-projects)]/10 text-[var(--accent-projects)] flex items-center justify-center">
-                  <Search className="w-8 h-8" />
+                  )}
+
+                  {/* Mobile Applications (Showcase Stages Matching Reference) */}
+                  {filteredList.some((p) => p.isMobile) && (
+                    <div>
+                      <div className="flex items-center gap-3 my-8 max-w-5xl mx-auto">
+                        <div className="h-[1.5px] flex-1 bg-slate-300 dark:bg-slate-700" />
+                        <span className="text-xs font-black uppercase tracking-[0.2em] text-[#36454F] dark:text-slate-400">
+                          // Mobile Applications
+                        </span>
+                        <div className="h-[1.5px] flex-1 bg-slate-300 dark:bg-slate-700" />
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+                        {filteredList
+                          .filter((p) => p.isMobile)
+                          .map((project, index) => (
+                            <div
+                              key={project._id || `mobile-${index}`}
+                              className="col-span-1 w-full flex justify-center h-full"
+                            >
+                              <AppShowcaseCard
+                                app={project}
+                                index={index}
+                                shouldReduceMotion={shouldReduceMotion}
+                                getMediaUrl={getMediaUrl}
+                              />
+                            </div>
+                          ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
-                  No matching projects found
-                </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md mx-auto">
-                  Try adjusting your search keywords, clear stack filters, or switch categories.
-                </p>
-                <button
-                  type="button"
-                  onClick={clearAllFilters}
-                  className="px-6 py-2.5 text-xs font-bold rounded-xl text-white bg-gradient-to-r from-[var(--accent-projects)] via-[#7c3aed] to-[#6d28d9] hover:brightness-110 active:translate-y-0.5 transition-all cursor-pointer"
-                  style={{
-                    boxShadow: '0 3.5px 0 #4c1d95, 0 6px 14px rgba(108, 43, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
-                  }}
-                >
-                  Clear All Filters
-                </button>
-              </div>
-            )}
-          </motion.div>
+              ) : activeTab === 'mobile' ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+                  {filteredList.map((project, index) => (
+                    <div
+                      key={project._id || `mobile-${index}`}
+                      className="col-span-1 w-full flex justify-center h-full"
+                    >
+                      <AppShowcaseCard
+                        app={project}
+                        index={index}
+                        shouldReduceMotion={shouldReduceMotion}
+                        getMediaUrl={getMediaUrl}
+                      />
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 max-w-7xl mx-auto">
+                  {filteredList.map((project, index) => (
+                    <div
+                      key={project._id || `web-${index}`}
+                      className="col-span-1 w-full flex justify-center h-full"
+                    >
+                      <ProjectMonitorCard
+                        project={project}
+                        index={index}
+                        shouldReduceMotion={shouldReduceMotion}
+                        getMediaUrl={getMediaUrl}
+                      />
+                    </div>
+                  ))}
+                </div>
+              )
+            ) : (
+                <div className="col-span-full text-center py-16 px-4 rounded-3xl bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800">
+                  <div className="w-16 h-16 mx-auto mb-4 rounded-2xl bg-[#6C2BFF]/10 text-[#6C2BFF] flex items-center justify-center">
+                    <Search className="w-8 h-8" />
+                  </div>
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-1">
+                    No matching projects found
+                  </h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400 mb-6 max-w-md mx-auto">
+                    Try adjusting your search keywords, clear stack filters, or switch categories.
+                  </p>
+                  <button
+                    type="button"
+                    onClick={clearAllFilters}
+                    className="px-6 py-2.5 text-xs font-bold rounded-xl text-white bg-[#6C2BFF] hover:bg-[#5b21b6] active:translate-y-0.5 transition-all cursor-pointer shadow-md shadow-[#6C2BFF]/20"
+                  >
+                    Clear All Filters
+                  </button>
+                </div>
+              )}
+            </motion.div>
+          </AnimatePresence>
         </div>
       </ProjectsScene>
     </section>

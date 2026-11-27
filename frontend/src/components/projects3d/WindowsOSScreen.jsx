@@ -77,7 +77,7 @@ export default function WindowsOSScreen({
           </div>
         ) : (
           /* Clean Editor / Canvas Preview (No text clutter, no Windows UI) */
-          <div className="relative w-full h-full p-6 bg-gradient-to-br from-[#0f172a] via-[#1e1b4b] to-[#090d16] flex flex-col justify-between overflow-hidden">
+          <div className="relative w-full h-full p-6 bg-[#0f172a] flex flex-col justify-between overflow-hidden">
             {/* Ambient Background Grid */}
             <div
               className="absolute inset-0 opacity-20 pointer-events-none"
@@ -88,13 +88,13 @@ export default function WindowsOSScreen({
             />
 
             {/* Subtle Glowing Radial Accent */}
-            <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-indigo-500/20 blur-3xl pointer-events-none" />
-            <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-blue-500/20 blur-3xl pointer-events-none" />
+            <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
+            <div className="absolute -bottom-16 -left-16 w-48 h-48 rounded-full bg-blue-500/10 blur-3xl pointer-events-none" />
 
             {/* Top Row: Clean Project Indicator */}
             <div className="relative z-10 flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-md">
+                <div className="w-7 h-7 rounded-lg bg-[#2563eb] flex items-center justify-center text-white shadow-md">
                   <Code2 size={15} />
                 </div>
                 <span className="text-xs font-bold text-white tracking-wide truncate max-w-[180px]">
@@ -149,7 +149,7 @@ export default function WindowsOSScreen({
               target="_blank"
               rel="noopener noreferrer"
               onClick={(e) => e.stopPropagation()}
-              className="pointer-events-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 hover:brightness-110 active:translate-y-0.5 transition-all shadow-[0_4px_0_#312e81,0_8px_18px_rgba(79,70,229,0.45),inset_0_1px_1px_rgba(255,255,255,0.4)] border border-indigo-300/40 select-none cursor-pointer"
+              className="pointer-events-auto inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 active:translate-y-0.5 transition-all shadow-[0_4px_0_#1d4ed8,0_8px_18px_rgba(37,99,235,0.4)] select-none cursor-pointer"
               aria-label={`Open preview of ${title}`}
             >
               <ExternalLink size={15} />

@@ -156,21 +156,22 @@ function BrainStage({ isDark }) {
       <pointLight position={[0, -1.8, 0]} intensity={1.6} color="#0284c7" distance={4.5} />
 
       {/* Levitating Chrome Brain */}
-      <Float speed={1.3} rotationIntensity={0.1} floatIntensity={0.15}>
+      <Float speed={1.3} rotationIntensity={0.08} floatIntensity={0.12}>
         <ChromeAnatomicalBrain isDark={isDark} />
         <SynapticSparkles />
       </Float>
 
-      {/* Smooth 360° Drag Rotation */}
+      {/* Full 360° Interactive Orbit Drag Controls */}
       <OrbitControls
+        makeDefault
+        target={[0, 0, 0]}
         enableZoom={false}
         enablePan={false}
         autoRotate={true}
         autoRotateSpeed={1.2}
-        rotateSpeed={0.85}
-        dampingFactor={0.06}
-        minPolarAngle={Math.PI * 0.15}
-        maxPolarAngle={Math.PI * 0.85}
+        rotateSpeed={1.0}
+        enableDamping={true}
+        dampingFactor={0.08}
       />
     </>
   )
@@ -193,9 +194,12 @@ const Certificate3DBrain = memo(() => {
     document.documentElement.classList.contains('dark')
 
   return (
-    <div className="w-72 h-72 sm:w-80 sm:h-80 select-none cursor-grab active:cursor-grabbing relative flex items-center justify-center">
+    <div
+      className="w-72 h-72 sm:w-80 sm:h-80 select-none cursor-grab active:cursor-grabbing relative flex items-center justify-center pointer-events-auto touch-none z-30"
+      style={{ touchAction: 'none' }}
+    >
       <Canvas
-        camera={{ position: [0, 0.15, 4.6], fov: 38 }}
+        camera={{ position: [0, 0.1, 4.5], fov: 38 }}
         dpr={[1, 2]}
         gl={{
           antialias: true,
@@ -203,6 +207,7 @@ const Certificate3DBrain = memo(() => {
           toneMapping: THREE.ACESFilmicToneMapping,
           toneMappingExposure: isDark ? 1.25 : 1.15,
         }}
+        style={{ width: '100%', height: '100%', touchAction: 'none', pointerEvents: 'auto' }}
         className="w-full h-full"
       >
         <Suspense fallback={<BrainLoader />}>

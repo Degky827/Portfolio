@@ -155,9 +155,9 @@ export default function ProjectDetailsModal({ project, isOpen, onClose, getMedia
                     href={liveUrl}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl text-white bg-gradient-to-r from-[var(--accent-projects)] via-[#7c3aed] to-[#6d28d9] hover:brightness-110 active:translate-y-0.5 transition-all select-none cursor-pointer"
+                    className="flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-xl text-white bg-blue-600 hover:bg-blue-700 active:translate-y-0.5 transition-all select-none cursor-pointer"
                     style={{
-                      boxShadow: '0 3.5px 0 #4c1d95, 0 6px 14px rgba(108, 43, 255, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
+                      boxShadow: '0 3.5px 0 #1d4ed8, 0 6px 14px rgba(37, 99, 235, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.4)',
                     }}
                   >
                     <ExternalLink size={16} />
