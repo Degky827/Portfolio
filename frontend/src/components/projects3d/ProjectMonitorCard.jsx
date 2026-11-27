@@ -1,245 +1,33 @@
-import { useRef, useState, useCallback, useMemo } from 'react'
-import { motion, useMotionValue, useTransform, useSpring, useMotionTemplate, AnimatePresence } from 'framer-motion'
-import { ExternalLink, ChevronDown, ChevronUp, Info, X } from 'lucide-react'
-import HolographicBadge from '../HolographicBadge'
-import FuturisticButton from './FuturisticButton'
+import { useRef, useState, useCallback } from 'react'
+import { motion, useMotionValue, useTransform, useSpring } from 'framer-motion'
+import { ExternalLink, Info, CheckCircle2, Clock, AlertCircle, Monitor } from 'lucide-react'
+import ProjectDetailsModal from './ProjectDetailsModal'
+import WindowsOSScreen from './WindowsOSScreen'
 
-const SPRING = { stiffness: 300, damping: 30, mass: 0.5 }
+const SPRING = { stiffness: 300, damping: 25, mass: 0.5 }
 
-const GithubIcon = ({ size = 16, className = '' }) => (
+const GithubIcon = ({ size = 15, className = '' }) => (
   <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z"/>
+    <path d="M12 2A10 10 0 0 0 2 12c0 4.42 2.87 8.17 6.84 9.5.5.08.66-.23.66-.5v-1.69c-2.77.6-3.36-1.34-3.36-1.34-.46-1.16-1.11-1.47-1.11-1.47-.91-.62.07-.6.07-.6 1 .07 1.53 1.03 1.53 1.03.87 1.52 2.34 1.07 2.91.83.09-.65.35-1.09.63-1.34-2.22-.25-4.55-1.11-4.55-4.92 0-1.11.38-2 1.03-2.71-.1-.25-.45-1.29.1-2.64 0 0 .84-.27 2.75 1.02.79-.22 1.65-.33 2.5-.33.85 0 1.71.11 2.5.33 1.91-1.29 2.75-1.02 2.75-1.02.55 1.35.2 2.39.1 2.64.65.71 1.03 1.6 1.03 2.71 0 3.82-2.34 4.66-4.57 4.91.36.31.69.92.69 1.85V21c0 .27.16.59.67.5C19.14 20.16 22 16.42 22 12A10 10 0 0 0 12 2z" />
   </svg>
 )
 
-const DEFAULT_THUMBNAIL = 'https://placehold.co/600x400/0f172a/475569?text=Project'
-
-const statusColorMap = {
-  completed: '#10b981',
-  in_progress: '#f59e0b',
-  planned: '#3b82f6',
+const statusMap = {
+  completed: { label: 'Completed', color: 'emerald', icon: CheckCircle2 },
+  in_progress: { label: 'In Progress', color: 'amber', icon: Clock },
+  planned: { label: 'Planned', color: 'blue', icon: AlertCircle },
 }
 
-function MonitorFrame({ children, color, isHovered, mouseX, mouseY }) {
-  const reflectionX = useSpring(useTransform(mouseX, [-0.5, 0.5], [-25, 25]), SPRING)
-  const reflectionY = useSpring(useTransform(mouseY, [-0.5, 0.5], [-18, 18]), SPRING)
-  const reflectionBg = useMotionTemplate`radial-gradient(ellipse at calc(50% + ${reflectionX}px) calc(30% + ${reflectionY}px), rgba(255,255,255,0.15) 0%, rgba(255,255,255,0.04) 30%, transparent 60%)`
-  const edgeGlow = useMotionTemplate`radial-gradient(ellipse at calc(50% + ${reflectionX}px) calc(50% + ${reflectionY}px), ${color}18 0%, transparent 50%)`
-
-  return (
-    <div className="relative" style={{ perspective: '1200px' }}>
-      {/* Monitor shadow on surface */}
-      <motion.div
-        className="absolute -bottom-6 left-[8%] right-[8%] h-8 rounded-[50%] blur-2xl"
-        style={{ background: `radial-gradient(ellipse, ${color}35 0%, transparent 70%)` }}
-        animate={{
-          opacity: isHovered ? 0.9 : 0.35,
-          scaleX: isHovered ? 1.15 : 0.85,
-          y: isHovered ? 6 : 0,
-        }}
-        transition={{ duration: 0.5, ease: 'easeOut' }}
-      />
-
-      {/* Ambient glow behind monitor */}
-      <motion.div
-        className="absolute -inset-8 rounded-3xl pointer-events-none"
-        style={{
-          background: `radial-gradient(ellipse, ${color}10 0%, transparent 70%)`,
-        }}
-        animate={{ opacity: isHovered ? 1 : 0.3 }}
-        transition={{ duration: 0.6 }}
-      />
-
-      {/* Monitor body */}
-      <motion.div
-        className="relative rounded-2xl overflow-hidden"
-        style={{
-          background: 'linear-gradient(165deg, #1c1c34 0%, #0e0e1c 40%, #141428 70%, #1a1a30 100%)',
-          border: `1.5px solid ${isHovered ? `${color}30` : 'rgba(255,255,255,0.07)'}`,
-          boxShadow: isHovered
-            ? `0 35px 90px rgba(0,0,0,0.65), 0 0 50px ${color}18, 0 0 100px ${color}08, inset 0 1px 0 rgba(255,255,255,0.08), inset 0 -1px 0 rgba(0,0,0,0.3)`
-            : '0 12px 45px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06), inset 0 -1px 0 rgba(0,0,0,0.2)',
-        }}
-        transition={{ duration: 0.4 }}
-      >
-        {/* Top bezel with camera dot */}
-        <div className="relative h-4 sm:h-5 bg-gradient-to-b from-[#1e1e32] to-[#14142a] flex items-center justify-center border-b border-white/5">
-          <motion.div
-            className="w-1.5 h-1.5 rounded-full"
-            style={{
-              background: isHovered
-                ? `radial-gradient(circle, ${color} 0%, ${color}60 100%)`
-                : 'radial-gradient(circle, #4a4a6a 0%, #2a2a3a 100%)',
-              boxShadow: isHovered ? `0 0 8px ${color}60` : 'none',
-            }}
-            animate={{ opacity: isHovered ? [0.6, 1, 0.6] : 0.4 }}
-            transition={{ duration: 2, repeat: Infinity }}
-          />
-        </div>
-
-        {/* Screen area */}
-        <div className="relative bg-[#050510] aspect-[16/10] overflow-hidden">
-          {/* Screen content */}
-          <div className="absolute inset-0">
-            {children}
-          </div>
-
-          {/* Screen reflection overlay */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none z-20"
-            style={{
-              background: isHovered
-                ? reflectionBg
-                : 'linear-gradient(135deg, rgba(255,255,255,0.05) 0%, transparent 35%)',
-            }}
-          />
-
-          {/* Edge glow */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none z-20"
-            animate={{
-              boxShadow: isHovered
-                ? `inset 0 0 40px ${color}12, inset 0 0 80px ${color}06, inset 0 1px 0 rgba(255,255,255,0.08)`
-                : 'inset 0 0 0px transparent',
-            }}
-            transition={{ duration: 0.5 }}
-          />
-
-          {/* Holographic color shift on hover */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none z-20 mix-blend-overlay"
-            style={{ background: edgeGlow }}
-            animate={{ opacity: isHovered ? 0.6 : 0 }}
-            transition={{ duration: 0.4 }}
-          />
-
-          {/* Fine scanlines */}
-          <div
-            className="absolute inset-0 pointer-events-none z-20 opacity-[0.02]"
-            style={{
-              backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(0,0,0,0.4) 1px, rgba(0,0,0,0.4) 2px)',
-            }}
-          />
-
-          {/* Screen glare line */}
-          <motion.div
-            className="absolute inset-0 pointer-events-none z-20"
-            animate={{ opacity: isHovered ? 0.12 : 0.04 }}
-            style={{
-              background: 'linear-gradient(120deg, transparent 25%, rgba(255,255,255,0.06) 42%, rgba(255,255,255,0.1) 44%, rgba(255,255,255,0.06) 46%, transparent 65%)',
-            }}
-          />
-        </div>
-
-        {/* Bottom bezel with status LED */}
-        <div className="relative h-5 sm:h-6 bg-gradient-to-t from-[#1a1a30] to-[#141428] flex items-center justify-center border-t border-white/[0.04]">
-          <div className="flex items-center gap-2">
-            <motion.div
-              className="w-1.5 h-1.5 rounded-full"
-              animate={{
-                backgroundColor: isHovered ? color : '#3a3a5a',
-                boxShadow: isHovered ? `0 0 8px ${color}80, 0 0 16px ${color}40` : '0 0 0px transparent',
-              }}
-              transition={{ duration: 0.3 }}
-            />
-            <motion.div
-              className="w-1 h-1 rounded-full"
-              animate={{
-                backgroundColor: isHovered ? '#4ade80' : '#2a2a3a',
-                boxShadow: isHovered ? '0 0 6px #4ade8060' : 'none',
-              }}
-              transition={{ duration: 0.3, delay: 0.1 }}
-            />
-          </div>
-        </div>
-      </motion.div>
-
-      {/* Monitor stand neck */}
-      <div className="flex justify-center">
-        <div
-          className="w-10 h-7"
-          style={{
-            background: 'linear-gradient(180deg, #1a1a30 0%, #10101e 100%)',
-            borderLeft: '1px solid rgba(255,255,255,0.04)',
-            borderRight: '1px solid rgba(255,255,255,0.04)',
-          }}
-        />
-      </div>
-
-      {/* Monitor stand base */}
-      <div className="flex justify-center">
-        <motion.div
-          className="h-2.5 rounded-b-xl"
-          style={{
-            width: '55%',
-            background: 'linear-gradient(180deg, #1a1a30 0%, #0e0e1c 100%)',
-            border: '1px solid rgba(255,255,255,0.04)',
-            borderTop: 'none',
-          }}
-          animate={{
-            boxShadow: isHovered ? `0 6px 25px ${color}12, 0 2px 8px rgba(0,0,0,0.4)` : '0 3px 10px rgba(0,0,0,0.35)',
-          }}
-        />
-      </div>
-    </div>
-  )
-}
-
-function ScreenContent({ thumbUrl, title, isHovered, getMediaUrl }) {
-  return (
-    <div className="relative w-full h-full bg-[#060612]">
-      {/* Project screenshot */}
-      <img
-        src={thumbUrl ? getMediaUrl(thumbUrl) : DEFAULT_THUMBNAIL}
-        alt={title}
-        className="w-full h-full object-cover transition-all duration-700"
-        style={{
-          transform: isHovered ? 'scale(1.06)' : 'scale(1)',
-          filter: isHovered ? 'brightness(1.1) contrast(1.05)' : 'brightness(0.95)',
-        }}
-        onError={(e) => { e.target.src = DEFAULT_THUMBNAIL }}
-      />
-
-      {/* Dark gradient overlay */}
-      <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/25" />
-
-      {/* Color tint overlay on hover */}
-      <motion.div
-        className="absolute inset-0 mix-blend-overlay"
-        animate={{ opacity: isHovered ? 0.08 : 0 }}
-        transition={{ duration: 0.5 }}
-      />
-
-      {/* CRT scanlines */}
-      <div
-        className="absolute inset-0 pointer-events-none opacity-[0.025]"
-        style={{
-          backgroundImage: 'repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.3) 2px, rgba(0,0,0,0.3) 4px)',
-        }}
-      />
-
-      {/* Vignette */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at center, transparent 40%, rgba(0,0,0,0.4) 100%)',
-        }}
-      />
-    </div>
-  )
-}
-
-export default function ProjectMonitorCard({ project, index, shouldReduceMotion, getMediaUrl: getMediaUrlFn }) {
+export default function ProjectMonitorCard({ project, index, shouldReduceMotion, getMediaUrl }) {
   const cardRef = useRef(null)
   const [isHovered, setIsHovered] = useState(false)
-  const [showDetails, setShowDetails] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   const mouseX = useMotionValue(0)
   const mouseY = useMotionValue(0)
 
-  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [8, -8]), SPRING)
-  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-8, 8]), SPRING)
-  const translateZ = useSpring(isHovered ? 30 : 0, SPRING)
+  const rotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [6, -6]), SPRING)
+  const rotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), SPRING)
   const scale = useSpring(isHovered ? 1.02 : 1, SPRING)
 
   const handleMouseMove = useCallback((e) => {
@@ -258,250 +46,203 @@ export default function ProjectMonitorCard({ project, index, shouldReduceMotion,
     mouseY.set(0)
   }, [mouseX, mouseY])
 
-  const color = '#6366f1'
-  const title = project.title || ''
+  const title = project.title || 'Untitled Project'
   const desc = project.shortDescription || project.description || ''
   const techs = project.technologies || project.tags || []
-  const liveUrl = project.liveDemoUrl || project.liveUrl || '#'
+  const liveUrl = project.liveDemoUrl || project.liveUrl || project.appUrl || '#'
   const repoUrl = project.githubUrl || project.repoUrl || ''
-  const thumbUrl = project.thumbnail || (project.images && project.images[0]) || ''
-  const status = project.status || null
-  const floatDelay = useMemo(() => index * 0.5, [index])
-
-  // Calculate alternating slide direction: even indices slide from left, odd from right
-  const slideDirection = index % 2 === 0 ? -60 : 60
+  const statusInfo = statusMap[project.status] || null
 
   return (
-    <motion.div
-      ref={cardRef}
-      variants={{
-        hidden: { 
-          opacity: 0, 
-          x: shouldReduceMotion ? 0 : slideDirection,
-          y: 0 
-        },
-        visible: {
-          opacity: 1,
-          x: 0,
-          y: 0,
-          transition: {
-            type: 'spring',
-            stiffness: 100,
-            damping: 15,
-            delay: shouldReduceMotion ? 0 : index * 0.15,
+    <>
+      <motion.div
+        ref={cardRef}
+        variants={{
+          hidden: { opacity: 0, y: shouldReduceMotion ? 0 : 25 },
+          visible: {
+            opacity: 1,
+            y: 0,
+            transition: {
+              duration: 0.5,
+              delay: shouldReduceMotion ? 0 : (index % 6) * 0.08,
+            },
           },
-        },
-      }}
-      custom={index}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        rotateX,
-        rotateY,
-        translateZ,
-        scale,
-        transformStyle: 'preserve-3d',
-      }}
-      animate={{ y: [0, -6, 0] }}
-      transition={{
-        y: { duration: 5 + index * 0.3, repeat: Infinity, ease: 'easeInOut', delay: floatDelay },
-      }}
-      className="group relative cursor-pointer"
-    >
-      {/* Card container */}
-      <div
-        className="relative rounded-2xl overflow-hidden p-4 sm:p-5 transition-all duration-500"
-        style={{
-          background: isHovered
-            ? `linear-gradient(165deg, ${color}06 0%, rgba(255,255,255,0.05) 30%, rgba(255,255,255,0.03) 60%, ${color}04 100%)`
-            : 'linear-gradient(165deg, rgba(255,255,255,0.035) 0%, rgba(255,255,255,0.01) 100%)',
-          backdropFilter: 'blur(24px)',
-          border: `1px solid ${isHovered ? `${color}28` : 'rgba(255,255,255,0.05)'}`,
-          boxShadow: isHovered
-            ? `0 20px 60px rgba(0,0,0,0.3), 0 0 30px ${color}08`
-            : '0 8px 32px rgba(0,0,0,0.2)',
         }}
+        onMouseMove={handleMouseMove}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        style={{
+          rotateX: shouldReduceMotion ? 0 : rotateX,
+          rotateY: shouldReduceMotion ? 0 : rotateY,
+          scale,
+          transformStyle: 'preserve-3d',
+        }}
+        className="group relative flex flex-col h-full rounded-2xl overflow-hidden bg-white/90 dark:bg-[#1e2a3a]/90 backdrop-blur-md border border-slate-200/90 dark:border-[#2a3050] shadow-md hover:shadow-2xl hover:border-[var(--accent-projects)]/40 dark:hover:border-[var(--accent-projects)]/50 transition-all duration-300"
       >
-        {/* Ambient glow */}
-        <motion.div
-          className="absolute -top-24 -right-24 w-48 h-48 rounded-full pointer-events-none z-0"
+        {/* Subtle Ambient Hover Glow */}
+        <div
+          className="absolute -inset-px rounded-2xl pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-500 -z-10"
           style={{
-            background: `radial-gradient(circle, ${color}15 0%, transparent 70%)`,
-            filter: 'blur(40px)',
+            background: 'radial-gradient(circle at 50% 0%, rgba(108, 43, 255, 0.15) 0%, transparent 70%)',
           }}
-          animate={{ opacity: isHovered ? [0.4, 0.7, 0.4] : 0.1 }}
-          transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         />
 
-        {/* Holographic border */}
-        <motion.div
-          className="absolute inset-0 rounded-2xl pointer-events-none z-10"
-          style={{ padding: '1px' }}
-          animate={{ opacity: isHovered ? 1 : 0.1 }}
-          transition={{ duration: 0.4 }}
-        >
-          <motion.div
-            className="absolute inset-0 rounded-2xl"
-            animate={isHovered ? {
-              background: [
-                `conic-gradient(from 0deg, ${color}60, transparent 20%, #8b5cf640 40%, transparent 60%, ${color}60)`,
-                `conic-gradient(from 360deg, ${color}60, transparent 20%, #8b5cf640 40%, transparent 60%, ${color}60)`,
-              ],
-            } : {
-              background: `conic-gradient(from 0deg, ${color}12, transparent 25%, #8b5cf606 50%, transparent 75%, ${color}12)`,
-            }}
-            transition={{ duration: isHovered ? 3 : 0, repeat: Infinity, ease: 'linear' }}
-            style={{
-              padding: '1px',
-              mask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-              maskComposite: 'exclude',
-              WebkitMask: 'linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0)',
-              WebkitMaskComposite: 'xor',
-            }}
-          />
-        </motion.div>
+        {/* ── 3D Windows PC / Monitor Screen Frame Top ── */}
+        <div className="relative p-3 sm:p-4 pb-0">
+          <div className="relative rounded-t-xl overflow-hidden border border-slate-700/80 bg-slate-950 shadow-2xl">
+            {/* Top Monitor Bezel with Status / Webcam */}
+            <div className="h-5 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 flex items-center justify-between px-3 border-b border-slate-700/50">
+              <div className="flex items-center gap-1.5">
+                <div className="w-2 h-2 rounded-full bg-blue-500/90 shadow-[0_0_4px_#3b82f6]" />
+                <span className="text-[8.5px] font-mono text-slate-400">DESKTOP-{String(index + 1).padStart(2, '0')}</span>
+              </div>
+              {/* Webcam */}
+              <div className="w-1.5 h-1.5 rounded-full bg-slate-950 ring-1 ring-slate-600/80 flex items-center justify-center">
+                <div className="w-0.5 h-0.5 rounded-full bg-blue-400/80" />
+              </div>
+              {/* Windows OS Badge */}
+              <div className="flex items-center gap-1 text-[9px] font-mono text-slate-300">
+                <Monitor size={10} className="text-blue-400" />
+                <span>Windows 11</span>
+              </div>
+            </div>
 
-        {/* Monitor */}
-        <div className="relative z-10 mb-4">
-          <MonitorFrame color={color} isHovered={isHovered} mouseX={mouseX} mouseY={mouseY}>
-            <ScreenContent thumbUrl={thumbUrl} title={title} isHovered={isHovered} getMediaUrl={getMediaUrlFn} />
-          </MonitorFrame>
+            {/* Windows OS Desktop Screen Showing Running Project Window & Auto-Play */}
+            <WindowsOSScreen
+              project={project}
+              index={index}
+              getMediaUrl={getMediaUrl}
+              autoPlay={true}
+            />
+
+            {/* Hover Floating "Open Live" Quick Button on Media Frame */}
+            {liveUrl && liveUrl !== '#' && (
+              <motion.div
+                initial={false}
+                animate={{
+                  opacity: isHovered ? 1 : 0,
+                  y: isHovered ? 0 : 8,
+                  scale: isHovered ? 1 : 0.92,
+                }}
+                transition={{ duration: 0.2 }}
+                className="absolute inset-0 z-30 flex items-center justify-center bg-black/40 backdrop-blur-[2px] pointer-events-none"
+              >
+                <a
+                  href={liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={(e) => e.stopPropagation()}
+                  className="pointer-events-auto inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-bold text-white shadow-xl shadow-emerald-500/30 bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 hover:from-emerald-400 hover:to-teal-500 hover:scale-105 active:scale-95 transition-all border border-emerald-300/40"
+                  aria-label={`Open live demo of ${title}`}
+                >
+                  <ExternalLink size={15} className="animate-pulse" />
+                  Open Live
+                </a>
+              </motion.div>
+            )}
+
+            {/* Bottom Monitor Chin with Brand Badge */}
+            <div className="h-4 bg-slate-900 flex items-center justify-between px-3 border-t border-slate-800 text-[9px] font-mono text-slate-500">
+              <span className="flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-[1px] bg-blue-400" />
+                <span>MICROSOFT WINDOWS</span>
+              </span>
+              <div className="w-8 h-1 rounded-full bg-slate-700/60" />
+              <span>4K UHD</span>
+            </div>
+          </div>
         </div>
 
-        {/* Content below monitor */}
-        <div className="relative z-10">
-          {/* Title + Status */}
-          <div className="flex items-start justify-between gap-2 mb-2">
-            <h3 className="text-base sm:text-lg font-bold leading-tight font-display text-white">
-              {title}
-            </h3>
-            {status && (
-              <HolographicBadge status={status} size="sm" />
-            )}
-          </div>
+        {/* ── Card Content ── */}
+        <div className="p-4 sm:p-5 flex-1 flex flex-col justify-between">
+          <div>
+            <div className="flex items-start justify-between gap-2 mb-2">
+              <h3 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white line-clamp-1 group-hover:text-[var(--accent-projects)] transition-colors">
+                {title}
+              </h3>
+              {statusInfo && (
+                <span className="px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider uppercase bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+                  <span className={`w-1.5 h-1.5 rounded-full ${
+                    statusInfo.color === 'emerald' ? 'bg-emerald-500' : statusInfo.color === 'amber' ? 'bg-amber-500' : 'bg-blue-500'
+                  }`} />
+                  {statusInfo.label}
+                </span>
+              )}
+            </div>
 
-          {/* Description */}
-          <div className="mb-3">
-            <p className="text-xs leading-relaxed line-clamp-2" style={{ color: '#d1d5db' }}>
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-300 line-clamp-2 leading-relaxed mb-4">
               {desc}
             </p>
+
+            {/* Technology Tags */}
+            <div className="flex flex-wrap gap-1.5 mb-4" role="list" aria-label="Project technologies">
+              {techs.slice(0, 4).map((tag, i) => (
+                <span
+                  key={i}
+                  role="listitem"
+                  className="px-2.5 py-0.5 text-[11px] font-semibold rounded-md bg-[var(--accent-projects)]/10 text-[var(--accent-projects)] border border-[var(--accent-projects)]/20"
+                >
+                  {tag}
+                </span>
+              ))}
+              {techs.length > 4 && (
+                <span className="px-2 py-0.5 text-[10px] font-medium rounded-md bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                  +{techs.length - 4}
+                </span>
+              )}
+            </div>
           </div>
 
-          {/* Technologies */}
-          <div className="flex flex-wrap gap-1 mb-3" role="list" aria-label="Project technologies">
-            {techs.slice(0, 5).map((tag, i) => (
-              <motion.span
-                key={i}
-                role="listitem"
-                whileHover={{ scale: 1.08, y: -1 }}
-                className="px-2 py-0.5 text-[10px] font-medium rounded-md transition-all duration-200"
-                style={{
-                  background: `${color}15`,
-                  color: `${color}dd`,
-                  border: `1px solid ${color}25`,
-                }}
-              >
-                {tag}
-              </motion.span>
-            ))}
-          </div>
-
-          {/* Action buttons */}
-          <div className="flex items-center gap-2 pt-3 border-t border-white/8">
-            {repoUrl && repoUrl !== '#' && (
-              <FuturisticButton
-                href={repoUrl}
-                icon={GithubIcon}
-                label="Source"
-                color={color}
-                variant="ghost"
-              />
-            )}
-            {liveUrl !== '#' && (
-              <FuturisticButton
+          {/* Action Buttons Row */}
+          <div className="flex items-center gap-2 pt-3 border-t border-slate-200/80 dark:border-slate-800/80 mt-auto">
+            {liveUrl && liveUrl !== '#' && (
+              <a
                 href={liveUrl}
-                icon={ExternalLink}
-                label="Live Demo"
-                color="#3b82f6"
-                variant="primary"
-              />
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold rounded-xl text-white bg-[var(--accent-projects)] hover:opacity-95 shadow-sm transition-all"
+                aria-label={`Live demo of ${title}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <ExternalLink size={13} />
+                Live Demo
+              </a>
             )}
+
+            {repoUrl && repoUrl !== '#' && (
+              <a
+                href={repoUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="p-2 text-slate-700 dark:text-slate-300 hover:text-[var(--accent-projects)] dark:hover:text-[var(--accent-projects)] bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700/80 rounded-xl border border-slate-200 dark:border-slate-700 transition-all"
+                title="View Source Code"
+                aria-label={`Source code for ${title}`}
+                onClick={(e) => e.stopPropagation()}
+              >
+                <GithubIcon size={16} />
+              </a>
+            )}
+
             <button
-              onClick={(e) => { e.stopPropagation(); setShowDetails(!showDetails) }}
-              className="flex items-center gap-1.5 px-3 py-1.5 text-[11px] font-semibold rounded-lg transition-all duration-200 hover:scale-105"
-              style={{
-                background: showDetails ? `${color}25` : `${color}15`,
-                color: color,
-                border: `1px solid ${showDetails ? `${color}40` : `${color}25`}`,
-              }}
+              type="button"
+              onClick={() => setShowModal(true)}
+              className="flex items-center gap-1 px-3 py-2 text-xs font-semibold rounded-xl text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700/80 border border-slate-200 dark:border-slate-700 transition-all"
+              title="View full project details"
             >
-              {showDetails ? <X size={12} /> : <Info size={12} />}
-              {showDetails ? 'Close' : 'Details'}
+              <Info size={13} />
+              Details
             </button>
           </div>
         </div>
+      </motion.div>
 
-        {/* Expanded Details Card */}
-        <AnimatePresence>
-          {showDetails && (
-            <motion.div
-              initial={{ height: 0, opacity: 0 }}
-              animate={{ height: 'auto', opacity: 1 }}
-              exit={{ height: 0, opacity: 0 }}
-              transition={{ duration: 0.3, ease: 'easeInOut' }}
-              className="relative z-10 overflow-hidden"
-            >
-              <div className="pt-4 mt-4 border-t border-white/10">
-                {/* Full Screenshot */}
-                <div className="relative rounded-xl overflow-hidden mb-4 aspect-[16/10]">
-                  <img
-                    src={thumbUrl ? (getMediaUrlFn ? getMediaUrlFn(thumbUrl) : thumbUrl) : DEFAULT_THUMBNAIL}
-                    alt={title}
-                    className="w-full h-full object-cover"
-                    onError={(e) => { e.target.src = DEFAULT_THUMBNAIL }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
-                </div>
-
-                {/* Full Description */}
-                <div className="mb-4">
-                  <h4 className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: color }}>
-                    Full Description
-                  </h4>
-                  <p className="text-xs leading-relaxed whitespace-pre-wrap" style={{ color: '#d1d5db' }}>
-                    {project.description || desc}
-                  </p>
-                </div>
-
-                {/* All Technologies */}
-                {techs.length > 5 && (
-                  <div>
-                    <h4 className="text-xs font-semibold uppercase tracking-wider mb-2" style={{ color: color }}>
-                      All Technologies
-                    </h4>
-                    <div className="flex flex-wrap gap-1">
-                      {techs.map((tag, i) => (
-                        <span
-                          key={i}
-                          className="px-2 py-0.5 text-[10px] font-medium rounded-md"
-                          style={{
-                            background: `${color}15`,
-                            color: `${color}dd`,
-                            border: `1px solid ${color}25`,
-                          }}
-                        >
-                          {tag}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </motion.div>
+      {/* Details Modal */}
+      <ProjectDetailsModal
+        project={project}
+        isOpen={showModal}
+        onClose={() => setShowModal(false)}
+        getMediaUrl={getMediaUrl}
+      />
+    </>
   )
 }

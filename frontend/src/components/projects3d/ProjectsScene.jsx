@@ -4,72 +4,60 @@ import { Preload, Stars } from '@react-three/drei'
 import FloatingParticles from './FloatingParticles'
 import CinematicLighting from './CinematicLighting'
 import HolographicLines from './HolographicLines'
-import CinematicLensFlare from './CinematicLensFlare'
 import SmoothCamera from './SmoothCamera'
-import PostProcessing from './PostProcessing'
 import ProjectsErrorBoundary from './ProjectsErrorBoundary'
-import { useIsMobile, useDarkModeScene } from '../../shared/hooks/useSceneHooks'
+import { useIsMobile } from '../../shared/hooks/useSceneHooks'
 
-function SceneEnvironment({ isMobile, fogColor }) {
+function SceneEnvironment({ isMobile }) {
   return (
     <>
       <SmoothCamera isMobile={isMobile} />
-
-      <fog attach="fog" args={[fogColor, 6, 28]} />
-
       <CinematicLighting isMobile={isMobile} />
       <HolographicLines />
-      <FloatingParticles key={isMobile ? 'particles-mobile' : 'particles-desktop'} count={isMobile ? 30 : 80} />
-      <CinematicLensFlare isMobile={isMobile} />
-
+      <FloatingParticles key={isMobile ? 'particles-mobile' : 'particles-desktop'} count={isMobile ? 25 : 60} />
       <Stars
         key={isMobile ? 'stars-mobile' : 'stars-desktop'}
-        radius={40}
+        radius={45}
         depth={40}
-        count={isMobile ? 150 : 600}
-        factor={2.5}
-        saturation={0.1}
+        count={isMobile ? 120 : 350}
+        factor={2}
+        saturation={0.2}
         fade
-        speed={0.4}
+        speed={0.3}
       />
-
-      <PostProcessing isMobile={isMobile} />
     </>
   )
 }
 
 export default function ProjectsScene({ children }) {
   const isMobile = useIsMobile()
-  const darkMode = useDarkModeScene()
-  const bgColor = darkMode ? '#070B14' : '#ffffff'
-  const fogColor = darkMode ? '#070B14' : '#ffffff'
 
   return (
     <div className="relative w-full min-h-screen" style={{ perspective: '1200px' }}>
-      <div className="absolute inset-0 z-0 pointer-events-none">
+      {/* 3D Interactive Canvas - transparent, lightweight, non-blocking for silky smooth scroll */}
+      <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
         <ProjectsErrorBoundary>
           <Canvas
             camera={{ position: [0, 2, 10], fov: 50, near: 0.1, far: 100 }}
-            dpr={isMobile ? [1, 1] : [1, 1.5]}
+            dpr={isMobile ? [1, 1] : [1, 1.25]}
             gl={{
               antialias: !isMobile,
               alpha: true,
               powerPreference: 'high-performance',
               stencil: false,
-              depth: true,
-              toneMapping: 4,
-              toneMappingExposure: 1.1,
+              depth: false,
             }}
-            style={{ background: bgColor }}
+            style={{ background: 'transparent' }}
           >
             <Suspense fallback={null}>
-              <SceneEnvironment isMobile={isMobile} fogColor={fogColor} />
+              <SceneEnvironment isMobile={isMobile} />
               <Preload all />
             </Suspense>
           </Canvas>
         </ProjectsErrorBoundary>
       </div>
 
+      {/* Main Content Container with preserve-3d perspective */}
       <div
         className="relative z-10"
         style={{
